@@ -14,5 +14,5 @@ Imports: Rcpp,
          RcppEigen,
          data.table
 RoxygenNote: 6.0.1
-Remotes: https://github.com/benkeser/halplus.git
+Remotes: github::benkeser/halplus
 Suggests: testthat

@@ -19,8 +19,9 @@ bool compare_vectors(MatRow v1, MatRow v2){
   return(bmap.key_comp()(v1,v2));
 }
 
-// [[Rcpp::export]]
+
 // generates a basismap with keys the values to test against
+// [[Rcpp::export]]
 SpMat make_basis(NumericMatrix X, IntegerVector cols){
   int n=X.rows();
   int p=X.cols();

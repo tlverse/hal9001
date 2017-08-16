@@ -104,7 +104,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_basis
-// generates a basismap with keys the values to test against SpMat make_basis(NumericMatrix X, IntegerVector cols);
+SpMat make_basis(NumericMatrix X, IntegerVector cols);
 RcppExport SEXP mangolassi_make_basis(SEXP XSEXP, SEXP colsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
