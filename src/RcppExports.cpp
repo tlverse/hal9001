@@ -7,6 +7,28 @@
 
 using namespace Rcpp;
 
+// dedupe
+LogicalVector dedupe(MSpMat X);
+RcppExport SEXP mangolassi_dedupe(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(dedupe(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dedupe_math
+LogicalVector dedupe_math(MSpMat X);
+RcppExport SEXP mangolassi_dedupe_math(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(dedupe_math(X));
+    return rcpp_result_gen;
+END_RCPP
+}
 // col_counts
 NumericVector col_counts(MSpMat X);
 RcppExport SEXP mangolassi_col_counts(SEXP XSEXP) {
@@ -58,12 +80,38 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// make_hal_basis
+SpMat make_hal_basis(NumericMatrix x);
+RcppExport SEXP mangolassi_make_hal_basis(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_hal_basis(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// make_univariate_basis
+SpMat make_univariate_basis(NumericMatrix X);
+RcppExport SEXP mangolassi_make_univariate_basis(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_univariate_basis(X));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"mangolassi_dedupe", (DL_FUNC) &mangolassi_dedupe, 1},
+    {"mangolassi_dedupe_math", (DL_FUNC) &mangolassi_dedupe_math, 1},
     {"mangolassi_col_counts", (DL_FUNC) &mangolassi_col_counts, 1},
     {"mangolassi_lassi_predict", (DL_FUNC) &mangolassi_lassi_predict, 2},
     {"mangolassi_update_coord", (DL_FUNC) &mangolassi_update_coord, 5},
     {"mangolassi_lassi_fit_cd", (DL_FUNC) &mangolassi_lassi_fit_cd, 4},
+    {"mangolassi_make_hal_basis", (DL_FUNC) &mangolassi_make_hal_basis, 1},
+    {"mangolassi_make_univariate_basis", (DL_FUNC) &mangolassi_make_univariate_basis, 1},
     {NULL, NULL, 0}
 };
 

@@ -2,18 +2,11 @@ library(hal)
 library(mangolassi)
 library(testthat)
 library(data.table)
-context("Basic test")
+context("Lasso test")
 
-# Number of covariates to use
-d <- 3
-
-# Sample size
-n <- 60
-
-# Simulate some data, all continuous covariates.
-set.seed(1)
-x <- data.frame(matrix(rnorm(n * d), ncol = d))
-y <- rnorm(n, rowSums(x))
+test_data <- generate_test_data()
+x <- test_data$x
+y <- test_data$y
 
 # Fit hal
 hal.fit <- hal(
@@ -23,9 +16,7 @@ hal.fit <- hal(
   verbose = TRUE
 )
 
-#############################################
-# internals of hal to generate design matrix
-x_basis = make_hal_basis(x)
+hal.fit$times
 
 #############################################
 # now that we have the design matrix, let's try to custom lasso

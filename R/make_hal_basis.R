@@ -17,7 +17,9 @@ make_hal_basis=function(X){
   #------------------------------------------------------------
   # makeSparseMat to create sparseMatrix design matrix
   X.init <- hal:::makeSparseMat(X = X, newX = X, verbose = verbose)
-  
+}
+
+remove_dupes=function(X.init){
   #------------------------------------------------------------  
   # Removing duplicated columns
   #------------------------------------------------------------
@@ -88,6 +90,6 @@ make_hal_basis=function(X){
       x[[1]]
     }), use.names = FALSE)
   
-  x_basis= X.init
+  x_basis= X.init[,notDupInds]
   
 }
