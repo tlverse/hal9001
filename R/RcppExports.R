@@ -29,7 +29,11 @@ make_hal_basis <- function(x) {
     .Call('mangolassi_make_hal_basis', PACKAGE = 'mangolassi', x)
 }
 
-make_univariate_basis <- function(X) {
-    .Call('mangolassi_make_univariate_basis', PACKAGE = 'mangolassi', X)
+compare_vectors <- function(v1, v2) {
+    .Call('mangolassi_compare_vectors', PACKAGE = 'mangolassi', v1, v2)
+}
+
+make_basis <- function(X, cols) {
+    .Call('mangolassi_make_basis', PACKAGE = 'mangolassi', X, cols)
 }
 

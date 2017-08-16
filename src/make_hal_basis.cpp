@@ -11,32 +11,53 @@ SpMat make_hal_basis(NumericMatrix x){
   return(x_basis);
 }
 
-NumericVector get_cutpoints(NumericMatrix::Column col){
-  NumericVector unique_vals=unique(col);
-  
-  // drop first element
-  unique_vals.sort();
-  unique_vals.erase(0);
-  
-  return(unique_vals);
+//quick and dirty way of validating comparator
+// [[Rcpp::export]]
+bool compare_vectors(MatRow v1, MatRow v2){
+  BasisMap bmap;
+  bmap[v1]=0;
+  return(bmap.key_comp()(v1,v2));
 }
 
-
-void eval_cutpoints(NumericMatrix::Column x_col, NumericVector cutpoints, int offset, SpMat & x_basis){
-  // initialize all indicators to be 1s
-  int n=x_col.size();
+// [[Rcpp::export]]
+// generates a basismap with keys the values to test against
+SpMat make_basis(NumericMatrix X, IntegerVector cols){
+  int n=X.rows();
+  int p=X.cols();
+  int sub_p=cols.length();
+  BasisMap bmap;
   
-  //begin by assuming every observation is bigger than the cutpoint
+  //construct submatrix with only basis cols
+  List all_cutpoints(p);
+  NumericMatrix X_sub(n,sub_p);
+  for(int j=0; j<sub_p; j++){
+    X_sub.column(j)=X.column(cols[j]);
+  }
+  
+  //find unique basis functions
+  for(int i=0; i<n; i++){
+    MatRow row=X_sub.row(i);
+    bmap.insert(std::pair<MatRow,int>(row, -1));
+  }
+  //erase the lowest(always true) basis function
+  bmap.erase(bmap.begin());
+  
+  //now generate an indicator vector for each
+  int basis_p=bmap.size();
+  SpMat x_basis(n,basis_p);
+  
+  //begin by assuming every observation is bigger than the smallest basis function
   SpVec indicators=Eigen::VectorXd::Ones(n).sparseView();
   
-  //for each cutpoint in the list
-  for(NumericVector::iterator cut_it = cutpoints.begin(); cut_it != cutpoints.end(); ++cut_it) {
+  //for each basis function
+  int offset=0;
+  MatRow basis;
+  for (BasisMap::iterator it=bmap.begin(); it!=bmap.end(); ++it){
+    basis=it->first;
     //verify that previously true indicators remain true
-    double cutpoint=*cut_it;
-
     for (InIterVec ind_it(indicators); ind_it; ++ind_it){
-      //if we exceed the cutpoint
-      if(x_col[ind_it.index()]>=cutpoint){
+      MatRow current_row=X_sub.row(ind_it.index());
+      if(!bmap.key_comp()(current_row,basis)){
         //we can add a positive indicator for this row, basis
         x_basis.coeffRef(ind_it.index(),offset)=1;
       } else{
@@ -44,39 +65,10 @@ void eval_cutpoints(NumericMatrix::Column x_col, NumericVector cutpoints, int of
         indicators.coeffRef(ind_it.index())=0;
       }
     }
-    
-    
     offset++;
   }
   
-}
-// [[Rcpp::export]]
-SpMat make_univariate_basis(NumericMatrix X){
-  int n=X.rows();
-  int p=X.cols();
-  int basis_p=0;
-  List all_cutpoints(p);
-  
-  for(int base_col=0; base_col<p; base_col++){
-    NumericVector cutpoints=get_cutpoints(X.column(base_col));
-    basis_p+=cutpoints.length();
-    all_cutpoints[base_col]=cutpoints;
-  }
-  
-  
-  SpMat x_basis(n,basis_p);
-  int offset=0;
-  for(int base_col=0; base_col<p; base_col++){
-    NumericMatrix::Column x_col=X.column(base_col);
-    NumericVector cutpoints=all_cutpoints[base_col];
-    eval_cutpoints(x_col, cutpoints, offset, x_basis);
-    offset+=cutpoints.length();
-  }
-  
-  x_basis.prune(0.5,0.1);
+  x_basis.makeCompressed();
   return(x_basis);
 }
 
-//define basis function as set of indicators
-//write function to cross two basis functions
-//can use that via induction I think

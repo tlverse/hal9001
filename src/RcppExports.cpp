@@ -91,14 +91,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// make_univariate_basis
-SpMat make_univariate_basis(NumericMatrix X);
-RcppExport SEXP mangolassi_make_univariate_basis(SEXP XSEXP) {
+// compare_vectors
+bool compare_vectors(MatRow v1, MatRow v2);
+RcppExport SEXP mangolassi_compare_vectors(SEXP v1SEXP, SEXP v2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< MatRow >::type v1(v1SEXP);
+    Rcpp::traits::input_parameter< MatRow >::type v2(v2SEXP);
+    rcpp_result_gen = Rcpp::wrap(compare_vectors(v1, v2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// make_basis
+// generates a basismap with keys the values to test against SpMat make_basis(NumericMatrix X, IntegerVector cols);
+RcppExport SEXP mangolassi_make_basis(SEXP XSEXP, SEXP colsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_univariate_basis(X));
+    Rcpp::traits::input_parameter< IntegerVector >::type cols(colsSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_basis(X, cols));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -111,7 +124,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"mangolassi_update_coord", (DL_FUNC) &mangolassi_update_coord, 5},
     {"mangolassi_lassi_fit_cd", (DL_FUNC) &mangolassi_lassi_fit_cd, 4},
     {"mangolassi_make_hal_basis", (DL_FUNC) &mangolassi_make_hal_basis, 1},
-    {"mangolassi_make_univariate_basis", (DL_FUNC) &mangolassi_make_univariate_basis, 1},
+    {"mangolassi_compare_vectors", (DL_FUNC) &mangolassi_compare_vectors, 2},
+    {"mangolassi_make_basis", (DL_FUNC) &mangolassi_make_basis, 2},
     {NULL, NULL, 0}
 };
 

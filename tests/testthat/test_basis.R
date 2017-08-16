@@ -8,11 +8,11 @@ test_data <- generate_test_data()
 x <- test_data$x
 y <- test_data$y
 
-
 ###################################################
 
 simple_uni_design=function(x){
   p=ncol(x)
+  n=nrow(x)
   design_uni_list <- vector(mode = "list", length = p)
   for(d in 1:p){
     #find the unique values, dropping the first value
@@ -31,9 +31,19 @@ simple_uni_design=function(x){
 }
 
 
-microbenchmark({make_univariate_basis(as.matrix(x))},
-               {simple_uni_design(x)},times=2)
+lassi_uni_design<-function(x){
+  p=ncol(x)
+  n=nrow(x)
+  xmat=as.matrix(x)
+  uni_basis=lapply(1:p,function(col)make_basis(xmat,col-1))
+  design_uni <- Reduce(cbind, uni_basis) 
+}
+
 simple_basis=simple_uni_design(x)
-lassi_basis=make_univariate_basis(as.matrix(x))
+lassi_basis=lassi_uni_design(x)
 
 expect_equivalent(as.matrix(lassi_basis),simple_basis)
+
+library(microbenchmark)
+microbenchmark({lassi_uni_design(x)},
+               {simple_uni_design(x)},times=2)
