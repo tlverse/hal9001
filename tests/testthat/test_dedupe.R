@@ -2,34 +2,40 @@ library(hal)
 library(mangolassi)
 library(testthat)
 library(data.table)
+library(microbenchmark)
 context("Remove Duplicates test")
 
-test_data <- generate_test_data()
-x <- test_data$x
-y <- test_data$y
+# Rcpp::compileAttributes() load_all()
 
+# generate hal design matrix
+n <- 1000
+p <- 3
+x <- matrix(rnorm(n * p), n, p)
+basis_list <- enumerate_basis(x)
+x_basis <- make_design_matrix(x, basis_list)
 
-#############################################
-# internals of hal to generate design matrix
-x_basis = make_hal_basis(x)
-dim(x_basis)
+copy_map <- make_copy_map(x_basis)
 
-# really naive approach
-naive_unique_indicator=function(x){
-  col_strs=apply(x,2,paste,collapse=",")
-  naive_is_unique=!duplicated(col_strs)
-}
-naive_is_unique=naive_unique_indicator(x_basis)
+# subset to only duplicated columns like oleg
+n_copies <- sapply(copy_map, length)
+copy_map <- copy_map[n_copies > 1]
 
-x_deduped = remove_dupes(x_basis)
+# sort oleg's copy map by the first elements
+os_copy_map <- os_find_dupes(x_basis)
+perm_vec <- order(sapply(os_copy_map, `[[`, 1))
+os_copy_map <- os_copy_map[perm_vec]
 
+# verify equivalence
+expect_equivalent(copy_map, os_copy_map)
 
-is_unique = dedupe(x_basis)
-expect_equal(naive_is_unique, is_unique)
-expect_equal(ncol(x_deduped),sum(is_unique))
-# library(microbenchmark)
-# microbenchmark({naive_unique_indicator(x_basis)},
-#                {dedupe(x_basis)},
-#                {remove_dupes(x_basis)},times=2)
-# 
+# benchmark
+microbenchmark({
+    copy_indices <- index_first_copy(x_basis)
+}, {
+    make_copy_map(x_basis)
+}, {
+    os_find_dupes(x_basis)
+}, times = 1)
+
+# todo: add test for or_duplicate_columns
 

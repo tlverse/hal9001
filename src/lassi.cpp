@@ -8,21 +8,6 @@ using namespace Rcpp;
 // General code
 
 // [[Rcpp::export]]
-NumericVector col_counts(MSpMat X){
-  int p=X.cols();
-  int k;
-  NumericVector counts(p);
-  SpVec col;
-  
-  for (k=0; k<X.outerSize(); ++k){
-    col=X.innerVector(k);
-    counts[k]=col.nonZeros();
-  }
-  return(counts);
-}
-
-
-// [[Rcpp::export]]
 NumericVector lassi_predict(MSpMat X, NumericVector beta){
   int n=X.rows();
   NumericVector pred(n,beta[0]);  //initialize with intercept
@@ -33,7 +18,7 @@ NumericVector lassi_predict(MSpMat X, NumericVector beta){
     
     current_beta=beta[k+1];
     
-    for (InIterMat it_(X, k); it_; ++it_){
+    for (MInIterMat it_(X, k); it_; ++it_){
       pred[it_.row()]+=current_beta;
     }
   }
@@ -71,7 +56,7 @@ void update_coord(MSpMat X, NumericVector resids, NumericVector beta, double lam
   double resid_sum=0;
   
   
-  for (InIterMat i_(X, j); i_; ++i_){
+  for (MInIterMat i_(X, j); i_; ++i_){
     resid_sum+=resids[i_.index()];
   }
 
@@ -82,7 +67,7 @@ void update_coord(MSpMat X, NumericVector resids, NumericVector beta, double lam
   if(new_beta!=beta_j){
     // Rcout << "Changed beta " << j << std::endl;
     double beta_diff=new_beta-beta_j;
-    for (InIterMat i_(X, j); i_; ++i_){
+    for (MInIterMat i_(X, j); i_; ++i_){
       resids[i_.index()]-=beta_diff;
     }
     

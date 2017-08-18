@@ -4,112 +4,65 @@
 #include "mangolassi_types.h"
 using namespace Rcpp;
 
-////------------------------------------------------------
-// General code
-
-bool columns_equal(MSpMat X, int col_1, int col_2){
-  
-      InIterMat iter_2(X, col_1);
-      for (InIterMat iter_1(X, col_2); iter_1; ++iter_1){
-         if(!iter_2){
-           //iter_2 is shorter
-           return(false);
-
-         }
-         if(iter_1.index()!=iter_2.index()){
-          //index mismatch
-          // Rcout << "index mismatch " << std::endl;
-          return(false);
-         }
-         
-         ++iter_2;
-      }
-      
-      if(iter_2){
-        //iter_2 is longer
-        return(false);
-      }
-      
-      return(true);
-}
+// returns an index vector that, for each column in X, indicates the index of the first copy of that column
 // [[Rcpp::export]]
-LogicalVector dedupe(MSpMat X){
+IntegerVector index_first_copy(const MSpMat& X){
   int p=X.cols();
-  int k,j;
-  LogicalVector unique_cols(p, true);
   
-  for (k=0; k<X.outerSize(); ++k){
-    if(!unique_cols[k]){
-      // we've already determined this column to be a duplicate
-      // therefore, we've already checked its original against all other columns
-      // so we can move on
+  ColMap col_map;
+  IntegerVector copy_index(p);
+  
+    
+  for(int j=0; j<p; j++){
+    MSpMatCol current_col(X,j);
+
+    //https://stackoverflow.com/questions/97050/stdmap-insert-or-stdmap-find
+    ColMap::iterator match = col_map.lower_bound(current_col);
+    if(match != col_map.end() && !(col_map.key_comp()(current_col, match->first)))
+    {
+      // column already exists
+      copy_index[j]=match->second + 1; //use 1-indexing
+    } else{
+      // column not yet in map
+      col_map.insert(match, ColMap::value_type(current_col, j));
+      copy_index[j]=j+1; //use 1-indexing
+    }
+
+
+  }
+
+  return(copy_index);
+}
+
+// returns true iff col_1 is strictly less than col_2 in the ordering scheme
+// [[Rcpp::export]]
+bool column_compare(const MSpMat& X, int col_1, int col_2){
+  ColMap cmap;
+  MSpMatCol X_1(X,col_1);
+  MSpMatCol X_2(X,col_2);
+  
+  return(cmap.key_comp()(X_1,X_2));
+}
+
+// ORs the columns of X listed in cols and places the result in column col[1]
+// [[Rcpp::export]]
+void or_duplicate_columns(MSpMat& X, const IntegerVector& cols){
+  int first=cols[0]-1; //cols is 1-indexed
+  int p_cols=cols.length();
+  int n=X.rows();
+  for(int i=0; i<n; i++){
+    if(X.coeffRef(i,first)==1){
+      //this is already 1
       continue;
     }
     
-    for (j=k+1; j<X.outerSize(); ++j){
-      
-      if(!unique_cols[j]){
-        // we've already determined this column to be a duplicate
-        // so we can move on
-        continue;
+    //search remaining columns for 1, inserting into first if found
+    for(int j=1; j<p_cols; j++){
+      int j_col=cols[j]-1;  //cols is 1-indexed
+      if(X.coeffRef(i,j_col)==1){
+        X.coeffRef(i,j_col)=1;
+        break;
       }
-      
-      unique_cols[j]=!columns_equal(X, k, j);
     }
-    
   }
-  
-  return(unique_cols);
-}
-
-// [[Rcpp::export]]
-LogicalVector dedupe_math(MSpMat X){
-  int p=X.cols();
-  int k,j;
-  LogicalVector unique_cols(p, true);
-  SpVec col_1;
-  SpVec col_2;
-  bool is_dupe=false;
-  
-  for (k=0; k<X.outerSize(); ++k){
-    if(!unique_cols[k]){
-      // we've already determined this column to be a duplicate
-      // therefore, we've already checked its original against all other columns
-      // so we can move on
-      continue;
-    }
-    
-    for (j=k+1; j<X.outerSize(); ++j){
-      // start out assuming duplicate
-      // Rcout << "Comparing " << j << " and " << k << " ";
-      is_dupe=true;
-      
-      col_1=X.innerVector(k);
-      col_2=X.innerVector(j);
-      // can't be a dupe if the lengths are different
-      if(col_1.nonZeros()!=col_2.nonZeros()){
-        // Rcout << "nonzero length mismatch " << std::endl;
-        is_dupe=false;
-        continue;
-      }
-      
-      InIterVec iter_2(col_2);
-      // compare all indices (we know the values are equal)
-      for (InIterVec iter_1(col_1); iter_1; ++iter_1){
-        if(iter_1.index()!=iter_2.index()){
-          //index mismatch
-          // Rcout << "index mismatch " << std::endl;
-          is_dupe=false;
-          break;
-        }
-        
-        ++iter_2;
-      }
-      // Rcout << is_dupe << std::endl;
-      unique_cols[j]=unique_cols[j]&!(is_dupe);
-    }
-    
-  }
-  
-  return(unique_cols);
 }

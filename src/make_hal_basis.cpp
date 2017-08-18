@@ -2,74 +2,140 @@
 // [[Rcpp::depends(RcppEigen)]]
 #include <RcppEigen.h>
 #include "mangolassi_types.h"
+
 using namespace Rcpp;
 
-// [[Rcpp::export]]
-SpMat make_hal_basis(NumericMatrix x){
-  SpMat x_basis;
-  
-  return(x_basis);
-}
+// ------------------------------------------------------------------------
+// Functions to enumerate basis functions
 
-//quick and dirty way of validating comparator
-// [[Rcpp::export]]
-bool compare_vectors(MatRow v1, MatRow v2){
+// populates a map with unique basis functions based on data in xsub
+// values are thresholds, keys are column indicies
+BasisMap enumerate_basis(const NumericMatrix& X_sub, const NumericVector& cols){
   BasisMap bmap;
-  bmap[v1]=0;
-  return(bmap.key_comp()(v1,v2));
-}
 
 
-// generates a basismap with keys the values to test against
-// [[Rcpp::export]]
-SpMat make_basis(NumericMatrix X, IntegerVector cols){
-  int n=X.rows();
-  int p=X.cols();
-  int sub_p=cols.length();
-  BasisMap bmap;
-  
-  //construct submatrix with only basis cols
-  List all_cutpoints(p);
-  NumericMatrix X_sub(n,sub_p);
-  for(int j=0; j<sub_p; j++){
-    X_sub.column(j)=X.column(cols[j]);
-  }
-  
   //find unique basis functions
+  int n=X_sub.rows();
   for(int i=0; i<n; i++){
-    MatRow row=X_sub.row(i);
-    bmap.insert(std::pair<MatRow,int>(row, -1));
+    NumericVector cutoffs=X_sub.row(i);
+    bmap.insert(std::pair<NumericVector,NumericVector>(cutoffs, cols));
   }
+
   //erase the lowest(always true) basis function
-  bmap.erase(bmap.begin());
+  //actually, I think we don't want to do this
+  //because it might not be true in an OOB prediction set
+  //bmap.erase(bmap.begin());
+
+
+  return(bmap);
+}
+
+
+
+// returns a sorted list of unique basis functions based on columns in cols (so basis order=cols.length())
+// each basis function is a list(cols,cutoffs)
+// X_sub is a subset of the columns of X (the original design matrix)
+// cols is an index of the columns that were subsetted
+// [[Rcpp::export]]
+List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols){
   
-  //now generate an indicator vector for each
-  int basis_p=bmap.size();
-  SpMat x_basis(n,basis_p);
-  
-  //begin by assuming every observation is bigger than the smallest basis function
-  SpVec indicators=Eigen::VectorXd::Ones(n).sparseView();
-  
-  //for each basis function
-  int offset=0;
-  MatRow basis;
+  BasisMap bmap=enumerate_basis(X_sub, cols);
+  List basis_list(bmap.size());
+  int index=0;
   for (BasisMap::iterator it=bmap.begin(); it!=bmap.end(); ++it){
-    basis=it->first;
-    //verify that previously true indicators remain true
-    for (InIterVec ind_it(indicators); ind_it; ++ind_it){
-      MatRow current_row=X_sub.row(ind_it.index());
-      if(!bmap.key_comp()(current_row,basis)){
-        //we can add a positive indicator for this row, basis
-        x_basis.coeffRef(ind_it.index(),offset)=1;
-      } else{
-        //otherwise we should stop checking this row going forward
-        indicators.coeffRef(ind_it.index())=0;
-      }
-    }
-    offset++;
+    // List basis(2);
+    // basis[0]=it->second;
+    // basis[1]=it->first;
+    
+    // List basis();
+    // basis["cols"]=it->second;
+    // basis["cutoffs"]=it->first;
+    
+    List basis=List::create(
+      Rcpp::Named("cols") = it->second,
+      Rcpp::Named("cutoffs") = it->first
+    );
+      
+    basis_list[index++]=basis;
   }
   
+  return(basis_list);
+}
+
+// ------------------------------------------------------------------------
+// Functions to make a design matrix based on a list of basis functions
+
+// returns the indicator value for the basis described by cols,cutoffs for X[row_num,] 
+// X is the original design matrix
+// row_num is a row index to evaluate
+// cols are the column incides of the basis function
+// cutoffs are thresholds
+// [[Rcpp::export]]
+bool meets_basis(const NumericMatrix& X, const int row_num, const IntegerVector& cols, const NumericVector& cutoffs){
+  int p=cols.length();
+  for(int i=0; i<p; i++){
+    double obs=X(row_num,cols[i]-1); //we're using 1-indexing for basis columns
+    if(!(obs>=cutoffs[i])){
+      return(false);
+    }
+  }
+  
+  return(true);
+}
+
+
+// populates a column (indexed by basis_col) of x_basis with basis indicators
+// basis is the basis function
+// X is the original design matrix
+// x_basis is the hal design matrix
+// basis_col indicates which column to populate
+// [[Rcpp::export]]
+void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis, int basis_col){
+  int n=X.rows();
+  //split basis into x[1] x[-1]
+  //find sub-basises
+  //intersect
+  
+  IntegerVector cols=as<IntegerVector>(basis["cols"]);
+  NumericVector cutoffs=as<NumericVector>(basis["cutoffs"]);
+  for (int row_num=0; row_num<n; row_num++){
+    
+    if(meets_basis(X,row_num,cols,cutoffs)){
+      //we can add a positive indicator for this row, basis
+      x_basis.insert(row_num,basis_col)=1;
+    }    
+  }
+  
+}
+
+// makes a hal design matrix based on original design matrix X and
+// a list of basis functions in blist
+// [[Rcpp::export]]
+SpMat make_design_matrix(NumericMatrix X, List blist){
+  //now generate an indicator vector for each
+  int n=X.rows();
+  int basis_p=blist.size();
+
+
+  SpMat x_basis(n,basis_p);  
+  x_basis.reserve(0.5*n*basis_p);
+
+
+  List basis;
+  NumericVector cutoffs, current_row; 
+  IntegerVector last_cols, cols;
+  NumericMatrix X_sub;
+  
+  //for each basis function  
+  for (int basis_col=0; basis_col<basis_p; basis_col++){
+    last_cols=cols;
+    
+    basis=(List) blist[basis_col];
+
+    evaluate_basis(basis, X, x_basis, basis_col);
+
+  }
+
   x_basis.makeCompressed();
   return(x_basis);
 }
-

@@ -7,42 +7,44 @@
 
 using namespace Rcpp;
 
-// dedupe
-LogicalVector dedupe(MSpMat X);
-RcppExport SEXP mangolassi_dedupe(SEXP XSEXP) {
+// index_first_copy
+IntegerVector index_first_copy(const MSpMat& X);
+RcppExport SEXP _mangolassi_index_first_copy(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(dedupe(X));
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(index_first_copy(X));
     return rcpp_result_gen;
 END_RCPP
 }
-// dedupe_math
-LogicalVector dedupe_math(MSpMat X);
-RcppExport SEXP mangolassi_dedupe_math(SEXP XSEXP) {
+// column_compare
+bool column_compare(const MSpMat& X, int col_1, int col_2);
+RcppExport SEXP _mangolassi_column_compare(SEXP XSEXP, SEXP col_1SEXP, SEXP col_2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(dedupe_math(X));
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type col_1(col_1SEXP);
+    Rcpp::traits::input_parameter< int >::type col_2(col_2SEXP);
+    rcpp_result_gen = Rcpp::wrap(column_compare(X, col_1, col_2));
     return rcpp_result_gen;
 END_RCPP
 }
-// col_counts
-NumericVector col_counts(MSpMat X);
-RcppExport SEXP mangolassi_col_counts(SEXP XSEXP) {
+// or_duplicate_columns
+void or_duplicate_columns(MSpMat& X, const IntegerVector& cols);
+RcppExport SEXP _mangolassi_or_duplicate_columns(SEXP XSEXP, SEXP colsSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(col_counts(X));
-    return rcpp_result_gen;
+    Rcpp::traits::input_parameter< MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type cols(colsSEXP);
+    or_duplicate_columns(X, cols);
+    return R_NilValue;
 END_RCPP
 }
 // lassi_predict
 NumericVector lassi_predict(MSpMat X, NumericVector beta);
-RcppExport SEXP mangolassi_lassi_predict(SEXP XSEXP, SEXP betaSEXP) {
+RcppExport SEXP _mangolassi_lassi_predict(SEXP XSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -54,7 +56,7 @@ END_RCPP
 }
 // update_coord
 void update_coord(MSpMat X, NumericVector resids, NumericVector beta, double lambda, int j);
-RcppExport SEXP mangolassi_update_coord(SEXP XSEXP, SEXP residsSEXP, SEXP betaSEXP, SEXP lambdaSEXP, SEXP jSEXP) {
+RcppExport SEXP _mangolassi_update_coord(SEXP XSEXP, SEXP residsSEXP, SEXP betaSEXP, SEXP lambdaSEXP, SEXP jSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
@@ -68,7 +70,7 @@ END_RCPP
 }
 // lassi_fit_cd
 NumericVector lassi_fit_cd(MSpMat X, NumericVector y, double lambda, int nsteps);
-RcppExport SEXP mangolassi_lassi_fit_cd(SEXP XSEXP, SEXP ySEXP, SEXP lambdaSEXP, SEXP nstepsSEXP) {
+RcppExport SEXP _mangolassi_lassi_fit_cd(SEXP XSEXP, SEXP ySEXP, SEXP lambdaSEXP, SEXP nstepsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -80,52 +82,69 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// make_hal_basis
-SpMat make_hal_basis(NumericMatrix x);
-RcppExport SEXP mangolassi_make_hal_basis(SEXP xSEXP) {
+// make_basis_list
+List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols);
+RcppExport SEXP _mangolassi_make_basis_list(SEXP X_subSEXP, SEXP colsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_hal_basis(x));
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type X_sub(X_subSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type cols(colsSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_basis_list(X_sub, cols));
     return rcpp_result_gen;
 END_RCPP
 }
-// compare_vectors
-bool compare_vectors(MatRow v1, MatRow v2);
-RcppExport SEXP mangolassi_compare_vectors(SEXP v1SEXP, SEXP v2SEXP) {
+// meets_basis
+bool meets_basis(const NumericMatrix& X, const int row_num, const IntegerVector& cols, const NumericVector& cutoffs);
+RcppExport SEXP _mangolassi_meets_basis(SEXP XSEXP, SEXP row_numSEXP, SEXP colsSEXP, SEXP cutoffsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< MatRow >::type v1(v1SEXP);
-    Rcpp::traits::input_parameter< MatRow >::type v2(v2SEXP);
-    rcpp_result_gen = Rcpp::wrap(compare_vectors(v1, v2));
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const int >::type row_num(row_numSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type cols(colsSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type cutoffs(cutoffsSEXP);
+    rcpp_result_gen = Rcpp::wrap(meets_basis(X, row_num, cols, cutoffs));
     return rcpp_result_gen;
 END_RCPP
 }
-// make_basis
-SpMat make_basis(NumericMatrix X, IntegerVector cols);
-RcppExport SEXP mangolassi_make_basis(SEXP XSEXP, SEXP colsSEXP) {
+// evaluate_basis
+void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis, int basis_col);
+RcppExport SEXP _mangolassi_evaluate_basis(SEXP basisSEXP, SEXP XSEXP, SEXP x_basisSEXP, SEXP basis_colSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type basis(basisSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< SpMat& >::type x_basis(x_basisSEXP);
+    Rcpp::traits::input_parameter< int >::type basis_col(basis_colSEXP);
+    evaluate_basis(basis, X, x_basis, basis_col);
+    return R_NilValue;
+END_RCPP
+}
+// make_design_matrix
+SpMat make_design_matrix(NumericMatrix X, List blist);
+RcppExport SEXP _mangolassi_make_design_matrix(SEXP XSEXP, SEXP blistSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type cols(colsSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_basis(X, cols));
+    Rcpp::traits::input_parameter< List >::type blist(blistSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_design_matrix(X, blist));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"mangolassi_dedupe", (DL_FUNC) &mangolassi_dedupe, 1},
-    {"mangolassi_dedupe_math", (DL_FUNC) &mangolassi_dedupe_math, 1},
-    {"mangolassi_col_counts", (DL_FUNC) &mangolassi_col_counts, 1},
-    {"mangolassi_lassi_predict", (DL_FUNC) &mangolassi_lassi_predict, 2},
-    {"mangolassi_update_coord", (DL_FUNC) &mangolassi_update_coord, 5},
-    {"mangolassi_lassi_fit_cd", (DL_FUNC) &mangolassi_lassi_fit_cd, 4},
-    {"mangolassi_make_hal_basis", (DL_FUNC) &mangolassi_make_hal_basis, 1},
-    {"mangolassi_compare_vectors", (DL_FUNC) &mangolassi_compare_vectors, 2},
-    {"mangolassi_make_basis", (DL_FUNC) &mangolassi_make_basis, 2},
+    {"_mangolassi_index_first_copy", (DL_FUNC) &_mangolassi_index_first_copy, 1},
+    {"_mangolassi_column_compare", (DL_FUNC) &_mangolassi_column_compare, 3},
+    {"_mangolassi_or_duplicate_columns", (DL_FUNC) &_mangolassi_or_duplicate_columns, 2},
+    {"_mangolassi_lassi_predict", (DL_FUNC) &_mangolassi_lassi_predict, 2},
+    {"_mangolassi_update_coord", (DL_FUNC) &_mangolassi_update_coord, 5},
+    {"_mangolassi_lassi_fit_cd", (DL_FUNC) &_mangolassi_lassi_fit_cd, 4},
+    {"_mangolassi_make_basis_list", (DL_FUNC) &_mangolassi_make_basis_list, 2},
+    {"_mangolassi_meets_basis", (DL_FUNC) &_mangolassi_meets_basis, 4},
+    {"_mangolassi_evaluate_basis", (DL_FUNC) &_mangolassi_evaluate_basis, 4},
+    {"_mangolassi_make_design_matrix", (DL_FUNC) &_mangolassi_make_design_matrix, 2},
     {NULL, NULL, 0}
 };
 
