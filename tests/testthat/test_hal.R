@@ -28,7 +28,7 @@ ml_hal_mse <- mse(preds, y)
 
 # oob prediction
 oob_preds <- predict(ml_hal_fit, test_x)
-ml_hal_mse <- mse(oob_preds, test_y)
+oob_ml_hal_mse <- mse(oob_preds, test_y)
 
 # squash object
 squashed <- squash_hal_fit(ml_hal_fit)

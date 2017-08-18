@@ -61,22 +61,16 @@ predict.ml_hal <- function(object, newdata) {
 # drop basis functions with zero coefficients
 #' @export
 squash_hal_fit <- function(object) {
-    nz_coefs <- which(as.vector(object$coefs) != 0)
-    new_basis <- object$basis_list[nz_coefs]
-    new_coefs <- object$coefs[nz_coefs]
+    nz_coefs <- which(as.vector(object$coefs)[-1] != 0)
+    new_coefs <- object$coefs[c(1,nz_coefs)]
+
+    #extract all basis functions that belong to any group with a nz coef
+    nz_basis_groups=object$copy_map[nz_coefs]
+    all_nz_basis_index=sort(unlist(nz_basis_groups))
+    new_basis <- object$basis_list[all_nz_basis_index]
     
-    # copy_map has to be reindexed
-    reindex_copy_map <- function(cols, nz_coefs) {
-        reindexed <- match(cols, nz_coefs)
-        reindexed[!is.na(reindexed)]
-    }
-    new_copy_map <- lapply(object$copy_map, reindex_copy_map, nz_coefs)
-    
-    # drop empty pairs
-    new_lengths <- sapply(new_copy_map, length)
-    new_copy_map <- new_copy_map[new_lengths > 0]
-    
-    # rekey pairs
+    # now, reindex and rekey the copy_map
+    new_copy_map <- lapply(nz_basis_groups, match, all_nz_basis_index)
     new_keys <- sapply(new_copy_map, `[[`, 1)
     names(new_copy_map) <- new_keys
     
