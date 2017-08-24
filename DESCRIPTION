@@ -1,18 +1,28 @@
 Package: mangolassi
-Title: reimplements halplus features in Rcpp
-Version: 0.0.0.9000
-Authors@R: person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Title: Re-implementation of the core linear algebraic routine of the highly
+  adaptive LASSO using the Rcpp framework.
+Version: 0.0.1.0
+Authors@R: c(
+  person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
+         role = c("aut", "cre")),
+  person("Nima", "Hejazi", email = "nh@nimahejazi.org", role = "aut")
+  )
+Description: Routines for constructing sparse matrices and indicator functions,
+  as required in the formulation of the highly adaptive LASSO algorithm, using
+  C++, through the Rcpp framework, to enhance computational performance.
 Depends: R (>= 3.4.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp,
            RcppEigen
-Imports: Rcpp,
-         hal,
-         RcppEigen,
-         data.table
+Imports:
+  Rcpp,
+  RcppEigen,
+  data.table,
+  hal
+Suggests:
+  testthat
+Remotes:
+  github::benkeser/halplus
 RoxygenNote: 6.0.1
-Remotes: github::benkeser/halplus
-Suggests: testthat
