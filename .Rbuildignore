@@ -5,4 +5,5 @@
 ^README-.*\.png$
 ^\.gitignore$
 ^\Makefile$
+^sandbox$
 
