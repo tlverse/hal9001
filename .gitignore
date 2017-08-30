@@ -1,4 +1,9 @@
+inst/lib
 .Rproj.user
+src/*.o
+src/*.so
+src/*.dll
+src/symbols.rds
 .Rhistory
 .RData
 .Ruserdata
@@ -7,3 +12,8 @@ sandbox/*.html
 vignettes/*.html
 .ipynb_checkpoints
 
+## QtCreator
+Rcpp.pro
+Rcpp.pro.user
+*.autosave
+.#*
