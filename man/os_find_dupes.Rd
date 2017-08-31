@@ -4,10 +4,11 @@
 \alias{os_find_dupes}
 \title{Remove Duplicate Columns (R)}
 \usage{
-os_find_dupes(X.init)
+os_find_dupes(X_init)
 }
 \arguments{
-\item{X.init}{...}
+\item{X_init}{A design matrix consisting of basis (indicator) functions for
+covariates (X) and terms for interactions thereof.}
 }
 \description{
 Duplicate column detection and removal, purely in R

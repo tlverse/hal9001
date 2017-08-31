@@ -1,6 +1,6 @@
 #' HAL: The Highly Adaptive LASSO estimator
 #'
-#' Performs the estimation procedure of the Highly Adaptive LASSO (HAL)
+#' Performs the estimation procedure for HAL, the Highly Adaptive LASSO
 #'
 #' @details The procedure uses custom C++ functions to generate the design
 #' matrix (consisting of basis functions corresponding to covariates and
@@ -8,14 +8,20 @@
 #' actual LASSO regression that follows is computed via \code{cv.glmnet},
 #' though plans are in place to re-implement this in Rcpp/C++ as well.
 #'
-#' @param X ...
-#' @param Y ...
-#' @param degrees ...
+#' @param X An input \code{matrix} containing observations and covariates
+#' following standard conventions in problems of statistical learning.
+#' @param Y A \code{numeric} vector of obervations of the outcome variable of
+#' interest, following standard conventions in problems of statistical learning.
+#' @param degrees The highest order of interaction terms for which the basis
+#' functions ought to be generated. The default (\code{NULL}) corresponds to
+#' generating basis functions for the full dimensionality of the input matrix.
 #'
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats coef
 #'
-#' @return Object of class \code{hal9001}, containing ...
+#' @return Object of class \code{hal9001}, containing a list of basis functions,
+#' a copy map, coefficients estimated for basis functions, and timing results
+#' (for assessing computational efficiency).
 #'
 #' @export
 #'

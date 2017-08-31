@@ -24,6 +24,7 @@ Imports:
   Rcpp,
   RcppEigen,
   data.table,
+  Matrix,
   glmnet,
   stats,
   utils,
@@ -35,7 +36,10 @@ Suggests:
   knitr,
   rmarkdown,
   microbenchmark,
-  devtools
+  devtools,
+  ggplot2,
+  dplyr,
+  tidyr
 LinkingTo:
   Rcpp,
   RcppEigen

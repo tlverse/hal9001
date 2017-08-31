@@ -7,17 +7,23 @@
 fit_hal(X, Y, degrees = NULL)
 }
 \arguments{
-\item{X}{...}
+\item{X}{An input \code{matrix} containing observations and covariates
+following standard conventions in problems of statistical learning.}
 
-\item{Y}{...}
+\item{Y}{A \code{numeric} vector of obervations of the outcome variable of
+interest, following standard conventions in problems of statistical learning.}
 
-\item{degrees}{...}
+\item{degrees}{The highest order of interaction terms for which the basis
+functions ought to be generated. The default (\code{NULL}) corresponds to
+generating basis functions for the full dimensionality of the input matrix.}
 }
 \value{
-Object of class \code{hal9001}, containing ...
+Object of class \code{hal9001}, containing a list of basis functions,
+a copy map, coefficients estimated for basis functions, and timing results
+(for assessing computational efficiency).
 }
 \description{
-Performs the estimation procedure of the Highly Adaptive LASSO (HAL)
+Performs the estimation procedure for HAL, the Highly Adaptive LASSO
 }
 \details{
 The procedure uses custom C++ functions to generate the design

@@ -2,15 +2,19 @@
 % Please edit documentation in R/make_basis.R
 \name{enumerate_basis}
 \alias{enumerate_basis}
-\title{TITLE}
+\title{Enumerate Basis Functions}
 \usage{
 enumerate_basis(x, degrees = NULL)
 }
 \arguments{
-\item{x}{...}
+\item{x}{An input \code{matrix} containing observations and covariates
+following standard conventions in problems of statistical learning.}
 
-\item{degrees}{...}
+\item{degrees}{The highest order of interaction terms for which the basis
+functions ought to be generated. The default (\code{NULL}) corresponds to
+generating basis functions for the full dimensionality of the input matrix.}
 }
 \description{
-description
+Generate basis functions for all covariates and interaction terms thereof, up
+to a specified order/degree
 }

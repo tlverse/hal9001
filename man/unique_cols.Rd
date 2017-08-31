@@ -2,16 +2,17 @@
 % Please edit documentation in R/find_dupes.R
 \name{unique_cols}
 \alias{unique_cols}
-\title{TITLE}
+\title{Find Unique Columns}
 \usage{
 unique_cols(copy_map)
 }
 \arguments{
-\item{copy_map}{...}
+\item{copy_map}{A copy map object, created from a design matrix of basis
+functions, as produced by a call to \code{\link{make_copy_map}}.}
 }
 \value{
 None
 }
 \description{
-description
+Utility for extract unique columns from copy maps safely
 }

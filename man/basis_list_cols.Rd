@@ -2,15 +2,19 @@
 % Please edit documentation in R/make_basis.R
 \name{basis_list_cols}
 \alias{basis_list_cols}
-\title{TITLE}
+\title{List Basis Functions}
 \usage{
 basis_list_cols(cols, x)
 }
 \arguments{
-\item{cols}{...}
+\item{cols}{Index or indices (as \code{numeric}) of covariates (columns) of
+interest in the data matrix \code{x} for which basis functions ought to be
+generated. Note that basis functions for interactions of these columns are
+computed automatically.}
 
-\item{x}{...}
+\item{x}{A \code{matrix} containing observations in the rows and covariates
+in the columns. Basis functions are computed for these covariates.}
 }
 \description{
-description
+Build a list of basis functions from a set of columns
 }

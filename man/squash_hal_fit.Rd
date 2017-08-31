@@ -7,7 +7,8 @@
 squash_hal_fit(object)
 }
 \arguments{
-\item{object}{...}
+\item{object}{An object of class \code{hal9001}, containing the results of
+fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.}
 }
 \value{
 Object of class \code{hal9001}, similar to the input object but
