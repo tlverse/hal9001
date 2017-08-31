@@ -1,0 +1,35 @@
+language: r
+sudo: false
+cache: packages
+warnings_are_errors: true
+
+before_install:
+  Rscript -e 'update.packages(ask = FALSE)'
+  - export RGL_USE_NULL=TRUE
+
+r_packages:
+  - covr
+
+r:
+  - oldrel
+  - release
+  - devel
+
+r_github_packages:
+  - jimhester/covr
+  - schloerke/travisDrat
+  
+env:
+  global:
+    - RGL_USE_NULL=TRUE
+    
+after_success:
+  - Rscript -e 'covr::codecov()'
+
+on_failure:
+  - ./travis-tool.sh dump_logs
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change

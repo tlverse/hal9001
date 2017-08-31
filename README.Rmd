@@ -12,26 +12,39 @@ knitr::opts_chunk$set(
 )
 ```
 
-# R/`lassi`
+# R/`mangolassi`
 
 > A faster Highly Adaptive LASSO estimator
 
 __Authors:__ [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima
 Hejazi](http://nimahejazi.org)
 
+[![Travis-CI Build Status](https://travis-ci.org/jeremyrcoyle/mangolassi.svg?branch=master)](https://travis-ci.org/jeremyrcoyle/mangolassi)
+[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/mangolassi?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/mangolassi)
+[![Coverage Status](https://img.shields.io/codecov/c/github/jeremyrcoyle/mangolassi/master.svg)](https://codecov.io/github/jeremyrcoyle/mangolassi?branch=master)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+
 ---
 
 ## Description
 
-`lassi` is an R package providing utilities for performing a specialized form of
-penalized regression (via application of the LASSO) as part of the Highly
-Adaptive LASSO (HAL), a nonparametric regression estimator with theoretical
-properties whose optimality has only recently been discovered. Due to the
-computationally intensive nature of the HAL algorithm, core routines are written
-in C++ and made available in R via the [Rcpp](http://www.rcpp.org/) framework.
+`mangolassi` is an R package providing an implementation of the Highly Adaptive
+LASSO (HAL), a nonparametric regression estimator that applies L1-regularized
+regression (i.e., the LASSO) to a design matrix composed of indicator functions
+corresponding to a set of covariates in a standard statistical learning problem.
+Recent theoretical results show that HAL is endowed with several important
+properties that make it optimally suited for obtaining inference in problem
+settings where causal parameters are estimated via machine learning, as is the
+case within the framework of Targeted Minimum Loss-Based Estimation (TMLE).
+While it is certainly possible to implement HAL purely in R, the computationally
+intensive nature of the algorithm suggests that re-writing core routines in C++,
+and making these available in R via the [Rcpp](http://www.rcpp.org/) framework,
+ought to provide significant efficiency gains. `mangolassi` is just such an
+implementation.
 
 __This project is still in its infancy. Accordingly, it will be regularly
-updated, possibly with breaking changes. Use at your own risk.__
+updated, possibly with breaking changes. For now, use only at your own risk.__
 
 ---
 
@@ -42,7 +55,7 @@ For standard use, we recommend installing the package from
 [CRAN](https://cran.r-project.org/) via
 
 ```{r cran-installation, eval = FALSE}
-install.packages("lassi")
+install.packages("mangolassi")
 ```
 -->
 

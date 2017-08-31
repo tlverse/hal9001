@@ -1,14 +1,15 @@
 md:
-	r -e "rmarkdown::render('README.Rmd')"
+	Rscript -e "rmarkdown::render('README.Rmd')"
 
 site:
-	r -e "pkgdown::build_site()"
+	Rscript -e "pkgdown::build_site()"
 
 check:
-	r -e "devtools::check()"
+	Rscript -e "devtools::check()"
 
 test:
-	r -e "devtools::test()"
+	Rscript -e "devtools::test()"
 
 doc:
-	r -e "devtools::document()"
+	Rscript -e "devtools::document()"
+

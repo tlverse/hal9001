@@ -1,0 +1,26 @@
+---
+title: "Introduction to the HAL estimator"
+author: "Nima Hejazi"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: vignette-refs.bib
+vignette: >
+  %\VignetteIndexEntry{Introduction to the HAL estimator}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+...
+
+---
+
+## Fitting the HAL estimator
+
+...
+
+---
+
+## References
+
