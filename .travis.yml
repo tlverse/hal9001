@@ -1,35 +1,32 @@
+env:
+  global:
+    - R_BUILD_ARGS="--no-build-vignettes --no-manual"
+    - R_CHECK_ARGS="--no-build-vignettes --no-manual"
+    - RGL_USE_NULL=TRUE
+
 language: r
 sudo: false
 cache: packages
 warnings_are_errors: true
-
-before_install:
-  Rscript -e 'update.packages(ask = FALSE)'
-  - export RGL_USE_NULL=TRUE
-
-r_packages:
-  - covr
 
 r:
   - oldrel
   - release
   - devel
 
+before_install:
+  Rscript -e 'update.packages(ask = FALSE)'
+
 r_github_packages:
   - jimhester/covr
-  - schloerke/travisDrat
-  
-env:
-  global:
-    - RGL_USE_NULL=TRUE
-    
+  - benkeser/halplus
+
+# coverage
 after_success:
   - Rscript -e 'covr::codecov()'
-
-on_failure:
-  - ./travis-tool.sh dump_logs
 
 notifications:
   email:
     on_success: change
     on_failure: change
+
