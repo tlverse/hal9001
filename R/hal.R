@@ -15,6 +15,8 @@
 #' @param degrees The highest order of interaction terms for which the basis
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
+#' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
+#' documentation for \code{glmnet} for a full list of options.
 #'
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats coef
@@ -27,7 +29,10 @@
 #'
 #' @examples
 #'
-fit_hal <- function(X, Y, degrees = NULL) {
+fit_hal <- function(X,
+                    Y,
+                    degrees = NULL,
+                    ...) {
   # bookkeeping: get start time of duplicate removal procedure
   time_start <- proc.time()
 
@@ -46,7 +51,9 @@ fit_hal <- function(X, Y, degrees = NULL) {
 
   # fit LASSO regression
   # TODO: replace with mangolassi/origami implementation
-  hal_lasso <- glmnet::cv.glmnet(x_basis, Y)
+  hal_lasso <- glmnet::cv.glmnet(x_basis,
+                                 Y,
+                                 ...)
   coefs <- stats::coef(hal_lasso)
 
   # bookkeeping: get time for computation of the LASSO regression

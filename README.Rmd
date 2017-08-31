@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 
 # R/`mangolassi`
 
-> A faster Highly Adaptive LASSO estimator
+> A _fast_ Highly Adaptive LASSO estimator
 
 __Authors:__ [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima
 Hejazi](http://nimahejazi.org)
