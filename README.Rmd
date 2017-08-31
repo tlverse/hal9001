@@ -1,5 +1,6 @@
 ---
 output: github_document
+bibliography: README-refs.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -44,6 +45,10 @@ intensive nature of the algorithm suggests that writing core routines in C++
 ought to provide significant efficiency gains. `mangolassi` is just such an
 implementation.
 
+For detailed discussions of the Highly Adaptive LASSO estimator, the interested
+reader might consider consulting @benkeser2016hal, @vdl2015generally,
+and @vdl2017finite.
+
 __This project is still in its infancy. Accordingly, it will be regularly
 updated, possibly with breaking changes. For now, use only at your own risk.__
 
@@ -76,4 +81,8 @@ Hejazi](http://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license. See
 file `LICENSE` for details.
+
+---
+
+## References
 
