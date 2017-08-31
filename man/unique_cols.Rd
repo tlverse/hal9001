@@ -9,6 +9,9 @@ unique_cols(copy_map)
 \arguments{
 \item{copy_map}{...}
 }
+\value{
+None
+}
 \description{
 description
 }

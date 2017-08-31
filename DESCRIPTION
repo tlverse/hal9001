@@ -5,8 +5,10 @@ Version: 0.0.3.0
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
     role = c("aut", "cre")),
+  person("David", "Benkeser", email = "benkeser@emory.edu",
+    role = c("aut", "cph")),
   person("Nima", "Hejazi", email = "nh@nimahejazi.org", role = "aut"),
-  person("David", "Benkeser", email = "benkeser@emory.edu", role = "cph"),
+  person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com", role = "ctb"),
   person("Mark", "van der Laan", email = "laan@berkeley.edu", role = "cph")
   )
 Description: Routines for constructing sparse matrices and indicator functions,
@@ -25,6 +27,8 @@ Imports:
   glmnet,
   stats,
   utils,
+  stringr,
+  bit,
   hal
 Suggests:
   testthat,
