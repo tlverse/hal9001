@@ -1,39 +1,50 @@
-Package: lassi
-Title: Re-implementation of the core linear algebraic routine of the highly
-  adaptive LASSO using the Rcpp framework.
-Version: 0.0.2.1
+Package: mangolassi
+Title: Implementation of the Highly Adaptive LASSO using a mix of C++ and R, via
+  Rcpp, to obtain efficiency gains in computation
+Version: 0.0.3.0
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
     role = c("aut", "cre")),
-  person("Nima", "Hejazi", email = "nh@nimahejazi.org",
-    role = c("aut")),
   person("David", "Benkeser", email = "benkeser@emory.edu",
-    role = c("cph")),
-  person("Mark", "van der Laan", email = "laan@berkeley.edu",
-    role = c("cph"))
+    role = c("aut", "cph")),
+  person("Nima", "Hejazi", email = "nh@nimahejazi.org", role = "aut"),
+  person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com", role = "ctb"),
+  person("Mark", "van der Laan", email = "laan@berkeley.edu", role = "cph")
   )
 Description: Routines for constructing sparse matrices and indicator functions,
-  as required in the formulation of the highly adaptive LASSO algorithm, using
+  as required in the formulation of the Highly Adaptive LASSO algorithm, using
   C++, through the Rcpp framework, to enhance computational performance.
 Depends: R (>= 3.1.0)
 License: GPL-3
+URL: https://github.com/jeremyrcoyle/mangolassi
+BugReports: https://github.com/jeremyrcoyle/mangolassi/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
   Rcpp,
   RcppEigen,
   data.table,
+  Matrix,
+  glmnet,
+  stats,
+  utils,
+  stringr,
+  bit,
   hal
 Suggests:
-  testthat
+  testthat,
+  knitr,
+  rmarkdown,
+  microbenchmark,
+  devtools,
+  ggplot2,
+  dplyr,
+  tidyr
 LinkingTo:
   Rcpp,
   RcppEigen
 Remotes:
   github::benkeser/halplus
-License: GPL-3
-URL: https://github.com/nhejazi/lassi
-Encoding: UTF-8
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 
