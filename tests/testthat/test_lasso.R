@@ -36,8 +36,6 @@ hal_intercept <- as.numeric(coef(hal.fit$object, s = hal_lambda))[1]
 smallest_hal <- min(abs(hal_coefs[hal_coefs != 0]))
 
 # verify entire fit
-Rcpp::sourceCpp(here::here("src", "lassi.cpp"))
-
 fit_time <- system.time({
   lassi_coefs <- lassi_fit_cd(x_basis, y, 0.01, 1000)
 })

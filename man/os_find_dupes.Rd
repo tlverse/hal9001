@@ -2,7 +2,7 @@
 % Please edit documentation in R/find_dupes.R
 \name{os_find_dupes}
 \alias{os_find_dupes}
-\title{Finding Duplicate Columns (R)}
+\title{Remove Duplicate Columns (R)}
 \usage{
 os_find_dupes(X.init)
 }
@@ -10,7 +10,7 @@ os_find_dupes(X.init)
 \item{X.init}{...}
 }
 \description{
-Original HAL implementation of duplicate detection, for comparision purposes
+Duplicate column detection and removal, purely in R
 }
 \author{
 Oleg Sofrygin

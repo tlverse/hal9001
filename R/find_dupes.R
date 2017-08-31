@@ -26,9 +26,13 @@ unique_cols <- function(copy_map) {
 
 ################################################################################
 
-#' Finding Duplicate Columns (R)
+# the following appeases R CMD Check
+utils::globalVariables(c("bit_to_int_to_str", ":=", "duplicates", "Ngrp", ".N",
+                         "ID"))
+
+#' Remove Duplicate Columns (R)
 #'
-#' Original HAL implementation of duplicate detection, for comparision purposes
+#' Duplicate column detection and removal, purely in R
 #'
 #' @param X.init ...
 #'
@@ -39,15 +43,12 @@ unique_cols <- function(copy_map) {
 #' @author Oleg Sofrygin
 #'
 os_find_dupes <- function(X.init) {
-  #------------------------------------------------------------
-  # Removing duplicated columns
-  #------------------------------------------------------------
 
-  # Number of columns will become the new number of observations in the data.table
+  # Number of columns will become new number of observations in the data.table
   nIndCols <- ncol(X.init)
 
   # Pre-allocate data.table w/ 1 column: each row will store 1 column from input
-  datDT <- data.table::data.table(ID = 1:nIndCols,
+  datDT <- data.table::data.table(ID = seq_len(nIndCols),
                                   bit_to_int_to_str = rep.int("0", nIndCols))
 
   # Each column in X.init will be represented by a unique vector of integers.
@@ -63,7 +64,7 @@ os_find_dupes <- function(X.init) {
   ID_withNA <- NULL
 
   # For loop over columns of X.init
-  for (i in 1:nIndCols) {
+  for (i in seq_len(nIndCols)) {
     bitvals <- bit::bit(length = nbits)  # initial allocation (all 0/FALSE)
 
     # zero-base indices of indices of non-zero rows for column i=1
