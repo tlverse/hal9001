@@ -2,7 +2,8 @@
 #'
 #' Reduce footprint by dropping basis functions with coefficients of zero
 #'
-#' @param object ...
+#' @param object An object of class \code{hal9001}, containing the results of
+#' fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.
 #'
 #' @export
 #'
@@ -13,7 +14,9 @@
 #' @examples
 #'
 squash_hal_fit <- function(object) {
+  stopifnot(class(object) == "hal9001")
 
+  # find indices for basis functions with non-zero coefficients
   nz_coefs <- which(as.vector(object$coefs)[-1] != 0)
   new_coefs <- object$coefs[c(1, nz_coefs)]
 

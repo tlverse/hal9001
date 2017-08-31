@@ -35,8 +35,7 @@ Suggests:
   knitr,
   rmarkdown,
   microbenchmark,
-  devtools,
-  here
+  devtools
 LinkingTo:
   Rcpp,
   RcppEigen

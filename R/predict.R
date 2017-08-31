@@ -1,11 +1,17 @@
 #' Prediction from HAL fits
 #'
-#' @details <ethod for computing and extracting predictions from fits of the
-#' Highly Adaptive LASSO estimator, formally S3 objects of class \code{hal9001}
+#' @details Method for computing and extracting predictions from fits of the
+#' Highly Adaptive LASSO estimator, formally S3 objects of class \code{hal9001}.
 #'
-#' @param object ...
+#' @param object An object of class \code{hal9001}, containing the results of
+#' fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.
 #' @param ... Additional arguments passed to \code{predict} as necessary.
-#' @param newdata ...
+#' @param newdata A \code{matrix} or \code{data.frame} containing new data
+#' (observations NOT used in fitting the \code{hal9001} object passed in via the
+#' \code{object} argument above) for which the \code{hal9001} object will
+#' compute predicted values.
+#'
+#' @importFrom Matrix tcrossprod
 #'
 #' @export
 #'
@@ -28,8 +34,8 @@ predict.hal9001 <- function(object, ..., newdata) {
   pred_x_basis <- pred_x_basis[, unique_columns]
 
   # generate predictions
-  # TODO: replacing %*% with crossprod or tcrossprod will increase speed
-  preds <- as.vector(pred_x_basis %*% object$coefs[-1] + object$coefs[1])
+  preds <- as.vector(Matrix::tcrossprod(x = c, y = object$coefs[-1]) +
+                     object$coefs[1])
   return(preds)
 }
 
