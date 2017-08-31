@@ -1,0 +1,124 @@
+---
+title: "Introduction to the HAL estimator"
+author: "Nima Hejazi"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: vignette-refs.bib
+vignette: >
+  %\VignetteIndexEntry{Introduction to the HAL estimator}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+...
+
+[@benkeser2016hal], [@vdl2015generally], [@vdl2017finite]
+
+---
+
+## Preliminaries
+
+...
+
+```{r setup, echo=FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(microbenchmark)
+```
+
+```{r sim-data}
+# simulation constants
+set.seed(467392)
+n_obs <- 1000
+n_covars <- 3
+
+# make some training data
+x <- replicate(n_covars, rnorm(n_obs))
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n_obs, 0, 0.2)
+
+# make some testing data
+test_x <- replicate(n_covars, rnorm(n_obs))
+test_y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n_obs, 0, 0.2)
+```
+
+Look at simulated data...
+
+```{r sim-view}
+head(x)
+head(y)
+```
+
+---
+
+## Using the Highly Adaptive LASSO
+
+```{r}
+library(mangolassi)
+```
+
+### Fitting the model
+
+```{r fit-lassi, eval=FALSE}
+lassi_fit <- fit_hal(X = x, Y = y)
+lassi_fit$times
+```
+
+```{r benchmark-lassi, eval=FALSE}
+# perform benchmarking
+m_lassi <- microbenchmark(unit = "s", times = 20,
+  lassi_fit_m <- fit_hal(X = x, Y = y)
+)
+
+# make plot
+p_lassi_times <- m_lassi %>%
+ dplyr::transmute(
+     time_sec = time / 10^9
+ ) %>%
+ gather() %>%
+ ggplot(., aes(x = key, y = value)) + geom_boxplot() + geom_point() +
+   xlab("") + ylab("time (sec.)") + ggtitle("HAL9000") + theme_minimal()
+
+p_lassi_times
+summary(m_lassi)
+```
+
+...
+
+### Obtaining model predictions
+
+```{r eval-mse, eval=FALSE}
+# training sample prediction for HAL vs HAL9000
+mse <- function(preds, y) {
+    mean((preds - y)^2)
+}
+
+preds_lassi <- predict(object = lassi_fit, newdata = x)
+mse_lassi <- mse(preds = preds_lassi, y = y)
+mse_lassi
+```
+
+```{r eval-oob, eval=FALSE}
+oob_lassi <- predict(object = lassi_fit, newdata = test_x)
+oob_lassi_mse <- mse(preds = oob_lassi, y = test_y)
+oob_lassi_mse
+```
+
+### "Squashing" the model object
+
+```{r squash-hal9001, eval=FALSE}
+squashed_lassi <- squash_hal_fit(lassi_fit)
+
+sq_preds <- predict(object = squashed_lassi, newdata = x)
+sq_oob_lassi <- predict(object = squashed_lassi, newdata = test_x)
+
+cbind(preds_lassi, sq_preds)
+cbind(oob_lassi, sq_oob_lassi)
+```
+
+---
+
+## References
+

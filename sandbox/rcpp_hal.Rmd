@@ -1,0 +1,338 @@
+---
+title: "Evaluating HAL: R vs. Rcpp"
+author: "[Nima Hejazi](http://nimahejazi.org) & Jeremy Coyle"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r, echo=FALSE}
+set.seed(479253)
+library(dplyr)
+library(BH)
+library(Rcpp)
+library(RcppArmadillo)
+library(Rcereal)
+library(microbenchmark)
+```
+
+## Introduction
+
+...
+
+---
+
+## Analysis
+
+### `hal`: A pure R implementation
+
+...
+
+### `hal9000`: An Rcpp implementation
+
+```{Rcpp, ref.label=knitr::all_rcpp_labels(), cache=TRUE, include=FALSE}
+// [[Rcpp::depends(RcppEigen)]]
+#include <RcppEigen.h>
+#include "mangolassi_types.h"
+using namespace Rcpp;
+```
+
+```{Rcpp dedupe, eval=FALSE}
+// returns an index vector indicating index of first copy of column for each X
+// [[Rcpp::export]]
+IntegerVector index_first_copy(const MSpMat& X){
+  int p = X.cols();
+
+  ColMap col_map;
+  IntegerVector copy_index(p);
+
+  for (int j = 0; j < p; j++){
+    MSpMatCol current_col(X, j);
+
+    //https://stackoverflow.com/questions/97050/stdmap-insert-or-stdmap-find
+    ColMap::iterator match = col_map.lower_bound(current_col);
+    if (match != col_map.end() && !(col_map.key_comp()(current_col, match -> first)))
+    {
+      // column already exists
+      copy_index[j] = match -> second + 1;  // just using 1-indexing
+    } else {
+      // column not yet in map
+      col_map.insert(match, ColMap::value_type(current_col, j));
+      copy_index[j] = j + 1;  //just using 1-indexing
+    }
+  }
+  return(copy_index);
+}
+
+// returns true iff col_1 is strictly less than col_2 in the ordering scheme
+// [[Rcpp::export]]
+bool column_compare(const MSpMat& X, int col_1, int col_2) {
+  ColMap cmap;
+  MSpMatCol X_1(X, col_1);
+  MSpMatCol X_2(X, col_2);
+  return(cmap.key_comp()(X_1, X_2));
+}
+
+// ORs the columns of X listed in cols and places the result in column col[1]
+// [[Rcpp::export]]
+void or_duplicate_columns(MSpMat& X, const IntegerVector& cols) {
+  int first = cols[0] - 1;  //cols is 1-indexed
+  int p_cols = cols.length();
+  int n = X.rows();
+  for (int i = 0; i < n; i++){
+    if(X.coeffRef(i, first) == 1) {
+      continue;  // this is already 1
+    }
+
+    //search remaining columns for 1, inserting into first if found
+    for (int j = 1; j < p_cols; j++) {
+      int j_col = cols[j] - 1;  //cols is 1-indexed
+      if (X.coeffRef(i, j_col) == 1) {
+        X.coeffRef(i, j_col) = 1;
+        break;
+      }
+    }
+  }
+}
+```
+
+```{Rcpp lassi-1, eval=FALSE}
+// [[Rcpp::export]]
+NumericVector lassi_predict(MSpMat X, NumericVector beta) {
+  int n = X.rows();
+  NumericVector pred(n, beta[0]);  // initialize with intercept
+  int k = 0;
+  double current_beta;
+
+  for (k = 0; k < X.outerSize(); ++k) {
+    current_beta = beta[k + 1];
+
+    for (MInIterMat it_(X, k); it_; ++it_) {
+      pred[it_.row()] += current_beta;
+    }
+  }
+  return(pred);
+}
+
+double soft_threshold(double beta, double lambda) {
+  if (beta > lambda) {
+    beta -= lambda;
+  } else if (beta < -1*lambda) {
+    beta += lambda;
+  } else {
+    beta = 0;
+  }
+  return(beta);
+}
+```
+
+_Code for coordinate descent:_
+based on http://www.stanford.edu/~hastie/Papers/glmnet.pdf
+TODO: implement scaling and centering:
+Coordinate descent is ideally set up to exploit such sparsity, in an obvious
+way. The O(N) inner-product operations in either the naive or covariance
+updates can exploit the sparsity, by summing over only the non-zero entries.
+Note that in this case scaling of the variables will not alter the sparsity,
+but centering will. So scaling is performed up front, but the centering is
+incorporated in the algorithm in an efficient and obvious manner.
+
+```{Rcpp lassi-2, eval=FALSE}
+// [[Rcpp::export]]
+void update_coord(MSpMat X, NumericVector resids, NumericVector beta, double lambda, int j) {
+
+  int n = resids.length();
+  double beta_j = beta[j + 1];  //+1 for intercept
+  double new_beta = 0;
+  double resid_sum = 0;
+
+  for (MInIterMat i_(X, j); i_; ++i_) {
+    resid_sum += resids[i_.index()];
+  }
+
+  new_beta = resid_sum / n + beta_j;
+  new_beta = soft_threshold(new_beta, lambda);
+
+  // if we changed this beta, we must update the residuals
+  if (new_beta != beta_j) {
+    // Rcout << "Changed beta " << j << std::endl;
+    double beta_diff = new_beta-beta_j;
+    for (MInIterMat i_(X, j); i_; ++i_) {
+      resids[i_.index()] -= beta_diff;
+    }
+    beta[j + 1] = new_beta;
+  }
+}
+
+void update_coords(MSpMat X, NumericVector resids, NumericVector beta, double lambda){
+  //update coordinates one-by-one
+  int k;
+  for (k = 0; k < X.outerSize(); ++k) {
+    update_coord(X, resids, beta, lambda, k);
+  }
+
+  //update intercept to center predictions
+  double mean_resid = mean(resids);
+  resids = resids-mean_resid;
+  beta[0] += mean_resid;
+}
+```
+
+```{Rcpp lassi-3, eval=FALSE}
+// [[Rcpp::export]]
+NumericVector lassi_fit_cd(MSpMat X, NumericVector y, double lambda, int nsteps){
+  int p = X.cols();
+  NumericVector beta(p + 1);
+  NumericVector resids = y-lassi_predict(X, beta);
+
+  int step_num = 0;
+
+  double mse = mean(resids*resids);
+  double last_mse = mse;
+  double ratio = 0;
+
+  for (step_num = 0; step_num < nsteps; step_num++) {
+    last_mse = mse;
+
+    update_coords(X, resids, beta, lambda);
+    mse = mean(resids*resids);
+    ratio = (last_mse - mse) / last_mse;
+
+    Rcout << "Step " << step_num << ", mse " << mse << ", ratio " << ratio << std::endl;
+    if (ratio < 0.001) {
+      break;
+    }
+  }
+  return(beta);
+}
+```
+
+The following are functions to enumerate basis functions:
+
+```{Rcpp hal-basis-1, eval=FALSE}
+// populates a map with unique basis functions based on data in xsub
+// values are thresholds, keys are column indicies
+BasisMap enumerate_basis(const NumericMatrix& X_sub, const NumericVector& cols){
+  BasisMap bmap;
+
+  //find unique basis functions
+  int n = X_sub.rows();
+  for (int i = 0; i < n; i++) {
+    NumericVector cutoffs = X_sub.row(i);
+    bmap.insert(std::pair<NumericVector, NumericVector>(cutoffs, cols));
+  }
+  return(bmap);
+}
+```
+
+returns a sorted list of unique basis functions based on columns in cols (so basis order=cols.length())
+each basis function is a list(cols,cutoffs)
+X_sub is a subset of the columns of X (the original design matrix)
+cols is an index of the columns that were subsetted
+
+```{Rcpp hal-basis-2, eval=FALSE}
+// [[Rcpp::export]]
+List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols) {
+
+  BasisMap bmap = enumerate_basis(X_sub, cols);
+  List basis_list(bmap.size());
+  int index = 0;
+  for (BasisMap::iterator it = bmap.begin(); it != bmap.end(); ++it) {
+    List basis = List::create(
+      Rcpp::Named("cols") = it -> second,
+      Rcpp::Named("cutoffs") = it -> first
+    );
+
+    basis_list[index++] = basis;
+  }
+  return(basis_list);
+}
+```
+
+Functions to make a design matrix based on a list of basis functions
+
+```{Rcpp hal-design-1, eval=FALSE}
+// returns the indicator value for the basis described by cols,cutoffs for X[row_num,]
+// X is the original design matrix
+// row_num is a row index to evaluate
+// cols are the column incides of the basis function
+// cutoffs are thresholds
+// [[Rcpp::export]]
+bool meets_basis(const NumericMatrix& X, const int row_num, const IntegerVector& cols, const NumericVector& cutoffs) {
+  int p = cols.length();
+  for (int i = 0; i < p; i++) {
+    double obs = X(row_num, cols[i] - 1);  //we're using 1-indexing for basis columns
+    if (!(obs >= cutoffs[i])) {
+      return(false);
+    }
+  }
+  return(true);
+}
+```
+
+```{Rcpp hal-design-2, eval=FALSE}
+// populates a column (indexed by basis_col) of x_basis with basis indicators
+// basis is the basis function
+// X is the original design matrix
+// x_basis is the hal design matrix
+// basis_col indicates which column to populate
+// [[Rcpp::export]]
+void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis, int basis_col){
+  int n=X.rows();
+  //split basis into x[1] x[-1]
+  //find sub-basises
+  //intersect
+
+  IntegerVector cols=as<IntegerVector>(basis["cols"]);
+  NumericVector cutoffs=as<NumericVector>(basis["cutoffs"]);
+  for (int row_num = 0; row_num < n; row_num++) {
+
+    if (meets_basis(X, row_num, cols, cutoffs)) {
+      //we can add a positive indicator for this row, basis
+      x_basis.insert(row_num, basis_col) = 1;
+    }
+  }
+}
+```
+
+```{Rcpp hal-design-3, eval=FALSE}
+// makes a hal design matrix based on original design matrix X and
+// a list of basis functions in blist
+// [[Rcpp::export]]
+SpMat make_design_matrix(NumericMatrix X, List blist) {
+  //now generate an indicator vector for each
+  int n = X.rows();
+  int basis_p = blist.size();
+
+  SpMat x_basis(n,basis_p);
+  x_basis.reserve(0.5*n*basis_p);
+
+  List basis;
+  NumericVector cutoffs, current_row;
+  IntegerVector last_cols, cols;
+  NumericMatrix X_sub;
+
+  //for each basis function
+  for (int basis_col = 0; basis_col < basis_p; basis_col++) {
+    last_cols = cols;
+
+    basis = (List) blist[basis_col];
+    evaluate_basis(basis, X, x_basis, basis_col);
+  }
+  x_basis.makeCompressed();
+  return(x_basis);
+}
+```
+
+---
+
+## Discussion
+
+...
+
+### Future Work
+
+...
+
+---
+
+## References
+

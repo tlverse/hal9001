@@ -1,84 +1,80 @@
+#' HAL: The Highly Adaptive LASSO estimator
+#'
+#' Performs the estimation procedure for HAL, the Highly Adaptive LASSO
+#'
+#' @details The procedure uses custom C++ functions to generate the design
+#' matrix (consisting of basis functions corresponding to covariates and
+#' interactions of covariates) and remove duplicate columns of indicators. The
+#' actual LASSO regression that follows is computed via \code{cv.glmnet},
+#' though plans are in place to re-implement this in Rcpp/C++ as well.
+#'
+#' @param X An input \code{matrix} containing observations and covariates
+#' following standard conventions in problems of statistical learning.
+#' @param Y A \code{numeric} vector of obervations of the outcome variable of
+#' interest, following standard conventions in problems of statistical learning.
+#' @param degrees The highest order of interaction terms for which the basis
+#' functions ought to be generated. The default (\code{NULL}) corresponds to
+#' generating basis functions for the full dimensionality of the input matrix.
+#' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
+#' documentation for \code{glmnet} for a full list of options.
+#'
+#' @importFrom glmnet cv.glmnet
+#' @importFrom stats coef
+#'
+#' @return Object of class \code{hal9001}, containing a list of basis functions,
+#' a copy map, coefficients estimated for basis functions, and timing results
+#' (for assessing computational efficiency).
+#'
 #' @export
-fit_hal <- function(x, y, degrees = NULL) {
-    
-    time_start <- proc.time()
-    
-    # make hal design matrix
-    basis_list <- enumerate_basis(x, degrees)
-    x_basis <- make_design_matrix(x, basis_list)
-    time_design_matrix <- proc.time()
-    
-    # catalog and eliminate duplicates
-    copy_map <- make_copy_map(x_basis)
-    unique_columns <- as.numeric(names(copy_map))
-    x_basis <- x_basis[, unique_columns]
-    time_remove_duplicates <- proc.time()
-    
-    # fit lasso (todo: replace with mangolassi/origami implementation)
-    r <- glmnet::cv.glmnet(x_basis, y)
-    coefs <- coef(r)
-    time_lasso <- proc.time()
-    time_final <- proc.time()
-    
-    times <- rbind(design_matrix = time_design_matrix - time_start, remove_duplicates = time_remove_duplicates - 
-        time_design_matrix, lasso = time_lasso - time_remove_duplicates, total = time_final - 
-        time_start)
-    
-    fit <- list(basis_list = basis_list, copy_map = copy_map, coefs = coefs, times = times)
-    
-    class(fit) <- "ml_hal"
-    
-    return(fit)
+#'
+#' @examples
+#'
+fit_hal <- function(X,
+                    Y,
+                    degrees = NULL,
+                    ...) {
+  # bookkeeping: get start time of duplicate removal procedure
+  time_start <- proc.time()
+
+  # make design matrix for HAL
+  basis_list <- enumerate_basis(X, degrees)
+  x_basis <- make_design_matrix(X, basis_list)
+  time_design_matrix <- proc.time()
+
+  # catalog and eliminate duplicates
+  copy_map <- make_copy_map(x_basis)
+  unique_columns <- as.numeric(names(copy_map))
+  x_basis <- x_basis[, unique_columns]
+
+  # bookkeeping: get end time of duplicate removal procedure
+  time_rm_duplicates <- proc.time()
+
+  # fit LASSO regression
+  # TODO: replace with mangolassi/origami implementation
+  hal_lasso <- glmnet::cv.glmnet(x_basis,
+                                 Y,
+                                 ...)
+  coefs <- stats::coef(hal_lasso)
+
+  # bookkeeping: get time for computation of the LASSO regression
+  time_lasso <- proc.time()
+
+  # bookkeeping: get time for the whole procedure
+  time_final <- proc.time()
+
+  # bookkeeping: construct table for viewing procedure times
+  times <- rbind(design_matrix = time_design_matrix - time_start,
+                 remove_duplicates = time_rm_duplicates -  time_design_matrix,
+                 lasso = time_lasso - time_rm_duplicates,
+                 total = time_final - time_start
+                )
+
+  # construct output object in S3 style
+  fit <- list(basis_list = basis_list,
+              copy_map = copy_map,
+              coefs = coefs,
+              times = times)
+  class(fit) <- "hal9001"
+  return(fit)
 }
 
-#' @export
-predict.ml_hal <- function(object, newdata) {
-    # generate design matrix
-    pred_x_basis <- make_design_matrix(newdata, object$basis_list)
-    
-    group <- object$copy_map[[1]]
-    
-    # OR duplicate columns from original design matrix
-    for (group in object$copy_map) {
-        if (length(group) > 1) {
-            # first=group[1] pred_x_basis[,first]=apply(pred_x_basis[,group]==1,1,any)
-            or_duplicate_columns(pred_x_basis, group)
-        }
-    }
-    
-    # subset unique columns
-    unique_columns <- as.numeric(names(object$copy_map))
-    pred_x_basis <- pred_x_basis[, unique_columns]
-    
-    
-    # generate predictions
-    preds <- as.vector(pred_x_basis %*% object$coefs[-1] + object$coefs[1])
-    
-    return(preds)
-}
-
-
-# drop basis functions with zero coefficients
-#' @export
-squash_hal_fit <- function(object) {
-    nz_coefs <- which(as.vector(object$coefs)[-1] != 0)
-    new_coefs <- object$coefs[c(1,nz_coefs)]
-
-    #extract all basis functions that belong to any group with a nz coef
-    nz_basis_groups=object$copy_map[nz_coefs]
-    all_nz_basis_index=sort(unlist(nz_basis_groups))
-    new_basis <- object$basis_list[all_nz_basis_index]
-    
-    # now, reindex and rekey the copy_map
-    new_copy_map <- lapply(nz_basis_groups, match, all_nz_basis_index)
-    new_keys <- sapply(new_copy_map, `[[`, 1)
-    names(new_copy_map) <- new_keys
-    
-    fit <- list(basis_list = new_basis, copy_map = new_copy_map, coefs = new_coefs, 
-        times = object$times)
-    
-    
-    class(fit) <- "ml_hal"
-    
-    return(fit)
-}

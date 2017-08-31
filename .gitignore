@@ -6,6 +6,11 @@ src/*.dll
 src/symbols.rds
 .Rhistory
 .RData
+.Ruserdata
+README.html
+sandbox/*.html
+vignettes/*.html
+.ipynb_checkpoints
 
 ## QtCreator
 Rcpp.pro

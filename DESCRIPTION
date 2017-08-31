@@ -1,18 +1,50 @@
 Package: mangolassi
-Title: reimplements halplus features in Rcpp
-Version: 0.0.0.9000
-Authors@R: person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.4.0)
+Title: Implementation of the Highly Adaptive LASSO using a mix of C++ and R, via
+  Rcpp, to obtain efficiency gains in computation
+Version: 0.0.3.0
+Authors@R: c(
+  person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
+    role = c("aut", "cre")),
+  person("David", "Benkeser", email = "benkeser@emory.edu",
+    role = c("aut", "cph")),
+  person("Nima", "Hejazi", email = "nh@nimahejazi.org", role = "aut"),
+  person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com", role = "ctb"),
+  person("Mark", "van der Laan", email = "laan@berkeley.edu", role = "cph")
+  )
+Description: Routines for constructing sparse matrices and indicator functions,
+  as required in the formulation of the Highly Adaptive LASSO algorithm, using
+  C++, through the Rcpp framework, to enhance computational performance.
+Depends: R (>= 3.1.0)
 License: GPL-3
+URL: https://github.com/jeremyrcoyle/mangolassi
+BugReports: https://github.com/jeremyrcoyle/mangolassi/issues
 Encoding: UTF-8
 LazyData: true
-LinkingTo: Rcpp,
-           RcppEigen
-Imports: Rcpp,
-         hal,
-         RcppEigen,
-         data.table
+Imports:
+  Rcpp,
+  RcppEigen,
+  data.table,
+  Matrix,
+  glmnet,
+  stats,
+  utils,
+  stringr,
+  bit,
+  hal
+Suggests:
+  testthat,
+  knitr,
+  rmarkdown,
+  microbenchmark,
+  devtools,
+  ggplot2,
+  dplyr,
+  tidyr
+LinkingTo:
+  Rcpp,
+  RcppEigen
+Remotes:
+  github::benkeser/halplus
+VignetteBuilder: knitr
 RoxygenNote: 6.0.1
-Remotes: github::benkeser/halplus
-Suggests: testthat
+
