@@ -37,7 +37,7 @@ install.packages("mangolassi")
 You can install the development version of `mangolassi` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with
 
 ``` r
-devtools::install_github("nhejazi/lassi")
+devtools::install_github("jeremyrcoyle/mangolassi")
 ```
 
 ------------------------------------------------------------------------
