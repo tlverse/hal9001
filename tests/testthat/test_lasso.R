@@ -1,8 +1,6 @@
-context("Lasso test")
+context("Unit test for the generic LASSO estimation procedure.")
 library(testthat)
 library(data.table)
-library(here)
-library(Rcpp)
 
 library(hal)
 library(mangolassi)

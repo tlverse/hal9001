@@ -26,7 +26,7 @@ basis_list_cols <- function(cols, x) {
 #'
 #' @param x An input \code{matrix} containing observations and covariates
 #' following standard conventions in problems of statistical learning.
-#' @param degrees The highest order of interaction terms for which the basis
+#' @param degree The highest order of interaction terms for which the basis
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
 #'
@@ -37,7 +37,7 @@ basis_of_degree <- function(x, degree) {
   p <- ncol(x)
 
   # the estimation problem is not defined when the following is violated
-  stopifnot(degree < p)
+  if (degree > p) stop("The problem is not defined for degree > p.")
 
   # compute combinations of columns and generate a list of basis functions
   all_cols <- utils::combn(p, degree)

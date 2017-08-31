@@ -31,10 +31,11 @@ predict.hal9001 <- function(object, ..., newdata) {
 
   # subset unique columns
   unique_columns <- as.numeric(names(object$copy_map))
-  pred_x_basis <- pred_x_basis[, unique_columns]
+  pred_x_basis_uniq <- pred_x_basis[, unique_columns]
 
   # generate predictions
-  preds <- as.vector(Matrix::tcrossprod(x = c, y = object$coefs[-1]) +
+  preds <- as.vector(Matrix::tcrossprod(x = pred_x_basis_uniq,
+                                        y = object$coefs[-1]) +
                      object$coefs[1])
   return(preds)
 }
