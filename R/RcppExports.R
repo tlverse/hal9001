@@ -64,18 +64,56 @@ lassi_fit_cd <- function(X, y, lambda, nsteps) {
     .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, y, lambda, nsteps)
 }
 
+#' Sort Basis Functions
+#'
+#' Build a sorted list of unique basis functions based on columns, where each
+#' basis function is a list
+#'
+#' @details Note that sorting of columns is performed such that the basis order
+#' equals cols.length() and each basis function is a list(cols, cutoffs).
+#'
+#' @param X_sub A subset of the columns of X, the original design matrix.
+#' @param cols An index of the columns that were reduced to by sub-setting.
+#'
 make_basis_list <- function(X_sub, cols) {
     .Call('_hal9001_make_basis_list', PACKAGE = 'hal9001', X_sub, cols)
 }
 
+#' Compute Values of Basis Functions
+#'
+#' Computes and returns the indicator value for the basis described by
+#' cols and cutoffs for a given row of X (X[row_num, ])
+#'
+#' @param X The design matrix, containing the original data.
+#' @param row_num Numeri for  a row index over which to evaluate.
+#' @param cols Numeric for the column indices of the basis function.
+#' @param cutoffs Numeric providing thresholds.
+#'
 meets_basis <- function(X, row_num, cols, cutoffs) {
     .Call('_hal9001_meets_basis', PACKAGE = 'hal9001', X, row_num, cols, cutoffs)
 }
 
+#' Generate Basis Functions
+#'
+#' Populates a column (indexed by basis_col) of x_basis with basis indicators.
+#'
+#' @param basis The basis function.
+#' @param X The design matrix, containing the original data.
+#' @param x_basis The HAL design matrix, containing indicator functions.
+#' @param basis_col Numeric indicating which column to populate.
+#'
 evaluate_basis <- function(basis, X, x_basis, basis_col) {
     invisible(.Call('_hal9001_evaluate_basis', PACKAGE = 'hal9001', basis, X, x_basis, basis_col))
 }
 
+#' Build HAL Design Matrix
+#'
+#' Make a HAL design matrix based on original design matrix X and a list of
+#' basis functions in blist
+#'
+#' @param X Matrix of covariates containing observed data in the columns.
+#' @param blist List of basis functions with which to build HAL design matrix.
+#'
 make_design_matrix <- function(X, blist) {
     .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist)
 }
