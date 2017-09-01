@@ -4,12 +4,10 @@
 \alias{predict.SL.hal9001}
 \title{predict.SL.hal9001}
 \usage{
-\method{predict}{SL.hal9001}(object, ..., newdata)
+\method{predict}{SL.hal9001}(object, newdata)
 }
 \arguments{
 \item{object}{A fitted object of class \code{hal9001}.}
-
-\item{...}{Other arguments passed to \code{predict}.}
 
 \item{newdata}{A matrix of new observations on which to obtain predictions.}
 }

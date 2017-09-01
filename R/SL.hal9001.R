@@ -4,7 +4,8 @@
 #'
 #' @param Y A \code{numeric} of outcomes.
 #' @param X A \code{matrix} of predictors/covariates.
-#' @param ... Any other arguments to pass-through to \code{hal9001::fit_hal}.
+#' @param ... Any other arguments to pass through to \code{hal9001::fit_hal},
+#' which are then passed directly to \code{glmnet::cv.glmnet} (for now).
 #' @param degrees The highest order of interaction terms for which the basis
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
@@ -21,12 +22,14 @@ SL.hal9001 <- function(X,
 
   # fit HAL
   hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, ...)
+
   # compute predictions based on `newdata` or input `X`
   if(!is.null(newdata)) {
     pred <- predict.hal9001(object = hal_out, newdata = newdata)
   } else {
     pred <- predict.hal9001(object = hal_out, newdata = X)
   }
+
   # build output object
   out <- list(object = hal_out, pred = pred)
   class(out) <- "SL.hal9001"
@@ -38,19 +41,17 @@ SL.hal9001 <- function(X,
 #' Predict method for objects of class \code{SL.hal9001}
 #'
 #' @param object A fitted object of class \code{hal9001}.
-#' @param ... Other arguments passed to \code{predict}.
 #' @param newdata A matrix of new observations on which to obtain predictions.
 #'
 #' @importFrom stats predict
 #'
 #' @export
 #'
-predict.SL.hal9001 <- function(object, ..., newdata) {
+predict.SL.hal9001 <- function(object, newdata) {
   .SL.require("hal9001")
 
   # generate predictions and return
   pred <- predict.hal9001(object$object,
-                          ...,
                           newdata = newdata)
   return(pred)
 }

@@ -15,7 +15,8 @@ SL.hal9001(X, Y, degrees = NULL, ..., newdata = NULL)
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
-\item{...}{Any other arguments to pass-through to \code{hal9001::fit_hal}.}
+\item{...}{Any other arguments to pass through to \code{hal9001::fit_hal},
+which are then passed directly to \code{glmnet::cv.glmnet} (for now).}
 
 \item{newdata}{A matrix of new observations on which to obtain predictions.}
 }
