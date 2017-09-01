@@ -1,7 +1,7 @@
 Package: hal9001
 Title: Implementation of the Highly Adaptive LASSO using a mix of C++ and R, via
   Rcpp, to obtain efficiency gains in computation
-Version: 0.0.3.0
+Version: 0.0.3.5
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
     role = c("aut", "cre")),

@@ -8,20 +8,22 @@ using namespace Rcpp;
 //' Index vector that, for each column in X, indicates the index of the first
 //' copy of that column
 //'
+//' @param X Sparse matrix containing columns of indicator functions.
+//'
 // [[Rcpp::export]]
-IntegerVector index_first_copy(const MSpMat& X){
+IntegerVector index_first_copy(const MSpMat& X) {
   int p = X.cols();
 
   ColMap col_map;
   IntegerVector copy_index(p);
 
-  for(int j = 0; j < p; j++) {
+  for (int j = 0; j < p; j++) {
     MSpMatCol current_col(X, j);
 
     //https://stackoverflow.com/questions/97050/stdmap-insert-or-stdmap-find
     ColMap::iterator match = col_map.lower_bound(current_col);
-    if(match != col_map.end() && !(col_map.key_comp()(current_col, match->first)))
-    {
+    if (match != col_map.end() &&
+        !(col_map.key_comp()(current_col, match->first))) {
       // column already exists
       copy_index[j] = match->second + 1; //use 1-indexing
     } else {
@@ -39,8 +41,12 @@ IntegerVector index_first_copy(const MSpMat& X){
 //'
 //' \code{TRUE} iff col_1 is strictly less than col_2 in the ordering scheme
 //'
+//' @param X Sparse matrix containing columns of indicator functions.
+//' @param col_1 The index of a first column to be compared.
+//' @param col_2 The index of a second column to be compared.
+//'
 // [[Rcpp::export]]
-bool column_compare(const MSpMat& X, int col_1, int col_2){
+bool column_compare(const MSpMat& X, int col_1, int col_2) {
   ColMap cmap;
   MSpMatCol X_1(X, col_1);
   MSpMatCol X_2(X, col_2);
@@ -53,20 +59,22 @@ bool column_compare(const MSpMat& X, int col_1, int col_2){
 //'
 //' ORs the columns of X listed in cols and places the result in column col[1]
 //'
+//' @param X Sparse matrix containing columns of indicator functions.
+//' @param cols Integer indicating the column index.
+//'
 // [[Rcpp::export]]
-void or_duplicate_columns(MSpMat& X, const IntegerVector& cols){
-  int first = cols[0] - 1; //cols is 1-indexed
+void or_duplicate_columns(MSpMat& X, const IntegerVector& cols) {
+  int first = cols[0] - 1;  //cols is 1-indexed
   int p_cols = cols.length();
   int n = X.rows();
-  for(int i = 0; i < n; i++){
-    if(X.coeffRef(i, first) == 1) {
-      //this is already 1
-      continue;
+  for (int i = 0; i < n; i++) {
+    if (X.coeffRef(i, first) == 1) {
+      continue;  //this is already 1
     }
     //search remaining columns for 1, inserting into first if found
-    for(int j = 1; j < p_cols; j++) {
+    for (int j = 1; j < p_cols; j++) {
       int j_col = cols[j] - 1;  //cols is 1-indexed
-      if(X.coeffRef(i, j_col) == 1) {
+      if (X.coeffRef(i, j_col) == 1) {
         X.coeffRef(i, j_col) = 1;
         break;
       }

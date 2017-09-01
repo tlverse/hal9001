@@ -1,17 +1,17 @@
 // [[Rcpp::depends(RcppEigen)]]
 #include <RcppEigen.h>
 #include "hal9001_types.h"
-
 using namespace Rcpp;
 
-// ------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Functions to enumerate basis functions
+//------------------------------------------------------------------------------
 
 // populates a map with unique basis functions based on data in xsub
 // values are thresholds, keys are column indicies
-BasisMap enumerate_basis(const NumericMatrix& X_sub, const NumericVector& cols) {
+BasisMap enumerate_basis(const NumericMatrix& X_sub,
+                         const NumericVector& cols) {
   BasisMap bmap;
-
 
   //find unique basis functions
   int n = X_sub.rows();
@@ -24,14 +24,11 @@ BasisMap enumerate_basis(const NumericMatrix& X_sub, const NumericVector& cols) 
   //actually, I think we don't want to do this
   //because it might not be true in an OOB prediction set
   //bmap.erase(bmap.begin());
-
   return(bmap);
 }
 
-
-
-// returns a sorted list of unique basis functions based on columns in cols (so basis order=cols.length())
-// each basis function is a list(cols,cutoffs)
+// Returns a sorted list of unique basis functions based on columns in cols (so
+// basis order=cols.length()) each basis function is a list(cols,cutoffs)
 // X_sub is a subset of the columns of X (the original design matrix)
 // cols is an index of the columns that were subsetted
 // [[Rcpp::export]]

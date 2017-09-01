@@ -6,6 +6,11 @@
 \usage{
 or_duplicate_columns(X, cols)
 }
+\arguments{
+\item{X}{Sparse matrix containing columns of indicator functions.}
+
+\item{cols}{Integer indicating the column index.}
+}
 \description{
 ORs the columns of X listed in cols and places the result in column col[1]
 }

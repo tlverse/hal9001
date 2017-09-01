@@ -6,6 +6,8 @@
 #' Index vector that, for each column in X, indicates the index of the first
 #' copy of that column
 #'
+#' @param X Sparse matrix containing columns of indicator functions.
+#'
 index_first_copy <- function(X) {
     .Call('_hal9001_index_first_copy', PACKAGE = 'hal9001', X)
 }
@@ -13,6 +15,10 @@ index_first_copy <- function(X) {
 #' Compute Column Ranks
 #'
 #' \code{TRUE} iff col_1 is strictly less than col_2 in the ordering scheme
+#'
+#' @param X Sparse matrix containing columns of indicator functions.
+#' @param col_1 The index of a first column to be compared.
+#' @param col_2 The index of a second column to be compared.
 #'
 column_compare <- function(X, col_1, col_2) {
     .Call('_hal9001_column_compare', PACKAGE = 'hal9001', X, col_1, col_2)
@@ -22,10 +28,20 @@ column_compare <- function(X, col_1, col_2) {
 #'
 #' ORs the columns of X listed in cols and places the result in column col[1]
 #'
+#' @param X Sparse matrix containing columns of indicator functions.
+#' @param cols Integer indicating the column index.
+#'
 or_duplicate_columns <- function(X, cols) {
     invisible(.Call('_hal9001_or_duplicate_columns', PACKAGE = 'hal9001', X, cols))
 }
 
+#' LASSO Prediction
+#'
+#' Compute predictions based on a LASSO regression
+#'
+#' @param X Sparse matrix containing columns of indicator functions.
+#' @param beta Numeric for the regression coefficient of a linear model fit.
+#'
 lassi_predict <- function(X, beta) {
     .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta)
 }
@@ -34,6 +50,16 @@ update_coord <- function(X, resids, beta, lambda, j) {
     invisible(.Call('_hal9001_update_coord', PACKAGE = 'hal9001', X, resids, beta, lambda, j))
 }
 
+#' Fit a LASSO Regression Model
+#'
+#' Fit a linear regression model with L1 penalization, the LASSO
+#'
+#' @param X Sparse matrix containing columns of indicator functions.
+#' @param y Numeric containing observations of an outcome variable of interest.
+#' @param lambda Numeric corresponding to the LASSO regularization parameter.
+#' @param nsteps Maximum number of steps to take until stopping computation of
+#' the regression coefficient.
+#'
 lassi_fit_cd <- function(X, y, lambda, nsteps) {
     .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, y, lambda, nsteps)
 }

@@ -6,6 +6,9 @@
 \usage{
 index_first_copy(X)
 }
+\arguments{
+\item{X}{Sparse matrix containing columns of indicator functions.}
+}
 \description{
 Index vector that, for each column in X, indicates the index of the first
 copy of that column

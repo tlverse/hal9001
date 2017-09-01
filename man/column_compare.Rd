@@ -6,6 +6,13 @@
 \usage{
 column_compare(X, col_1, col_2)
 }
+\arguments{
+\item{X}{Sparse matrix containing columns of indicator functions.}
+
+\item{col_1}{The index of a first column to be compared.}
+
+\item{col_2}{The index of a second column to be compared.}
+}
 \description{
 \code{TRUE} iff col_1 is strictly less than col_2 in the ordering scheme
 }
