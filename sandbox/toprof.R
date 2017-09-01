@@ -1,4 +1,4 @@
-library(mangolassi)
+library(hal9001)
 library(hal)
 x <- xmat <- matrix(rnorm(1000 * 3), 1000, 3)
 cols <- c(2, 3)
