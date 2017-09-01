@@ -4,7 +4,7 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive LASSO estimator}
 \usage{
-fit_hal(X, Y, degrees = NULL, ...)
+fit_hal(X, Y, degrees = NULL, quote = TRUE, ...)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -16,6 +16,9 @@ interest, following standard conventions in problems of statistical learning.}
 \item{degrees}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
+
+\item{quote}{A \code{logical} indicating whether to print one of a curated
+selection of quotes from HAL 9000, from 2001: A Space Odyssey (1968).}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}
