@@ -33,6 +33,11 @@ fit_hal <- function(X,
                     Y,
                     degrees = NULL,
                     ...) {
+  # cast X to matrix -- and don't time this step
+  if (class(X) != "matrix") {
+    X <- as.matix(X)
+  }
+
   # bookkeeping: get start time of duplicate removal procedure
   time_start <- proc.time()
 
