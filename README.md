@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-R/`mangolassi`
-==============
+R/`hal9001`
+===========
 
 > A *fast* Highly Adaptive LASSO estimator
 
@@ -11,10 +11,10 @@ R/`mangolassi`
 
 ------------------------------------------------------------------------
 
-Description
------------
+What's `hal9001`?
+-----------------
 
-`mangolassi` is an R package providing an implementation of the Highly Adaptive LASSO (HAL), a nonparametric regression estimator that applies L1-regularized regression (i.e., the LASSO) to a design matrix composed of indicator functions corresponding to a set of covariates and interactions thereof, in a standard statistical learning problem. Recent theoretical results show that HAL is endowed with several important properties that make it optimally suited for the purpose of inference in problem settings where causal parameters are estimated via data-adaptive techniques (i.e., machine learning), as is the case within the framework of Targeted Minimum Loss-Based Estimation (TMLE). While it is certainly possible to implement HAL purely in R, the computationally intensive nature of the algorithm suggests that writing core routines in C++ (and making these available in R via the [Rcpp](http://www.rcpp.org/) framework) ought to provide significant efficiency gains. `mangolassi` is just such an implementation.
+`hal9001` is an R package providing an implementation of the Highly Adaptive LASSO (HAL), a nonparametric regression estimator that applies L1-regularized regression (i.e., the LASSO) to a design matrix composed of indicator functions corresponding to a set of covariates and interactions thereof, in a standard statistical learning problem. Recent theoretical results show that HAL is endowed with several important properties that make it optimally suited for the purpose of inference in problem settings where causal parameters are estimated via data-adaptive techniques (i.e., machine learning), as is the case within the framework of Targeted Minimum Loss-Based Estimation (TMLE). While it is certainly possible to implement HAL purely in R, the computationally intensive nature of the algorithm suggests that writing core routines in C++ (and making these available in R via the [Rcpp](http://www.rcpp.org/) framework) ought to provide significant efficiency gains. `hal9001` is just such an implementation.
 
 For detailed discussions of the Highly Adaptive LASSO estimator, the interested reader might consider consulting Benkeser and van der Laan (2016), van der Laan (2015), and van der Laan (2017).
 
@@ -31,7 +31,7 @@ For standard use, we recommend installing the package from
 
 
 ```r
-install.packages("mangolassi")
+install.packages("hal9001")
 ```
 -->
 You can install the development version of `mangolassi` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with

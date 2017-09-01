@@ -4,9 +4,7 @@ library(devtools)
 library(testthat)
 library(data.table)
 library(microbenchmark)
-
 library(hal)
-library(mangolassi)
 
 # Rcpp::compileAttributes() load_all()
 

@@ -1,5 +1,5 @@
 library(testthat)
-library(mangolassi)
+library(hal9001)
 
-test_check("mangolassi")
+test_check("hal9001")
 
