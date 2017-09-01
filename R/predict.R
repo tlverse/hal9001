@@ -17,6 +17,11 @@
 #' @examples
 #'
 predict.hal9001 <- function(object, newdata) {
+  # cast new data to matrix if not so already
+  if (!is.matrix(newdata)) {
+    newdata <- as.matrix(newdata)
+  }
+
   # generate design matrix
   pred_x_basis <- make_design_matrix(newdata, object$basis_list)
   group <- object$copy_map[[1]]
