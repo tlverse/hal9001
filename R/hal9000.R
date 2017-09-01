@@ -4,12 +4,9 @@ utils::globalVariables(c("hal_quotes"))
 #'
 #' Prints a quote from the HAL 9000 robot from 2001: A Space Odyssey
 #'
-#' @param seed Passed directly to \code{set.seed}.
-#'
 #' @importFrom utils data
 #'
-hal9000 <- function(seed = 79246) {
-  set.seed(seed)
+hal9000 <- function() {
   utils::data("hal_quotes", envir = environment())
 
   # pick a HAL 9000 quote to print

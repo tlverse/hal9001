@@ -4,10 +4,7 @@
 \alias{hal9000}
 \title{HAL 9000 Quotes}
 \usage{
-hal9000(seed = 79246)
-}
-\arguments{
-\item{seed}{Passed directly to \code{set.seed}.}
+hal9000()
 }
 \description{
 Prints a quote from the HAL 9000 robot from 2001: A Space Odyssey
