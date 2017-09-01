@@ -28,7 +28,7 @@ Hejazi](http://nimahejazi.org)
 
 ---
 
-## Description
+## What's `hal9001`?
 
 `hal9001` is an R package providing an implementation of the Highly Adaptive
 LASSO (HAL), a nonparametric regression estimator that applies L1-regularized
