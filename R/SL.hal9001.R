@@ -1,58 +1,52 @@
-#' Fast Highly Adaptive Lasso
+#' Classic SuperLearner Wrapper for HAL9001
 #'
-#' SuperLearner wrapper for \code{hal9001}, a fast Highly Adaptive LASSO.
+#' Wrapper for package \code{SuperLearner} for objects of class \code{hal9001}
 #'
-#' @param Y A \code{numeric} of outcomes
-#' @param X A \code{data.frame} of predictors
-#' @param newX Optional \code{data.frame} on which to return predicted values
-#' @param verbose A \code{boolean} indicating whether to print output on functions progress
-#' @param obsWeights Optional \code{vector} of observation weights to be passed to \code{cv.glmnet}
-#' @param nfolds Number of CV folds passed to \code{cv.glmnet}
-#' @param nlambda Number of lambda values to search across in \code{cv.glmnet}
-#' @param useMin Option passed to \code{cv.glmnet}, use minimum risk lambda or 1se lambda (more
-#'   penalization)
-#' @param family Needs to have a character object in \code{family$family} as required by \code{SuperLearner}
-#' @param ... Any other arguments to pass-through to hal()
+#' @param Y A \code{numeric} of outcomes.
+#' @param X A \code{matrix} of predictors/covariates.
+#' @param ... Any other arguments to pass-through to \code{hal9001::fit_hal}.
+#' @param degrees The highest order of interaction terms for which the basis
+#' functions ought to be generated. The default (\code{NULL}) corresponds to
+#' generating basis functions for the full dimensionality of the input matrix.
+#' @param newdata A matrix of new observations on which to obtain predictions.
 #'
 #' @export
-SL.hal9001 <- function(Y,
-                       X,
-                       newX,
-                       family = gaussian(),
-                       verbose = TRUE,
-                       obsWeights = rep(1, length(Y)),
-                       nfolds = ifelse(length(Y) <= 100, 20, 10),
-                       nlambda = 100,
-                       useMin = TRUE,
-                       ...) {
+#'
+SL.hal9001 <- function(X,
+                       Y,
+                       degrees = NULL,
+                       ...,
+                       newdata = NULL) {
   # fit HAL
-  halOut <- hal(Y = Y, X = X, newX = newX, verbose = verbose,
-                obsWeights = obsWeights, nfolds = nfolds,
-                nlambda = nlambda, useMin = useMin, ...)
-
-      out <- list(object = halOut, pred = halOut$pred)
-      class(out) <- "SL.hal9001"
-      return(out)
+  hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, ...)
+  # compute predictions based on `newdata` or input `X`
+  if(!is.null(newdata)) {
+    pred <- predict.hal9001(object = hal_out, newdata = newdata)
+  } else {
+    pred <- predict.hal9001(object = hal_out, newdata = X)
+  }
+  # build output object
+  out <- list(object = hal_out, pred = pred)
+  class(out) <- "SL.hal9001"
+  return(out)
 }
 
 #' predict.SL.hal9001
 #'
-#' Predict method for \code{SL.hal9001}
+#' Predict method for objects of class \code{SL.hal9001}
 #'
-#' @param object A fitted object of class \code{hal}
-#' @param newdata A matrix of new predictions to obtain predictions
-#' @param bigDesign A boolean indicating whether to obtain predictions all at once
-#' (which may be memory intractable) or to split up the task into smaller chunks
-#' @param chunks A numeric indicating how many observations to use in each chunk of
-#' the prediction task (if \code{bigDesign = FALSE})
-#' @param ... Other arguments passed to \code{predict}
+#' @param object A fitted object of class \code{hal9001}.
+#' @param ... Other arguments passed to \code{predict}.
+#' @param newdata A matrix of new observations on which to obtain predictions.
 #'
 #' @importFrom stats predict
 #'
 #' @export
 #'
-predict.SL.hal9001 <- function(object, newdata, bigDesign = FALSE, chunks = 5000, ...){
-      pred <- stats::predict(object$object, newdata = newdata, bigDesign = bigDesign, 
-                      chunks = chunks,...)
-      return(pred)
+predict.SL.hal9001 <- function(object, ..., newdata) {
+  pred <- predict.hal9001(object$object,
+                          ...,
+                          newdata = newdata)
+  return(pred)
 }
+
