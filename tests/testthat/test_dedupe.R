@@ -3,9 +3,7 @@ context("Unit test for removing duplicate columns of indicator functions.")
 library(testthat)
 library(data.table)
 library(microbenchmark)
-
 library(hal)
-library(mangolassi)
 
 # Rcpp::compileAttributes() load_all()
 

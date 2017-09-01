@@ -56,33 +56,33 @@ head(y)
 ## Using the Highly Adaptive LASSO
 
 ```{r}
-library(mangolassi)
+library(hal9001)
 ```
 
 ### Fitting the model
 
-```{r fit-lassi, eval=FALSE}
-lassi_fit <- fit_hal(X = x, Y = y)
-lassi_fit$times
+```{r fit-hal, eval=FALSE}
+hal_fit <- fit_hal(X = x, Y = y)
+hal_fit$times
 ```
 
-```{r benchmark-lassi, eval=FALSE}
+```{r benchmark-hal, eval=FALSE}
 # perform benchmarking
-m_lassi <- microbenchmark(unit = "s", times = 20,
-  lassi_fit_m <- fit_hal(X = x, Y = y)
+m_hal <- microbenchmark(unit = "s", times = 20,
+  hal_fit_m <- fit_hal(X = x, Y = y)
 )
 
 # make plot
-p_lassi_times <- m_lassi %>%
+p_hal_times <- m_hal %>%
  dplyr::transmute(
      time_sec = time / 10^9
  ) %>%
  gather() %>%
  ggplot(., aes(x = key, y = value)) + geom_boxplot() + geom_point() +
-   xlab("") + ylab("time (sec.)") + ggtitle("HAL9000") + theme_minimal()
+   xlab("") + ylab("time (sec.)") + ggtitle("HAL9001") + theme_minimal()
 
-p_lassi_times
-summary(m_lassi)
+p_hal_times
+summary(m_hal)
 ```
 
 ...
@@ -95,27 +95,27 @@ mse <- function(preds, y) {
     mean((preds - y)^2)
 }
 
-preds_lassi <- predict(object = lassi_fit, newdata = x)
-mse_lassi <- mse(preds = preds_lassi, y = y)
-mse_lassi
+preds_hal <- predict(object = hal_fit, newdata = x)
+mse_hal <- mse(preds = preds_hal, y = y)
+mse_hal
 ```
 
 ```{r eval-oob, eval=FALSE}
-oob_lassi <- predict(object = lassi_fit, newdata = test_x)
-oob_lassi_mse <- mse(preds = oob_lassi, y = test_y)
-oob_lassi_mse
+oob_hal <- predict(object = hal_fit, newdata = test_x)
+oob_hal_mse <- mse(preds = oob_hal, y = test_y)
+oob_hal_mse
 ```
 
 ### "Squashing" the model object
 
 ```{r squash-hal9001, eval=FALSE}
-squashed_lassi <- squash_hal_fit(lassi_fit)
+squashed_hal <- squash_hal_fit(hal_fit)
 
-sq_preds <- predict(object = squashed_lassi, newdata = x)
-sq_oob_lassi <- predict(object = squashed_lassi, newdata = test_x)
+sq_preds <- predict(object = squashed_hal, newdata = x)
+sq_oob_hal <- predict(object = squashed_hal, newdata = test_x)
 
-cbind(preds_lassi, sq_preds)
-cbind(oob_lassi, sq_oob_lassi)
+cbind(preds_hal, sq_preds)
+cbind(oob_hal, sq_oob_hal)
 ```
 
 ---

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# R/`mangolassi`
+# R/`hal9001`
 
 > A _fast_ Highly Adaptive LASSO estimator
 
@@ -28,9 +28,9 @@ Hejazi](http://nimahejazi.org)
 
 ---
 
-## Description
+## What's `hal9001`?
 
-`mangolassi` is an R package providing an implementation of the Highly Adaptive
+`hal9001` is an R package providing an implementation of the Highly Adaptive
 LASSO (HAL), a nonparametric regression estimator that applies L1-regularized
 regression (i.e., the LASSO) to a design matrix composed of indicator functions
 corresponding to a set of covariates and interactions thereof, in a standard
@@ -42,7 +42,7 @@ within the framework of Targeted Minimum Loss-Based Estimation (TMLE). While it
 is certainly possible to implement HAL purely in R, the computationally
 intensive nature of the algorithm suggests that writing core routines in C++
 (and making these available in R via the [Rcpp](http://www.rcpp.org/) framework)
-ought to provide significant efficiency gains. `mangolassi` is just such an
+ought to provide significant efficiency gains. `hal9001` is just such an
 implementation.
 
 For detailed discussions of the Highly Adaptive LASSO estimator, the interested
@@ -61,7 +61,7 @@ For standard use, we recommend installing the package from
 [CRAN](https://cran.r-project.org/) via
 
 ```{r cran-installation, eval = FALSE}
-install.packages("mangolassi")
+install.packages("hal9001")
 ```
 -->
 
