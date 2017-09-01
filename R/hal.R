@@ -34,7 +34,7 @@ fit_hal <- function(X,
                     degrees = NULL,
                     ...) {
   # cast X to matrix -- and don't time this step
-  if (class(X) != "matrix") {
+  if (!is.matrix(X)) {
     X <- as.matrix(X)
   }
 

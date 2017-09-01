@@ -17,6 +17,8 @@ SL.hal9001 <- function(X,
                        degrees = NULL,
                        ...,
                        newdata = NULL) {
+  .SL.require("hal9001")
+
   # fit HAL
   hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, ...)
   # compute predictions based on `newdata` or input `X`
@@ -44,6 +46,9 @@ SL.hal9001 <- function(X,
 #' @export
 #'
 predict.SL.hal9001 <- function(object, ..., newdata) {
+  .SL.require("hal9001")
+
+  # generate predictions and return
   pred <- predict.hal9001(object$object,
                           ...,
                           newdata = newdata)
