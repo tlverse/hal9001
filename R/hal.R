@@ -39,6 +39,9 @@ fit_hal <- function(X,
   # bookkeeping: get start time of duplicate removal procedure
   time_start <- proc.time()
 
+  # fun: quotes from HAL 9000
+  if (quote) hal9000()
+
   # make design matrix for HAL
   basis_list <- enumerate_basis(X, degrees)
   x_basis <- make_design_matrix(X, basis_list)
@@ -71,9 +74,6 @@ fit_hal <- function(X,
                  lasso = time_lasso - time_rm_duplicates,
                  total = time_final - time_start
                 )
-
-  # fun: quotes from HAL 9000
-  if (quote) hal9000()
 
   # construct output object in S3 style
   fit <- list(basis_list = basis_list,
