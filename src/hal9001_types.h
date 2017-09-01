@@ -1,4 +1,3 @@
-
 // [[Rcpp::depends(RcppEigen)]]
 #include <RcppEigen.h>
 using namespace Rcpp;
@@ -13,16 +12,16 @@ typedef SpVec::InnerIterator InIterVec;
 
 struct cmpMatrixRow {
   bool operator()(const NumericVector& a, const NumericVector& b) const {
-    
+
     int i=0;
-    
-    int smaller_length=a.size();
-    if(b.size()<smaller_length){
-      smaller_length=b.size();
+
+    int smaller_length = a.size();
+    if(b.size()<smaller_length) {
+      smaller_length = b.size();
     }
-    
-    for(i=0; i<smaller_length; i++){
-      if(a[i]==b[i]){
+
+    for(i = 0; i<smaller_length; i++) {
+      if(a[i] == b[i]) {
         //skip anything at the beginning that matches
         continue;
       } else {
@@ -30,9 +29,7 @@ struct cmpMatrixRow {
         return(a[i]<b[i]);
       }
     }
-    
 
-    
     return(a.size() < b.size());
   }
 };
@@ -49,18 +46,17 @@ struct cmpCol {
     int col_b=b.second;
 
     MInIterMat iter_b(X, col_b);
-    for (MInIterMat iter_a(X, col_a); iter_a; ++iter_a,++iter_b){
-      if(!iter_b){
+    for (MInIterMat iter_a(X, col_a); iter_a; ++iter_a,++iter_b) {
+      if (!iter_b) {
         //we've matched the entirety of b to a, but there's still more elements in a, so it comes after
         //iter_b is shorter
         return(false);
-        
       }
       int index_a=iter_a.index();
       int index_b=iter_b.index();
-      
+
       // Rcout << index_a << " " << index_b << std::endl;
-      if(index_a==index_b){
+      if(index_a==index_b) {
         //skip anything at the beginning that matches
         continue;
       } else {
@@ -69,7 +65,7 @@ struct cmpCol {
         return(index_a>index_b);
       }
     }
-    
+
     //we've matched the entirety of a to b
     //if there are more elements in b, it comes after, otherwise they're a match
     return(iter_b);
@@ -77,3 +73,4 @@ struct cmpCol {
 };
 
 typedef std::map<MSpMatCol, int, cmpCol> ColMap;
+

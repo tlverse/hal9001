@@ -1,9 +1,7 @@
 context("Unit test for the HAL estimation procedure.")
 library(testthat)
 library(data.table)
-
 library(hal)
-library(mangolassi)
 
 ################################################################################
 ## UNIT TESTS START HERE; PRELIMINARIES ABOVE

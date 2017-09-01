@@ -51,8 +51,8 @@ fit_hal <- function(X,
 
   # fit LASSO regression
   # TODO: replace with mangolassi/origami implementation
-  hal_lasso <- glmnet::cv.glmnet(x_basis,
-                                 Y,
+  hal_lasso <- glmnet::cv.glmnet(x = x_basis,
+                                 y = Y,
                                  ...)
   coefs <- stats::coef(hal_lasso)
 
