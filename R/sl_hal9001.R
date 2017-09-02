@@ -11,23 +11,23 @@
 #' generating basis functions for the full dimensionality of the input matrix.
 #' @param newdata A matrix of new observations on which to obtain predictions.
 #'
+#' @importFrom stats predict
+#'
 #' @export
 #'
 SL.hal9001 <- function(X,
                        Y,
                        degrees = NULL,
-                       ...,
-                       newdata = NULL) {
-  .SL.require("hal9001")
-
+                       newdata = NULL,
+                       ...) {
   # fit HAL
-  hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, ...)
+  hal_out <- fit_hal(Y = Y, X = X, degrees = degrees)
 
   # compute predictions based on `newdata` or input `X`
   if(!is.null(newdata)) {
-    pred <- predict.hal9001(object = hal_out, newdata = newdata)
+    pred <- stats::predict(object = hal_out, newdata = newdata)
   } else {
-    pred <- predict.hal9001(object = hal_out, newdata = X)
+    pred <- stats::predict(object = hal_out, newdata = X)
   }
 
   # build output object
@@ -48,11 +48,9 @@ SL.hal9001 <- function(X,
 #' @export
 #'
 predict.SL.hal9001 <- function(object, newdata) {
-  .SL.require("hal9001")
-
   # generate predictions and return
-  pred <- predict.hal9001(object$object,
-                          newdata = newdata)
+  pred <- stats::predict(object$object,
+                         newdata = newdata)
   return(pred)
 }
 
