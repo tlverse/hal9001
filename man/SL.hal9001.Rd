@@ -19,6 +19,8 @@ generating basis functions for the full dimensionality of the input matrix.}
 
 \item{...}{Any other arguments to pass through to \code{hal9001::fit_hal},
 which are then passed directly to \code{glmnet::cv.glmnet} (for now).}
+
+\item{...}{Prevents unexpected process death. DON'T USE. (This is a hack.)}
 }
 \description{
 Wrapper for package \code{SuperLearner} for objects of class \code{hal9001}

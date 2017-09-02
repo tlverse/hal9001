@@ -10,6 +10,7 @@
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
 #' @param newdata A matrix of new observations on which to obtain predictions.
+#' @param ... Prevents unexpected process death. DON'T USE. (This is a hack.)
 #'
 #' @importFrom stats predict
 #'
@@ -42,15 +43,15 @@ SL.hal9001 <- function(X,
 #'
 #' @param object A fitted object of class \code{hal9001}.
 #' @param newdata A matrix of new observations on which to obtain predictions.
+#' @param ... Prevents unexpected process death. DON'T USE. (This is a hack.)
 #'
 #' @importFrom stats predict
 #'
 #' @export
 #'
-predict.SL.hal9001 <- function(object, newdata) {
+predict.SL.hal9001 <- function(object, newdata, ...) {
   # generate predictions and return
-  pred <- stats::predict(object$object,
-                         newdata = newdata)
+  pred <- stats::predict(object$object, newdata = newdata)
   return(pred)
 }
 
