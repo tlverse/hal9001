@@ -32,8 +32,9 @@ SL.hal9001 <- function(X,
   }
 
   # build output object
-  out <- list(pred = pred, fit = hal_out)
-  class(out) <- "SL.hal9001"
+  fit <- list(object = hal_out)
+  class(fit) <- "SL.hal9001"
+  out <- list(pred = pred, fit = fit)
   return(out)
 }
 
