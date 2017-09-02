@@ -1,11 +1,4 @@
 context("Unit test for the generic LASSO estimation procedure.")
-library(testthat)
-library(data.table)
-library(hal)
-
-################################################################################
-## UNIT TESTS START HERE; PRELIMINARIES ABOVE
-################################################################################
 
 # generate simple test data
 x <- xmat <- matrix(rnorm(100 * 3), 100, 3)

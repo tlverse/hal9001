@@ -1,15 +1,6 @@
 context("Unit test for removing duplicate columns of indicator functions.")
 
-library(testthat)
-library(data.table)
-library(microbenchmark)
-library(hal)
-
 # Rcpp::compileAttributes() load_all()
-
-################################################################################
-## UNIT TESTS START HERE; PRELIMINARIES ABOVE
-################################################################################
 
 # generate design matrix for HAL
 n <- 1000
