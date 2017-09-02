@@ -1,18 +1,8 @@
 context("Unit test for procedures relating to basis functions.")
 
-library(devtools)
-library(testthat)
-library(data.table)
-library(microbenchmark)
-library(hal)
-
 # Rcpp::compileAttributes() load_all()
 
-################################################################################
-## UNIT TESTS START HERE; PRELIMINARIES ABOVE
-################################################################################
-
-# NOTE: mangolassi orders basis functions differently than hal. Thus, a first
+# NOTE: hal9001 orders basis functions differently than hal. Thus, a first
 # approximation to equivalence is having sets of columns with the same sums.
 compare_sums <- function(ab1, ab2) {
   sum1 <- sort(colSums(as.matrix(ab1)))
