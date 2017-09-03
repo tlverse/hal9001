@@ -4,21 +4,26 @@
 \alias{SL.hal9001}
 \title{Classic SuperLearner Wrapper for HAL9001}
 \usage{
-SL.hal9001(X, Y, degrees = NULL, newdata = NULL, ...)
+SL.hal9001(Y, X, newX = NULL, degrees = NULL, family = stats::gaussian(),
+  obsWeights = rep(1, length(Y)), ...)
 }
 \arguments{
+\item{Y}{A \code{numeric} of outcomes.}
+
 \item{X}{A \code{matrix} of predictors/covariates.}
 
-\item{Y}{A \code{numeric} of outcomes.}
+\item{newX}{A matrix of new observations on which to obtain predictions. The
+default of \code{NULL} computes predictions on training inputs \code{X}.}
 
 \item{degrees}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
-\item{newdata}{A matrix of new observations on which to obtain predictions.}
+\item{family}{Not used by the function directly, but ensures compatibility
+with \code{SuperLearner}.}
 
-\item{...}{Any other arguments to pass through to \code{hal9001::fit_hal},
-which are then passed directly to \code{glmnet::cv.glmnet} (for now).}
+\item{obsWeights}{Not used by the function directly, but meant to ensure
+compatibility with \code{SuperLearner}.}
 
 \item{...}{Prevents unexpected process death. DON'T USE. (This is a hack.)}
 }

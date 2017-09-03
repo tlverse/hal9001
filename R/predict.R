@@ -5,7 +5,8 @@
 #'
 #' @param object An object of class \code{hal9001}, containing the results of
 #' fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.
-#' @param newdata A \code{matrix} or \code{data.frame} containing new data
+#' @param ... Additional arguments passed to \code{predict} as necessary.
+#' @param newX A \code{matrix} or \code{data.frame} containing new data
 #' (observations NOT used in fitting the \code{hal9001} object passed in via the
 #' \code{object} argument above) for which the \code{hal9001} object will
 #' compute predicted values.
@@ -16,14 +17,14 @@
 #'
 #' @examples
 #'
-predict.hal9001 <- function(object, newdata) {
+predict.hal9001 <- function(object, ..., newX) {
   # cast new data to matrix if not so already
-  if (!is.matrix(newdata)) {
-    newdata <- as.matrix(newdata)
+  if (!is.matrix(newX)) {
+    newX <- as.matrix(newX)
   }
 
   # generate design matrix
-  pred_x_basis <- make_design_matrix(newdata, object$basis_list)
+  pred_x_basis <- make_design_matrix(newX, object$basis_list)
   group <- object$copy_map[[1]]
 
   # OR duplicate columns from original design matrix

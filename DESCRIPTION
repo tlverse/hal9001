@@ -30,6 +30,7 @@ Imports:
   utils,
   stringr,
   bit,
+  SuperLearner,
   hal
 Suggests:
   testthat,

@@ -4,13 +4,15 @@
 \alias{predict.hal9001}
 \title{Prediction from HAL fits}
 \usage{
-\method{predict}{hal9001}(object, newdata)
+\method{predict}{hal9001}(object, ..., newX)
 }
 \arguments{
 \item{object}{An object of class \code{hal9001}, containing the results of
 fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.}
 
-\item{newdata}{A \code{matrix} or \code{data.frame} containing new data
+\item{...}{Additional arguments passed to \code{predict} as necessary.}
+
+\item{newX}{A \code{matrix} or \code{data.frame} containing new data
 (observations NOT used in fitting the \code{hal9001} object passed in via the
 \code{object} argument above) for which the \code{hal9001} object will
 compute predicted values.}
