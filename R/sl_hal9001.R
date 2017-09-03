@@ -1,4 +1,4 @@
-#' Classic SuperLearner Wrapper for HAL9001
+#' Wrapper for Classic SuperLearner
 #'
 #' Wrapper for package \code{SuperLearner} for objects of class \code{hal9001}
 #'
@@ -27,7 +27,7 @@ SL.hal9001 <- function(Y,
                        obsWeights = rep(1, length(Y)),
                        ...) {
   # fit HAL
-  hal_out <- fit_hal(Y = Y, X = X, degrees = degrees)
+  hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, yolo = FALSE)
 
   # compute predictions based on `newX` or input `X`
   if(!is.null(newX)) {
@@ -42,6 +42,8 @@ SL.hal9001 <- function(Y,
   class(out$fit) <- "SL.hal9001"
   return(out)
 }
+
+################################################################################
 
 #' predict.SL.hal9001
 #'
