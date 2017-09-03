@@ -20,9 +20,9 @@ knitr::opts_chunk$set(
 __Authors:__ [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima
 Hejazi](http://nimahejazi.org)
 
-[![Travis-CI Build Status](https://travis-ci.org/jeremyrcoyle/mangolassi.svg?branch=master)](https://travis-ci.org/jeremyrcoyle/mangolassi)
-[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/mangolassi?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/mangolassi)
-[![Coverage Status](https://img.shields.io/codecov/c/github/jeremyrcoyle/mangolassi/master.svg)](https://codecov.io/github/jeremyrcoyle/mangolassi?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/jeremyrcoyle/hal9001.svg?branch=master)](https://travis-ci.org/jeremyrcoyle/hal9001)
+[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
+[![Coverage Status](https://img.shields.io/codecov/c/github/jeremyrcoyle/hal9001/master.svg)](https://codecov.io/github/jeremyrcoyle/hal9001?branch=master)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
@@ -65,11 +65,11 @@ install.packages("hal9001")
 ```
 -->
 
-You can install the development version of `mangolassi` from GitHub via
+You can install the development version of `hal9001` from GitHub via
 [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with
 
 ```{r gh-installation, eval = FALSE}
-devtools::install_github("jeremyrcoyle/mangolassi")
+devtools::install_github("jeremyrcoyle/hal9001")
 ```
 
 ---

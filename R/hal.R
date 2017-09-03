@@ -15,6 +15,8 @@
 #' @param degrees The highest order of interaction terms for which the basis
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
+#' @param yolo A \code{logical} indicating whether to print one of a curated
+#' selection of quotes from HAL 9000, from 2001: A Space Odyssey (1968).
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #' documentation for \code{glmnet} for a full list of options.
 #'
@@ -32,6 +34,7 @@
 fit_hal <- function(X,
                     Y,
                     degrees = NULL,
+                    yolo = TRUE,
                     ...) {
   # cast X to matrix -- and don't time this step
   if (!is.matrix(X)) {
@@ -40,6 +43,9 @@ fit_hal <- function(X,
 
   # bookkeeping: get start time of duplicate removal procedure
   time_start <- proc.time()
+
+  # fun: yolos from HAL 9000
+  if (yolo) hal9000()
 
   # make design matrix for HAL
   basis_list <- enumerate_basis(X, degrees)

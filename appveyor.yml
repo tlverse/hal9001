@@ -63,7 +63,7 @@ notifications:
      - jeremyrcoyle@gmail.com
      - nh@nimahejazi.org
    subject: 'r-appveyor build {{status}}'
-   message: "https://ci.appveyor.com/project/jeremyrcoyle/mangolassi"
+   message: "https://ci.appveyor.com/project/jeremyrcoyle/hal9001"
    on_build_success: false
    on_build_failure: true
    on_build_status_changed: true

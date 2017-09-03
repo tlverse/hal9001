@@ -1,12 +1,6 @@
 context("Unit test for the HAL estimation procedure.")
-library(testthat)
-library(data.table)
-library(hal)
 
-################################################################################
-## UNIT TESTS START HERE; PRELIMINARIES ABOVE
-################################################################################
-
+# simulate data
 x <- matrix(rnorm(1000 * 3), 1000, 3)
 y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(1000, 0, 0.2)
 
