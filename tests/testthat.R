@@ -1,7 +1,8 @@
 library(testthat)
+library(devtools)
 library(data.table)
 library(microbenchmark)
-library(devtools)
+library(SuperLearner)
 library(hal9001)
 library(hal)
 

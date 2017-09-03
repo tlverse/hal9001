@@ -2,7 +2,7 @@
 % Please edit documentation in R/sl_hal9001.R
 \name{SL.hal9001}
 \alias{SL.hal9001}
-\title{Classic SuperLearner Wrapper for HAL9001}
+\title{Wrapper for Classic SuperLearner}
 \usage{
 SL.hal9001(Y, X, newX = NULL, degrees = NULL, family = stats::gaussian(),
   obsWeights = rep(1, length(Y)), ...)

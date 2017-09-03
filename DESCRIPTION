@@ -1,7 +1,6 @@
 Package: hal9001
-Title: Implementation of the Highly Adaptive LASSO using a mix of C++ and R, via
-  Rcpp, to obtain efficiency gains in computation
-Version: 0.0.3.7
+Title: A fast, computationally efficient Highly Adaptive LASSO (HAL)
+Version: 0.0.4.0
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
     role = c("aut", "cre")),
@@ -11,13 +10,15 @@ Authors@R: c(
   person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com", role = "ctb"),
   person("Mark", "van der Laan", email = "laan@berkeley.edu", role = "cph")
   )
-Description: Routines for constructing sparse matrices and indicator functions,
-  as required in the formulation of the Highly Adaptive LASSO algorithm, using
-  C++, through the Rcpp framework, to enhance computational performance.
+Description: Routines for constructing sparse matrices of basis functions, as
+  well as a custom implementation of L1-regularized regression (i.e. the LASSO),
+  altogether providing a fast, computationally efficient implementation of the
+  Highly Adaptive LASSO (HAL), primarily in C++ but made available for use in R
+  through Rcpp.
 Depends: R (>= 3.1.0)
 License: GPL-3
-URL: https://github.com/jeremyrcoyle/mangolassi
-BugReports: https://github.com/jeremyrcoyle/mangolassi/issues
+URL: https://github.com/jeremyrcoyle/hal9001
+BugReports: https://github.com/jeremyrcoyle/hal9001/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
