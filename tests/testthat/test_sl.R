@@ -1,42 +1,53 @@
 context("Fits and prediction of classic Super Learner with HAL.")
 
-# simulate data
-p <- 5
-n <- 1000
-x <- as.data.frame(replicate(p, rnorm(n)))
-y <- rnorm(n, mean = mean(rowMeans(x)), sd = sd(sin(x[, p])))
+# easily compute MSE
+mse <- function(preds, y) {
+  mean((preds - y)^2)
+}
 
+# simulation constants
+set.seed(479512)
+tol <- 10e-4  # tolerance
+p <- 3  # dimensionality
+n <- 200  # observations
+
+# simulate data
+x <- as.data.frame(replicate(p, rnorm(n)))
+y <- sin(1 / x[, 2]) + cos(x[, 3]) + rnorm(n)
 test_x <- as.data.frame(replicate(p, rnorm(n)))
-test_y <- rnorm(n, mean = mean(rowMeans(x)), sd = sd(sin(x[, p - 1])))
+test_y <- sin(1 / test_x[, 2]) + cos(test_x[, 3]) + rnorm(n)
 
 # run HAL by itself
 hal <- fit_hal(X = x, Y = y, yolo = FALSE)
-pred_hal_train <- predict(hal, newX = x)  # returns a numeric vector
-pred_hal_test <- predict(hal, newX = test_x)  # returns a numeric vector
+pred_hal_train <- predict(hal, new_data = x)
+pred_hal_test <- predict(hal, new_data = test_x)
 
 # run SL-classic with glmnet and get predictions
 glmnet_sl <- SuperLearner(Y = y, X = x, SL.lib = "SL.glmnet")
-pred_glmnet_train <- predict(glmnet_sl, newX = x)  # returns a list
-pred_glmnet_test <- predict(glmnet_sl, newX = test_x)  # returns a list
+pred_glmnet_sl_train <- as.numeric(predict(glmnet_sl, newX = x)$pred)
+pred_glmnet_sl_test <- as.numeric(predict(glmnet_sl, newX = test_x)$pred)
 
 # run SL-classic with glmnet and get predictions
 hal_sl <- SuperLearner(Y = y, X = x, SL.lib = "SL.hal9001")
-pred_hal_sl_train <- predict(hal_sl, newX = x)  # returns a list
-pred_hal_sl_test <- predict(hal_sl, newX = test_x)  # returns a list
+pred_hal_sl_train <- as.numeric(predict(hal_sl, newX = x)$pred)
+pred_hal_sl_test <- as.numeric(predict(hal_sl, newX = test_x)$pred)
 
-# test via equivalence of outputs: HAL vs. SL-HAL
-expect_equal(pred_hal_train, as.numeric(pred_hal_sl_train$library.predict))
-expect_equal(pred_hal_test, as.numeric(pred_hal_sl_test$library.predict))
+# run an SL with HAL and some parametric learners
+sl <- SuperLearner(Y = y, X = x, SL.lib = c("SL.mean", "SL.glm", "SL.glmnet",
+                                            "SL.hal9001"))
+pred_sl_train <- as.numeric(predict(sl, newX = x)$pred)
+pred_sl_test <- as.numeric(predict(sl, newX = test_x)$pred)
 
-# test via equivalence of outputs: HAL vs. SL-glmnet
-expect_equal(pred_hal_train, as.numeric(pred_glmnet_train$library.predict))
-expect_equal(pred_hal_test, as.numeric(pred_glmnet_test$library.predict))
+# test for HAL vs. SL-HAL: outputs are the same length
+expect_equal(length(pred_hal_train), length(pred_hal_sl_train))
+expect_equal(length(pred_hal_test), length(pred_hal_sl_test))
 
-# test via equivalence of outputs: SL-HAL vs. SL-glmnet
-expect_equal(as.numeric(pred_hal_sl_train$library.predict),
-             as.numeric(pred_glmnet_train$library.predict)
-            )
-expect_equal(as.numeric(pred_hal_sl_test$library.predict),
-             as.numeric(pred_glmnet_test$library.predict)
-            )
+# test for MSE: SL-HAL < HAL < SL-glmnet in test data
+expect_true(mse(pred_hal_sl_train, test_y) < mse(pred_hal_train, test_y))
+expect_true(abs(mse(pred_hal_train, test_y) - mse(pred_glmnet_sl_train, test_y))
+            < tol)
+expect_true(mse(pred_hal_sl_train, test_y) < mse(pred_glmnet_sl_train, test_y))
+
+# test of SL-HAL risk: HAL has lowest CV-risk in the learner library
+expect_equivalent(names(which.min(sl$cvRisk)), "SL.hal9001_All")
 

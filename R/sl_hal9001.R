@@ -31,9 +31,9 @@ SL.hal9001 <- function(Y,
 
   # compute predictions based on `newX` or input `X`
   if(!is.null(newX)) {
-    pred <- stats::predict(object = hal_out, newX = newX)
+    pred <- stats::predict(object = hal_out, new_data = newX)
   } else {
-    pred <- stats::predict(object = hal_out, newX = X)
+    pred <- stats::predict(object = hal_out, new_data = X)
   }
 
   # build output object
@@ -59,7 +59,7 @@ SL.hal9001 <- function(Y,
 #'
 predict.SL.hal9001 <- function(object, newX, ...) {
   # generate predictions and return
-  pred <- stats::predict(object$object, newX = newX)
+  pred <- stats::predict(object$object, new_data = newX)
   return(pred)
 }
 
