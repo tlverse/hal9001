@@ -42,11 +42,14 @@ pred_sl_test <- as.numeric(predict(sl, newX = test_x)$pred)
 expect_equal(length(pred_hal_train), length(pred_hal_sl_train))
 expect_equal(length(pred_hal_test), length(pred_hal_sl_test))
 
-# test for MSE: SL-HAL < HAL < SL-glmnet in test data
-expect_true(mse(pred_hal_sl_train, test_y) < mse(pred_hal_train, test_y))
-expect_true(abs(mse(pred_hal_train, test_y) - mse(pred_glmnet_sl_train, test_y))
-            < tol)
-expect_true(mse(pred_hal_sl_train, test_y) < mse(pred_glmnet_sl_train, test_y))
+# test for MSE: HAL < SL-HAL when SL library is only HAL
+# (intuition: this is equivalent to just training HAL on less data)
+expect_true(mse(pred_hal_train, y) < mse(pred_hal_sl_train, y))
+expect_true(mse(pred_hal_test, test_y) < mse(pred_hal_sl_test, test_y))
+
+# test for MSE: SL-HAL < SL-glmnet in training and test data
+expect_true(mse(pred_hal_sl_train, y) < mse(pred_glmnet_sl_train, y))
+expect_true(mse(pred_hal_sl_test, test_y) < mse(pred_glmnet_sl_test, test_y))
 
 # test of SL-HAL risk: HAL has lowest CV-risk in the learner library
 expect_equivalent(names(which.min(sl$cvRisk)), "SL.hal9001_All")
