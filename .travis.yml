@@ -25,6 +25,11 @@ r_github_packages:
 after_success:
   - Rscript -e 'covr::codecov()'
 
+script:
+  - |
+    R CMD build .
+    travis_wait 40 R CMD check hal9001*tar.gz
+
 notifications:
   email:
     on_success: change

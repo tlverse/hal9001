@@ -37,15 +37,15 @@ fit_hal <- function(X,
                     yolo = TRUE,
                     ...) {
   # cast X to matrix -- and don't time this step
-  if (class(X) != "matrix") {
+  if (!is.matrix(X)) {
     X <- as.matrix(X)
   }
 
+  # fun: quotes from HAL 9000
+  if (yolo) hal9000()
+
   # bookkeeping: get start time of duplicate removal procedure
   time_start <- proc.time()
-
-  # fun: yolos from HAL 9000
-  if (yolo) hal9000()
 
   # make design matrix for HAL
   basis_list <- enumerate_basis(X, degrees)

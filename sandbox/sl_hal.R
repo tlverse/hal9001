@@ -1,11 +1,11 @@
 rm(list = ls())
 
 library(devtools)
-install_github("benkeser/halplus")
-install_github("nhejazi/mangolassi")
+#install_github("benkeser/halplus")
+#install_github("nhejazi/lassi")
 
 library(hal)
-library(mangolassi)
+library(hal9001)
 library(SuperLearner)
 
 set.seed(56393)
@@ -30,18 +30,19 @@ SL.hal9001 <- function(X,
   hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, ...)
 
   if(!is.null(newdata)) {
-    pred <- stats::predict(object = hal_out, newdata = newdata)
+    pred <- predict.hal9001(object = hal_out, newdata = newdata)
   } else {
-    pred <- stats::predict(object = hal_out, newdata = X)
+    pred <- predict.hal9001(object = hal_out, newdata = X)
   }
   out <- list(object = hal_out, pred = pred)
   class(out) <- "SL.hal9001"
   return(out)
 }
+
 predict.SL.hal9001 <- function(object, ..., newdata) {
-  pred <- stats::predict(object$object,
-                         ...,
-                         newdata = newdata)
+  pred <- predict.hal9001(object$object,
+                          ...,
+                          newdata = newdata)
   return(pred)
 }
 
