@@ -1,5 +1,5 @@
 library(hal)
-library(mangolassi)
+library(hal90001)
 library(testthat)
 library(data.table)
 context("Full hal test")

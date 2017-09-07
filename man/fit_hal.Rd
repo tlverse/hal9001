@@ -20,6 +20,8 @@ generating basis functions for the full dimensionality of the input matrix.}
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from HAL 9000, from 2001: A Space Odyssey (1968).}
 
+\item{useMin}{Determines which lambda is selected from \code{cv.glmnet}. True means \code{"lambda.min"} is used, otherwise \code{"lambda.1se"}}
+
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}
 }
