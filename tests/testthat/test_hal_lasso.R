@@ -20,8 +20,8 @@ ml_hal_fit <- fit_hal(x, y)
 ml_hal_fit$times
 
 #regenerate design matrix
-x_basis <- mangolassi:::make_design_matrix(x,ml_hal_fit$basis_list)
-copy_map <- mangolassi:::make_copy_map(x_basis)
+x_basis <- hal9001:::make_design_matrix(x,ml_hal_fit$basis_list)
+copy_map <- hal9001:::make_copy_map(x_basis)
 unique_columns <- as.numeric(names(copy_map))
 x_basis <- x_basis[, unique_columns]
 
