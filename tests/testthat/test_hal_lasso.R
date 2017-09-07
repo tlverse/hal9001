@@ -1,5 +1,5 @@
 library(hal)
-library(hal90001)
+library(hal9001)
 library(testthat)
 library(data.table)
 context("Full hal test")
