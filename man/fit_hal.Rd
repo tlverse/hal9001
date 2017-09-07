@@ -4,7 +4,7 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive LASSO estimator}
 \usage{
-fit_hal(X, Y, degrees = NULL, yolo = TRUE, ...)
+fit_hal(X, Y, degrees = NULL, yolo = TRUE, useMin = TRUE, ...)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates

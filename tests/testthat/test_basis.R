@@ -2,19 +2,17 @@ context("Unit test for procedures relating to basis functions.")
 
 # Rcpp::compileAttributes() load_all()
 
-# NOTE: hal9001 orders basis functions differently than hal. Thus, a first
-# approximation to equivalence is having sets of columns with the same sums.
-compare_sums <- function(ab1, ab2) {
-  sum1 <- sort(colSums(as.matrix(ab1)))
-  sum2 <- sort(colSums(as.matrix(ab2)))
-  all.equal(sum1, sum2)
+compare_basis <- function(ab1, ab2) {
+  basis_str1 <- apply(ab1,2,paste,collapse="")
+  basis_str2 <- apply(ab1,2,paste,collapse="")
+  all(basis_str1%in%basis_str2)&&all(basis_str2%in%basis_str1)
 }
 
 basis_test <- function(x) {
   basis_list <- enumerate_basis(x)
   x_basis <- make_design_matrix(x, basis_list)
   x_basis_hal <- hal:::makeSparseMat(x)
-  expect_true(compare_sums(x_basis, x_basis_hal))
+  expect_true(compare_basis(x_basis, x_basis_hal))
 }
 
 basis_timing <- function(x) {

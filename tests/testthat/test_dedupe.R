@@ -31,5 +31,15 @@ microbenchmark({
   os_find_dupes(x_basis)
 }, times = 1)
 
+
+compare_basis <- function(ab1, ab2) {
+  basis_str1 <- apply(ab1,2,paste,collapse="")
+  basis_str2 <- apply(ab1,2,paste,collapse="")
+  all(basis_str1%in%basis_str2)&&all(basis_str2%in%basis_str1)
+}
+
+unique_columns <- as.numeric(names(copy_map))
+x_basis_uniq <- x_basis[, unique_columns]
+expect_true(compare_basis(x_basis,x_basis_uniq))
 # TODO: add test for or_duplicate_columns
 

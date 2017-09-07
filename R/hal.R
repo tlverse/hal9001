@@ -35,6 +35,7 @@ fit_hal <- function(X,
                     Y,
                     degrees = NULL,
                     yolo = TRUE,
+                    useMin = TRUE,
                     ...) {
   # cast X to matrix -- and don't time this step
   if (!is.matrix(X)) {
@@ -65,7 +66,13 @@ fit_hal <- function(X,
   hal_lasso <- glmnet::cv.glmnet(x = x_basis,
                                  y = Y,
                                  ...)
-  coefs <- stats::coef(hal_lasso)
+  if(useMin){
+    s <- "lambda.min"
+  } else{
+    s <- "lambda.1se"
+  }
+
+  coefs <- stats::coef(hal_lasso, s)
 
   # bookkeeping: get time for computation of the LASSO regression
   time_lasso <- proc.time()
