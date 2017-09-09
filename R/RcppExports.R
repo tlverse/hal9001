@@ -46,8 +46,20 @@ lassi_predict <- function(X, beta) {
     .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta)
 }
 
-update_coord <- function(X, resids, beta, lambda, j) {
-    invisible(.Call('_hal9001_update_coord', PACKAGE = 'hal9001', X, resids, beta, lambda, j))
+get_new_beta <- function(X, resids, beta_j, j, xscale_j) {
+    .Call('_hal9001_get_new_beta', PACKAGE = 'hal9001', X, resids, beta_j, j, xscale_j)
+}
+
+find_lambda_max <- function(X, y, xscale) {
+    .Call('_hal9001_find_lambda_max', PACKAGE = 'hal9001', X, y, xscale)
+}
+
+equal_double <- function(x, y) {
+    .Call('_hal9001_equal_double', PACKAGE = 'hal9001', x, y)
+}
+
+update_coord <- function(X, resids, beta, lambda, j, xscale) {
+    invisible(.Call('_hal9001_update_coord', PACKAGE = 'hal9001', X, resids, beta, lambda, j, xscale))
 }
 
 #' Fit a LASSO Regression Model
@@ -56,12 +68,17 @@ update_coord <- function(X, resids, beta, lambda, j) {
 #'
 #' @param X Sparse matrix containing columns of indicator functions.
 #' @param y Numeric containing observations of an outcome variable of interest.
+#' @param beta Numeric vector of initial beta estiamtes
 #' @param lambda Numeric corresponding to the LASSO regularization parameter.
 #' @param nsteps Maximum number of steps to take until stopping computation of
 #' the regression coefficient.
 #'
-lassi_fit_cd <- function(X, y, lambda, nsteps) {
-    .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, y, lambda, nsteps)
+lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale) {
+    invisible(.Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale))
+}
+
+non_zeros <- function(X) {
+    .Call('_hal9001_non_zeros', PACKAGE = 'hal9001', X)
 }
 
 #' Sort Basis Functions

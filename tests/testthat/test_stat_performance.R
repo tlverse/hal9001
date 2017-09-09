@@ -1,5 +1,5 @@
 library(hal9001)
-
+library(hal)
 #########################################
 # generate training and test data
 # adapted from https://github.com/jeremyrcoyle/hal9001/issues/9
@@ -34,8 +34,8 @@ covars <- setdiff(names(data),"Y")
 X <- data[, covars, drop = F]
 Y <- data$Y
 testdata <- gendata(10000, g0=g0_linear,Q0=Q0_trig1)
-testY <- testdata$Y
-testX <- testdata[, covars, drop = F]
+testY <- Y#testdata$Y
+testX <- X#testdata[, covars, drop = F]
 
 
 #########################################
@@ -50,7 +50,7 @@ length(halres$dupInds)
 
 # how many basis functions did we generate?
 nbasis <- length(coef(halres$object)) 
-
+coefs <- coef(halres$object, "lambda.min")
 #########################################
 # hal9001 with default arguments
 # fold_id <- sample(1:10,length(Y),replace=T)
@@ -79,15 +79,16 @@ nbasis9001 <- ncol(x_basis)
 
 set.seed(1234) #attempt to control randomness in cv.glmnet fold generation
 #try to match hal param
+library(glmnet)
 hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y, nlambda=100, lambda.min.ratio=0.001, nfolds=10, family="gaussian", alpha=1)
 
 #prediction
 new_data <- as.matrix(testX)
-pred_x_basis <- make_design_matrix(new_data, basis_list)
+pred_x_basis <- hal9001:::make_design_matrix(new_data, basis_list)
 
 for (group in copy_map) {
   if (length(group) > 1) {
-    or_duplicate_columns(pred_x_basis, group)
+    hal9001:::or_duplicate_columns(pred_x_basis, group)
   }
 }
 # subset unique columns
@@ -97,5 +98,5 @@ pred_x_basis_uniq <- pred_x_basis[, unique_columns]
 # still doesn't quite match
 match_pred <- predict(hal_lasso, pred_x_basis_uniq, "lambda.min")
 mean((match_pred-testY)^2)
-
+plot(pred,match_pred)
 
