@@ -82,7 +82,7 @@ bool meets_basis(const NumericMatrix& X, const int row_num,
 
   for (int i = 0; i<p; i++) {
     double obs = X(row_num,cols[i] - 1); // using 1-indexing for basis columns
-    if(!(obs >= cutoffs[i])) {
+    if(!(obs > cutoffs[i])) {
       return(false);
     }
   }
@@ -131,7 +131,7 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
 //' @param blist List of basis functions with which to build HAL design matrix.
 //'
 // [[Rcpp::export]]
-SpMat make_design_matrix(NumericMatrix X, List blist) {
+SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
   //now generate an indicator vector for each
   int n = X.rows();
   int basis_p = blist.size();
