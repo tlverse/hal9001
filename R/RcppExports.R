@@ -35,6 +35,15 @@ or_duplicate_columns <- function(X, cols) {
     invisible(.Call('_hal9001_or_duplicate_columns', PACKAGE = 'hal9001', X, cols))
 }
 
+#' Soft thresholding for LASSO fits
+#'
+#' The soft thresholding algorithm given by Hastie et al. (2009)
+#'
+#' @param beta Numeric of the regression coefficients of a linear model.
+#' @param lambda Numeric of the regularization constant for the L1 penalty.
+#'
+NULL
+
 #' LASSO Prediction
 #'
 #' Compute predictions based on a LASSO regression
@@ -46,10 +55,24 @@ lassi_predict <- function(X, beta) {
     .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta)
 }
 
-get_new_beta <- function(X, resids, beta_j, j, xscale_j) {
-    .Call('_hal9001_get_new_beta', PACKAGE = 'hal9001', X, resids, beta_j, j, xscale_j)
+#' Compute updated LASSO coefficients
+#'
+#' @param X ...
+#' @param resids ...
+#' @param j ...
+#' @param beta_j ...
+#' @param xscale_j ...
+#'
+get_new_beta <- function(X, resids, j, beta_j, xscale_j) {
+    .Call('_hal9001_get_new_beta', PACKAGE = 'hal9001', X, resids, j, beta_j, xscale_j)
 }
 
+#' Find maximum L1 regularization constant
+#'
+#' @param X ...
+#' @param y ...
+#' @param xscale ...
+#'
 find_lambda_max <- function(X, y, xscale) {
     .Call('_hal9001_find_lambda_max', PACKAGE = 'hal9001', X, y, xscale)
 }
@@ -67,11 +90,12 @@ update_coord <- function(X, resids, beta, lambda, j, xscale) {
 #' Fit a linear regression model with L1 penalization, the LASSO
 #'
 #' @param X Sparse matrix containing columns of indicator functions.
-#' @param y Numeric containing observations of an outcome variable of interest.
+#' @param resids Numeric of the residuals from a given fit of the LASSO model.
 #' @param beta Numeric vector of initial beta estiamtes
 #' @param lambda Numeric corresponding to the LASSO regularization parameter.
 #' @param nsteps Maximum number of steps to take until stopping computation of
 #' the regression coefficient.
+#' @param xscale ...
 #'
 lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale) {
     invisible(.Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale))

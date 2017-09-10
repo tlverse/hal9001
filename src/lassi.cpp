@@ -31,10 +31,17 @@ NumericVector lassi_predict(const MSpMat X, const NumericVector beta) {
 
 //------------------------------------------------------------------------------
 
+//' Soft thresholding for LASSO fits
+//'
+//' The soft thresholding algorithm given by Hastie et al. (2009)
+//'
+//' @param beta Numeric of the regression coefficients of a linear model.
+//' @param lambda Numeric of the regularization constant for the L1 penalty.
+//'
 double soft_threshold(double beta, double lambda) {
-  if (beta>lambda) {
+  if (beta > lambda) {
     beta -= lambda;
-  } else if (beta< -1*lambda) {
+  } else if (beta < -1 * lambda) {
     beta += lambda;
   } else {
     beta = 0;
@@ -52,46 +59,65 @@ double soft_threshold(double beta, double lambda) {
 // Note that in this case scaling of the variables will not alter the sparsity,
 // but centering will. So scaling is performed up front, but the centering is
 // incorporated in the algorithm in an efficient and obvious manner.
-
 // get beta update
+
+//' Compute updated LASSO coefficients
+//'
+//' @param X ...
+//' @param resids ...
+//' @param j ...
+//' @param beta_j ...
+//' @param xscale_j ...
+//'
 // [[Rcpp::export]]
-double get_new_beta(const MSpMat& X, const NumericVector& resids, double beta_j, int j, double xscale_j) {
-  
+double get_new_beta(const MSpMat& X, const NumericVector& resids, int j,
+                    double beta_j, double xscale_j) {
+
   int n = resids.length();
   double new_beta = 0;
   double resid_sum = 0;
-  
+
   for (MInIterMat i_(X, j); i_; ++i_) {
     // Rcout << i_.index() << " " << resids[i_.index()] << " " << resid_sum << std::endl;
     resid_sum += resids[i_.index()];
-    
   }
-  
-  new_beta = resid_sum/ n + xscale_j * beta_j;
-  
+
+  new_beta = resid_sum / n + xscale_j * beta_j;
   return(new_beta);
 }
 
+//------------------------------------------------------------------------------
+
+//' Find maximum L1 regularization constant
+//'
+//' @param X ...
+//' @param y ...
+//' @param xscale ...
+//'
 // [[Rcpp::export]]
-double find_lambda_max(const MSpMat& X, const NumericVector& y, const NumericVector& xscale){
-  
+double find_lambda_max(const MSpMat& X, const NumericVector& y,
+                       const NumericVector& xscale){
+
   int k;
   double lambda_max = 0;
   double new_beta;
   for (k = 0; k < X.outerSize(); ++k) {
     new_beta = get_new_beta(X, y, 0, k, xscale[k]);
-    if(new_beta > lambda_max){
+    if (new_beta > lambda_max) {
       lambda_max = new_beta;
     }
   }
-  
   return(lambda_max);
 }
 
+//------------------------------------------------------------------------------
+
 // [[Rcpp::export]]
 bool equal_double(double x, double y){
-  return(std::abs(x-y)<1e-16);
+  return(std::abs(x - y) < 1e-16);
 }
+
+//------------------------------------------------------------------------------
 
 // [[Rcpp::export]]
 void update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
@@ -116,6 +142,8 @@ void update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
   }
 }
 
+//------------------------------------------------------------------------------
+
 void update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
                    double lambda, const NumericVector& xscale) {
   // update coordinates one-by-one
@@ -132,15 +160,16 @@ void update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
 //' Fit a linear regression model with L1 penalization, the LASSO
 //'
 //' @param X Sparse matrix containing columns of indicator functions.
-//' @param y Numeric containing observations of an outcome variable of interest.
+//' @param resids Numeric of the residuals from a given fit of the LASSO model.
 //' @param beta Numeric vector of initial beta estiamtes
 //' @param lambda Numeric corresponding to the LASSO regularization parameter.
 //' @param nsteps Maximum number of steps to take until stopping computation of
 //' the regression coefficient.
+//' @param xscale ...
 //'
 // [[Rcpp::export]]
-void lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta, double lambda, 
-                           int nsteps, const NumericVector& xscale) {
+void lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
+                  double lambda, int nsteps, const NumericVector& xscale) {
   // int p = X.cols();
   // NumericVector beta(p, 0.0);
   // NumericVector resids = y - lassi_predict(X, beta);
@@ -163,21 +192,24 @@ void lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta, d
       break;
     }
   }
-  
 }
 
-NumericVector lassi_fit_path(const MSpMat& X, const NumericVector& y, NumericVector& beta, NumericVector& lambdas, 
-                           int nsteps) {
-  
+//------------------------------------------------------------------------------
+
+NumericVector lassi_fit_path(const MSpMat& X, const NumericVector& y,
+                             NumericVector& beta, NumericVector& lambdas,
+                             int nsteps) {
   return(beta);
 }
 
+//------------------------------------------------------------------------------
+
 // [[Rcpp::export]]
-IntegerVector non_zeros(const MSpMat& X){
+IntegerVector non_zeros(const MSpMat& X) {
   int p=X.cols();
   int j;
   int nz;
-  
+
   IntegerVector non_zeros(p);
 
   for (j = 0; j < p; ++j) {
@@ -185,8 +217,8 @@ IntegerVector non_zeros(const MSpMat& X){
     for (MInIterMat i_(X, j); i_; ++i_) {
       nz++;
     }
-    
-    non_zeros[j]=nz;
+
+    non_zeros[j] = nz;
   }
   return(non_zeros);
 }

@@ -55,17 +55,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_new_beta
-double get_new_beta(const MSpMat& X, const NumericVector& resids, double beta_j, int j, double xscale_j);
-RcppExport SEXP _hal9001_get_new_beta(SEXP XSEXP, SEXP residsSEXP, SEXP beta_jSEXP, SEXP jSEXP, SEXP xscale_jSEXP) {
+double get_new_beta(const MSpMat& X, const NumericVector& resids, int j, double beta_j, double xscale_j);
+RcppExport SEXP _hal9001_get_new_beta(SEXP XSEXP, SEXP residsSEXP, SEXP jSEXP, SEXP beta_jSEXP, SEXP xscale_jSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type resids(residsSEXP);
-    Rcpp::traits::input_parameter< double >::type beta_j(beta_jSEXP);
     Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< double >::type beta_j(beta_jSEXP);
     Rcpp::traits::input_parameter< double >::type xscale_j(xscale_jSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_new_beta(X, resids, beta_j, j, xscale_j));
+    rcpp_result_gen = Rcpp::wrap(get_new_beta(X, resids, j, beta_j, xscale_j));
     return rcpp_result_gen;
 END_RCPP
 }
