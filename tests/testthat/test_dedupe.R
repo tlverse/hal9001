@@ -15,20 +15,20 @@ n_copies <- sapply(copy_map, length)
 copy_map <- copy_map[n_copies > 1]
 
 # sort Oleg's copy map by the first elements
-os_copy_map <- os_find_dupes(x_basis)
-perm_vec <- order(sapply(os_copy_map, `[[`, 1))
-os_copy_map <- os_copy_map[perm_vec]
+#os_copy_map <- os_find_dupes(x_basis)
+#perm_vec <- order(sapply(os_copy_map, `[[`, 1))
+#os_copy_map <- os_copy_map[perm_vec]
 
 # verify equivalence
-expect_equivalent(copy_map, os_copy_map)
+#expect_equivalent(copy_map, os_copy_map)
 
 # benchmark
 microbenchmark({
   copy_indices <- index_first_copy(x_basis)
 }, {
   make_copy_map(x_basis)
-}, {
-  os_find_dupes(x_basis)
+#}, {
+#  os_find_dupes(x_basis)
 }, times = 1)
 
 

@@ -1,7 +1,3 @@
-library(hal)
-library(hal9001)
-library(testthat)
-library(data.table)
 context("Full hal test")
 
 x <- matrix(rnorm(1000 * 3), 1000, 3)
@@ -32,3 +28,4 @@ microbenchmark({glmnet::cv.glmnet(x_basis,y)},
                                   nfolds = 10, family = "gaussian", alpha = 1, 
                                   nlambda = 100, parallel = FALSE)
           }, times=2)
+

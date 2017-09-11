@@ -89,7 +89,10 @@ os_find_dupes <- function(X_init) {
 
   # add logical column for duplicates, following first non-duplicate element
   datDT[, `:=`(duplicates, duplicated(datDT, by = "bit_to_int_to_str"))]
-  # just get the column IDs and duplicate indicators: datDT[, .(ID, duplicates)]
+
+  # just get the column IDs and duplicate indicators:
+  datDT[, .(ID, duplicates)]
+  dupInds <- datDT[, ID][which(datDT[, duplicates])]
 
   # NEW FASTER APPROACH TO FIND DUPLICATE IDs # get the number of duplicates in
   # each group if its 1 the column is # unique and we are note interested:
