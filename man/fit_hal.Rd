@@ -40,6 +40,3 @@ interactions of covariates) and remove duplicate columns of indicators. The
 actual LASSO regression that follows is computed via \code{cv.glmnet},
 though plans are in place to re-implement this in Rcpp/C++ as well.
 }
-\examples{
-
-}

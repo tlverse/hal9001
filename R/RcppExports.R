@@ -12,27 +12,13 @@ index_first_copy <- function(X) {
     .Call('_hal9001_index_first_copy', PACKAGE = 'hal9001', X)
 }
 
-#' Compute Column Ranks
-#'
-#' \code{TRUE} iff col_1 is strictly less than col_2 in the ordering scheme
-#'
+#' Apply copy map
+#' 
+#' OR duplicate training set columns together
 #' @param X Sparse matrix containing columns of indicator functions.
-#' @param col_1 The index of a first column to be compared.
-#' @param col_2 The index of a second column to be compared.
-#'
-column_compare <- function(X, col_1, col_2) {
-    .Call('_hal9001_column_compare', PACKAGE = 'hal9001', X, col_1, col_2)
-}
-
-#' Reorder Columns of X
-#'
-#' ORs the columns of X listed in cols and places the result in column col[1]
-#'
-#' @param X Sparse matrix containing columns of indicator functions.
-#' @param cols Integer indicating the column index.
-#'
-or_duplicate_columns <- function(X, cols) {
-    invisible(.Call('_hal9001_or_duplicate_columns', PACKAGE = 'hal9001', X, cols))
+#' @param copy_map the copy map
+apply_copy_map <- function(X, copy_map) {
+    .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
 
 #' Soft thresholding for LASSO fits
@@ -82,7 +68,7 @@ equal_double <- function(x, y) {
 }
 
 update_coord <- function(X, resids, beta, lambda, j, xscale) {
-    invisible(.Call('_hal9001_update_coord', PACKAGE = 'hal9001', X, resids, beta, lambda, j, xscale))
+    .Call('_hal9001_update_coord', PACKAGE = 'hal9001', X, resids, beta, lambda, j, xscale)
 }
 
 #' Fit a LASSO Regression Model
@@ -95,14 +81,22 @@ update_coord <- function(X, resids, beta, lambda, j, xscale) {
 #' @param lambda Numeric corresponding to the LASSO regularization parameter.
 #' @param nsteps Maximum number of steps to take until stopping computation of
 #' the regression coefficient.
-#' @param xscale ...
-#'
-lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale) {
-    invisible(.Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale))
+#' @param xscale scale factor for covariates. See get_xscale
+#' @param active_set, update only nonzero coefficients (TRUE), or all coefficients (FALSE)
+lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale, active_set) {
+    .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale, active_set)
 }
 
 non_zeros <- function(X) {
     .Call('_hal9001_non_zeros', PACKAGE = 'hal9001', X)
+}
+
+get_pnz <- function(X) {
+    .Call('_hal9001_get_pnz', PACKAGE = 'hal9001', X)
+}
+
+get_xscale <- function(X) {
+    .Call('_hal9001_get_xscale', PACKAGE = 'hal9001', X)
 }
 
 #' Sort Basis Functions

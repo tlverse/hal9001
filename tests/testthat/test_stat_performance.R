@@ -85,15 +85,7 @@ hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y, nlambda=100, lambda.min.ratio
 #prediction
 new_data <- as.matrix(testX)
 pred_x_basis <- hal9001:::make_design_matrix(new_data, basis_list)
-
-for (group in copy_map) {
-  if (length(group) > 1) {
-    hal9001:::or_duplicate_columns(pred_x_basis, group)
-  }
-}
-# subset unique columns
-unique_columns <- as.numeric(names(copy_map))
-pred_x_basis_uniq <- pred_x_basis[, unique_columns]
+pred_x_basis_uniq <- apply_copy_map(pred_x_basis, copy_map)
 
 # still doesn't quite match
 match_pred <- predict(hal_lasso, pred_x_basis_uniq, "lambda.min")

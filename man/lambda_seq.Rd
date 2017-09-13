@@ -6,6 +6,13 @@
 \usage{
 lambda_seq(lambda_max, lambda_min_ratio = 0.01, nlambda = 100)
 }
+\arguments{
+\item{lambda_max}{the highest lambda value, ideally from get_lambda_max}
+
+\item{lambda_min_ratio}{the ratio of the largest to smallest lambda values lambda_min=lambda_max*lambda_min_ration}
+
+\item{nlambda}{total number of lambdas}
+}
 \description{
 generate sequence of lambdas
 }

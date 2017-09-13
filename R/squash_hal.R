@@ -11,8 +11,6 @@
 #' reduced such that coefficients belonging to bases with coefficients equal to
 #' zero removed.
 #'
-#' @examples
-#'
 squash_hal_fit <- function(object) {
   stopifnot(class(object) == "hal9001")
 

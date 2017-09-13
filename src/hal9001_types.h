@@ -1,10 +1,11 @@
 // [[Rcpp::depends(RcppEigen)]]
 #include <RcppEigen.h>
 using namespace Rcpp;
-typedef Eigen::MappedSparseMatrix<double> MSpMat;
-typedef MSpMat::InnerIterator MInIterMat;
 typedef Eigen::SparseMatrix<double> SpMat;
 typedef Eigen::SparseMatrix<int> IntSpMat;
+typedef Eigen::Map<SpMat> MSpMat;
+typedef MSpMat::InnerIterator MInIterMat;
+
 typedef SpMat::InnerIterator InIterMat;
 typedef SpMat::InnerVectorReturnType InVec;
 typedef Eigen::SparseVector<double> SpVec;

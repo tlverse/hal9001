@@ -37,48 +37,35 @@ IntegerVector index_first_copy(const MSpMat& X) {
 
 //------------------------------------------------------------------------------
 
-//' Compute Column Ranks
-//'
-//' \code{TRUE} iff col_1 is strictly less than col_2 in the ordering scheme
-//'
+//' Apply copy map
+//' 
+//' OR duplicate training set columns together
 //' @param X Sparse matrix containing columns of indicator functions.
-//' @param col_1 The index of a first column to be compared.
-//' @param col_2 The index of a second column to be compared.
-//'
+//' @param copy_map the copy map
 // [[Rcpp::export]]
-bool column_compare(const MSpMat& X, int col_1, int col_2) {
-  ColMap cmap;
-  MSpMatCol X_1(X, col_1);
-  MSpMatCol X_2(X, col_2);
-  return(cmap.key_comp()(X_1, X_2));
-}
-
-//------------------------------------------------------------------------------
-
-//' Reorder Columns of X
-//'
-//' ORs the columns of X listed in cols and places the result in column col[1]
-//'
-//' @param X Sparse matrix containing columns of indicator functions.
-//' @param cols Integer indicating the column index.
-//'
-// [[Rcpp::export]]
-void or_duplicate_columns(MSpMat& X, const IntegerVector& cols) {
-  int first = cols[0] - 1;  //cols is 1-indexed
-  int p_cols = cols.length();
+SpMat apply_copy_map(const MSpMat& X, const List& copy_map){
   int n = X.rows();
-  for (int i = 0; i < n; i++) {
-    if (X.coeffRef(i, first) == 1) {
-      continue;  //this is already 1
-    }
-    //search remaining columns for 1, inserting into first if found
-    for (int j = 1; j < p_cols; j++) {
-      int j_col = cols[j] - 1;  //cols is 1-indexed
-      if (X.coeffRef(i, j_col) == 1) {
-        X.coeffRef(i, j_col) = 1;
-        break;
+  int basis_p = copy_map.size();
+  
+  SpMat x_unique(n, basis_p);
+  x_unique.reserve(0.5 * n * basis_p);
+  
+  for(int j=0; j<basis_p; ++j){
+    IntegerVector copy_group=copy_map[j];
+
+    int p_cols = copy_group.size();
+    for (int i = 0; i < n; i++) {
+      
+      for (int j_original = 0; j_original < p_cols; j_original++) {
+        int col = copy_group[j_original] - 1;  //cols is 1-indexed
+        if (X.coeff(i, col) == 1) {
+          x_unique.insert(i, j) = 1;
+          break;
+        }
       }
     }
   }
+  
+  x_unique.makeCompressed();
+  return(x_unique);
 }
-

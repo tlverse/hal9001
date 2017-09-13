@@ -4,7 +4,7 @@
 \alias{lassi_fit_cd}
 \title{Fit a LASSO Regression Model}
 \usage{
-lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale)
+lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale, active_set)
 }
 \arguments{
 \item{X}{Sparse matrix containing columns of indicator functions.}
@@ -18,7 +18,9 @@ lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale)
 \item{nsteps}{Maximum number of steps to take until stopping computation of
 the regression coefficient.}
 
-\item{xscale}{...}
+\item{xscale}{scale factor for covariates. See get_xscale}
+
+\item{active_set, }{update only nonzero coefficients (TRUE), or all coefficients (FALSE)}
 }
 \description{
 Fit a linear regression model with L1 penalization, the LASSO

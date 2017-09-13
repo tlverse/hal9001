@@ -18,6 +18,3 @@ zero removed.
 \description{
 Reduce footprint by dropping basis functions with coefficients of zero
 }
-\examples{
-
-}

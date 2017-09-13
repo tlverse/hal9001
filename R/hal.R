@@ -30,8 +30,6 @@
 #'
 #' @export
 #'
-#' @examples
-#'
 fit_hal <- function(X,
                     Y,
                     degrees = NULL,
