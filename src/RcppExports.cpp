@@ -18,67 +18,133 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// column_compare
-bool column_compare(const MSpMat& X, int col_1, int col_2);
-RcppExport SEXP _hal9001_column_compare(SEXP XSEXP, SEXP col_1SEXP, SEXP col_2SEXP) {
+// apply_copy_map
+SpMat apply_copy_map(const MSpMat& X, const List& copy_map);
+RcppExport SEXP _hal9001_apply_copy_map(SEXP XSEXP, SEXP copy_mapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< int >::type col_1(col_1SEXP);
-    Rcpp::traits::input_parameter< int >::type col_2(col_2SEXP);
-    rcpp_result_gen = Rcpp::wrap(column_compare(X, col_1, col_2));
+    Rcpp::traits::input_parameter< const List& >::type copy_map(copy_mapSEXP);
+    rcpp_result_gen = Rcpp::wrap(apply_copy_map(X, copy_map));
     return rcpp_result_gen;
 END_RCPP
 }
-// or_duplicate_columns
-void or_duplicate_columns(MSpMat& X, const IntegerVector& cols);
-RcppExport SEXP _hal9001_or_duplicate_columns(SEXP XSEXP, SEXP colsSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< MSpMat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type cols(colsSEXP);
-    or_duplicate_columns(X, cols);
-    return R_NilValue;
-END_RCPP
-}
 // lassi_predict
-NumericVector lassi_predict(MSpMat X, NumericVector beta);
+NumericVector lassi_predict(const MSpMat X, const NumericVector beta);
 RcppExport SEXP _hal9001_lassi_predict(SEXP XSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< const MSpMat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type beta(betaSEXP);
     rcpp_result_gen = Rcpp::wrap(lassi_predict(X, beta));
     return rcpp_result_gen;
 END_RCPP
 }
-// update_coord
-void update_coord(MSpMat X, NumericVector resids, NumericVector beta, double lambda, int j);
-RcppExport SEXP _hal9001_update_coord(SEXP XSEXP, SEXP residsSEXP, SEXP betaSEXP, SEXP lambdaSEXP, SEXP jSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type resids(residsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type j(jSEXP);
-    update_coord(X, resids, beta, lambda, j);
-    return R_NilValue;
-END_RCPP
-}
-// lassi_fit_cd
-NumericVector lassi_fit_cd(MSpMat X, NumericVector y, double lambda, int nsteps);
-RcppExport SEXP _hal9001_lassi_fit_cd(SEXP XSEXP, SEXP ySEXP, SEXP lambdaSEXP, SEXP nstepsSEXP) {
+// get_new_beta
+double get_new_beta(const MSpMat& X, const NumericVector& resids, int j, double beta_j, double xscale_j);
+RcppExport SEXP _hal9001_get_new_beta(SEXP XSEXP, SEXP residsSEXP, SEXP jSEXP, SEXP beta_jSEXP, SEXP xscale_jSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< MSpMat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type resids(residsSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< double >::type beta_j(beta_jSEXP);
+    Rcpp::traits::input_parameter< double >::type xscale_j(xscale_jSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_new_beta(X, resids, j, beta_j, xscale_j));
+    return rcpp_result_gen;
+END_RCPP
+}
+// find_lambda_max
+double find_lambda_max(const MSpMat& X, const NumericVector& y, const NumericVector& xscale);
+RcppExport SEXP _hal9001_find_lambda_max(SEXP XSEXP, SEXP ySEXP, SEXP xscaleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type xscale(xscaleSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_lambda_max(X, y, xscale));
+    return rcpp_result_gen;
+END_RCPP
+}
+// equal_double
+bool equal_double(double x, double y);
+RcppExport SEXP _hal9001_equal_double(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(equal_double(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// update_coord
+double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta, double lambda, int j, const NumericVector& xscale);
+RcppExport SEXP _hal9001_update_coord(SEXP XSEXP, SEXP residsSEXP, SEXP betaSEXP, SEXP lambdaSEXP, SEXP jSEXP, SEXP xscaleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type resids(residsSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type xscale(xscaleSEXP);
+    rcpp_result_gen = Rcpp::wrap(update_coord(X, resids, beta, lambda, j, xscale));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lassi_fit_cd
+int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta, double lambda, int nsteps, const NumericVector& xscale, bool active_set);
+RcppExport SEXP _hal9001_lassi_fit_cd(SEXP XSEXP, SEXP residsSEXP, SEXP betaSEXP, SEXP lambdaSEXP, SEXP nstepsSEXP, SEXP xscaleSEXP, SEXP active_setSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type resids(residsSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< int >::type nsteps(nstepsSEXP);
-    rcpp_result_gen = Rcpp::wrap(lassi_fit_cd(X, y, lambda, nsteps));
+    Rcpp::traits::input_parameter< const NumericVector& >::type xscale(xscaleSEXP);
+    Rcpp::traits::input_parameter< bool >::type active_set(active_setSEXP);
+    rcpp_result_gen = Rcpp::wrap(lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale, active_set));
+    return rcpp_result_gen;
+END_RCPP
+}
+// non_zeros
+IntegerVector non_zeros(const MSpMat& X);
+RcppExport SEXP _hal9001_non_zeros(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(non_zeros(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_pnz
+NumericVector get_pnz(const MSpMat& X);
+RcppExport SEXP _hal9001_get_pnz(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_pnz(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_xscale
+NumericVector get_xscale(const MSpMat& X);
+RcppExport SEXP _hal9001_get_xscale(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_xscale(X));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -122,13 +188,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_design_matrix
-SpMat make_design_matrix(NumericMatrix X, List blist);
+SpMat make_design_matrix(const NumericMatrix& X, const List& blist);
 RcppExport SEXP _hal9001_make_design_matrix(SEXP XSEXP, SEXP blistSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< List >::type blist(blistSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const List& >::type blist(blistSEXP);
     rcpp_result_gen = Rcpp::wrap(make_design_matrix(X, blist));
     return rcpp_result_gen;
 END_RCPP
@@ -136,11 +202,16 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_index_first_copy", (DL_FUNC) &_hal9001_index_first_copy, 1},
-    {"_hal9001_column_compare", (DL_FUNC) &_hal9001_column_compare, 3},
-    {"_hal9001_or_duplicate_columns", (DL_FUNC) &_hal9001_or_duplicate_columns, 2},
+    {"_hal9001_apply_copy_map", (DL_FUNC) &_hal9001_apply_copy_map, 2},
     {"_hal9001_lassi_predict", (DL_FUNC) &_hal9001_lassi_predict, 2},
-    {"_hal9001_update_coord", (DL_FUNC) &_hal9001_update_coord, 5},
-    {"_hal9001_lassi_fit_cd", (DL_FUNC) &_hal9001_lassi_fit_cd, 4},
+    {"_hal9001_get_new_beta", (DL_FUNC) &_hal9001_get_new_beta, 5},
+    {"_hal9001_find_lambda_max", (DL_FUNC) &_hal9001_find_lambda_max, 3},
+    {"_hal9001_equal_double", (DL_FUNC) &_hal9001_equal_double, 2},
+    {"_hal9001_update_coord", (DL_FUNC) &_hal9001_update_coord, 6},
+    {"_hal9001_lassi_fit_cd", (DL_FUNC) &_hal9001_lassi_fit_cd, 7},
+    {"_hal9001_non_zeros", (DL_FUNC) &_hal9001_non_zeros, 1},
+    {"_hal9001_get_pnz", (DL_FUNC) &_hal9001_get_pnz, 1},
+    {"_hal9001_get_xscale", (DL_FUNC) &_hal9001_get_xscale, 1},
     {"_hal9001_make_basis_list", (DL_FUNC) &_hal9001_make_basis_list, 2},
     {"_hal9001_meets_basis", (DL_FUNC) &_hal9001_meets_basis, 4},
     {"_hal9001_evaluate_basis", (DL_FUNC) &_hal9001_evaluate_basis, 4},

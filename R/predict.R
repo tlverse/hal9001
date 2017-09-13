@@ -15,8 +15,6 @@
 #'
 #' @export
 #'
-#' @examples
-#'
 predict.hal9001 <- function(object, ..., new_data) {
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) {
@@ -27,19 +25,10 @@ predict.hal9001 <- function(object, ..., new_data) {
   pred_x_basis <- make_design_matrix(new_data, object$basis_list)
   group <- object$copy_map[[1]]
 
-  # OR duplicate columns from original design matrix
-  for (group in object$copy_map) {
-    if (length(group) > 1) {
-      or_duplicate_columns(pred_x_basis, group)
-    }
-  }
-
-  # subset unique columns
-  unique_columns <- as.numeric(names(object$copy_map))
-  pred_x_basis_uniq <- pred_x_basis[, unique_columns]
+  pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
 
   # generate predictions
-  preds <- as.vector(Matrix::tcrossprod(x = pred_x_basis_uniq,
+  preds <- as.vector(Matrix::tcrossprod(x = pred_x_basis,
                                         y = object$coefs[-1]) +
                      object$coefs[1])
   return(preds)

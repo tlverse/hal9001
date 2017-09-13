@@ -24,6 +24,3 @@ Prediction from HAL fits
 Method for computing and extracting predictions from fits of the
 Highly Adaptive LASSO estimator, formally S3 objects of class \code{hal9001}.
 }
-\examples{
-
-}

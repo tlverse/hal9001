@@ -31,8 +31,7 @@ Imports:
   utils,
   stringr,
   bit,
-  SuperLearner,
-  hal
+  SuperLearner
 Suggests:
   testthat,
   knitr,
@@ -41,7 +40,8 @@ Suggests:
   devtools,
   ggplot2,
   dplyr,
-  tidyr
+  tidyr,
+  hal
 LinkingTo:
   Rcpp,
   RcppEigen

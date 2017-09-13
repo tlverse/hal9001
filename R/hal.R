@@ -15,6 +15,7 @@
 #' @param degrees The highest order of interaction terms for which the basis
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
+#' @param useMin Determines which lambda is selected from \code{cv.glmnet}. True means \code{"lambda.min"} is used, otherwise \code{"lambda.1se"}
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #' selection of quotes from HAL 9000, from 2001: A Space Odyssey (1968).
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
@@ -29,12 +30,11 @@
 #'
 #' @export
 #'
-#' @examples
-#'
 fit_hal <- function(X,
                     Y,
                     degrees = NULL,
                     yolo = TRUE,
+                    useMin = TRUE,
                     ...) {
   # cast X to matrix -- and don't time this step
   if (!is.matrix(X)) {
@@ -65,7 +65,13 @@ fit_hal <- function(X,
   hal_lasso <- glmnet::cv.glmnet(x = x_basis,
                                  y = Y,
                                  ...)
-  coefs <- stats::coef(hal_lasso)
+  if(useMin){
+    s <- "lambda.min"
+  } else{
+    s <- "lambda.1se"
+  }
+
+  coefs <- stats::coef(hal_lasso, s)
 
   # bookkeeping: get time for computation of the LASSO regression
   time_lasso <- proc.time()

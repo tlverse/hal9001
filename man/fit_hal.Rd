@@ -4,7 +4,7 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive LASSO estimator}
 \usage{
-fit_hal(X, Y, degrees = NULL, yolo = TRUE, ...)
+fit_hal(X, Y, degrees = NULL, yolo = TRUE, useMin = TRUE, ...)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -19,6 +19,8 @@ generating basis functions for the full dimensionality of the input matrix.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from HAL 9000, from 2001: A Space Odyssey (1968).}
+
+\item{useMin}{Determines which lambda is selected from \code{cv.glmnet}. True means \code{"lambda.min"} is used, otherwise \code{"lambda.1se"}}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}
@@ -37,7 +39,4 @@ matrix (consisting of basis functions corresponding to covariates and
 interactions of covariates) and remove duplicate columns of indicators. The
 actual LASSO regression that follows is computed via \code{cv.glmnet},
 though plans are in place to re-implement this in Rcpp/C++ as well.
-}
-\examples{
-
 }
