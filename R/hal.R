@@ -72,7 +72,6 @@ fit_hal <- function(X,
     s <- "lambda.1se"
     lambda_star <- hal_lasso$lambda.1se
   }
-  print(lambda_star)
   coefs <- stats::coef(hal_lasso, s)
 
   # bookkeeping: get time for computation of the LASSO regression
