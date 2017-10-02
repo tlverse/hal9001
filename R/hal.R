@@ -33,6 +33,7 @@
 fit_hal <- function(X,
                     Y,
                     degrees = NULL,
+#                    type = "origami",
                     yolo = TRUE,
                     useMin = TRUE,
                     ...) {
@@ -61,17 +62,20 @@ fit_hal <- function(X,
   time_rm_duplicates <- proc.time()
 
   # fit LASSO regression
-  # TODO: replace with mangolassi/origami implementation
-  hal_lasso <- glmnet::cv.glmnet(x = x_basis,
-                                 y = Y,
-                                 ...)
-  if(useMin){
-    s <- "lambda.min"
-  } else{
-    s <- "lambda.1se"
-  }
-
-  coefs <- stats::coef(hal_lasso, s)
+#  if (type = "origami") {
+#    # TODO: replace with origami implementation
+#    hal_lasso <- cv_lasso()
+#  } else if (type = "glmnet") {
+    hal_lasso <- glmnet::cv.glmnet(x = x_basis,
+                                   y = Y,
+                                   ...)
+    if (useMin) {
+      s <- "lambda.min"
+    } else {
+      s <- "lambda.1se"
+    }
+    coefs <- stats::coef(hal_lasso, s)
+#  }
 
   # bookkeeping: get time for computation of the LASSO regression
   time_lasso <- proc.time()
