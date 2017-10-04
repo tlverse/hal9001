@@ -32,7 +32,8 @@ squash_hal_fit <- function(object) {
   fit <- list(basis_list = new_basis,
               copy_map = new_copy_map,
               coefs = new_coefs,
-              times = object$times
+              times = object$times,
+              lambda_star = object$lambda_star
              )
   class(fit) <- "hal9001"
   return(fit)

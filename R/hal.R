@@ -67,10 +67,11 @@ fit_hal <- function(X,
                                  ...)
   if(useMin){
     s <- "lambda.min"
+    lambda_star <- hal_lasso$lambda.min
   } else{
     s <- "lambda.1se"
+    lambda_star <- hal_lasso$lambda.1se
   }
-
   coefs <- stats::coef(hal_lasso, s)
 
   # bookkeeping: get time for computation of the LASSO regression
@@ -90,7 +91,8 @@ fit_hal <- function(X,
   fit <- list(basis_list = basis_list,
               copy_map = copy_map,
               coefs = coefs,
-              times = times)
+              times = times,
+              lambda_star = lambda_star)
   class(fit) <- "hal9001"
   return(fit)
 }
