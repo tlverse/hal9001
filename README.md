@@ -3,7 +3,7 @@
 R/`hal9001`
 ===========
 
-> A *fast* Highly Adaptive LASSO estimator
+> *Fast* and *scalable* estimation procedure for the Highly Adaptive LASSO
 
 **Authors:** [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima Hejazi](http://nimahejazi.org)
 
@@ -16,7 +16,7 @@ What's `hal9001`?
 
 `hal9001` is an R package providing an implementation of the Highly Adaptive LASSO (HAL), a nonparametric regression estimator that applies L1-regularized regression (i.e., the LASSO) to a design matrix composed of indicator functions corresponding to a set of covariates and interactions thereof, in a standard statistical learning problem. Recent theoretical results show that HAL is endowed with several important properties that make it optimally suited for the purpose of inference in problem settings where causal parameters are estimated via data-adaptive techniques (i.e., machine learning), as is the case within the framework of Targeted Minimum Loss-Based Estimation (TMLE). While it is certainly possible to implement HAL purely in R, the computationally intensive nature of the algorithm suggests that writing core routines in C++ (and making these available in R via the [Rcpp](http://www.rcpp.org/) framework) ought to provide significant efficiency gains. `hal9001` is just such an implementation.
 
-For detailed discussions of the Highly Adaptive LASSO estimator, the interested reader might consider consulting Benkeser and van der Laan (2016), van der Laan (2015), and van der Laan (2017).
+For detailed discussions of the Highly Adaptive LASSO estimator, the interested reader might consider consulting Benkeser and van der Laan (2016), M. van der Laan (2017), and van der Laan (2017).
 
 **This project is still in its infancy. Accordingly, it will be regularly updated, possibly with breaking changes. For now, use only at your own risk.**
 
@@ -56,6 +56,6 @@ References
 
 Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In *2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)*. IEEE. doi:[10.1109/dsaa.2016.93](https://doi.org/10.1109/dsaa.2016.93).
 
-van der Laan, Mark J. 2015. “A Generally Efficient Targeted Minimum Loss Based Estimator.” bepress.
+van der Laan, Mark. 2017. “A Generally Efficient Targeted Minimum Loss Based Estimator Based on the Highly Adaptive Lasso.” *The International Journal of Biostatistics*. De Gruyter. doi:[10.1515/ijb-2015-0097](https://doi.org/10.1515/ijb-2015-0097).
 
-———. 2017. “Finite Sample Inference for Targeted Learning.” bepress.
+van der Laan, Mark J. 2017. “Finite Sample Inference for Targeted Learning.” *ArXiv E-Prints*.

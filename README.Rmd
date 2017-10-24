@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 
 # R/`hal9001`
 
-> A _fast_ Highly Adaptive LASSO estimator
+> _Fast_ and _scalable_ estimation procedure for the Highly Adaptive LASSO
 
 __Authors:__ [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima
 Hejazi](http://nimahejazi.org)
@@ -46,7 +46,7 @@ ought to provide significant efficiency gains. `hal9001` is just such an
 implementation.
 
 For detailed discussions of the Highly Adaptive LASSO estimator, the interested
-reader might consider consulting @benkeser2016hal, @vdl2015generally,
+reader might consider consulting @benkeser2016hal, @vdl2017generally,
 and @vdl2017finite.
 
 __This project is still in its infancy. Accordingly, it will be regularly
