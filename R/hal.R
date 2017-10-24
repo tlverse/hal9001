@@ -15,7 +15,9 @@
 #' @param degrees The highest order of interaction terms for which the basis
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
-#' @param useMin Determines which lambda is selected from \code{cv.glmnet}. True means \code{"lambda.min"} is used, otherwise \code{"lambda.1se"}
+#' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
+#' \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
+#' to \code{"lambda.1se"}.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #' selection of quotes from HAL 9000, from 2001: A Space Odyssey (1968).
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
@@ -23,6 +25,7 @@
 #'
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats coef
+#' @importFrom origami make_folds cross_validate
 #'
 #' @return Object of class \code{hal9001}, containing a list of basis functions,
 #' a copy map, coefficients estimated for basis functions, and timing results
@@ -35,7 +38,7 @@ fit_hal <- function(X,
                     degrees = NULL,
 #                    type = "origami",
                     yolo = TRUE,
-                    useMin = TRUE,
+                    use_min = TRUE,
                     ...) {
   # cast X to matrix -- and don't time this step
   if (!is.matrix(X)) {
@@ -62,14 +65,21 @@ fit_hal <- function(X,
   time_rm_duplicates <- proc.time()
 
   # fit LASSO regression
-#  if (type = "origami") {
-#    # TODO: replace with origami implementation
-#    hal_lasso <- cv_lasso()
-#  } else if (type = "glmnet") {
+
+  #if (type = "origami") {
+    ## TODO: replace with origami implementation
+    #full_mat <- cbind(Y, x_basis)
+    #folds <- origami::make_folds(full_mat)
+    #cv_lasso_results <- origami::cross_validate(cv_fun = cv_lassi,
+                                                #folds = folds,
+                                                #data = full_mat)
+    #hal_lasso <- ...
+  #} else if (type = "glmnet") {
+
     hal_lasso <- glmnet::cv.glmnet(x = x_basis,
                                    y = Y,
                                    ...)
-    if (useMin) {
+    if (use_min) {
       s <- "lambda.min"
       lambda_star <- hal_lasso$lambda.min
     } else {

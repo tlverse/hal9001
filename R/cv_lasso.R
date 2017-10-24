@@ -20,7 +20,23 @@
 #'
 #' @export
 #'
-cv_lasso <- function(X, Y, ...) {
+cv_lassi <- function(fold, data, ...) {
+  # make sure data is an (augmented) sparse matrix of basis functions
+  stopifnot(class(data) == "dgCMatrix")
+
+  # split data for V-fold cross-validation
+  train_data <- training(data)
+  valid_data <- validation(data)
+
+  # wrangle objects to clearer forms
+  train_x_basis <- train_data[, -1]
+  valid_x_basis <- valid_data[, -1]
+  train_y <- train_data[, 1]
+  valid_y <- valid_data[, 1]
+
   # ...
+  beta_mat <- lassi(train_x_basis, train_y)
+  pred_mat <- valid_x_basis %*% beta_mat
 }
+
 
