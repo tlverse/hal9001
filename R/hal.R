@@ -1,6 +1,6 @@
 #' HAL: The Highly Adaptive LASSO estimator
 #'
-#' Performs the estimation procedure for HAL, the Highly Adaptive LASSO
+#' Estimation procedure for HAL, the Highly Adaptive LASSO
 #'
 #' @details The procedure uses custom C++ functions to generate the design
 #' matrix (consisting of basis functions corresponding to covariates and
@@ -71,8 +71,10 @@ fit_hal <- function(X,
                                    ...)
     if (useMin) {
       s <- "lambda.min"
+      lambda_star <- hal_lasso$lambda.min
     } else {
       s <- "lambda.1se"
+      lambda_star <- hal_lasso$lambda.1se
     }
     coefs <- stats::coef(hal_lasso, s)
 #  }
@@ -94,7 +96,8 @@ fit_hal <- function(X,
   fit <- list(basis_list = basis_list,
               copy_map = copy_map,
               coefs = coefs,
-              times = times)
+              times = times,
+              lambda_star = lambda_star)
   class(fit) <- "hal9001"
   return(fit)
 }
