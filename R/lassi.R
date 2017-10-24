@@ -28,21 +28,24 @@ lassi <- function(x, y, nlambda = 100, lambda_min_ratio = 0.01) {
   ybar <- mean(y)
   resid <- y - ybar
   beta <- rep(0, ncol(x))
-  beta_mat <- matrix(0,nrow = length(beta), ncol = nlambda)
+  beta_mat <- matrix(0, nrow = length(beta), ncol = nlambda)
   lambda_max <- find_lambda_max(x, resid, xscale)
   lambdas <- lambda_seq(lambda_max, lambda_min_ratio, nlambda)
 
   for (lambda_step in seq_len(nlambda)) {
     lambda <- lambdas[lambda_step]
 
-    active_steps <- lassi_fit_cd(x, resid, beta, lambda, 1000, xscale, TRUE)
-    full_steps <- lassi_fit_cd(x, resid, beta, lambda, 1000, xscale, FALSE)
+    active_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
+                                 lambda = lambda, nsteps = 1000,
+                                 xscale = xscale, active_set = TRUE)
+    full_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
+                               lambda = lambda, nsteps = 1000, xscale = xscale,
+                               active_set = FALSE)
 
     beta_mat[, lambda_step] <- beta
   }
  
-  beta_mat <- diag(1/xscale) %*% beta_mat
- 
+  beta_mat <- diag(1 / xscale) %*% beta_mat
   return(beta_mat)
 }
 

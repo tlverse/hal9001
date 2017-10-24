@@ -16,17 +16,17 @@
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #' documentation for \code{glmnet} for a full list of options.
 #'
-#' @importFrom origami train test
+#' @importFrom origami training validation
 #'
 #' @export
-#'
-cv_lassi <- function(fold, data, ...) {
+#
+cv_lassi <- function(fold, data, lambda, ...) {
   # make sure data is an (augmented) sparse matrix of basis functions
   stopifnot(class(data) == "dgCMatrix")
 
   # split data for V-fold cross-validation
-  train_data <- training(data)
-  valid_data <- validation(data)
+  train_data <- origami::training(data)
+  valid_data <- origami::validation(data)
 
   # wrangle objects to clearer forms
   train_x_basis <- train_data[, -1]
@@ -35,7 +35,7 @@ cv_lassi <- function(fold, data, ...) {
   valid_y <- valid_data[, 1]
 
   # ...
-  beta_mat <- lassi(train_x_basis, train_y)
+  beta_mat <- lassi(x = train_x_basis, y = train_y, ...)
   pred_mat <- valid_x_basis %*% beta_mat
 }
 

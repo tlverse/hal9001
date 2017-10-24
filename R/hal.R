@@ -36,10 +36,11 @@
 fit_hal <- function(X,
                     Y,
                     degrees = NULL,
-#                    type = "origami",
-                    yolo = TRUE,
+                    type = "glmnet",
+                    n_folds = 10,
                     use_min = TRUE,
-                    ...) {
+                    ...,
+                    yolo = TRUE) {
   # cast X to matrix -- and don't time this step
   if (!is.matrix(X)) {
     X <- as.matrix(X)
@@ -66,19 +67,17 @@ fit_hal <- function(X,
 
   # fit LASSO regression
 
-  #if (type = "origami") {
-    ## TODO: replace with origami implementation
-    #full_mat <- cbind(Y, x_basis)
-    #folds <- origami::make_folds(full_mat)
-    #cv_lasso_results <- origami::cross_validate(cv_fun = cv_lassi,
-                                                #folds = folds,
-                                                #data = full_mat)
-    #hal_lasso <- ...
-  #} else if (type = "glmnet") {
-
-    hal_lasso <- glmnet::cv.glmnet(x = x_basis,
-                                   y = Y,
-                                   ...)
+  if (type = "origami") {
+    # TODO: complete origami implementation
+    full_data_mat <- cbind(Y, x_basis)
+    folds <- origami::make_folds(n = full_data_mat, V = n_folds)
+    cv_lasso_out <- origami::cross_validate(cv_fun = cv_lassi, folds = folds,
+                                            data = full_data_mat)
+    hal_lasso <- ""
+  } else if (type = "glmnet") {
+    # just use the standard implementation available in glmnet
+    hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y,
+                                   nfolds = n_folds, ...)
     if (use_min) {
       s <- "lambda.min"
       lambda_star <- hal_lasso$lambda.min
@@ -87,7 +86,7 @@ fit_hal <- function(X,
       lambda_star <- hal_lasso$lambda.1se
     }
     coefs <- stats::coef(hal_lasso, s)
-#  }
+  }
 
   # bookkeeping: get time for computation of the LASSO regression
   time_lasso <- proc.time()
