@@ -25,7 +25,6 @@
 #'
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats coef
-#' @importFrom origami make_folds cross_validate
 #'
 #' @return Object of class \code{hal9001}, containing a list of basis functions,
 #' a copy map, coefficients estimated for basis functions, and timing results
@@ -69,11 +68,8 @@ fit_hal <- function(X,
 
   if (type = "origami") {
     # TODO: complete origami implementation
-    full_data_mat <- cbind(Y, x_basis)
-    folds <- origami::make_folds(n = full_data_mat, V = n_folds)
-    cv_lasso_out <- origami::cross_validate(cv_fun = cv_lassi, folds = folds,
-                                            data = full_data_mat)
-    hal_lasso <- ""
+    hal_lasso <- cv_lasso(x = x_basis, y = Y, n_folds = n_folds)
+
   } else if (type = "glmnet") {
     # just use the standard implementation available in glmnet
     hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y,
