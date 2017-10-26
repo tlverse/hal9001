@@ -66,11 +66,11 @@ fit_hal <- function(X,
 
   # fit LASSO regression
 
-  if (type = "origami") {
+  if (type == "origami") {
     # TODO: complete origami implementation
     hal_lasso <- cv_lasso(x = x_basis, y = Y, n_folds = n_folds)
 
-  } else if (type = "glmnet") {
+  } else if (type == "glmnet") {
     # just use the standard implementation available in glmnet
     hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y,
                                    nfolds = n_folds, ...)
