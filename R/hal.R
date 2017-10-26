@@ -15,6 +15,13 @@
 #' @param degrees The highest order of interaction terms for which the basis
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
+#' @param type The specific routine to be called when fitting the LASSO
+#' regression in a cross-validated manner. Choosing the \code{glmnet} option
+#' will result in a call to \code{cv.glmnet} while \code{origami} will produce a
+#' (faster) call to a custom routine using the \code{origami} package.
+#' @param n_folds Integer for the number of folds to be used when splitting the
+#' data for cross-validation. This defaults to 10 as this is the convention for
+#' v-fold cross-validation.
 #' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
 #' \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 #' to \code{"lambda.1se"}.
@@ -45,7 +52,8 @@ fit_hal <- function(X,
     X <- as.matrix(X)
   }
 
-  # fun: quotes from HAL 9000
+  # FUN: quotes from HAL 9000
+  # note: this is the robot from the classic film "2001: A Space Odyssey"
   if (yolo) hal9000()
 
   # bookkeeping: get start time of duplicate removal procedure
@@ -68,7 +76,7 @@ fit_hal <- function(X,
 
   if (type == "origami") {
     # TODO: complete origami implementation
-    hal_lasso <- cv_lasso(x = x_basis, y = Y, n_folds = n_folds)
+    hal_lasso <- cv_lasso(x_basis = x_basis, y = Y, n_folds = n_folds)
 
   } else if (type == "glmnet") {
     # just use the standard implementation available in glmnet
@@ -106,4 +114,3 @@ fit_hal <- function(X,
   class(fit) <- "hal9001"
   return(fit)
 }
-

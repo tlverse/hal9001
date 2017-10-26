@@ -1,20 +1,13 @@
-#' LASSO cross-validation with Origami
+#' Single LASSO estimation for cross-validation with Origami
 #'
-#' Fits the LASSO regression using a customized procedure, with cross-validation
-#' based on origami
+#' Fits the LASSO regression over a single fold of a cross-validated data set.
+#' This is meant to be called using \code{cross_validate} from the
+#' \code{origami} package, which is done through \code{cv_lasso}. Note that this
+#' procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.
 #'
-#' @details The procedure uses custom C++ functions to generate the design
-#' matrix (consisting of basis functions corresponding to covariates and
-#' interactions of covariates) and remove duplicate columns of indicators. The
-#' actual LASSO regression that follows is computed via \code{cv.glmnet},
-#' though plans are in place to re-implement this in Rcpp/C++ as well.
-#'
-#' @param X An input \code{matrix} containing observations and covariates
-#' following standard conventions in problems of statistical learning.
-#' @param Y A \code{numeric} vector of observations of the outcome variable of
-#' interest, following standard conventions in problems of statistical learning.
-#' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
-#' documentation for \code{glmnet} for a full list of options.
+#' @param fold ...
+#' @param data ...
+#' @param lambdas ...
 #'
 #' @importFrom origami training validation
 #
@@ -52,7 +45,7 @@ lassi_origami <- function(fold, data, lambdas) {
 #' Fits the LASSO regression using a customized procedure, with cross-validation
 #' based on origami
 #'
-#' @param x ...
+#' @param x_basis ...
 #' @param y ...
 #' @param n_folds ...
 #'
@@ -84,4 +77,3 @@ cv_lasso <- function(x_basis, y, n_folds = 10) {
   #names(lambda_out) <- c("lambda_min", "lambda_1se")
   #return(lambda_out)
 }
-

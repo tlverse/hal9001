@@ -114,8 +114,8 @@ pred_x_basis <- hal9001:::make_design_matrix(new_data, basis_list)
 pred_x_basis <- hal9001:::apply_copy_map(pred_x_basis, copy_map)
 
 # lassi prediction and mses
-beta_mat <- hal9001:::lassi(x_basis, y)
-pred_mat <- pred_x_basis %*% beta_mat
+lassi_fit <- hal9001:::lassi(x_basis, y)
+pred_mat <- pred_x_basis %*% lassi_fit$beta_mat
 mses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar - testy)^2)})
 
 
@@ -130,4 +130,3 @@ gmses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar - testy)^2)})
 
 test_that("lassi isn't doing much worse in terms of MSE",
           expect_lt((min(mses) - min(gmses)) / min(gmses), 1e-1))
-

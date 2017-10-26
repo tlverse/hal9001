@@ -71,4 +71,3 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
   names(out) <- c("beta_mat", "lambdas")
   return(out)
 }
-
