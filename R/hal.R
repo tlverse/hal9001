@@ -15,7 +15,7 @@
 #' @param degrees The highest order of interaction terms for which the basis
 #' functions ought to be generated. The default (\code{NULL}) corresponds to
 #' generating basis functions for the full dimensionality of the input matrix.
-#' @param type The specific routine to be called when fitting the LASSO
+#' @param fit_type The specific routine to be called when fitting the LASSO
 #' regression in a cross-validated manner. Choosing the \code{glmnet} option
 #' will result in a call to \code{cv.glmnet} while \code{origami} will produce a
 #' (faster) call to a custom routine using the \code{origami} package.
@@ -42,7 +42,7 @@
 fit_hal <- function(X,
                     Y,
                     degrees = NULL,
-                    type = "glmnet",
+                    fit_type = "glmnet",
                     n_folds = 10,
                     use_min = TRUE,
                     ...,
@@ -74,11 +74,11 @@ fit_hal <- function(X,
 
   # fit LASSO regression
 
-  if (type == "origami") {
+  if (fit_type == "origami") {
     # TODO: complete origami implementation
     hal_lasso <- cv_lasso(x_basis = x_basis, y = Y, n_folds = n_folds)
 
-  } else if (type == "glmnet") {
+  } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
     hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y,
                                    nfolds = n_folds, ...)

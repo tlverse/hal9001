@@ -1,4 +1,5 @@
 library(glmnet)
+library(origami)
 set.seed(749125)
 context("Unit test for the generic cross-validated LASSO estimation procedure.")
 
@@ -22,15 +23,11 @@ testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, 0.2)
 # fit design matrix for HAL
 basis_list <- hal9001:::enumerate_basis(x)
 x_basis <- hal9001:::make_design_matrix(x, basis_list)
-time_design_matrix <- proc.time()
 
 # catalog and eliminate duplicates
 copy_map <- hal9001:::make_copy_map(x_basis)
 unique_columns <- as.numeric(names(copy_map))
 x_basis <- x_basis[, unique_columns]
-
-# bookkeeping: get end time of duplicate removal procedure
-time_rm_duplicates <- proc.time()
 
 
 ################################################################################
@@ -51,23 +48,35 @@ lassi_origami <- function(fold, data, lambdas) {
   train_data <- origami::training(data)
   valid_data <- origami::validation(data)
 
-  # wrangle objects to clearer forms
+  #browser()
+
+  # extract matrices of basis function from training and validation for X
   train_x_basis <- train_data[, -1]
   valid_x_basis <- valid_data[, -1]
+
+  # extract vector of outcomes from training and validation for Y
   train_y <- train_data[, 1]
   valid_y <- valid_data[, 1]
 
+  #browser()
+
   # compute the predicted betas for the given training and validation sets
-  lassi_fit <- lassi(x = train_x_basis, y = train_y, lambdas = lambdas)
+
+  #browser()
+
+  lassi_fit <- hal9001:::lassi(x = train_x_basis, y = train_y,
+                               lambdas = lambdas)
   pred_mat <- valid_x_basis %*% lassi_fit$beta_mat
 
   # compute the MSE for the given training and validation sets
   ybar_train <- mean(train_y)
   mses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar_train -
                                                     valid_y)^2)})
+  #browser()
 
   # the only output needed is the lambda-wise MSE over each fold
-  return(mses)
+  out <- list(mses = as.data.frame(mses))
+  return(out)
 }
 
 # run the cross-validated lasso procedure to find the optimal lambda

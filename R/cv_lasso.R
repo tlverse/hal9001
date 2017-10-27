@@ -51,9 +51,9 @@ lassi_origami <- function(fold, data, lambdas) {
 #'
 #' @importFrom origami make_folds cross_validate
 #
-cv_lasso <- function(x_basis, y, n_folds = 10) {
+cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   # first, need to run lasso on the full data to get a sequence of lambdas
-  lasso_init <- lassi(y = y, x = x_basis)
+  lasso_init <- lassi(y = y, x = x_basis, nlambda = n_lambda)
   lambdas_init <- lasso_init$lambdas
 
   # next, set up a cross-validated lasso using the sequence of lambdas
@@ -61,7 +61,8 @@ cv_lasso <- function(x_basis, y, n_folds = 10) {
   folds <- origami::make_folds(full_data_mat, V = n_folds)
 
   # run the cross-validated lasso procedure to find the optimal lambda
-  cv_lasso_out <- origami::cross_validate(cv_fun = lassi_origami, folds = folds,
+  cv_lasso_out <- origami::cross_validate(cv_fun = lassi_origami,
+                                          folds = folds,
                                           data = full_data_mat,
                                           lambdas = lambdas_init)
 
