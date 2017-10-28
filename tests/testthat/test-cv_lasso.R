@@ -48,8 +48,6 @@ lassi_origami <- function(fold, data, lambdas) {
   train_data <- origami::training(data)
   valid_data <- origami::validation(data)
 
-  #browser()
-
   # extract matrices of basis function from training and validation for X
   train_x_basis <- train_data[, -1]
   valid_x_basis <- valid_data[, -1]
@@ -58,12 +56,7 @@ lassi_origami <- function(fold, data, lambdas) {
   train_y <- train_data[, 1]
   valid_y <- valid_data[, 1]
 
-  #browser()
-
   # compute the predicted betas for the given training and validation sets
-
-  #browser()
-
   lassi_fit <- hal9001:::lassi(x = train_x_basis, y = train_y,
                                lambdas = lambdas)
   pred_mat <- valid_x_basis %*% lassi_fit$beta_mat
@@ -72,10 +65,10 @@ lassi_origami <- function(fold, data, lambdas) {
   ybar_train <- mean(train_y)
   mses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar_train -
                                                     valid_y)^2)})
-  #browser()
 
   # the only output needed is the lambda-wise MSE over each fold
-  out <- list(mses = as.data.frame(mses))
+  mses_out <- matrix(mses, nrow = 1)
+  out <- list(mses = mses_out)
   return(out)
 }
 
@@ -85,9 +78,17 @@ cv_lasso_out <- origami::cross_validate(cv_fun = lassi_origami,
                                         data = full_data_mat,
                                         lambdas = lambdas_init)
 
+# compute cv-mean of MSEs for each lambda
+lambdas_cvmse <- colMeans(cv_lasso_out$mses)
 
+# also need the CV standard error for each lambda
+lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, sd)
+lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
 
-hal_lasso <- hal9001:::cv_lasso(x_basis = x_basis, y = y, n_folds = n_folds)
+# find the lambda that minimizes the MSE and the lambda 1 std. err. above it
+lambda_optim <- which.min(lambdas_cvmse)
+lambda_minmse_origami <- lambdas_init[lambda_optim]
+lambda_1se_origami <- lambda_minmse + lambdas_cvse[lambda_optim]
 
 
 ################################################################################
@@ -97,11 +98,18 @@ hal_lasso <- hal9001:::cv_lasso(x_basis = x_basis, y = y, n_folds = n_folds)
 # just use the standard implementation available in glmnet
 hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = y,
                                nfolds = n_folds)
-if (use_min) {
-  s <- "lambda.min"
-  lambda_star <- hal_lasso$lambda.min
-} else {
-  s <- "lambda.1se"
-  lambda_star <- hal_lasso$lambda.1se
-}
-coefs <- stats::coef(hal_lasso, s)
+lambda_minmse_cvglmnet <- hal_lasso$lambda.min
+lambda_1se_cvglmnet <- hal_lasso$lambda.1se
+
+
+################################################################################
+# TEST THAT ORIGAMI AND CV-GLMNET IMPLEMENTATIONS MATCH
+################################################################################
+
+test_that("lambda-min matches between cv.glmnet and origami's cv_lasso" {
+  expect_equal(abs(lambda_minmse_origami - lambda_minmse_cvglmnet), 2/100)
+})
+
+test_that("lambda-1se matches between cv.glmnet and origami's cv_lasso" {
+  expect_equal(abs(lambda_1se_origami - lambda_1se_cvglmnet), 2/100)
+})

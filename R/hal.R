@@ -78,6 +78,14 @@ fit_hal <- function(X,
     # TODO: complete origami implementation
     hal_lasso <- cv_lasso(x_basis = x_basis, y = Y, n_folds = n_folds)
 
+    if (use_min) {
+      lambda_star <- hal_lasso$lambda_min
+    } else {
+      lambda_star <- hal_lasso$lambda_1se
+    }
+    # still need to reasonably return coefficients...
+    #coefs <- stats::coef(hal_lasso, s)
+
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
     hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y,

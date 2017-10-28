@@ -66,15 +66,21 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
                                           data = full_data_mat,
                                           lambdas = lambdas_init)
 
-  ## get types of lambda input to match cv.glmnet output
-  #lambda_min <- lambdas[which.min(mses)]
+  # compute cv-mean of MSEs for each lambda
+  lambdas_cvmse <- colMeans(cv_lasso_out$mses)
+  lambda_minmse <- lambdas_init[which.min(lambdas_cvmse)]
 
-  ## TODO: double check the logic for 1se criterion -- not really sure here...
-  #m1se <- min(mses) + sd(mses) / sqrt(length(lambdas))
-  #lambda_1se <- lambdas[which.min(abs(lambdas - m1se))]
+  # also need the CV standard error for each lambda
+  lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, sd)
+  lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
 
-  ## create output object
-  #lambda_out <- list(lambda_min, lambda_1se)
-  #names(lambda_out) <- c("lambda_min", "lambda_1se")
-  #return(lambda_out)
+  # find the lambda that minimizes the MSE and the lambda 1 std. err. above it
+  lambda_optim <- which.min(lambdas_cvmse)
+  lambda_minmse <- lambdas_init[lambda_optim]
+  lambda_1se <- lambda_minmse + lambdas_cvse[lambda_optim]
+
+  # create output object
+  lambda_out <- list(lambda_minmse, lambda_1se)
+  names(lambda_out) <- c("lambda_min", "lambda_1se")
+  return(lambda_out)
 }
