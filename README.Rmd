@@ -15,16 +15,16 @@ knitr::opts_chunk$set(
 
 # R/`hal9001`
 
-> _Fast_ and _scalable_ estimation procedure for the Highly Adaptive LASSO
-
-__Authors:__ [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima
-Hejazi](http://nimahejazi.org)
-
 [![Travis-CI Build Status](https://travis-ci.org/jeremyrcoyle/hal9001.svg?branch=master)](https://travis-ci.org/jeremyrcoyle/hal9001)
 [![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
 [![Coverage Status](https://img.shields.io/codecov/c/github/jeremyrcoyle/hal9001/master.svg)](https://codecov.io/github/jeremyrcoyle/hal9001?branch=master)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+
+> _Fast_ and _scalable_ estimation procedure for the Highly Adaptive LASSO
+
+__Authors:__ [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima
+Hejazi](http://nimahejazi.org)
 
 ---
 
@@ -71,6 +71,56 @@ You can install the development version of `hal9001` from GitHub via
 ```{r gh-installation, eval = FALSE}
 devtools::install_github("jeremyrcoyle/hal9001")
 ```
+
+---
+
+## Issues
+
+If you encounter any bugs or have any specific feature requests, please [file an
+issue](https://github.com/jeremyrcoyle/hal9001/issues).
+
+---
+
+## Example
+
+This minimal example shows how to use `hal9001` to obtain predictions based on
+the Highly Adaptive LASSO. For details on the properties of the estimator, the
+interested reader is referred to @benkeser2016hal and @vdl2017generally.
+
+```{r example}
+# simulate data
+set.seed(385971)
+n <- 1000
+p <- 5
+
+```
+
+---
+
+## Contributions
+
+`hal9001` is the primary implementation of the Highly Adaptive LASSO, an
+estimator with numerous optimality properties, especially useful when employing
+[Targeted Learning](http://www.targetedlearningbook.com/about/). To that end,
+contributions are very welcome, though we ask that interested contributors
+consult our [`contribution
+guidelines`](https://github.com/jeremyrcoyle/hal9001/blob/master/CONTRIBUTING.md)
+prior to submitting a pull request.
+
+---
+
+## Citation
+
+After using the `hal9001` R package, please cite the following:
+
+        @misc{hejazi2017hal9001,
+          author = {Hejazi, Nima S and Coyle, Jeremy R},
+          title = {{hal9001}: A fast and scalable {Highly Adaptive LASSO}},
+          year  = {},
+          howpublished = {\url{}},
+          url = {},
+          doi = {}
+        }
 
 ---
 

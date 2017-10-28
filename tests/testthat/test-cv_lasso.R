@@ -88,7 +88,7 @@ lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
 # find the lambda that minimizes the MSE and the lambda 1 std. err. above it
 lambda_optim <- which.min(lambdas_cvmse)
 lambda_minmse_origami <- lambdas_init[lambda_optim]
-lambda_1se_origami <- lambda_minmse + lambdas_cvse[lambda_optim]
+lambda_1se_origami <- lambda_minmse_origami + lambdas_cvse[lambda_optim]
 
 
 ################################################################################
@@ -107,9 +107,12 @@ lambda_1se_cvglmnet <- hal_lasso$lambda.1se
 ################################################################################
 
 test_that("lambda-min matches between cv.glmnet and origami's cv_lasso" {
-  expect_equal(abs(lambda_minmse_origami - lambda_minmse_cvglmnet), 2/100)
+  expect_equal(abs(lambda_minmse_origami - lambda_minmse_cvglmnet) /
+               lambda_minmse_cvglmnet, 2/100)
 })
 
 test_that("lambda-1se matches between cv.glmnet and origami's cv_lasso" {
-  expect_equal(abs(lambda_1se_origami - lambda_1se_cvglmnet), 2/100)
+  expect_equal(abs(lambda_1se_origami - lambda_1se_cvglmnet) /
+               lambda_1se_cvglmnet, 2/100)
 })
+

@@ -64,6 +64,9 @@ fit_hal <- function(X,
   x_basis <- make_design_matrix(X, basis_list)
   time_design_matrix <- proc.time()
 
+  # center the outcome vector
+  y_resid <- Y - mean(Y)
+
   # catalog and eliminate duplicates
   copy_map <- make_copy_map(x_basis)
   unique_columns <- as.numeric(names(copy_map))
@@ -83,8 +86,11 @@ fit_hal <- function(X,
     } else {
       lambda_star <- hal_lasso$lambda_1se
     }
-    # still need to reasonably return coefficients...
-    #coefs <- stats::coef(hal_lasso, s)
+    # TODO: still need to reasonably return coefficients...
+    #lassi_out <- lassi_fit_cd(X = x_basis, resids = y_resid, beta = 0,
+                              #lambda = lambda_star, nsteps = 1000,
+                              #xscale = xscale, active_set = FALSE)
+    #coefs <-
 
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
@@ -122,3 +128,4 @@ fit_hal <- function(X,
   class(fit) <- "hal9001"
   return(fit)
 }
+
