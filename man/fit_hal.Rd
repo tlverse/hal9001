@@ -4,7 +4,7 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive LASSO estimator}
 \usage{
-fit_hal(X, Y, degrees = NULL, type = "glmnet", n_folds = 10,
+fit_hal(X, Y, degrees = NULL, fit_type = "glmnet", n_folds = 10,
   use_min = TRUE, ..., yolo = TRUE)
 }
 \arguments{
@@ -18,7 +18,7 @@ interest, following standard conventions in problems of statistical learning.}
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
-\item{type}{The specific routine to be called when fitting the LASSO
+\item{fit_type}{The specific routine to be called when fitting the LASSO
 regression in a cross-validated manner. Choosing the \code{glmnet} option
 will result in a call to \code{cv.glmnet} while \code{origami} will produce a
 (faster) call to a custom routine using the \code{origami} package.}

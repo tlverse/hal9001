@@ -106,12 +106,12 @@ lambda_1se_cvglmnet <- hal_lasso$lambda.1se
 # TEST THAT ORIGAMI AND CV-GLMNET IMPLEMENTATIONS MATCH
 ################################################################################
 
-test_that("lambda-min matches between cv.glmnet and origami's cv_lasso" {
+test_that("lambda-min matches between cv.glmnet and origami's cv_lasso", {
   expect_equal(abs(lambda_minmse_origami - lambda_minmse_cvglmnet) /
                lambda_minmse_cvglmnet, 2/100)
 })
 
-test_that("lambda-1se matches between cv.glmnet and origami's cv_lasso" {
+test_that("lambda-1se matches between cv.glmnet and origami's cv_lasso", {
   expect_equal(abs(lambda_1se_origami - lambda_1se_cvglmnet) /
                lambda_1se_cvglmnet, 2/100)
 })

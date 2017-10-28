@@ -4,7 +4,7 @@
 \alias{cv_lasso}
 \title{Cross-validated LASSO on Indicator Bases}
 \usage{
-cv_lasso(x_basis, y, n_folds = 10)
+cv_lasso(x_basis, y, n_lambda = 100, n_folds = 10)
 }
 \arguments{
 \item{x_basis}{...}

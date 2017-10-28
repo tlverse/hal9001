@@ -25,14 +25,10 @@ LazyData: true
 Imports:
   Rcpp,
   RcppEigen,
-  data.table,
   Matrix,
   glmnet,
   stats,
   utils,
-  stringr,
-  bit,
-  SuperLearner,
   origami
 Suggests:
   testthat,
@@ -43,6 +39,10 @@ Suggests:
   ggplot2,
   dplyr,
   tidyr,
+  bit,
+  stringr,
+  SuperLearner,
+  data.table,
   hal
 LinkingTo:
   Rcpp,

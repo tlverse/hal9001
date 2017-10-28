@@ -50,6 +50,7 @@ lassi_origami <- function(fold, data, lambdas) {
 #' @param n_folds ...
 #'
 #' @importFrom origami make_folds cross_validate
+#' @importFrom stats sd
 #
 cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   # first, need to run lasso on the full data to get a sequence of lambdas
@@ -71,7 +72,7 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   lambda_minmse <- lambdas_init[which.min(lambdas_cvmse)]
 
   # also need the CV standard error for each lambda
-  lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, sd)
+  lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, stats::sd)
   lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
 
   # find the lambda that minimizes the MSE and the lambda 1 std. err. above it
@@ -84,3 +85,4 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   names(lambda_out) <- c("lambda_min", "lambda_1se")
   return(lambda_out)
 }
+
