@@ -91,6 +91,13 @@ lambda_optim_index <- which.min(lambdas_cvmse)
 lambda_minmse_origami <- lambdas_init[lambda_optim_index]
 lambda_1se_origami <- lambda_minmse_origami + lambdas_cvse
 
+# create output object
+get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
+betas_out <- lasso_init$beta_mat[, get_lambda_indices]
+colnames(betas_out) <- c("lambda_1se", "lambda_min")
+cv_lasso_out <- list(betas_out, lambda_minmse_origami, lambda_1se_origami)
+names(cv_lasso_out) <- c("beta_coefs", "lambda_min", "lambda_1se")
+
 
 ################################################################################
 # CV-LASSO using glmnet

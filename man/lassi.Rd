@@ -16,8 +16,8 @@ lassi(x, y, lambdas = NULL, nlambda = 100, lambda_min_ratio = 0.01)
 
 \item{nlambda}{number of lambdas to fit. See \code{\link{lambda_seq}}}
 
-\item{lambda_min_ratio}{ratio of largest to smallest lambda to fit.
-See \code{\link{lambda_seq}}}
+\item{lambda_min_ratio}{ratio of largest to smallest lambda to fit. For
+details, see \code{\link{lambda_seq}}}
 }
 \description{
 Custom Lasso implementation for matrices of indicator functions

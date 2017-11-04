@@ -2,7 +2,7 @@
 #'
 #' @param lambda_max the highest lambda value, ideally from get_lambda_max
 #' @param lambda_min_ratio the ratio of the largest to smallest lambda values
-#' lambda_min=lambda_max*lambda_min_ration
+#'  lambda_min = lambda_max * lambda_min_ratio
 #' @param nlambda total number of lambdas
 #'
 #' @export
@@ -18,10 +18,10 @@ lambda_seq <- function(lambda_max, lambda_min_ratio = 0.01, nlambda = 100) {
 #' @param x The covariate matrix
 #' @param y The outcome vector
 #' @param lambdas A sequence of values for the L1 regularization parameter
-#' (lambda) to be used in fitting the LASSO. Defaults to \code{NULL}.
+#'  (lambda) to be used in fitting the LASSO. Defaults to \code{NULL}.
 #' @param nlambda number of lambdas to fit. See \code{\link{lambda_seq}}
-#' @param lambda_min_ratio ratio of largest to smallest lambda to fit.
-#' See \code{\link{lambda_seq}}
+#' @param lambda_min_ratio ratio of largest to smallest lambda to fit. For
+#'  details, see \code{\link{lambda_seq}}
 #'
 #' @export
 #

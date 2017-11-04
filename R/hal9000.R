@@ -5,7 +5,7 @@ utils::globalVariables(c("hal_quotes"))
 #' Prints a quote from the HAL 9000 robot from 2001: A Space Odyssey
 #'
 #' @importFrom utils data
-#'
+#
 hal9000 <- function() {
   utils::data("hal_quotes", envir = environment())
 

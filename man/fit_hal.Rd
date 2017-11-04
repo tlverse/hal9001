@@ -4,8 +4,8 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive LASSO estimator}
 \usage{
-fit_hal(X, Y, degrees = NULL, fit_type = "glmnet", n_folds = 10,
-  use_min = TRUE, ..., yolo = TRUE)
+fit_hal(X, Y, degrees = NULL, fit_type = c("origami", "glmnet"),
+  n_folds = 10, use_min = TRUE, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -20,8 +20,8 @@ generating basis functions for the full dimensionality of the input matrix.}
 
 \item{fit_type}{The specific routine to be called when fitting the LASSO
 regression in a cross-validated manner. Choosing the \code{glmnet} option
-will result in a call to \code{cv.glmnet} while \code{origami} will produce a
-(faster) call to a custom routine using the \code{origami} package.}
+will result in a call to \code{cv.glmnet} while \code{origami} will produce
+a (faster) call to a custom routine using the \code{origami} package.}
 
 \item{n_folds}{Integer for the number of folds to be used when splitting the
 data for cross-validation. This defaults to 10 as this is the convention for
@@ -35,20 +35,22 @@ to \code{"lambda.1se"}.}
 documentation for \code{glmnet} for a full list of options.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
-selection of quotes from HAL 9000, from 2001: A Space Odyssey (1968).}
+selection of quotes from the HAL9000 computer, from the critically acclaimed
+epic science-fiction film "2001: A Space Odyssey" (1968).}
 }
 \value{
 Object of class \code{hal9001}, containing a list of basis functions,
-a copy map, coefficients estimated for basis functions, and timing results
-(for assessing computational efficiency).
+ a copy map, coefficients estimated for basis functions, and timing results
+ (for assessing computational efficiency).
 }
 \description{
 Estimation procedure for HAL, the Highly Adaptive LASSO
 }
 \details{
-The procedure uses custom C++ functions to generate the design
-matrix (consisting of basis functions corresponding to covariates and
-interactions of covariates) and remove duplicate columns of indicators. The
-actual LASSO regression that follows is computed via \code{cv.glmnet},
-though plans are in place to re-implement this in Rcpp/C++ as well.
+The procedure uses a custom C++ implementation to generate a design
+ matrix (consisting of basis functions corresponding to covariates and
+ interactions of covariates) and remove duplicate columns of indicators. The
+ LASSO regression is fit to this (usually) very wide matrix using either a
+ custom implementation (based on the \code{origami} package) or by a call to
+ \code{cv.glmnet} from the \code{glmnet} package.
 }
