@@ -1,6 +1,6 @@
 Package: hal9001
 Title: A fast, computationally efficient Highly Adaptive LASSO (HAL)
-Version: 0.0.4.5
+Version: 0.0.5.0
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
          role = c("aut", "cre"),

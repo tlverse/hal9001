@@ -5,9 +5,13 @@
 #' \code{origami} package, which is done through \code{cv_lasso}. Note that this
 #' procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.
 #'
-#' @param fold ...
-#' @param data ...
-#' @param lambdas ...
+#' @param fold A \code{fold} object produced by a call to \code{make_folds} from
+#'  the \code{origami} package.
+#' @param data A \code{dgCMatrix} object containing the outcome values (Y) in
+#'  its first column and vectors corresponding to the basis functions of HAL in
+#'  all other columns. Consult the description of the HAL algorithm for details.
+#' @param lambdas A \code{numeric} vector corresponding to a sequence of lambda
+#'  values obtained by fitting the LASSO on the full data.
 #'
 #' @importFrom origami training validation
 #
@@ -45,10 +49,15 @@ lassi_origami <- function(fold, data, lambdas) {
 #' Fits the LASSO regression using a customized procedure, with cross-validation
 #' based on origami
 #'
-#' @param x_basis ...
-#' @param y ...
-#' @param n_lambda ...
-#' @param n_folds ...
+#' @param x_basis A \code{dgCMatrix} object corresponding to a sparse matrix of
+#'  the basis functions generated for the HAL algorithm.
+#' @param y A \code{numeric} vector of the observed outcome variable values.
+#' @param n_lambda A \code{numeric} scalar indicating the number of values of
+#'  the L1 regularization parameter (lambda) to be obtained from fitting the
+#'  LASSO to the full data. Cross-validation is used to select an optimal lambda
+#'  (that minimizes the risk) from among these.
+#' @param n_folds A \code{numeric} scalar for the number of folds to be used in
+#'  the cross-validation procedure to select an optimal value of lambda.
 #'
 #' @importFrom origami make_folds cross_validate
 #' @importFrom stats sd
@@ -92,3 +101,4 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   names(cv_lasso_out) <- c("beta_coefs", "lambda_min", "lambda_1se")
   return(cv_lasso_out)
 }
+

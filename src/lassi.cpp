@@ -38,6 +38,7 @@ NumericVector lassi_predict(const MSpMat X, const NumericVector beta) {
 //' @param beta Numeric of the regression coefficients of a linear model.
 //' @param lambda Numeric of the regularization constant for the L1 penalty.
 //'
+// [[Rcpp::export]]
 double soft_threshold(double beta, double lambda) {
   if (beta > lambda) {
     beta -= lambda;

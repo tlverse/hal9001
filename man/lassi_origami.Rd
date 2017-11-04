@@ -7,11 +7,15 @@
 lassi_origami(fold, data, lambdas)
 }
 \arguments{
-\item{fold}{...}
+\item{fold}{A \code{fold} object produced by a call to \code{make_folds} from
+the \code{origami} package.}
 
-\item{data}{...}
+\item{data}{A \code{dgCMatrix} object containing the outcome values (Y) in
+its first column and vectors corresponding to the basis functions of HAL in
+all other columns. Consult the description of the HAL algorithm for details.}
 
-\item{lambdas}{...}
+\item{lambdas}{A \code{numeric} vector corresponding to a sequence of lambda
+values obtained by fitting the LASSO on the full data.}
 }
 \description{
 Fits the LASSO regression over a single fold of a cross-validated data set.

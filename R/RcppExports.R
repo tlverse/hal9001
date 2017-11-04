@@ -21,15 +21,6 @@ apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
 
-#' Soft thresholding for LASSO fits
-#'
-#' The soft thresholding algorithm given by Hastie et al. (2009)
-#'
-#' @param beta Numeric of the regression coefficients of a linear model.
-#' @param lambda Numeric of the regularization constant for the L1 penalty.
-#'
-NULL
-
 #' LASSO Prediction
 #'
 #' Compute predictions based on a LASSO regression
@@ -39,6 +30,17 @@ NULL
 #'
 lassi_predict <- function(X, beta) {
     .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta)
+}
+
+#' Soft thresholding for LASSO fits
+#'
+#' The soft thresholding algorithm given by Hastie et al. (2009)
+#'
+#' @param beta Numeric of the regression coefficients of a linear model.
+#' @param lambda Numeric of the regularization constant for the L1 penalty.
+#'
+soft_threshold <- function(beta, lambda) {
+    .Call('_hal9001_soft_threshold', PACKAGE = 'hal9001', beta, lambda)
 }
 
 #' Compute updated LASSO coefficients
