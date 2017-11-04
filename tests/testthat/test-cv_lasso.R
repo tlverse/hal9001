@@ -86,10 +86,11 @@ lambdas_cvmse <- colMeans(cv_lasso_out$mses)
 #lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
 lambdas_cvse <- sd(lambdas_cvmse) / sqrt(n_folds)
 
-# find the lambda that minimizes the MSE and the lambda 1 std. err. above it
+# find the lambda that minimizes the MSE and the lambda 1 standard error above
 lambda_optim_index <- which.min(lambdas_cvmse)
 lambda_minmse_origami <- lambdas_init[lambda_optim_index]
 lambda_1se_origami <- lambda_minmse_origami + lambdas_cvse
+lambda_1se_index <- which.min(abs(lasso_init$lambdas - lambda_1se_origami))
 
 # create output object
 get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
@@ -104,22 +105,25 @@ names(cv_lasso_out) <- c("beta_coefs", "lambda_min", "lambda_1se")
 ################################################################################
 
 # just use the standard implementation available in glmnet
-hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = y,
-                               nfolds = n_folds)
-lambda_minmse_cvglmnet <- hal_lasso$lambda.min
-lambda_1se_cvglmnet <- hal_lasso$lambda.1se
+lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds)
+lambda_minmse_cvglmnet <- lasso_glmnet$lambda.min
+lambda_1se_cvglmnet <- lasso_glmnet$lambda.1se
+coef_minmse_cvglmnet <- coef(lasso_glmnet, "lambda.min")
+coef_1se_cvglmnet <- coef(lasso_glmnet, "lambda.1se")
+betas_cvglmnet <- cbind(coef_1se_cvglmnet, coef_minmse_cvglmnet)
 
 
 ################################################################################
 # TEST THAT ORIGAMI AND CV-GLMNET IMPLEMENTATIONS MATCH
 ################################################################################
 
-test_that("lambda-min matches between cv.glmnet and origami's cv_lasso", {
-  expect_equal(abs(lambda_minmse_origami - lambda_minmse_cvglmnet) /
-               lambda_minmse_cvglmnet, 0.05)
+test_that("lambda-min difference between cv.glmnet and cv_lasso within 1%.", {
+  expect_equal((abs(lambda_minmse_origami - lambda_minmse_cvglmnet) /
+               lambda_minmse_cvglmnet), 0.01)
 })
 
-test_that("lambda-1se matches between cv.glmnet and origami's cv_lasso", {
-  expect_equal(abs(lambda_1se_origami - lambda_1se_cvglmnet) /
-               lambda_1se_cvglmnet, 0.05)
+test_that("lambda-1se difference between cv.glmnet and cv_lasso within 1%.", {
+  expect_equal((abs(lambda_1se_origami - lambda_1se_cvglmnet) /
+               lambda_1se_cvglmnet), 0.01)
 })
+

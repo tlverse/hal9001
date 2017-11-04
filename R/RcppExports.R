@@ -155,3 +155,18 @@ make_design_matrix <- function(X, blist) {
     .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist)
 }
 
+#' Fast Coercion to Sparse Matrix
+#'
+#' Fast and efficient coercion of R's native matrix objects to sparse matrices.
+#' Borrowed from http://gallery.rcpp.org/articles/sparse-matrix-coercion/.
+#' INTERNAL USE ONLY.
+#'
+#' @param XX_ An object of class \code{Matrix} that has a sparse structure
+#'  suitable for coercion to a sparse matrix format of \code{dgCMatrix}.
+#'
+#' @return An object of class \code{dgCMatrix}, coerced from input \code{XX_}.
+#'
+asdgCMatrix_ <- function(XX_) {
+    .Call('_hal9001_asdgCMatrix_', PACKAGE = 'hal9001', XX_)
+}
+

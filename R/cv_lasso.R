@@ -39,7 +39,9 @@ lassi_origami <- function(fold, data, lambdas) {
                                                     valid_y)^2)})
 
   # the only output needed is the lambda-wise MSE over each fold
-  return(mses)
+  mses_out <- matrix(mses, nrow = 1)
+  out <- list(mses = mses_out)
+  return(out)
 }
 
 ################################################################################
@@ -85,7 +87,7 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   #lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
   lambdas_cvse <- sd(lambdas_cvmse) / sqrt(n_folds)
 
-  # find the lambda that minimizes the MSE and the lambda 1 std. err. above it
+  # find the lambda that minimizes the MSE and the lambda 1 standard error above
   lambda_optim_index <- which.min(lambdas_cvmse)
   lambda_minmse <- lambdas_init[lambda_optim_index]
   lambda_1se <- lambda_minmse + lambdas_cvse
@@ -95,6 +97,7 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
   betas_out <- lasso_init$beta_mat[, get_lambda_indices]
   colnames(betas_out) <- c("lambda_1se", "lambda_min")
+  betas_out <- asdgCMatrix_(betas_out * 1.0)
 
   # create output object
   cv_lasso_out <- list(betas_out, lambda_minmse, lambda_1se)
