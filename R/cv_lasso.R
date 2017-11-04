@@ -47,6 +47,7 @@ lassi_origami <- function(fold, data, lambdas) {
 #'
 #' @param x_basis ...
 #' @param y ...
+#' @param n_lambda ...
 #' @param n_folds ...
 #'
 #' @importFrom origami make_folds cross_validate
@@ -69,20 +70,25 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
 
   # compute cv-mean of MSEs for each lambda
   lambdas_cvmse <- colMeans(cv_lasso_out$mses)
-  lambda_minmse <- lambdas_init[which.min(lambdas_cvmse)]
 
   # also need the CV standard error for each lambda
-  lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, stats::sd)
-  lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
+  #lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, stats::sd)
+  #lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
+  lambdas_cvse <- sd(lambdas_cvmse) / sqrt(n_folds)
 
   # find the lambda that minimizes the MSE and the lambda 1 std. err. above it
-  lambda_optim <- which.min(lambdas_cvmse)
-  lambda_minmse <- lambdas_init[lambda_optim]
-  lambda_1se <- lambda_minmse + lambdas_cvse[lambda_optim]
+  lambda_optim_index <- which.min(lambdas_cvmse)
+  lambda_minmse <- lambdas_init[lambda_optim_index]
+  lambda_1se <- lambda_minmse + lambdas_cvse
+  lambda_1se_index <- which.min(abs(lasso_init$lambdas - lambda_1se))
+
+  # get beta vectors for lambda-min and lambda-1se
+  get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
+  betas_out <- lasso_init$beta_mat[, get_lambda_indices]
+  colnames(betas_out) <- c("lambda_1se", "lambda_min")
 
   # create output object
-  lambda_out <- list(lambda_minmse, lambda_1se)
-  names(lambda_out) <- c("lambda_min", "lambda_1se")
-  return(lambda_out)
+  cv_lasso_out <- list(betas_out, lambda_minmse, lambda_1se)
+  names(cv_lasso_out) <- c("beta_coefs", "lambda_min", "lambda_1se")
+  return(cv_lasso_out)
 }
-

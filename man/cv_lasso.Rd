@@ -11,6 +11,8 @@ cv_lasso(x_basis, y, n_lambda = 100, n_folds = 10)
 
 \item{y}{...}
 
+\item{n_lambda}{...}
+
 \item{n_folds}{...}
 }
 \description{
