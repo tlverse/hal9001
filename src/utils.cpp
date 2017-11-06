@@ -5,7 +5,7 @@ using namespace Rcpp;
 
 //' Fast Coercion to Sparse Matrix
 //'
-//' Fast and efficient coercion of R's native matrix objects to sparse matrices.
+//' Fast and efficient coercion of standard matrix objects to sparse matrices.
 //' Borrowed from http://gallery.rcpp.org/articles/sparse-matrix-coercion/.
 //' INTERNAL USE ONLY.
 //'

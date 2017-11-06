@@ -122,7 +122,7 @@ bool equal_double(double x, double y){
 
 // [[Rcpp::export]]
 double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                  double lambda, int j, const NumericVector& xscale) {
+                    double lambda, int j, const NumericVector& xscale) {
 
   double beta_j = beta[j];
   double xscale_j = xscale[j];
@@ -145,14 +145,14 @@ double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
     }
     beta[j] = new_beta;
   }
-  
+
   return(rss);
 }
 
 //------------------------------------------------------------------------------
 
 int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                   double lambda, const NumericVector& xscale, bool active_set) {
+                  double lambda, const NumericVector& xscale, bool active_set) {
   // update coordinates one-by-one
   int k;
   double old_rss = sum(resids * resids);
@@ -161,7 +161,7 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
   for (k = 0; k < X.outerSize(); ++k) {
     if(!(active_set) || beta[k]!=0){
       rss = update_coord(X, resids, beta, lambda, k, xscale);
-      
+
       // see if we decreased the rss
       // todo: should be relative to null deviance
       if(rss!= -1){
@@ -170,13 +170,9 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
         }
         old_rss = rss;
       }
-      
-      
     }
   }
-  
   // Rcout << "Updated " << updated << " coords" << std::endl;
-  
   return(updated);
 }
 
@@ -191,12 +187,15 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
 //' @param beta Numeric vector of initial beta estiamtes
 //' @param lambda Numeric corresponding to the LASSO regularization parameter.
 //' @param nsteps Maximum number of steps to take until stopping computation of
-//' the regression coefficient.
+//'  the regression coefficient.
 //' @param xscale scale factor for covariates. See get_xscale
-//' @param active_set, update only nonzero coefficients (TRUE), or all coefficients (FALSE)
+//' @param active_set, update only nonzero coefficients (TRUE), or all
+//'  coefficients (FALSE)
+//'
 // [[Rcpp::export]]
 int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                  double lambda, int nsteps, const NumericVector& xscale, bool active_set) {
+                 double lambda, int nsteps, const NumericVector& xscale,
+                 bool active_set) {
   // int p = X.cols();
   // NumericVector beta(p, 0.0);
   // NumericVector resids = y - lassi_predict(X, beta);
@@ -212,10 +211,9 @@ int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
     last_mse = mse;
 
     updated = update_coords(X, resids, beta, lambda, xscale, active_set);
-    
-    // we failed to substantially improve any coords
-    if(updated==0){
 
+    // we failed to substantially improve any coords
+    if (updated == 0) {
       break;
     }
 
@@ -227,7 +225,6 @@ int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
       break;
     }
   }
-  
   return(step_num + 1);
 }
 
@@ -243,7 +240,7 @@ NumericVector lassi_fit_path(const MSpMat& X, const NumericVector& y,
 
 // [[Rcpp::export]]
 IntegerVector non_zeros(const MSpMat& X) {
-  int p=X.cols();
+  int p = X.cols();
   int j;
   int nz;
 
@@ -254,28 +251,27 @@ IntegerVector non_zeros(const MSpMat& X) {
     for (MInIterMat i_(X, j); i_; ++i_) {
       nz++;
     }
-
     non_zeros[j] = nz;
   }
   return(non_zeros);
 }
 
 // [[Rcpp::export]]
-NumericVector get_pnz(const MSpMat& X){
+NumericVector get_pnz(const MSpMat& X) {
   IntegerVector nz = non_zeros(X);
   int n = X.rows();
   NumericVector pnz = as<NumericVector>(nz)/n;
-  
+
   return(pnz);
 }
 
 // [[Rcpp::export]]
-NumericVector get_xscale(const MSpMat& X){
+NumericVector get_xscale(const MSpMat& X) {
  int n = X.rows();
  NumericVector pnz = get_pnz(X);
  NumericVector xscale = sqrt(pnz);
- double minx = sqrt(1.0/n);
+ double minx = sqrt(1.0 / n);
  xscale[xscale < minx] = minx;
- 
+
  return(xscale);
 }

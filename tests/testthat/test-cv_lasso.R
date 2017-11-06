@@ -14,11 +14,11 @@ n_folds <- 10
 n = 100
 p = 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
-y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.1)
 
 testn <- 1e4
 testx <- matrix(rnorm(testn * p), testn, p)
-testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, 0.2)
+testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, mean = 0, sd = 0.1)
 
 # fit design matrix for HAL
 basis_list <- hal9001:::enumerate_basis(x)
@@ -96,16 +96,21 @@ lambda_1se_index <- which.min(abs(lasso_init$lambdas - lambda_1se_origami))
 get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
 betas_out <- lasso_init$beta_mat[, get_lambda_indices]
 colnames(betas_out) <- c("lambda_1se", "lambda_min")
-cv_lasso_out <- list(betas_out, lambda_minmse_origami, lambda_1se_origami)
-names(cv_lasso_out) <- c("beta_coefs", "lambda_min", "lambda_1se")
+coefs_out <- hal9001:::asdgCMatrix_(betas_out * 1.0)
+cv_lasso_out <- list(coefs_out, lambda_minmse_origami, lambda_1se_origami)
+names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se")
 
 
 ################################################################################
 # CV-LASSO using glmnet
 ################################################################################
 
+# create fold ID object for using the same folds between cv.glmnet and origami
+fold_id <- origami:::folds2foldvec(folds)
+
 # just use the standard implementation available in glmnet
-lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds)
+lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds,
+                                  foldid = fold_id)
 lambda_minmse_cvglmnet <- lasso_glmnet$lambda.min
 lambda_1se_cvglmnet <- lasso_glmnet$lambda.1se
 coef_minmse_cvglmnet <- coef(lasso_glmnet, "lambda.min")
@@ -117,13 +122,13 @@ betas_cvglmnet <- cbind(coef_1se_cvglmnet, coef_minmse_cvglmnet)
 # TEST THAT ORIGAMI AND CV-GLMNET IMPLEMENTATIONS MATCH
 ################################################################################
 
-test_that("lambda-min difference between cv.glmnet and cv_lasso within 1%.", {
-  expect_equal((abs(lambda_minmse_origami - lambda_minmse_cvglmnet) /
-               lambda_minmse_cvglmnet), 0.01)
+test_that("lambda-min difference between cv.glmnet, cv_lasso within 0.5%.", {
+  expect_equal(lambda_minmse_origami, expected = lambda_minmse_cvglmnet,
+               scale = lambda_minmse_cvglmnet, tolerance = 0.005)
 })
 
-test_that("lambda-1se difference between cv.glmnet and cv_lasso within 1%.", {
-  expect_equal((abs(lambda_1se_origami - lambda_1se_cvglmnet) /
-               lambda_1se_cvglmnet), 0.01)
+test_that("lambda-1se difference between cv.glmnet and cv_lasso within 0.5%.", {
+  expect_equal(lambda_1se_origami, expected = lambda_1se_cvglmnet,
+               scale = lambda_1se_cvglmnet, tolerance = 0.005)
 })
 

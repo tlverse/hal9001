@@ -13,7 +13,7 @@ index_first_copy <- function(X) {
 }
 
 #' Apply copy map
-#' 
+#'
 #' OR duplicate training set columns together
 #' @param X Sparse matrix containing columns of indicator functions.
 #' @param copy_map the copy map
@@ -82,9 +82,11 @@ update_coord <- function(X, resids, beta, lambda, j, xscale) {
 #' @param beta Numeric vector of initial beta estiamtes
 #' @param lambda Numeric corresponding to the LASSO regularization parameter.
 #' @param nsteps Maximum number of steps to take until stopping computation of
-#' the regression coefficient.
+#'  the regression coefficient.
 #' @param xscale scale factor for covariates. See get_xscale
-#' @param active_set, update only nonzero coefficients (TRUE), or all coefficients (FALSE)
+#' @param active_set, update only nonzero coefficients (TRUE), or all
+#'  coefficients (FALSE)
+#'
 lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale, active_set) {
     .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale, active_set)
 }
@@ -157,7 +159,7 @@ make_design_matrix <- function(X, blist) {
 
 #' Fast Coercion to Sparse Matrix
 #'
-#' Fast and efficient coercion of R's native matrix objects to sparse matrices.
+#' Fast and efficient coercion of standard matrix objects to sparse matrices.
 #' Borrowed from http://gallery.rcpp.org/articles/sparse-matrix-coercion/.
 #' INTERNAL USE ONLY.
 #'

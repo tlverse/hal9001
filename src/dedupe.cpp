@@ -38,24 +38,24 @@ IntegerVector index_first_copy(const MSpMat& X) {
 //------------------------------------------------------------------------------
 
 //' Apply copy map
-//' 
+//'
 //' OR duplicate training set columns together
 //' @param X Sparse matrix containing columns of indicator functions.
 //' @param copy_map the copy map
 // [[Rcpp::export]]
-SpMat apply_copy_map(const MSpMat& X, const List& copy_map){
+SpMat apply_copy_map(const MSpMat& X, const List& copy_map) {
   int n = X.rows();
   int basis_p = copy_map.size();
-  
+
   SpMat x_unique(n, basis_p);
   x_unique.reserve(0.5 * n * basis_p);
-  
+
   for(int j=0; j<basis_p; ++j){
     IntegerVector copy_group=copy_map[j];
 
     int p_cols = copy_group.size();
     for (int i = 0; i < n; i++) {
-      
+
       for (int j_original = 0; j_original < p_cols; j_original++) {
         int col = copy_group[j_original] - 1;  //cols is 1-indexed
         if (X.coeff(i, col) == 1) {
@@ -65,7 +65,6 @@ SpMat apply_copy_map(const MSpMat& X, const List& copy_map){
       }
     }
   }
-  
   x_unique.makeCompressed();
   return(x_unique);
 }

@@ -16,3 +16,6 @@ test:
 doc:
 	Rscript -e "devtools::document()"
 
+build:
+	Rscript -e "devtools::build()"
+

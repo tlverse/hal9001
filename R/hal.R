@@ -19,7 +19,7 @@
 #' @param fit_type The specific routine to be called when fitting the LASSO
 #'  regression in a cross-validated manner. Choosing the \code{glmnet} option
 #'  will result in a call to \code{cv.glmnet} while \code{origami} will produce
-#'  a (faster) call to a custom routine using the \code{origami} package.
+#'  a (faster) call to a custom routine based on the \code{origami} package.
 #' @param n_folds Integer for the number of folds to be used when splitting the
 #'  data for cross-validation. This defaults to 10 as this is the convention for
 #'  v-fold cross-validation.
@@ -89,10 +89,10 @@ fit_hal <- function(X,
 
     if (use_min) {
       lambda_star <- hal_lasso$lambda_min
-      coefs <- hal_lasso$beta_coefs[, "lambda_min"]
+      coefs <- hal_lasso$betas_mat[, "lambda_min"]
     } else {
       lambda_star <- hal_lasso$lambda_1se
-      coefs <- hal_lasso$beta_coefs[, "lambda_1se"]
+      coefs <- hal_lasso$betas_mat[, "lambda_1se"]
     }
 
   } else if (fit_type == "glmnet") {
@@ -117,7 +117,7 @@ fit_hal <- function(X,
 
   # bookkeeping: construct table for viewing procedure times
   times <- rbind(design_matrix = time_design_matrix - time_start,
-                 remove_duplicates = time_rm_duplicates -  time_design_matrix,
+                 remove_duplicates = time_rm_duplicates - time_design_matrix,
                  lasso = time_lasso - time_rm_duplicates,
                  total = time_final - time_start
                 )

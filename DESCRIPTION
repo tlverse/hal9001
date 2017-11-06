@@ -26,10 +26,10 @@ Imports:
   Rcpp,
   RcppEigen,
   Matrix,
-  glmnet,
   stats,
   utils,
-  origami
+  origami (>= 0.8.1),
+  glmnet
 Suggests:
   testthat,
   knitr,
@@ -48,6 +48,7 @@ LinkingTo:
   Rcpp,
   RcppEigen
 Remotes:
-  github::benkeser/halplus
+  github::benkeser/halplus,
+  github::jeremyrcoyle/origami
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1.9000

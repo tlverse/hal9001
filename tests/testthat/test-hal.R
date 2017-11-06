@@ -14,7 +14,7 @@ x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
 
 
-testn=10000
+testn = 10000
 testx <- matrix(rnorm(testn * p), testn, p)
 testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, 0.2)
 

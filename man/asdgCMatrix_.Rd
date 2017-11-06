@@ -14,7 +14,7 @@ suitable for coercion to a sparse matrix format of \code{dgCMatrix}.}
 An object of class \code{dgCMatrix}, coerced from input \code{XX_}.
 }
 \description{
-Fast and efficient coercion of R's native matrix objects to sparse matrices.
+Fast and efficient coercion of standard matrix objects to sparse matrices.
 Borrowed from http://gallery.rcpp.org/articles/sparse-matrix-coercion/.
 INTERNAL USE ONLY.
 }

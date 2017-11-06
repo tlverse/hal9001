@@ -101,7 +101,7 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
 
   # create output object
   cv_lasso_out <- list(betas_out, lambda_minmse, lambda_1se)
-  names(cv_lasso_out) <- c("beta_coefs", "lambda_min", "lambda_1se")
+  names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se")
   return(cv_lasso_out)
 }
 
