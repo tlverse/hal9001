@@ -1,6 +1,5 @@
 ---
-output: github_document
-bibliography: README-refs.bib
+output: rmarkdown::html_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -15,16 +14,16 @@ knitr::opts_chunk$set(
 
 # R/`hal9001`
 
-> A _fast_ Highly Adaptive LASSO estimator
-
-__Authors:__ [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima
-Hejazi](http://nimahejazi.org)
-
 [![Travis-CI Build Status](https://travis-ci.org/jeremyrcoyle/hal9001.svg?branch=master)](https://travis-ci.org/jeremyrcoyle/hal9001)
 [![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
 [![Coverage Status](https://img.shields.io/codecov/c/github/jeremyrcoyle/hal9001/master.svg)](https://codecov.io/github/jeremyrcoyle/hal9001?branch=master)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+
+> _Fast_ and _scalable_ estimation procedure for the Highly Adaptive LASSO
+
+__Authors:__ [Jeremy Coyle](https://github.com/jeremyrcoyle) and [Nima
+Hejazi](https://nimahejazi.org)
 
 ---
 
@@ -44,13 +43,6 @@ intensive nature of the algorithm suggests that writing core routines in C++
 (and making these available in R via the [Rcpp](http://www.rcpp.org/) framework)
 ought to provide significant efficiency gains. `hal9001` is just such an
 implementation.
-
-For detailed discussions of the Highly Adaptive LASSO estimator, the interested
-reader might consider consulting @benkeser2016hal, @vdl2015generally,
-and @vdl2017finite.
-
-__This project is still in its infancy. Accordingly, it will be regularly
-updated, possibly with breaking changes. For now, use only at your own risk.__
 
 ---
 
@@ -74,6 +66,68 @@ devtools::install_github("jeremyrcoyle/hal9001")
 
 ---
 
+## Issues
+
+If you encounter any bugs or have any specific feature requests, please [file an
+issue](https://github.com/jeremyrcoyle/hal9001/issues).
+
+---
+
+## Example
+
+This minimal example shows how to use `hal9001` to obtain predictions based on
+the Highly Adaptive LASSO. For details on the properties of the estimator, the
+interested reader is referred to @benkeser2016hal and @vdl2017generally.
+
+```{r example}
+# load the hal9001 package
+library(hal9001)
+
+# simulate data
+set.seed(385971)
+n = 100
+p = 3
+x <- xmat <- matrix(rnorm(n * p), n, p)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
+
+# fit the HAL regression
+hal_fit <- fit_hal(X = x, Y = y)
+hal_fit$times
+
+# training sample prediction
+preds <- predict(hal_fit, new_data = x)
+mean(hal_mse <- (preds - y)^2)
+```
+
+---
+
+## Contributions
+
+`hal9001` is the primary implementation of the Highly Adaptive LASSO, an
+estimator with numerous optimality properties, especially useful when employing
+[Targeted Learning](http://www.targetedlearningbook.com/about/). To that end,
+contributions are very welcome, though we ask that interested contributors
+consult our [`contribution
+guidelines`](https://github.com/jeremyrcoyle/hal9001/blob/master/CONTRIBUTING.md)
+prior to submitting a pull request.
+
+---
+
+## Citation
+
+After using the `hal9001` R package, please cite the following:
+
+        @misc{coyle2017hal9001,
+          author = {Coyle, Jeremy R and Hejazi, Nima S},
+          title = {{hal9001}: A fast and scalable {Highly Adaptive LASSO}},
+          year  = {2017},
+          howpublished = {\url{https://github.com/jeremyrcoyle/hal9001}},
+          url = {http://dx.doi.org/DOI_TBD},
+          doi = {DOI_TBD}
+        }
+
+---
+
 ## License
 
 &copy; 2017 [Jeremy R. Coyle](https://github.com/jeremyrcoyle) & [Nima S.
@@ -81,8 +135,4 @@ Hejazi](http://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license. See
 file `LICENSE` for details.
-
----
-
-## References
 

@@ -42,6 +42,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// soft_threshold
+double soft_threshold(double beta, double lambda);
+RcppExport SEXP _hal9001_soft_threshold(SEXP betaSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    rcpp_result_gen = Rcpp::wrap(soft_threshold(beta, lambda));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_new_beta
 double get_new_beta(const MSpMat& X, const NumericVector& resids, int j, double beta_j, double xscale_j);
 RcppExport SEXP _hal9001_get_new_beta(SEXP XSEXP, SEXP residsSEXP, SEXP jSEXP, SEXP beta_jSEXP, SEXP xscale_jSEXP) {
@@ -199,11 +211,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// asdgCMatrix_
+SEXP asdgCMatrix_(SEXP XX_);
+RcppExport SEXP _hal9001_asdgCMatrix_(SEXP XX_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type XX_(XX_SEXP);
+    rcpp_result_gen = Rcpp::wrap(asdgCMatrix_(XX_));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_index_first_copy", (DL_FUNC) &_hal9001_index_first_copy, 1},
     {"_hal9001_apply_copy_map", (DL_FUNC) &_hal9001_apply_copy_map, 2},
     {"_hal9001_lassi_predict", (DL_FUNC) &_hal9001_lassi_predict, 2},
+    {"_hal9001_soft_threshold", (DL_FUNC) &_hal9001_soft_threshold, 2},
     {"_hal9001_get_new_beta", (DL_FUNC) &_hal9001_get_new_beta, 5},
     {"_hal9001_find_lambda_max", (DL_FUNC) &_hal9001_find_lambda_max, 3},
     {"_hal9001_equal_double", (DL_FUNC) &_hal9001_equal_double, 2},
@@ -216,6 +240,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_meets_basis", (DL_FUNC) &_hal9001_meets_basis, 4},
     {"_hal9001_evaluate_basis", (DL_FUNC) &_hal9001_evaluate_basis, 4},
     {"_hal9001_make_design_matrix", (DL_FUNC) &_hal9001_make_design_matrix, 2},
+    {"_hal9001_asdgCMatrix_", (DL_FUNC) &_hal9001_asdgCMatrix_, 1},
     {NULL, NULL, 0}
 };
 

@@ -4,5 +4,5 @@
 \alias{hal9001}
 \title{hal9001}
 \description{
-Package for fitting the Highly Adaptive LASSO (HAL) estimator fast
+Package for fitting the Highly Adaptive LASSO (HAL) estimator
 }

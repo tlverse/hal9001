@@ -20,7 +20,8 @@ the regression coefficient.}
 
 \item{xscale}{scale factor for covariates. See get_xscale}
 
-\item{active_set, }{update only nonzero coefficients (TRUE), or all coefficients (FALSE)}
+\item{active_set, }{update only nonzero coefficients (TRUE), or all
+coefficients (FALSE)}
 }
 \description{
 Fit a linear regression model with L1 penalization, the LASSO

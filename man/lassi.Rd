@@ -2,19 +2,23 @@
 % Please edit documentation in R/lassi.R
 \name{lassi}
 \alias{lassi}
-\title{custom lasso implementation for indicators}
+\title{Custom Lasso implementation for matrices of indicator functions}
 \usage{
-lassi(x, y, nlambda = 100, lambda_min_ratio = 0.01)
+lassi(x, y, lambdas = NULL, nlambda = 100, lambda_min_ratio = 0.01)
 }
 \arguments{
-\item{x}{the covariate matrix}
+\item{x}{The covariate matrix}
 
-\item{y}{the outcome vector}
+\item{y}{The outcome vector}
+
+\item{lambdas}{A sequence of values for the L1 regularization parameter
+(lambda) to be used in fitting the LASSO. Defaults to \code{NULL}.}
 
 \item{nlambda}{number of lambdas to fit. See \code{\link{lambda_seq}}}
 
-\item{lambda_min_ratio}{ratio of largest to smallest lambda to fit. See \code{\link{lambda_seq}}}
+\item{lambda_min_ratio}{ratio of largest to smallest lambda to fit. For
+details, see \code{\link{lambda_seq}}}
 }
 \description{
-custom lasso implementation for indicators
+Custom Lasso implementation for matrices of indicator functions
 }

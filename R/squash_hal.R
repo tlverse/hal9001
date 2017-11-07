@@ -3,14 +3,14 @@
 #' Reduce footprint by dropping basis functions with coefficients of zero
 #'
 #' @param object An object of class \code{hal9001}, containing the results of
-#' fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.
+#'  fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.
 #'
 #' @export
 #'
 #' @return Object of class \code{hal9001}, similar to the input object but
-#' reduced such that coefficients belonging to bases with coefficients equal to
-#' zero removed.
-#'
+#'  reduced such that coefficients belonging to bases with coefficients equal to
+#'  zero removed.
+#
 squash_hal_fit <- function(object) {
   stopifnot(class(object) == "hal9001")
 

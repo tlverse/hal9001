@@ -1,7 +1,7 @@
-#' HAL 9000 Quotes from 2001: A Space Odyssey
+#' HAL9000 Quotes from "2001: A Space Odyssey"
 #'
-#' Curated quotes from the HAL 9000 computer, from the 1968 film 2001: A Space
-#' Odyssey.
+#' Curated selection of quotes from the HAL9000 computer, from the critically
+#' acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
 #'
 #' @format A vector of quotes.
 #'

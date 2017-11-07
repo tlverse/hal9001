@@ -5,20 +5,20 @@
 #' @param Y A \code{numeric} of outcomes.
 #' @param X A \code{matrix} of predictors/covariates.
 #' @param newX A matrix of new observations on which to obtain predictions. The
-#' default of \code{NULL} computes predictions on training inputs \code{X}.
+#'  default of \code{NULL} computes predictions on training inputs \code{X}.
 #' @param degrees The highest order of interaction terms for which the basis
-#' functions ought to be generated. The default (\code{NULL}) corresponds to
-#' generating basis functions for the full dimensionality of the input matrix.
+#'  functions ought to be generated. The default (\code{NULL}) corresponds to
+#'  generating basis functions for the full dimensionality of the input matrix.
 #' @param family Not used by the function directly, but ensures compatibility
-#' with \code{SuperLearner}.
+#'  with \code{SuperLearner}.
 #' @param obsWeights Not used by the function directly, but meant to ensure
-#' compatibility with \code{SuperLearner}.
+#'  compatibility with \code{SuperLearner}.
 #' @param ... Prevents unexpected process death. DON'T USE. (This is a hack.)
 #'
 #' @importFrom stats predict gaussian
 #'
 #' @export
-#'
+#
 SL.hal9001 <- function(Y,
                        X,
                        newX = NULL,
@@ -56,7 +56,7 @@ SL.hal9001 <- function(Y,
 #' @importFrom stats predict
 #'
 #' @export
-#'
+#
 predict.SL.hal9001 <- function(object, newX, ...) {
   # generate predictions and return
   pred <- stats::predict(object$object, new_data = newX)

@@ -3,12 +3,12 @@
 #' Build a list of basis functions from a set of columns
 #'
 #' @param cols Index or indices (as \code{numeric}) of covariates (columns) of
-#' interest in the data matrix \code{x} for which basis functions ought to be
-#' generated. Note that basis functions for interactions of these columns are
-#' computed automatically.
+#'  interest in the data matrix \code{x} for which basis functions ought to be
+#'  generated. Note that basis functions for interactions of these columns are
+#'  computed automatically.
 #' @param x A \code{matrix} containing observations in the rows and covariates
-#' in the columns. Basis functions are computed for these covariates.
-#'
+#'  in the columns. Basis functions are computed for these covariates.
+#
 basis_list_cols <- function(cols, x) {
   # first, subset only to columns of interest
   x_sub <- x[, cols, drop = FALSE]
@@ -25,13 +25,13 @@ basis_list_cols <- function(cols, x) {
 #' Find the full list of basis functions up to a particular degree
 #'
 #' @param x An input \code{matrix} containing observations and covariates
-#' following standard conventions in problems of statistical learning.
+#'  following standard conventions in problems of statistical learning.
 #' @param degree The highest order of interaction terms for which the basis
-#' functions ought to be generated. The default (\code{NULL}) corresponds to
-#' generating basis functions for the full dimensionality of the input matrix.
+#'  functions ought to be generated. The default (\code{NULL}) corresponds to
+#'  generating basis functions for the full dimensionality of the input matrix.
 #'
 #' @importFrom utils combn
-#'
+#
 basis_of_degree <- function(x, degree) {
   # get dimensionality of input matrix
   p <- ncol(x)
@@ -56,13 +56,13 @@ basis_of_degree <- function(x, degree) {
 #' to a specified order/degree
 #'
 #' @param x An input \code{matrix} containing observations and covariates
-#' following standard conventions in problems of statistical learning.
+#'  following standard conventions in problems of statistical learning.
 #' @param degrees The highest order of interaction terms for which the basis
-#' functions ought to be generated. The default (\code{NULL}) corresponds to
-#' generating basis functions for the full dimensionality of the input matrix.
+#'  functions ought to be generated. The default (\code{NULL}) corresponds to
+#'  generating basis functions for the full dimensionality of the input matrix.
 #'
 #' @export
-#'
+#
 enumerate_basis <- function(x, degrees = NULL) {
   # if degree is not specified, set it as the full dimensionality of input x
   if (is.null(degrees)) {

@@ -1,12 +1,13 @@
 Package: hal9001
 Title: A fast, computationally efficient Highly Adaptive LASSO (HAL)
-Version: 0.0.4.0
+Version: 0.0.5.0
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
-    role = c("aut", "cre")),
-  person("David", "Benkeser", email = "benkeser@emory.edu",
-    role = c("aut", "cph")),
-  person("Nima", "Hejazi", email = "nh@nimahejazi.org", role = "aut"),
+         role = c("aut", "cre"),
+         comment = c(ORCID = "0000-0002-9874-6649")),
+  person("Nima", "Hejazi", email = "nh@nimahejazi.org", role = "aut",
+         comment = c(ORCID = "0000-0002-7127-2789")),
+  person("David", "Benkeser", email = "benkeser@emory.edu", role = "ctb"),
   person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com", role = "ctb"),
   person("Mark", "van der Laan", email = "laan@berkeley.edu", role = "cph")
   )
@@ -24,14 +25,11 @@ LazyData: true
 Imports:
   Rcpp,
   RcppEigen,
-  data.table,
   Matrix,
-  glmnet,
   stats,
   utils,
-  stringr,
-  bit,
-  SuperLearner
+  origami (>= 0.8.1),
+  glmnet
 Suggests:
   testthat,
   knitr,
@@ -41,12 +39,16 @@ Suggests:
   ggplot2,
   dplyr,
   tidyr,
+  bit,
+  stringr,
+  SuperLearner,
+  data.table,
   hal
 LinkingTo:
   Rcpp,
   RcppEigen
 Remotes:
-  github::benkeser/halplus
+  github::benkeser/halplus,
+  github::jeremyrcoyle/origami
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
-
+RoxygenNote: 6.0.1.9000
