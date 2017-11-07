@@ -83,8 +83,6 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   lambdas_cvmse <- colMeans(cv_lasso_out$mses)
 
   # also need the CV standard error for each lambda
-  #lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, stats::sd)
-  #lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
   lambdas_cvse <- sd(lambdas_cvmse) / sqrt(n_folds)
 
   # find the lambda that minimizes the MSE and the lambda 1 standard error above
@@ -97,6 +95,9 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
   betas_out <- lasso_init$beta_mat[, get_lambda_indices]
   colnames(betas_out) <- c("lambda_1se", "lambda_min")
+
+  # add in intercept term to coefs matrix and convert to sparse matrix output
+  betas_out <- rbind(rep(mean(y), ncol(betas_out)), betas_out)
   betas_out <- asdgCMatrix_(betas_out * 1.0)
 
   # create output object
