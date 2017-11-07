@@ -95,18 +95,42 @@ install.packages("hal9001")
 ```
 -->
 <p>You can install the development version of <code>hal9001</code> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/"><code>devtools</code></a> with</p>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"jeremyrcoyle/hal9001"</span>)</div></code></pre>
+<pre class="sourceCode r" id="cb1"><code class="sourceCode r"><div class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"jeremyrcoyle/hal9001"</span>)</div></code></pre>
 <hr></section><section id="issues" class="level2"><h2>Issues</h2>
 <p>If you encounter any bugs or have any specific feature requests, please <a href="https://github.com/jeremyrcoyle/hal9001/issues">file an issue</a>.</p>
 <hr></section><section id="example" class="level2"><h2>Example</h2>
 <p>This minimal example shows how to use <code>hal9001</code> to obtain predictions based on the Highly Adaptive LASSO. For details on the properties of the estimator, the interested reader is referred to <span class="citation" data-cites="benkeser2016hal">@benkeser2016hal</span> and <span class="citation" data-cites="vdl2017generally">@vdl2017generally</span>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="co"># simulate data</span></div>
-<div class="sourceLine" id="2" href="#2" data-line-number="2">
+<pre class="sourceCode r" id="cb2"><code class="sourceCode r"><div class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># load the hal9001 package</span></div>
+<div class="sourceLine" id="cb2-2" data-line-number="2">
+<span class="kw">library</span>(hal9001)</div>
+<div class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">#&gt; hal9001: A fast and scalable Highly Adaptive LASSO</span></div>
+<div class="sourceLine" id="cb2-4" data-line-number="4"><span class="co">#&gt; Version: 0.0.5.0</span></div>
+<div class="sourceLine" id="cb2-5" data-line-number="5"></div>
+<div class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># simulate data</span></div>
+<div class="sourceLine" id="cb2-7" data-line-number="7">
 <span class="kw">set.seed</span>(<span class="dv">385971</span>)</div>
-<div class="sourceLine" id="3" href="#3" data-line-number="3">n &lt;-<span class="st"> </span><span class="dv">1000</span>
+<div class="sourceLine" id="cb2-8" data-line-number="8">n =<span class="st"> </span><span class="dv">100</span>
 </div>
-<div class="sourceLine" id="4" href="#4" data-line-number="4">p &lt;-<span class="st"> </span><span class="dv">5</span>
-</div></code></pre>
+<div class="sourceLine" id="cb2-9" data-line-number="9">p =<span class="st"> </span><span class="dv">3</span>
+</div>
+<div class="sourceLine" id="cb2-10" data-line-number="10">x &lt;-<span class="st"> </span>xmat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), n, p)</div>
+<div class="sourceLine" id="cb2-11" data-line-number="11">y &lt;-<span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">1</span>]) <span class="op">*</span><span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n, <span class="fl">0.2</span>)</div>
+<div class="sourceLine" id="cb2-12" data-line-number="12"></div>
+<div class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># fit the HAL regression</span></div>
+<div class="sourceLine" id="cb2-14" data-line-number="14">hal_fit &lt;-<span class="st"> </span><span class="kw"><a href="reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y)</div>
+<div class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; [1] "Look Dave, I can see you're really upset about this. I honestly think you ought to sit down calmly, take a stress pill, and think things over."</span></div>
+<div class="sourceLine" id="cb2-16" data-line-number="16">hal_fit<span class="op">$</span>times</div>
+<div class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></div>
+<div class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; design_matrix         0.004    0.001   0.004          0         0</span></div>
+<div class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; remove_duplicates     0.005    0.000   0.007          0         0</span></div>
+<div class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; lasso                 1.112    0.054   1.131          0         0</span></div>
+<div class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; total                 1.121    0.055   1.142          0         0</span></div>
+<div class="sourceLine" id="cb2-22" data-line-number="22"></div>
+<div class="sourceLine" id="cb2-23" data-line-number="23"><span class="co"># training sample prediction</span></div>
+<div class="sourceLine" id="cb2-24" data-line-number="24">preds &lt;-<span class="st"> </span><span class="kw">predict</span>(hal_fit, <span class="dt">new_data =</span> x)</div>
+<div class="sourceLine" id="cb2-25" data-line-number="25">
+<span class="kw">mean</span>(hal_mse &lt;-<span class="st"> </span>(preds <span class="op">-</span><span class="st"> </span>y)<span class="op">^</span><span class="dv">2</span>)</div>
+<div class="sourceLine" id="cb2-26" data-line-number="26"><span class="co">#&gt; [1] 1.163029</span></div></code></pre>
 <hr></section><section id="contributions" class="level2"><h2>Contributions</h2>
 <p><code>hal9001</code> is the primary implementation of the Highly Adaptive LASSO, an estimator with numerous optimality properties, especially useful when employing <a href="http://www.targetedlearningbook.com/about/">Targeted Learning</a>. To that end, contributions are very welcome, though we ask that interested contributors consult our <a href="https://github.com/jeremyrcoyle/hal9001/blob/master/CONTRIBUTING.md"><code>contribution guidelines</code></a> prior to submitting a pull request.</p>
 <hr></section><section id="citation" class="level2"><h2>Citation</h2>

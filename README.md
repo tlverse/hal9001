@@ -83,10 +83,32 @@ estimator, the interested reader is referred to Benkeser and van der
 Laan (2016) and van der Laan (2017a).
 
 ``` r
+# load the hal9001 package
+library(hal9001)
+#> hal9001: A fast and scalable Highly Adaptive LASSO
+#> Version: 0.0.5.0
+
 # simulate data
 set.seed(385971)
-n <- 1000
-p <- 5
+n = 100
+p = 3
+x <- xmat <- matrix(rnorm(n * p), n, p)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
+
+# fit the HAL regression
+hal_fit <- fit_hal(X = x, Y = y)
+#> [1] "Look Dave, I can see you're really upset about this. I honestly think you ought to sit down calmly, take a stress pill, and think things over."
+hal_fit$times
+#>                   user.self sys.self elapsed user.child sys.child
+#> design_matrix         0.003    0.000   0.004          0         0
+#> remove_duplicates     0.006    0.000   0.006          0         0
+#> lasso                 0.977    0.033   0.966          0         0
+#> total                 0.986    0.033   0.976          0         0
+
+# training sample prediction
+preds <- predict(hal_fit, new_data = x)
+mean(hal_mse <- (preds - y)^2)
+#> [1] 1.163029
 ```
 
 -----

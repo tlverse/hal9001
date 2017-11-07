@@ -72,7 +72,7 @@
       <h1>Introduction to the HAL estimator</h1>
                         <h4 class="author">Nima Hejazi</h4>
             
-            <h4 class="date">2017-11-04</h4>
+            <h4 class="date">2017-11-06</h4>
           </div>
 
     
@@ -91,23 +91,23 @@
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="co"># simulation constants</span></div>
-<div class="sourceLine" id="2" href="#2" data-line-number="2">
+<pre class="sourceCode r" id="cb4"><code class="sourceCode r"><div class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># simulation constants</span></div>
+<div class="sourceLine" id="cb4-2" data-line-number="2">
 <span class="kw">set.seed</span>(<span class="dv">467392</span>)</div>
-<div class="sourceLine" id="3" href="#3" data-line-number="3">n_obs &lt;-<span class="st"> </span><span class="dv">1000</span>
+<div class="sourceLine" id="cb4-3" data-line-number="3">n_obs &lt;-<span class="st"> </span><span class="dv">1000</span>
 </div>
-<div class="sourceLine" id="4" href="#4" data-line-number="4">n_covars &lt;-<span class="st"> </span><span class="dv">3</span>
+<div class="sourceLine" id="cb4-4" data-line-number="4">n_covars &lt;-<span class="st"> </span><span class="dv">3</span>
 </div>
-<div class="sourceLine" id="5" href="#5" data-line-number="5"></div>
-<div class="sourceLine" id="6" href="#6" data-line-number="6"><span class="co"># make some training data</span></div>
-<div class="sourceLine" id="7" href="#7" data-line-number="7">x &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_covars, <span class="kw">rnorm</span>(n_obs))</div>
-<div class="sourceLine" id="8" href="#8" data-line-number="8">y &lt;-<span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">1</span>]) <span class="op">*</span><span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n_obs, <span class="dv">0</span>, <span class="fl">0.2</span>)</div>
-<div class="sourceLine" id="9" href="#9" data-line-number="9"></div>
-<div class="sourceLine" id="10" href="#10" data-line-number="10"><span class="co"># make some testing data</span></div>
-<div class="sourceLine" id="11" href="#11" data-line-number="11">test_x &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_covars, <span class="kw">rnorm</span>(n_obs))</div>
-<div class="sourceLine" id="12" href="#12" data-line-number="12">test_y &lt;-<span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">1</span>]) <span class="op">*</span><span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n_obs, <span class="dv">0</span>, <span class="fl">0.2</span>)</div></code></pre>
+<div class="sourceLine" id="cb4-5" data-line-number="5"></div>
+<div class="sourceLine" id="cb4-6" data-line-number="6"><span class="co"># make some training data</span></div>
+<div class="sourceLine" id="cb4-7" data-line-number="7">x &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_covars, <span class="kw">rnorm</span>(n_obs))</div>
+<div class="sourceLine" id="cb4-8" data-line-number="8">y &lt;-<span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">1</span>]) <span class="op">*</span><span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n_obs, <span class="dv">0</span>, <span class="fl">0.2</span>)</div>
+<div class="sourceLine" id="cb4-9" data-line-number="9"></div>
+<div class="sourceLine" id="cb4-10" data-line-number="10"><span class="co"># make some testing data</span></div>
+<div class="sourceLine" id="cb4-11" data-line-number="11">test_x &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_covars, <span class="kw">rnorm</span>(n_obs))</div>
+<div class="sourceLine" id="cb4-12" data-line-number="12">test_y &lt;-<span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">1</span>]) <span class="op">*</span><span class="st"> </span><span class="kw">sin</span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n_obs, <span class="dv">0</span>, <span class="fl">0.2</span>)</div></code></pre>
 <p>Look at simulated data…</p>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">
+<pre class="sourceCode r" id="cb5"><code class="sourceCode r"><div class="sourceLine" id="cb5-1" data-line-number="1">
 <span class="kw">head</span>(x)</div></code></pre>
 <pre><code>##             [,1]       [,2]       [,3]
 ## [1,]  2.44102981  0.4670282  0.5659888
@@ -116,63 +116,65 @@
 ## [4,] -1.09760477 -0.1173214  0.8895520
 ## [5,]  0.23710498  1.8049389 -1.1283156
 ## [6,]  0.06810091  0.9301941  0.8971138</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">
+<pre class="sourceCode r" id="cb7"><code class="sourceCode r"><div class="sourceLine" id="cb7-1" data-line-number="1">
 <span class="kw">head</span>(y)</div></code></pre>
 <pre><code>## [1]  0.22550406 -0.66207651 -0.04202133 -0.05962337 -0.02333049  0.10083977</code></pre>
 <hr></section><section id="using-the-highly-adaptive-lasso" class="level2"><h2>Using the Highly Adaptive LASSO</h2>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">
+<pre class="sourceCode r" id="cb9"><code class="sourceCode r"><div class="sourceLine" id="cb9-1" data-line-number="1">
 <span class="kw">library</span>(hal9001)</div></code></pre>
+<pre><code>## hal9001: A fast and scalable Highly Adaptive LASSO</code></pre>
+<pre><code>## Version: 0.0.5.0</code></pre>
 <section id="fitting-the-model" class="level3"><h3>Fitting the model</h3>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">hal_fit &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y)</div>
-<div class="sourceLine" id="2" href="#2" data-line-number="2">hal_fit<span class="op">$</span>times</div></code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="co"># perform benchmarking</span></div>
-<div class="sourceLine" id="2" href="#2" data-line-number="2">m_hal &lt;-<span class="st"> </span><span class="kw">microbenchmark</span>(<span class="dt">unit =</span> <span class="st">"s"</span>, <span class="dt">times =</span> <span class="dv">20</span>,</div>
-<div class="sourceLine" id="3" href="#3" data-line-number="3">  hal_fit_m &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y)</div>
-<div class="sourceLine" id="4" href="#4" data-line-number="4">)</div>
-<div class="sourceLine" id="5" href="#5" data-line-number="5"></div>
-<div class="sourceLine" id="6" href="#6" data-line-number="6"><span class="co"># make plot</span></div>
-<div class="sourceLine" id="7" href="#7" data-line-number="7">p_hal_times &lt;-<span class="st"> </span>m_hal <span class="op">%&gt;%</span>
+<pre class="sourceCode r" id="cb12"><code class="sourceCode r"><div class="sourceLine" id="cb12-1" data-line-number="1">hal_fit &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y)</div>
+<div class="sourceLine" id="cb12-2" data-line-number="2">hal_fit<span class="op">$</span>times</div></code></pre>
+<pre class="sourceCode r" id="cb13"><code class="sourceCode r"><div class="sourceLine" id="cb13-1" data-line-number="1"><span class="co"># perform benchmarking</span></div>
+<div class="sourceLine" id="cb13-2" data-line-number="2">m_hal &lt;-<span class="st"> </span><span class="kw">microbenchmark</span>(<span class="dt">unit =</span> <span class="st">"s"</span>, <span class="dt">times =</span> <span class="dv">20</span>,</div>
+<div class="sourceLine" id="cb13-3" data-line-number="3">  hal_fit_m &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y)</div>
+<div class="sourceLine" id="cb13-4" data-line-number="4">)</div>
+<div class="sourceLine" id="cb13-5" data-line-number="5"></div>
+<div class="sourceLine" id="cb13-6" data-line-number="6"><span class="co"># make plot</span></div>
+<div class="sourceLine" id="cb13-7" data-line-number="7">p_hal_times &lt;-<span class="st"> </span>m_hal <span class="op">%&gt;%</span>
 </div>
-<div class="sourceLine" id="8" href="#8" data-line-number="8">
+<div class="sourceLine" id="cb13-8" data-line-number="8">
 <span class="st"> </span>dplyr<span class="op">::</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">transmute</a></span>(</div>
-<div class="sourceLine" id="9" href="#9" data-line-number="9">     <span class="dt">time_sec =</span> time <span class="op">/</span><span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">9</span>
+<div class="sourceLine" id="cb13-9" data-line-number="9">     <span class="dt">time_sec =</span> time <span class="op">/</span><span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="dv">9</span>
 </div>
-<div class="sourceLine" id="10" href="#10" data-line-number="10"> ) <span class="op">%&gt;%</span>
+<div class="sourceLine" id="cb13-10" data-line-number="10"> ) <span class="op">%&gt;%</span>
 </div>
-<div class="sourceLine" id="11" href="#11" data-line-number="11">
+<div class="sourceLine" id="cb13-11" data-line-number="11">
 <span class="st"> </span><span class="kw">gather</span>() <span class="op">%&gt;%</span>
 </div>
-<div class="sourceLine" id="12" href="#12" data-line-number="12">
+<div class="sourceLine" id="cb13-12" data-line-number="12">
 <span class="st"> </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x =</span> key, <span class="dt">y =</span> value)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span>
 </div>
-<div class="sourceLine" id="13" href="#13" data-line-number="13">
+<div class="sourceLine" id="cb13-13" data-line-number="13">
 <span class="st">   </span><span class="kw">xlab</span>(<span class="st">""</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylab</span>(<span class="st">"time (sec.)"</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">"HAL9001"</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_minimal</span>()</div>
-<div class="sourceLine" id="14" href="#14" data-line-number="14"></div>
-<div class="sourceLine" id="15" href="#15" data-line-number="15">p_hal_times</div>
-<div class="sourceLine" id="16" href="#16" data-line-number="16">
+<div class="sourceLine" id="cb13-14" data-line-number="14"></div>
+<div class="sourceLine" id="cb13-15" data-line-number="15">p_hal_times</div>
+<div class="sourceLine" id="cb13-16" data-line-number="16">
 <span class="kw">summary</span>(m_hal)</div></code></pre>
 <p>…</p>
 </section><section id="obtaining-model-predictions" class="level3"><h3>Obtaining model predictions</h3>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1"><span class="co"># training sample prediction for HAL vs HAL9000</span></div>
-<div class="sourceLine" id="2" href="#2" data-line-number="2">mse &lt;-<span class="st"> </span><span class="cf">function</span>(preds, y) {</div>
-<div class="sourceLine" id="3" href="#3" data-line-number="3">    <span class="kw">mean</span>((preds <span class="op">-</span><span class="st"> </span>y)<span class="op">^</span><span class="dv">2</span>)</div>
-<div class="sourceLine" id="4" href="#4" data-line-number="4">}</div>
-<div class="sourceLine" id="5" href="#5" data-line-number="5"></div>
-<div class="sourceLine" id="6" href="#6" data-line-number="6">preds_hal &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> hal_fit, <span class="dt">newdata =</span> x)</div>
-<div class="sourceLine" id="7" href="#7" data-line-number="7">mse_hal &lt;-<span class="st"> </span><span class="kw">mse</span>(<span class="dt">preds =</span> preds_hal, <span class="dt">y =</span> y)</div>
-<div class="sourceLine" id="8" href="#8" data-line-number="8">mse_hal</div></code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">oob_hal &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> hal_fit, <span class="dt">newdata =</span> test_x)</div>
-<div class="sourceLine" id="2" href="#2" data-line-number="2">oob_hal_mse &lt;-<span class="st"> </span><span class="kw">mse</span>(<span class="dt">preds =</span> oob_hal, <span class="dt">y =</span> test_y)</div>
-<div class="sourceLine" id="3" href="#3" data-line-number="3">oob_hal_mse</div></code></pre>
+<pre class="sourceCode r" id="cb14"><code class="sourceCode r"><div class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># training sample prediction for HAL vs HAL9000</span></div>
+<div class="sourceLine" id="cb14-2" data-line-number="2">mse &lt;-<span class="st"> </span><span class="cf">function</span>(preds, y) {</div>
+<div class="sourceLine" id="cb14-3" data-line-number="3">    <span class="kw">mean</span>((preds <span class="op">-</span><span class="st"> </span>y)<span class="op">^</span><span class="dv">2</span>)</div>
+<div class="sourceLine" id="cb14-4" data-line-number="4">}</div>
+<div class="sourceLine" id="cb14-5" data-line-number="5"></div>
+<div class="sourceLine" id="cb14-6" data-line-number="6">preds_hal &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> hal_fit, <span class="dt">newdata =</span> x)</div>
+<div class="sourceLine" id="cb14-7" data-line-number="7">mse_hal &lt;-<span class="st"> </span><span class="kw">mse</span>(<span class="dt">preds =</span> preds_hal, <span class="dt">y =</span> y)</div>
+<div class="sourceLine" id="cb14-8" data-line-number="8">mse_hal</div></code></pre>
+<pre class="sourceCode r" id="cb15"><code class="sourceCode r"><div class="sourceLine" id="cb15-1" data-line-number="1">oob_hal &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> hal_fit, <span class="dt">newdata =</span> test_x)</div>
+<div class="sourceLine" id="cb15-2" data-line-number="2">oob_hal_mse &lt;-<span class="st"> </span><span class="kw">mse</span>(<span class="dt">preds =</span> oob_hal, <span class="dt">y =</span> test_y)</div>
+<div class="sourceLine" id="cb15-3" data-line-number="3">oob_hal_mse</div></code></pre>
 </section><section id="squashing-the-model-object" class="level3"><h3>“Squashing” the model object</h3>
-<pre class="sourceCode r"><code class="sourceCode r"><div class="sourceLine" id="1" href="#1" data-line-number="1">squashed_hal &lt;-<span class="st"> </span><span class="kw"><a href="../reference/squash_hal_fit.html">squash_hal_fit</a></span>(hal_fit)</div>
-<div class="sourceLine" id="2" href="#2" data-line-number="2"></div>
-<div class="sourceLine" id="3" href="#3" data-line-number="3">sq_preds &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> squashed_hal, <span class="dt">newdata =</span> x)</div>
-<div class="sourceLine" id="4" href="#4" data-line-number="4">sq_oob_hal &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> squashed_hal, <span class="dt">newdata =</span> test_x)</div>
-<div class="sourceLine" id="5" href="#5" data-line-number="5"></div>
-<div class="sourceLine" id="6" href="#6" data-line-number="6">
+<pre class="sourceCode r" id="cb16"><code class="sourceCode r"><div class="sourceLine" id="cb16-1" data-line-number="1">squashed_hal &lt;-<span class="st"> </span><span class="kw"><a href="../reference/squash_hal_fit.html">squash_hal_fit</a></span>(hal_fit)</div>
+<div class="sourceLine" id="cb16-2" data-line-number="2"></div>
+<div class="sourceLine" id="cb16-3" data-line-number="3">sq_preds &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> squashed_hal, <span class="dt">newdata =</span> x)</div>
+<div class="sourceLine" id="cb16-4" data-line-number="4">sq_oob_hal &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="dt">object =</span> squashed_hal, <span class="dt">newdata =</span> test_x)</div>
+<div class="sourceLine" id="cb16-5" data-line-number="5"></div>
+<div class="sourceLine" id="cb16-6" data-line-number="6">
 <span class="kw">cbind</span>(preds_hal, sq_preds)</div>
-<div class="sourceLine" id="7" href="#7" data-line-number="7">
+<div class="sourceLine" id="cb16-7" data-line-number="7">
 <span class="kw">cbind</span>(oob_hal, sq_oob_hal)</div></code></pre>
 <hr></section></section><section id="references" class="level2 unnumbered"><h2>References</h2>
 <div id="refs" class="references">

@@ -80,11 +80,23 @@ the Highly Adaptive LASSO. For details on the properties of the estimator, the
 interested reader is referred to @benkeser2016hal and @vdl2017generally.
 
 ```{r example}
+# load the hal9001 package
+library(hal9001)
+
 # simulate data
 set.seed(385971)
-n <- 1000
-p <- 5
+n = 100
+p = 3
+x <- xmat <- matrix(rnorm(n * p), n, p)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
 
+# fit the HAL regression
+hal_fit <- fit_hal(X = x, Y = y)
+hal_fit$times
+
+# training sample prediction
+preds <- predict(hal_fit, new_data = x)
+mean(hal_mse <- (preds - y)^2)
 ```
 
 ---

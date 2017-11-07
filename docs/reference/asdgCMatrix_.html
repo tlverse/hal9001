@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit a LASSO Regression Model — lassi_fit_cd • hal9001</title>
+<title>Fast Coercion to Sparse Matrix — asdgCMatrix_ • hal9001</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -92,49 +92,30 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit a LASSO Regression Model</h1>
+    <h1>Fast Coercion to Sparse Matrix</h1>
     </div>
 
     
-    <p>Fit a linear regression model with L1 penalization, the LASSO</p>
+    <p>Fast and efficient coercion of standard matrix objects to sparse matrices.
+Borrowed from http://gallery.rcpp.org/articles/sparse-matrix-coercion/.
+INTERNAL USE ONLY.</p>
     
 
-    <pre class="usage"><span class='fu'>lassi_fit_cd</span>(<span class='no'>X</span>, <span class='no'>resids</span>, <span class='no'>beta</span>, <span class='no'>lambda</span>, <span class='no'>nsteps</span>, <span class='no'>xscale</span>, <span class='no'>active_set</span>)</pre>
+    <pre class="usage"><span class='fu'>asdgCMatrix_</span>(<span class='no'>XX_</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>X</th>
-      <td><p>Sparse matrix containing columns of indicator functions.</p></td>
-    </tr>
-    <tr>
-      <th>resids</th>
-      <td><p>Numeric of the residuals from a given fit of the LASSO model.</p></td>
-    </tr>
-    <tr>
-      <th>beta</th>
-      <td><p>Numeric vector of initial beta estiamtes</p></td>
-    </tr>
-    <tr>
-      <th>lambda</th>
-      <td><p>Numeric corresponding to the LASSO regularization parameter.</p></td>
-    </tr>
-    <tr>
-      <th>nsteps</th>
-      <td><p>Maximum number of steps to take until stopping computation of
-the regression coefficient.</p></td>
-    </tr>
-    <tr>
-      <th>xscale</th>
-      <td><p>scale factor for covariates. See get_xscale</p></td>
-    </tr>
-    <tr>
-      <th>active_set, </th>
-      <td><p>update only nonzero coefficients (TRUE), or all
-coefficients (FALSE)</p></td>
+      <th>XX_</th>
+      <td><p>An object of class <code>Matrix</code> that has a sparse structure
+suitable for coercion to a sparse matrix format of <code>dgCMatrix</code>.</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>An object of class <code>dgCMatrix</code>, coerced from input <code>XX_</code>.</p>
     
 
   </div>
@@ -142,7 +123,9 @@ coefficients (FALSE)</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#value">Value</a></li>
+          </ul>
 
   </div>
 </div>
