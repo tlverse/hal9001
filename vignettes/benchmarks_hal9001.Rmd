@@ -1,0 +1,146 @@
+---
+title: "`hal9001` Benchmarks"
+author: "[Nima Hejazi](https://nimahejazi.org)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: vignette-refs.bib
+vignette: >
+  %\VignetteIndexEntry{`hal9001` Benchmarks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE, results='hide'}
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(future)
+library(SuperLearner)
+library(hal9001)
+library(tidyverse)
+library(microbenchmark)
+```
+
+## Introduction
+
+This document consists of some simple benchmarks for various choices of the
+`hal9001` implementation. The purpose of this document is two-fold:
+
+1. Compare the computational performance of these methods
+2. Illustrate the use of these different methods
+
+```{r mse_fun}
+# easily compute MSE
+mse <- function(preds, y) {
+  mean((preds - y)^2)
+}
+```
+
+---
+
+## The Continuous Outcome Case
+
+```{r sim}
+# generate simple test data
+n = 100
+p = 3
+x <- xmat <- matrix(rnorm(n * p), n, p)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
+
+testn = 10000
+testx <- matrix(rnorm(testn * p), testn, p)
+testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, 0.2)
+```
+
+```{r hal_glmnet}
+# glmnet implementation
+glmnet_hal_fit <- fit_hal(X = x, Y = y, fit_type = "glmnet")
+glmnet_hal_fit$times
+
+# training sample prediction
+preds_glmnet <- predict(glmnet_hal_fit, new_data = x)
+glmnet_hal_mse <- mse(preds_glmnet, y)
+
+# out-of-bag prediction
+oob_preds_glmnet <- predict(glmnet_hal_fit, new_data = testx)
+oob_glmnet_hal_mse <- mse(oob_preds_glmnet, y = testy)
+```
+
+```{r hal_origami}
+# origami implementation
+origami_hal_fit <- fit_hal(X = x, Y = y, fit_type = "origami")
+origami_hal_fit$times
+
+# training sample prediction
+preds_origami <- predict(origami_hal_fit, new_data = x)
+origami_hal_mse <- mse(preds_origami, y)
+
+# out-of-bag prediction
+oob_preds_origami <- predict(origami_hal_fit, new_data = testx)
+oob_origami_hal_mse <- mse(oob_preds_origami, y = testy)
+```
+
+```{r hal_microbenchmark}
+mb_hal_origami <- microbenchmark(unit = "s", times = 20,
+  hal_fit_origami <- fit_hal(Y = y, X = x, fit_type = "origami")
+)
+summary(mb_hal_origami)
+
+mb_hal_glmnet <- microbenchmark(unit = "s", times = 20,
+  hal_fit_glmnet <- fit_hal(Y = y, X = x, fit_type = "glmnet")
+)
+summary(mb_hal_glmnet)
+
+# visualize
+p_fit_times <- rbind(mb_hal_origami, mb_hal_glmnet) %>%
+  data.frame %>%
+  transmute(
+    type = ifelse(str_sub(as.character(expr), 9, 14) == "glmnet", "HAL-glmnet",
+                  "HAL-origami"),
+    time = time / 1e9
+  ) %>%
+  group_by(type) %>%
+  ggplot(., aes(x = type, y = time, colour = type)) + geom_boxplot() +
+    geom_point() + stat_boxplot(geom = 'errorbar') +
+    scale_color_manual(values = wes_palette("GrandBudapest")) +
+    xlab("") + ylab("time (sec.)") + ggtitle("") +
+    theme_gray() + theme(legend.position = "none")
+p_fit_times
+```
+
+---
+
+## The Binary Outcome Case
+
+
+```{r sim}
+# generate simple test data
+n = 100
+p = 3
+x <- xmat <- matrix(rnorm(n * p), n, p)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
+y_bin <- as.numeric(y > median(y))
+```
+
+```{r hal_glmnet}
+# glmnet implementation
+glmnet_hal_fit <- fit_hal(X = x, Y = y_bin, fit_type = "glmnet",
+                          family = "binomial")
+glmnet_hal_fit$times
+
+# training sample prediction
+preds_glmnet <- predict(glmnet_hal_fit, new_data = x, type = "response")
+glmnet_hal_mse <- mse(preds_glmnet, y_bin)
+```
+
+```{r hal_origami}
+# origami implementation
+origami_hal_fit <- fit_hal(X = x, Y = y_bin, fit_type = "origami",
+                           family = "binomial")
+origami_hal_fit$times
+
+# training sample prediction
+preds_origami <- predict(origami_hal_fit, new_data = x)
+origami_hal_mse <- mse(preds_origami, y_bin)
+```
+
