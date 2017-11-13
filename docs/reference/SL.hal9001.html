@@ -68,6 +68,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/benchmarks_hal9001.html">Benchmarks for the `hal9001` Package</a>
+    </li>
+    <li>
       <a href="../articles/intro_hal9001.html">Introduction to the HAL estimator</a>
     </li>
   </ul>
@@ -99,7 +102,8 @@
     <p>Wrapper for package <code>SuperLearner</code> for objects of class <code>hal9001</code></p>
     
 
-    <pre class="usage"><span class='fu'>SL.hal9001</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>newX</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/family'>gaussian</a></span>(),
+    <pre class="usage"><span class='fu'>SL.hal9001</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>newX</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"origami"</span>,
+  <span class='st'>"glmnet"</span>), <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/family'>gaussian</a></span>(),
   <span class='kw'>obsWeights</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1</span>, <span class='fu'>length</span>(<span class='no'>Y</span>)), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>

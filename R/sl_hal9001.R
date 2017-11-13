@@ -23,24 +23,35 @@ SL.hal9001 <- function(Y,
                        X,
                        newX = NULL,
                        degrees = NULL,
+                       fit_type = c("origami", "glmnet"),
+                       n_folds = 10,
+                       use_min = TRUE,
                        family = stats::gaussian(),
                        obsWeights = rep(1, length(Y)),
                        ...) {
-  # fit HAL
-  hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, yolo = FALSE)
 
-  # compute predictions based on `newX` or input `X`
-  if(!is.null(newX)) {
-    pred <- stats::predict(object = hal_out, new_data = newX)
-  } else {
-    pred <- stats::predict(object = hal_out, new_data = X)
+  if (family$family == "gaussian") {
+    # fit HAL
+    hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, fit_type = fit_type,
+                       n_folds = n_folds, use_min = use_min, yolo = FALSE)
+
+    # compute predictions based on `newX` or input `X`
+    if(!is.null(newX)) {
+      pred <- stats::predict(object = hal_out, new_data = newX)
+    } else {
+      pred <- stats::predict(object = hal_out, new_data = X)
+    }
+
+    # build output object
+    fit <- list(object = hal_out)
+    out <- list(pred = pred, fit = fit)
+    class(out$fit) <- "SL.hal9001"
+    return(out)
   }
 
-  # build output object
-  fit <- list(object = hal_out)
-  out <- list(pred = pred, fit = fit)
-  class(out$fit) <- "SL.hal9001"
-  return(out)
+  if (family$family == "binomial") {
+    stop("Only Gaussian error family currently supported with HAL9001")
+  }
 }
 
 ################################################################################

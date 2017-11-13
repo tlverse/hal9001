@@ -4,7 +4,8 @@
 \alias{SL.hal9001}
 \title{Wrapper for Classic SuperLearner}
 \usage{
-SL.hal9001(Y, X, newX = NULL, degrees = NULL, family = stats::gaussian(),
+SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("origami",
+  "glmnet"), n_folds = 10, use_min = TRUE, family = stats::gaussian(),
   obsWeights = rep(1, length(Y)), ...)
 }
 \arguments{
