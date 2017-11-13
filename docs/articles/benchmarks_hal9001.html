@@ -110,10 +110,10 @@
 <pre><code>## [1] "Dave, this conversation can serve no purpose anymore. Goodbye."</code></pre>
 <pre class="sourceCode r" id="cb5"><code class="sourceCode r"><div class="sourceLine" id="cb5-1" data-line-number="1">glmnet_hal_fit<span class="op">$</span>times</div></code></pre>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.006    0.000   0.006          0         0
-## remove_duplicates     0.008    0.001   0.008          0         0
-## lasso                 0.863    0.012   0.888          0         0
-## total                 0.877    0.013   0.902          0         0</code></pre>
+## design_matrix         0.003    0.000   0.003          0         0
+## remove_duplicates     0.005    0.000   0.006          0         0
+## lasso                 0.850    0.015   0.880          0         0
+## total                 0.858    0.015   0.889          0         0</code></pre>
 <pre class="sourceCode r" id="cb7"><code class="sourceCode r"><div class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># training sample prediction</span></div>
 <div class="sourceLine" id="cb7-2" data-line-number="2">preds_glmnet &lt;-<span class="st"> </span><span class="kw">predict</span>(glmnet_hal_fit, <span class="dt">new_data =</span> x)</div>
 <div class="sourceLine" id="cb7-3" data-line-number="3">glmnet_hal_mse &lt;-<span class="st"> </span><span class="kw">mse</span>(preds_glmnet, y)</div>
@@ -126,10 +126,10 @@
 <pre><code>## [1] "Dave, although you took very thorough precautions in the pod against my hearing you, I could see your lips move."</code></pre>
 <pre class="sourceCode r" id="cb10"><code class="sourceCode r"><div class="sourceLine" id="cb10-1" data-line-number="1">origami_hal_fit<span class="op">$</span>times</div></code></pre>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.003    0.000   0.003          0         0
+## design_matrix         0.003    0.000   0.004          0         0
 ## remove_duplicates     0.001    0.000   0.001          0         0
-## lasso                 1.178    0.138   1.445          0         0
-## total                 1.182    0.138   1.449          0         0</code></pre>
+## lasso                 1.212    0.148   1.509          0         0
+## total                 1.216    0.148   1.514          0         0</code></pre>
 <pre class="sourceCode r" id="cb12"><code class="sourceCode r"><div class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># training sample prediction</span></div>
 <div class="sourceLine" id="cb12-2" data-line-number="2">preds_origami &lt;-<span class="st"> </span><span class="kw">predict</span>(origami_hal_fit, <span class="dt">new_data =</span> x)</div>
 <div class="sourceLine" id="cb12-3" data-line-number="3">origami_hal_mse &lt;-<span class="st"> </span><span class="kw">mse</span>(preds_origami, y)</div>
@@ -163,9 +163,9 @@
 <pre class="sourceCode r" id="cb15"><code class="sourceCode r"><div class="sourceLine" id="cb15-1" data-line-number="1">
 <span class="kw">summary</span>(mb_hal_origami)</div></code></pre>
 <pre><code>##                                                             expr       min
-## 1 hal_fit_origami &lt;- fit_hal(Y = y, X = x, fit_type = "origami") 0.3302871
-##          lq      mean    median        uq       max neval
-## 1 0.3432187 0.3730944 0.3549583 0.3630897 0.6483937    20</code></pre>
+## 1 hal_fit_origami &lt;- fit_hal(Y = y, X = x, fit_type = "origami") 0.3260198
+##          lq      mean   median        uq      max neval
+## 1 0.3376284 0.3793765 0.352608 0.3675487 0.658299    20</code></pre>
 <pre class="sourceCode r" id="cb17"><code class="sourceCode r"><div class="sourceLine" id="cb17-1" data-line-number="1">mb_hal_glmnet &lt;-<span class="st"> </span><span class="kw">microbenchmark</span>(<span class="dt">unit =</span> <span class="st">"s"</span>, <span class="dt">times =</span> <span class="dv">20</span>,</div>
 <div class="sourceLine" id="cb17-2" data-line-number="2">  hal_fit_glmnet &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">Y =</span> y, <span class="dt">X =</span> x, <span class="dt">fit_type =</span> <span class="st">"glmnet"</span>)</div>
 <div class="sourceLine" id="cb17-3" data-line-number="3">)</div></code></pre>
@@ -192,9 +192,9 @@
 <pre class="sourceCode r" id="cb19"><code class="sourceCode r"><div class="sourceLine" id="cb19-1" data-line-number="1">
 <span class="kw">summary</span>(mb_hal_glmnet)</div></code></pre>
 <pre><code>##                                                           expr       min
-## 1 hal_fit_glmnet &lt;- fit_hal(Y = y, X = x, fit_type = "glmnet") 0.4451928
+## 1 hal_fit_glmnet &lt;- fit_hal(Y = y, X = x, fit_type = "glmnet") 0.4566711
 ##          lq     mean    median        uq       max neval
-## 1 0.4633435 0.480852 0.4762332 0.4897189 0.5822098    20</code></pre>
+## 1 0.4787322 0.505392 0.4947093 0.5284646 0.6145925    20</code></pre>
 <pre class="sourceCode r" id="cb21"><code class="sourceCode r"><div class="sourceLine" id="cb21-1" data-line-number="1"><span class="co"># visualize</span></div>
 <div class="sourceLine" id="cb21-2" data-line-number="2">p_fit_times &lt;-<span class="st"> </span><span class="kw">rbind</span>(mb_hal_origami, mb_hal_glmnet) <span class="op">%&gt;%</span>
 </div>
@@ -272,8 +272,8 @@
 <span class="kw">summary</span>(mb_hal_origami_estimateG)</div></code></pre>
 <pre><code>##                                                                                                         expr
 ## 1 hal_origami_estimateG &lt;- fit_hal(Y = as.numeric(dat$A0 == abar[1]),      X = dat$L0, fit_type = "origami")
-##         min        lq      mean    median        uq      max neval
-## 1 0.5081802 0.5475576 0.6403924 0.5805278 0.7181729 1.161991    20</code></pre>
+##         min        lq      mean    median        uq       max neval
+## 1 0.5756932 0.5861575 0.5973188 0.5959953 0.6059783 0.6255723    20</code></pre>
 <pre class="sourceCode r" id="cb27"><code class="sourceCode r"><div class="sourceLine" id="cb27-1" data-line-number="1">mb_hal_glmnet_estimateG &lt;-<span class="st"> </span><span class="kw">microbenchmark</span>(<span class="dt">unit =</span> <span class="st">"s"</span>, <span class="dt">times =</span> <span class="dv">20</span>,</div>
 <div class="sourceLine" id="cb27-2" data-line-number="2">  hal_glmnet_estimateG &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">Y =</span> <span class="kw">as.numeric</span>(dat<span class="op">$</span>A0 <span class="op">==</span><span class="st"> </span>abar[<span class="dv">1</span>]),</div>
 <div class="sourceLine" id="cb27-3" data-line-number="3">                                  <span class="dt">X =</span> dat<span class="op">$</span>L0,</div>
@@ -303,8 +303,8 @@
 <span class="kw">summary</span>(mb_hal_glmnet_estimateG)</div></code></pre>
 <pre><code>##                                                                                                       expr
 ## 1 hal_glmnet_estimateG &lt;- fit_hal(Y = as.numeric(dat$A0 == abar[1]),      X = dat$L0, fit_type = "glmnet")
-##        min       lq    mean   median       uq      max neval
-## 1 1.439767 1.617875 1.74795 1.723827 1.878073 2.128569    20</code></pre>
+##        min       lq     mean   median       uq      max neval
+## 1 1.429134 1.548246 1.611663 1.620698 1.671286 1.745309    20</code></pre>
 <pre class="sourceCode r" id="cb31"><code class="sourceCode r"><div class="sourceLine" id="cb31-1" data-line-number="1"><span class="co"># visualize</span></div>
 <div class="sourceLine" id="cb31-2" data-line-number="2">p_estimateG_times &lt;-<span class="st"> </span><span class="kw">rbind</span>(mb_hal_origami_estimateG,</div>
 <div class="sourceLine" id="cb31-3" data-line-number="3">                           mb_hal_glmnet_estimateG) <span class="op">%&gt;%</span>
@@ -380,8 +380,8 @@
 <span class="kw">summary</span>(mb_hal_origami_estimateQ)</div></code></pre>
 <pre><code>##                                                                             expr
 ## 1 hal_origami_estimateQ &lt;- fit_hal(Y = Y_estQ, X = X_estQ, fit_type = "origami")
-##         min        lq      mean   median        uq       max neval
-## 1 0.1311098 0.1372891 0.1510556 0.148516 0.1615881 0.1858021    20</code></pre>
+##         min       lq     mean    median        uq       max neval
+## 1 0.1532981 0.163054 0.179814 0.1734524 0.1825662 0.2752185    20</code></pre>
 <pre class="sourceCode r" id="cb36"><code class="sourceCode r"><div class="sourceLine" id="cb36-1" data-line-number="1">mb_hal_glmnet_estimateQ &lt;-<span class="st"> </span><span class="kw">microbenchmark</span>(<span class="dt">unit =</span> <span class="st">"s"</span>, <span class="dt">times =</span> <span class="dv">20</span>,</div>
 <div class="sourceLine" id="cb36-2" data-line-number="2">  hal_glmnet_estimateQ &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">Y =</span> Y_estQ,</div>
 <div class="sourceLine" id="cb36-3" data-line-number="3">                                  <span class="dt">X =</span> X_estQ,</div>
@@ -411,8 +411,8 @@
 <span class="kw">summary</span>(mb_hal_glmnet_estimateQ)</div></code></pre>
 <pre><code>##                                                                           expr
 ## 1 hal_glmnet_estimateQ &lt;- fit_hal(Y = Y_estQ, X = X_estQ, fit_type = "glmnet")
-##         min        lq      mean   median       uq       max neval
-## 1 0.1913058 0.2011302 0.2123034 0.211091 0.223035 0.2464445    20</code></pre>
+##         min       lq      mean    median        uq       max neval
+## 1 0.2258753 0.241342 0.2885499 0.2756127 0.3397102 0.3823258    20</code></pre>
 <pre class="sourceCode r" id="cb40"><code class="sourceCode r"><div class="sourceLine" id="cb40-1" data-line-number="1"><span class="co"># visualize</span></div>
 <div class="sourceLine" id="cb40-2" data-line-number="2">p_estimateQ_times &lt;-<span class="st"> </span><span class="kw">rbind</span>(mb_hal_origami_estimateQ,</div>
 <div class="sourceLine" id="cb40-3" data-line-number="3">                           mb_hal_glmnet_estimateQ) <span class="op">%&gt;%</span>
@@ -481,8 +481,8 @@
 <span class="kw">summary</span>(mb_hal_origami_sl_estimateG)</div></code></pre>
 <pre><code>##                                                                                                                                                expr
 ## 1 hal_origami_sl_estimateG &lt;- SuperLearner(Y = as.numeric(dat$A0 ==      abar[1]), X = dat$L0, SL.library = c("SL.speedglm", "SL.hal9001.origami"))
-##        min       lq     mean   median       uq      max neval
-## 1 5.456115 5.606268 5.768453 5.641793 5.820544 7.037404    20</code></pre>
+##        min       lq    mean   median       uq     max neval
+## 1 5.989014 6.010379 6.63428 6.058605 6.424414 10.8592    20</code></pre>
 <pre class="sourceCode r" id="cb52"><code class="sourceCode r"><div class="sourceLine" id="cb52-1" data-line-number="1">mb_hal_glmnet_sl_estimateG &lt;-<span class="st"> </span><span class="kw">microbenchmark</span>(<span class="dt">unit =</span> <span class="st">"s"</span>, <span class="dt">times =</span> <span class="dv">20</span>,</div>
 <div class="sourceLine" id="cb52-2" data-line-number="2">  hal_glmnet_sl_estimateG &lt;-<span class="st"> </span><span class="kw">SuperLearner</span>(<span class="dt">Y =</span> <span class="kw">as.numeric</span>(dat<span class="op">$</span>A0 <span class="op">==</span><span class="st"> </span>abar[<span class="dv">1</span>]),</div>
 <div class="sourceLine" id="cb52-3" data-line-number="3">                                          <span class="dt">X =</span> dat<span class="op">$</span>L0,</div>
@@ -495,7 +495,7 @@
 <pre><code>##                                                                                                                                              expr
 ## 1 hal_glmnet_sl_estimateG &lt;- SuperLearner(Y = as.numeric(dat$A0 ==      abar[1]), X = dat$L0, SL.library = c("SL.speedglm", "SL.hal9001.glmnet"))
 ##        min       lq     mean   median       uq      max neval
-## 1 13.14005 13.33463 13.95705 13.58024 14.46339 16.51849    20</code></pre>
+## 1 13.64942 13.94495 14.37158 14.19632 14.87847 15.54349    20</code></pre>
 <pre class="sourceCode r" id="cb54"><code class="sourceCode r"><div class="sourceLine" id="cb54-1" data-line-number="1"><span class="co"># visualize</span></div>
 <div class="sourceLine" id="cb54-2" data-line-number="2">p_sl_estimateG_times &lt;-<span class="st"> </span><span class="kw">rbind</span>(mb_hal_origami_sl_estimateG,</div>
 <div class="sourceLine" id="cb54-3" data-line-number="3">                              mb_hal_glmnet_sl_estimateG) <span class="op">%&gt;%</span>

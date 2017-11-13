@@ -9,6 +9,16 @@
 #' @param degrees The highest order of interaction terms for which the basis
 #'  functions ought to be generated. The default (\code{NULL}) corresponds to
 #'  generating basis functions for the full dimensionality of the input matrix.
+#' @param fit_type The specific routine to be called when fitting the LASSO
+#'  regression in a cross-validated manner. Choosing the \code{glmnet} option
+#'  will result in a call to \code{cv.glmnet} while \code{origami} will produce
+#'  a (faster) call to a custom routine based on the \code{origami} package.
+#' @param n_folds Integer for the number of folds to be used when splitting the
+#'  data for cross-validation. This defaults to 10 as this is the convention for
+#'  v-fold cross-validation.
+#' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
+#'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
+#'  to \code{"lambda.1se"}.
 #' @param family Not used by the function directly, but ensures compatibility
 #'  with \code{SuperLearner}.
 #' @param obsWeights Not used by the function directly, but meant to ensure

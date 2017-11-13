@@ -124,10 +124,10 @@ install.packages("hal9001")
 <div class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; [1] "Look Dave, I can see you're really upset about this. I honestly think you ought to sit down calmly, take a stress pill, and think things over."</span></div>
 <div class="sourceLine" id="cb2-16" data-line-number="16">hal_fit<span class="op">$</span>times</div>
 <div class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></div>
-<div class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; design_matrix         0.003    0.001   0.003          0         0</span></div>
-<div class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; remove_duplicates     0.006    0.000   0.006          0         0</span></div>
-<div class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; lasso                 1.262    0.069   1.328          0         0</span></div>
-<div class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; total                 1.271    0.070   1.337          0         0</span></div>
+<div class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; design_matrix         0.004    0.001   0.005          0         0</span></div>
+<div class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; remove_duplicates     0.006    0.001   0.007          0         0</span></div>
+<div class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; lasso                 1.168    0.054   1.183          0         0</span></div>
+<div class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; total                 1.178    0.056   1.195          0         0</span></div>
 <div class="sourceLine" id="cb2-22" data-line-number="22"></div>
 <div class="sourceLine" id="cb2-23" data-line-number="23"><span class="co"># training sample prediction</span></div>
 <div class="sourceLine" id="cb2-24" data-line-number="24">preds &lt;-<span class="st"> </span><span class="kw">predict</span>(hal_fit, <span class="dt">new_data =</span> x)</div>
