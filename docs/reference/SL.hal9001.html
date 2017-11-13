@@ -68,6 +68,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/benchmarks_hal9001.html">Benchmarks for the `hal9001` Package</a>
+    </li>
+    <li>
       <a href="../articles/intro_hal9001.html">Introduction to the HAL estimator</a>
     </li>
   </ul>
@@ -99,7 +102,8 @@
     <p>Wrapper for package <code>SuperLearner</code> for objects of class <code>hal9001</code></p>
     
 
-    <pre class="usage"><span class='fu'>SL.hal9001</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>newX</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/family'>gaussian</a></span>(),
+    <pre class="usage"><span class='fu'>SL.hal9001</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>newX</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"origami"</span>,
+  <span class='st'>"glmnet"</span>), <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/family'>gaussian</a></span>(),
   <span class='kw'>obsWeights</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1</span>, <span class='fu'>length</span>(<span class='no'>Y</span>)), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
@@ -123,6 +127,25 @@ default of <code>NULL</code> computes predictions on training inputs <code>X</co
       <td><p>The highest order of interaction terms for which the basis
 functions ought to be generated. The default (<code>NULL</code>) corresponds to
 generating basis functions for the full dimensionality of the input matrix.</p></td>
+    </tr>
+    <tr>
+      <th>fit_type</th>
+      <td><p>The specific routine to be called when fitting the LASSO
+regression in a cross-validated manner. Choosing the <code>glmnet</code> option
+will result in a call to <code>cv.glmnet</code> while <code>origami</code> will produce
+a (faster) call to a custom routine based on the <code>origami</code> package.</p></td>
+    </tr>
+    <tr>
+      <th>n_folds</th>
+      <td><p>Integer for the number of folds to be used when splitting the
+data for cross-validation. This defaults to 10 as this is the convention for
+v-fold cross-validation.</p></td>
+    </tr>
+    <tr>
+      <th>use_min</th>
+      <td><p>Determines which lambda is selected from <code>cv.glmnet</code>.
+<code>TRUE</code> corresponds to <code>"lambda.min"</code> and <code>FALSE</code> corresponds
+to <code>"lambda.1se"</code>.</p></td>
     </tr>
     <tr>
       <th>family</th>

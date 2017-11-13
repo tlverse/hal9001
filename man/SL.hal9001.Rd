@@ -4,7 +4,8 @@
 \alias{SL.hal9001}
 \title{Wrapper for Classic SuperLearner}
 \usage{
-SL.hal9001(Y, X, newX = NULL, degrees = NULL, family = stats::gaussian(),
+SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("origami",
+  "glmnet"), n_folds = 10, use_min = TRUE, family = stats::gaussian(),
   obsWeights = rep(1, length(Y)), ...)
 }
 \arguments{
@@ -18,6 +19,19 @@ default of \code{NULL} computes predictions on training inputs \code{X}.}
 \item{degrees}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
+
+\item{fit_type}{The specific routine to be called when fitting the LASSO
+regression in a cross-validated manner. Choosing the \code{glmnet} option
+will result in a call to \code{cv.glmnet} while \code{origami} will produce
+a (faster) call to a custom routine based on the \code{origami} package.}
+
+\item{n_folds}{Integer for the number of folds to be used when splitting the
+data for cross-validation. This defaults to 10 as this is the convention for
+v-fold cross-validation.}
+
+\item{use_min}{Determines which lambda is selected from \code{cv.glmnet}.
+\code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
+to \code{"lambda.1se"}.}
 
 \item{family}{Not used by the function directly, but ensures compatibility
 with \code{SuperLearner}.}
