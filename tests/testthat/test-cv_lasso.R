@@ -82,18 +82,10 @@ folds <- make_folds(n)
 fold_id <- origami:::folds2foldvec(folds)
 
 # just use the standard implementation available in glmnet
-<<<<<<< HEAD
 lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds,
                                   foldid = fold_id)
 
 lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y)
-
-=======
-lasso_glmnet <- glmnet::cv.glmnet(
-  x = x_basis, y = y, nfolds = n_folds,
-  foldid = fold_id
-)
->>>>>>> 5c73a8dbd615ba5a57bfef5ebfa03ab13c8062f6
 lambda_minmse_cvglmnet <- lasso_glmnet$lambda.min
 lambda_1se_cvglmnet <- lasso_glmnet$lambda.1se
 coef_minmse_cvglmnet <- coef(lasso_glmnet, "lambda.min")
