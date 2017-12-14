@@ -3,14 +3,14 @@ set.seed(749125)
 context("Unit test for the generic LASSO estimation procedure.")
 
 # generate simple test data
-n = 100
+n = 1000
 p = 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
-y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0, 0.2)
 
 testn <- 1e4
 testx <- matrix(rnorm(testn * p), testn, p)
-testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, 0.2)
+testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, 0, 0.2)
 
 # fit design matrix for HAL
 basis_list <- hal9001:::enumerate_basis(x)
@@ -30,13 +30,18 @@ xscale <- hal9001:::get_xscale(x_basis)
 ybar <- mean(y)
 y_centered <- y - ybar
 lambda_max <- hal9001:::find_lambda_max(x_basis, y_centered, xscale)
+dot <- y_centered%*%x_basis/xscale/n
+nz <- lapply(lambdas, function(lambda)sum(abs(dot)<lambda))
+quantile(unlist(abs(dot)))
+lamba_max_expected <- max(y_centered%*%x_basis/xscale/n)
 
+lambda_max
 # verify that lambda max zeros out coefs
 beta <- rep(0, ncol(x_basis))
 intercept <- 0
 lassi_1step <- hal9001:::lassi_fit_cd(X = x_basis, resids = y_centered,
                                       beta = beta, lambda = lambda_max,
-                                      nsteps = 1, xscale = xscale,
+                                      nsteps = 1, xscale = xscale, intercept,
                                       active_set = FALSE)
 test_that("lambda_max results in zero beta vector", expect_true(all(beta == 0)))
 
@@ -46,7 +51,7 @@ lambda_delta <- lambda_max * delta
 beta0 <- rep(0, ncol(x_basis))
 lassi_smallstep <- hal9001:::lassi_fit_cd(X = x_basis, resids = y_centered,
                                           beta = beta, lambda = lambda_delta,
-                                          nsteps = 1, xscale = xscale,
+                                          nsteps = 1, xscale = xscale, intercept,
                                           active_set = FALSE)
 test_that("a slightly smaller lambda results in nonzero beta vector",
           expect_true(!all(beta == 0)))
@@ -94,15 +99,6 @@ test_that("the mse of the updated residuals is as expected",
           expect_equal(post_mse, verify_postmse))
 
 
-#microbenchmark({
-   #glmnet::glmnet(x = x_basis, y = y_centered, intercept = FALSE, nlambda = 100,
-          #lambda.min.ratio = 0.01, family = "gaussian", alpha = 1)
-#}, times = 10)
-#microbenchmark({
-  #lassi(x_basis, y, nlambda=100, lambda_min_ratio = 0.01)
-#}, times = 10)
-
-
 ################################################################################
 # PREDICTION
 ################################################################################
@@ -115,18 +111,19 @@ pred_x_basis <- hal9001:::apply_copy_map(pred_x_basis, copy_map)
 
 # lassi prediction and mses
 lassi_fit <- hal9001:::lassi(x_basis, y)
-pred_mat <- pred_x_basis %*% lassi_fit$beta_mat
-mses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar - testy)^2)})
+pred_mat <- predict(lassi_fit, pred_x_basis)
+mses <- apply(pred_mat, 2, function(preds) {mean((preds - testy)^2)})
 
 
 # glmnet predictions and mses
-g <- glmnet::glmnet(x = x_basis, y = y_centered, intercept = FALSE,
+g <- glmnet::glmnet(x = x_basis, y = y, intercept = TRUE,
                     nlambda = 100, lambda.min.ratio = 0.01, family = "gaussian",
                     alpha = 1, standardize.response = FALSE, standardize = TRUE)
+g$lambda
 glmnet_beta_mat <- coef(g)
 
-pred_mat <- pred_x_basis %*% glmnet_beta_mat[-1, ]
-gmses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar - testy)^2)})
+gpred_mat <- predict(g, pred_x_basis)
+gmses <- apply(gpred_mat, 2, function(preds) {mean((preds - testy)^2)})
 
 test_that("lassi isn't doing much worse in terms of MSE",
           expect_lt((min(mses) - min(gmses)) / min(gmses), 1e-1))

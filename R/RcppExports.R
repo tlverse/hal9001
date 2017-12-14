@@ -28,8 +28,8 @@ apply_copy_map <- function(X, copy_map) {
 #' @param X Sparse matrix containing columns of indicator functions.
 #' @param beta Numeric for the regression coefficient of a linear model fit.
 #'
-lassi_predict <- function(X, beta) {
-    .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta)
+lassi_predict <- function(X, beta, intercept) {
+    .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta, intercept)
 }
 
 #' Soft thresholding for LASSO fits
@@ -41,6 +41,11 @@ lassi_predict <- function(X, beta) {
 #'
 soft_threshold <- function(beta, lambda) {
     .Call('_hal9001_soft_threshold', PACKAGE = 'hal9001', beta, lambda)
+}
+
+#' compute $X'r$ for a given column of X
+X_t_resid <- function(X, resids, j, xscale_j) {
+    .Call('_hal9001_X_t_resid', PACKAGE = 'hal9001', X, resids, j, xscale_j)
 }
 
 #' Compute updated LASSO coefficients
@@ -73,6 +78,10 @@ update_coord <- function(X, resids, beta, lambda, j, xscale) {
     .Call('_hal9001_update_coord', PACKAGE = 'hal9001', X, resids, beta, lambda, j, xscale)
 }
 
+update_coords <- function(X, resids, beta, lambda, xscale, intercept, active_set) {
+    .Call('_hal9001_update_coords', PACKAGE = 'hal9001', X, resids, beta, lambda, xscale, intercept, active_set)
+}
+
 #' Fit a LASSO Regression Model
 #'
 #' Fit a linear regression model with L1 penalization, the LASSO
@@ -87,8 +96,8 @@ update_coord <- function(X, resids, beta, lambda, j, xscale) {
 #' @param active_set, update only nonzero coefficients (TRUE), or all
 #'  coefficients (FALSE)
 #'
-lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale, active_set) {
-    .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale, active_set)
+lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale, intercept, active_set) {
+    .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale, intercept, active_set)
 }
 
 non_zeros <- function(X) {

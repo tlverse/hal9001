@@ -31,14 +31,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // lassi_predict
-NumericVector lassi_predict(const MSpMat X, const NumericVector beta);
-RcppExport SEXP _hal9001_lassi_predict(SEXP XSEXP, SEXP betaSEXP) {
+NumericVector lassi_predict(const MSpMat X, const NumericVector beta, double intercept);
+RcppExport SEXP _hal9001_lassi_predict(SEXP XSEXP, SEXP betaSEXP, SEXP interceptSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const MSpMat >::type X(XSEXP);
     Rcpp::traits::input_parameter< const NumericVector >::type beta(betaSEXP);
-    rcpp_result_gen = Rcpp::wrap(lassi_predict(X, beta));
+    Rcpp::traits::input_parameter< double >::type intercept(interceptSEXP);
+    rcpp_result_gen = Rcpp::wrap(lassi_predict(X, beta, intercept));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -51,6 +52,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     rcpp_result_gen = Rcpp::wrap(soft_threshold(beta, lambda));
+    return rcpp_result_gen;
+END_RCPP
+}
+// X_t_resid
+double X_t_resid(const MSpMat& X, const NumericVector& resids, int j, double xscale_j);
+RcppExport SEXP _hal9001_X_t_resid(SEXP XSEXP, SEXP residsSEXP, SEXP jSEXP, SEXP xscale_jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type resids(residsSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< double >::type xscale_j(xscale_jSEXP);
+    rcpp_result_gen = Rcpp::wrap(X_t_resid(X, resids, j, xscale_j));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -110,9 +125,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// update_coords
+int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta, double lambda, const NumericVector& xscale, NumericVector& intercept, bool active_set);
+RcppExport SEXP _hal9001_update_coords(SEXP XSEXP, SEXP residsSEXP, SEXP betaSEXP, SEXP lambdaSEXP, SEXP xscaleSEXP, SEXP interceptSEXP, SEXP active_setSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type resids(residsSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type xscale(xscaleSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type intercept(interceptSEXP);
+    Rcpp::traits::input_parameter< bool >::type active_set(active_setSEXP);
+    rcpp_result_gen = Rcpp::wrap(update_coords(X, resids, beta, lambda, xscale, intercept, active_set));
+    return rcpp_result_gen;
+END_RCPP
+}
 // lassi_fit_cd
-int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta, double lambda, int nsteps, const NumericVector& xscale, bool active_set);
-RcppExport SEXP _hal9001_lassi_fit_cd(SEXP XSEXP, SEXP residsSEXP, SEXP betaSEXP, SEXP lambdaSEXP, SEXP nstepsSEXP, SEXP xscaleSEXP, SEXP active_setSEXP) {
+int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta, double lambda, int nsteps, const NumericVector& xscale, NumericVector& intercept, bool active_set);
+RcppExport SEXP _hal9001_lassi_fit_cd(SEXP XSEXP, SEXP residsSEXP, SEXP betaSEXP, SEXP lambdaSEXP, SEXP nstepsSEXP, SEXP xscaleSEXP, SEXP interceptSEXP, SEXP active_setSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -122,8 +154,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< int >::type nsteps(nstepsSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type xscale(xscaleSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< bool >::type active_set(active_setSEXP);
-    rcpp_result_gen = Rcpp::wrap(lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale, active_set));
+    rcpp_result_gen = Rcpp::wrap(lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale, intercept, active_set));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -226,13 +259,15 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_index_first_copy", (DL_FUNC) &_hal9001_index_first_copy, 1},
     {"_hal9001_apply_copy_map", (DL_FUNC) &_hal9001_apply_copy_map, 2},
-    {"_hal9001_lassi_predict", (DL_FUNC) &_hal9001_lassi_predict, 2},
+    {"_hal9001_lassi_predict", (DL_FUNC) &_hal9001_lassi_predict, 3},
     {"_hal9001_soft_threshold", (DL_FUNC) &_hal9001_soft_threshold, 2},
+    {"_hal9001_X_t_resid", (DL_FUNC) &_hal9001_X_t_resid, 4},
     {"_hal9001_get_new_beta", (DL_FUNC) &_hal9001_get_new_beta, 5},
     {"_hal9001_find_lambda_max", (DL_FUNC) &_hal9001_find_lambda_max, 3},
     {"_hal9001_equal_double", (DL_FUNC) &_hal9001_equal_double, 2},
     {"_hal9001_update_coord", (DL_FUNC) &_hal9001_update_coord, 6},
-    {"_hal9001_lassi_fit_cd", (DL_FUNC) &_hal9001_lassi_fit_cd, 7},
+    {"_hal9001_update_coords", (DL_FUNC) &_hal9001_update_coords, 7},
+    {"_hal9001_lassi_fit_cd", (DL_FUNC) &_hal9001_lassi_fit_cd, 8},
     {"_hal9001_non_zeros", (DL_FUNC) &_hal9001_non_zeros, 1},
     {"_hal9001_get_pnz", (DL_FUNC) &_hal9001_get_pnz, 1},
     {"_hal9001_get_xscale", (DL_FUNC) &_hal9001_get_xscale, 1},

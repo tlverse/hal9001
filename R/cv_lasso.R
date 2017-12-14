@@ -31,7 +31,7 @@ lassi_origami <- function(fold, data, lambdas) {
 
   # compute the predicted betas for the given training and validation sets
   lassi_fit <- lassi(x = train_x_basis, y = train_y, lambdas = lambdas)
-  pred_mat <- valid_x_basis %*% lassi_fit$beta_mat
+  pred_mat <- predict(lassi_fit, valid_x_basis)
 
   # compute the MSE for the given training and validation sets
   ybar_train <- mean(train_y)

@@ -13,9 +13,9 @@ using namespace Rcpp;
 //' @param beta Numeric for the regression coefficient of a linear model fit.
 //'
 // [[Rcpp::export]]
-NumericVector lassi_predict(const MSpMat X, const NumericVector beta) {
+NumericVector lassi_predict(const MSpMat X, const NumericVector beta, double intercept) {
   int n = X.rows();
-  NumericVector pred(n, 0.0);
+  NumericVector pred(n, intercept);
   int k = 0;
   double current_beta;
 
@@ -62,6 +62,23 @@ double soft_threshold(double beta, double lambda) {
 // incorporated in the algorithm in an efficient and obvious manner.
 // get beta update
 
+//' compute $X'r$ for a given column of X
+// [[Rcpp::export]]
+double X_t_resid(const MSpMat& X, const NumericVector& resids, int j,
+                 double xscale_j) {
+  
+  double crossprod_sum = 0;
+  
+  for (MInIterMat i_(X, j); i_; ++i_) {
+    crossprod_sum += resids[i_.index()];
+  }
+  
+  // to correct for centering + scaling of X  
+  // crossprod_sum = (crossprod_sum - xcenter_j * sum(resids)) / xscale_j;
+  crossprod_sum = crossprod_sum / xscale_j;
+  return(crossprod_sum);
+}
+
 //' Compute updated LASSO coefficients
 //'
 //' @param X ...
@@ -74,15 +91,9 @@ double soft_threshold(double beta, double lambda) {
 double get_new_beta(const MSpMat& X, const NumericVector& resids, int j,
                     double beta_j, double xscale_j) {
 
+  double crossprod_sum = X_t_resid(X, resids, j, xscale_j);
   int n = resids.length();
-  double new_beta = 0;
-  double resid_sum = 0;
-
-  for (MInIterMat i_(X, j); i_; ++i_) {
-    // Rcout << i_.index() << " " << resids[i_.index()] << " " << resid_sum << std::endl;
-    resid_sum += resids[i_.index()];
-  }
-  new_beta = resid_sum / n / xscale_j + beta_j;
+  double new_beta = crossprod_sum / n + beta_j;
   return(new_beta);
 }
 
@@ -119,7 +130,22 @@ bool equal_double(double x, double y){
 }
 
 //------------------------------------------------------------------------------
+double update_resid(const MSpMat& X, NumericVector& resids, double beta_diff, int j,
+                  double xscale_j){
+  
+  double new_resid;
+  double rss=0;
+  double scaled_diff = beta_diff / xscale_j;
+  for (MInIterMat i_(X, j); i_; ++i_) {
+    new_resid = resids[i_.index()] - scaled_diff;
+    resids[i_.index()] = new_resid;
+    rss += new_resid * new_resid;
+  }
+ 
+  return(rss);
+}
 
+//------------------------------------------------------------------------------
 // [[Rcpp::export]]
 double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
                     double lambda, int j, const NumericVector& xscale) {
@@ -128,7 +154,6 @@ double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
   double xscale_j = xscale[j];
   double new_beta = get_new_beta(X, resids, j, beta_j, xscale_j);
   double rss= -1;
-  double new_resid;
   // Rcout << std::endl << "beta " << j << std::endl;
   // Rcout << "previous " << beta_j << std::endl;
   // Rcout << "new " << new_beta << std::endl;
@@ -137,12 +162,8 @@ double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
   //if we changed this beta, we must update the residuals
   if (!equal_double(new_beta, beta_j)) {
     // Rcout << "Changed beta " << j << std::endl;
-    double beta_diff = (new_beta-beta_j)  / xscale_j;
-    for (MInIterMat i_(X, j); i_; ++i_) {
-      new_resid = resids[i_.index()] - beta_diff;
-      resids[i_.index()] = new_resid;
-      rss += new_resid * new_resid;
-    }
+    double beta_diff = new_beta-beta_j;
+    rss = update_resid(X, resids, beta_diff, j, xscale_j);
     beta[j] = new_beta;
   }
 
@@ -150,9 +171,9 @@ double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
 }
 
 //------------------------------------------------------------------------------
-
+// [[Rcpp::export]]
 int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                  double lambda, const NumericVector& xscale, bool active_set) {
+                  double lambda, const NumericVector& xscale, NumericVector& intercept, bool active_set) {
   // update coordinates one-by-one
   int k;
   double old_rss = sum(resids * resids);
@@ -172,8 +193,16 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
       }
     }
   }
+  
+  // update intercept
+  double mean_resid = mean(resids);
+  resids = resids - mean_resid;
+  intercept[0]+= mean_resid;
+  
+
   // Rcout << "Updated " << updated << " coords" << std::endl;
   return(updated);
+  
 }
 
 //------------------------------------------------------------------------------
@@ -194,7 +223,7 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
 //'
 // [[Rcpp::export]]
 int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                 double lambda, int nsteps, const NumericVector& xscale,
+                 double lambda, int nsteps, const NumericVector& xscale, NumericVector& intercept,
                  bool active_set) {
   // int p = X.cols();
   // NumericVector beta(p, 0.0);
@@ -210,7 +239,7 @@ int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
   for (step_num = 0; step_num < nsteps; step_num++) {
     last_mse = mse;
 
-    updated = update_coords(X, resids, beta, lambda, xscale, active_set);
+    updated = update_coords(X, resids, beta, lambda, xscale, intercept, active_set);
 
     // we failed to substantially improve any coords
     if (updated == 0) {
@@ -225,15 +254,7 @@ int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
       break;
     }
   }
-  return(step_num + 1);
-}
-
-//------------------------------------------------------------------------------
-
-NumericVector lassi_fit_path(const MSpMat& X, const NumericVector& y,
-                             NumericVector& beta, NumericVector& lambdas,
-                             int nsteps) {
-  return(beta);
+  return(step_num);
 }
 
 //------------------------------------------------------------------------------
