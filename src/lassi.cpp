@@ -2,7 +2,6 @@
 #include <RcppEigen.h>
 #include "hal9001_types.h"
 using namespace Rcpp;
-
 //------------------------------------------------------------------------------
 
 //' LASSO Prediction
@@ -11,9 +10,11 @@ using namespace Rcpp;
 //'
 //' @param X Sparse matrix containing columns of indicator functions.
 //' @param beta Numeric for the regression coefficient of a linear model fit.
+//' @param intercept Numeric value corresponding to the regression intercept.
 //'
 // [[Rcpp::export]]
-NumericVector lassi_predict(const MSpMat X, const NumericVector beta, double intercept) {
+NumericVector lassi_predict(const MSpMat X, const NumericVector beta,
+                           double intercept) {
   int n = X.rows();
   NumericVector pred(n, intercept);
   int k = 0;
@@ -62,22 +63,32 @@ double soft_threshold(double beta, double lambda) {
 // incorporated in the algorithm in an efficient and obvious manner.
 // get beta update
 
+//' Coordinate Descent with Regression Residuals
+//'
+//' @param X A sparse matrix corresponding to the full set of basis functions.
+//' @param resids Residuals from a previous round of regression fits.
+//' @param j A numeric value indexing the columns of X (i.e., basis functions).
+//' @param xscale_j A numeric corresponding to the scaled values of the jth
+//'   column of the sparse matrix X.
+//'
 //' compute $X'r$ for a given column of X
 // [[Rcpp::export]]
 double X_t_resid(const MSpMat& X, const NumericVector& resids, int j,
                  double xscale_j) {
-  
+
   double crossprod_sum = 0;
-  
+
   for (MInIterMat i_(X, j); i_; ++i_) {
     crossprod_sum += resids[i_.index()];
   }
-  
-  // to correct for centering + scaling of X  
+
+  // to correct for centering + scaling of X
   // crossprod_sum = (crossprod_sum - xcenter_j * sum(resids)) / xscale_j;
   crossprod_sum = crossprod_sum / xscale_j;
   return(crossprod_sum);
 }
+
+//------------------------------------------------------------------------------
 
 //' Compute updated LASSO coefficients
 //'
@@ -99,7 +110,7 @@ double get_new_beta(const MSpMat& X, const NumericVector& resids, int j,
 
 //------------------------------------------------------------------------------
 
-//' Find maximum L1 regularization constant
+//' Find maximum L1-norm regularization constant
 //'
 //' @param X ...
 //' @param y ...
@@ -108,7 +119,6 @@ double get_new_beta(const MSpMat& X, const NumericVector& resids, int j,
 // [[Rcpp::export]]
 double find_lambda_max(const MSpMat& X, const NumericVector& y,
                        const NumericVector& xscale){
-
   int k;
   double lambda_max = 0;
   double new_beta;
@@ -130,9 +140,10 @@ bool equal_double(double x, double y){
 }
 
 //------------------------------------------------------------------------------
-double update_resid(const MSpMat& X, NumericVector& resids, double beta_diff, int j,
-                  double xscale_j){
-  
+
+double update_resid(const MSpMat& X, NumericVector& resids, double beta_diff,
+                    int j, double xscale_j) {
+
   double new_resid;
   double rss=0;
   double scaled_diff = beta_diff / xscale_j;
@@ -141,11 +152,11 @@ double update_resid(const MSpMat& X, NumericVector& resids, double beta_diff, in
     resids[i_.index()] = new_resid;
     rss += new_resid * new_resid;
   }
- 
   return(rss);
 }
 
 //------------------------------------------------------------------------------
+
 // [[Rcpp::export]]
 double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
                     double lambda, int j, const NumericVector& xscale) {
@@ -166,14 +177,15 @@ double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
     rss = update_resid(X, resids, beta_diff, j, xscale_j);
     beta[j] = new_beta;
   }
-
   return(rss);
 }
 
 //------------------------------------------------------------------------------
+
 // [[Rcpp::export]]
 int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                  double lambda, const NumericVector& xscale, NumericVector& intercept, bool active_set) {
+                  double lambda, const NumericVector& xscale,
+                  NumericVector& intercept, bool active_set) {
   // update coordinates one-by-one
   int k;
   double old_rss = sum(resids * resids);
@@ -193,16 +205,14 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
       }
     }
   }
-  
+
   // update intercept
   double mean_resid = mean(resids);
   resids = resids - mean_resid;
-  intercept[0]+= mean_resid;
-  
+  intercept[0] += mean_resid;
 
   // Rcout << "Updated " << updated << " coords" << std::endl;
   return(updated);
-  
 }
 
 //------------------------------------------------------------------------------
@@ -218,13 +228,14 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
 //' @param nsteps Maximum number of steps to take until stopping computation of
 //'  the regression coefficient.
 //' @param xscale scale factor for covariates. See get_xscale
+//' @param intercept Numeric value corresponding to the regression intercept.
 //' @param active_set, update only nonzero coefficients (TRUE), or all
-//'  coefficients (FALSE)
+//'  coefficients (FALSE).
 //'
 // [[Rcpp::export]]
 int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                 double lambda, int nsteps, const NumericVector& xscale, NumericVector& intercept,
-                 bool active_set) {
+                 double lambda, int nsteps, const NumericVector& xscale,
+                 NumericVector& intercept, bool active_set) {
   // int p = X.cols();
   // NumericVector beta(p, 0.0);
   // NumericVector resids = y - lassi_predict(X, beta);
@@ -257,42 +268,3 @@ int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
   return(step_num);
 }
 
-//------------------------------------------------------------------------------
-
-// [[Rcpp::export]]
-IntegerVector non_zeros(const MSpMat& X) {
-  int p = X.cols();
-  int j;
-  int nz;
-
-  IntegerVector non_zeros(p);
-
-  for (j = 0; j < p; ++j) {
-    nz = 0;
-    for (MInIterMat i_(X, j); i_; ++i_) {
-      nz++;
-    }
-    non_zeros[j] = nz;
-  }
-  return(non_zeros);
-}
-
-// [[Rcpp::export]]
-NumericVector get_pnz(const MSpMat& X) {
-  IntegerVector nz = non_zeros(X);
-  int n = X.rows();
-  NumericVector pnz = as<NumericVector>(nz)/n;
-
-  return(pnz);
-}
-
-// [[Rcpp::export]]
-NumericVector get_xscale(const MSpMat& X) {
- int n = X.rows();
- NumericVector pnz = get_pnz(X);
- NumericVector xscale = sqrt(pnz);
- double minx = sqrt(1.0 / n);
- xscale[xscale < minx] = minx;
-
- return(xscale);
-}

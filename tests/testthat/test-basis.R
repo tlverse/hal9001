@@ -4,9 +4,9 @@ context("Unit test for procedures relating to basis functions.")
 # Rcpp::compileAttributes() load_all()
 
 compare_basis <- function(ab1, ab2) {
-  basis_str1 <- apply(ab1,2,paste,collapse="")
-  basis_str2 <- apply(ab1,2,paste,collapse="")
-  all(basis_str1%in%basis_str2)&&all(basis_str2%in%basis_str1)
+  basis_str1 <- apply(ab1, 2, paste, collapse = "")
+  basis_str2 <- apply(ab1, 2, paste, collapse = "")
+  all(basis_str1 %in% basis_str2) && all(basis_str2 %in% basis_str1)
 }
 
 basis_test <- function(x) {
@@ -42,4 +42,3 @@ basis_test(x_mat_2)
 x_mat_3 <- matrix(rbinom(n * p, 1, 0.5), n, p)
 basis_test(x_mat_3)
 # basis_timing(x_mat_3)
-

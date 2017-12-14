@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{find_lambda_max}
 \alias{find_lambda_max}
-\title{Find maximum L1 regularization constant}
+\title{Find maximum L1-norm regularization constant}
 \usage{
 find_lambda_max(X, y, xscale)
 }
@@ -14,5 +14,5 @@ find_lambda_max(X, y, xscale)
 \item{xscale}{...}
 }
 \description{
-Find maximum L1 regularization constant
+Find maximum L1-norm regularization constant
 }

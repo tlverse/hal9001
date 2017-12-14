@@ -2,6 +2,7 @@
 #include <RcppEigen.h>
 #include "hal9001_types.h"
 using namespace Rcpp;
+//------------------------------------------------------------------------------
 
 //' Find Copies of Columns
 //'
@@ -68,3 +69,4 @@ SpMat apply_copy_map(const MSpMat& X, const List& copy_map) {
   x_unique.makeCompressed();
   return(x_unique);
 }
+

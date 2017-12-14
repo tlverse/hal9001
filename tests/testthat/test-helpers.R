@@ -18,4 +18,3 @@ generate_test_data <- function(seed = 479231) {
 
   return(list(x = x, y = y))
 }
-

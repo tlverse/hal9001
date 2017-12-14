@@ -9,7 +9,7 @@
 #
 lambda_seq <- function(lambda_max, lambda_min_ratio = 0.01, nlambda = 100) {
   log_seq <- seq(from = 0, to = log10(lambda_min_ratio), length = nlambda)
-  result <- lambda_max * 10^log_seq
+  result <- lambda_max * 10 ^ log_seq
   return(result)
 }
 
@@ -36,14 +36,16 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
   beta <- rep(0, ncol(x))
   beta_mat <- matrix(0, nrow = length(beta), ncol = nlambda)
   intercepts <- rep(0, nlambda)
-  intercept = ybar
-  
+  intercept <- ybar
+
   # lambdas
   if (is.null(lambdas)) {
     lambda_max <- find_lambda_max(X = x, y = resid, xscale = xscale)
-    lambdas <- lambda_seq(lambda_max = lambda_max,
-                          lambda_min_ratio = lambda_min_ratio,
-                          nlambda = nlambda)
+    lambdas <- lambda_seq(
+      lambda_max = lambda_max,
+      lambda_min_ratio = lambda_min_ratio,
+      nlambda = nlambda
+    )
   }
 
   step_counts <- rep(0, nlambda)
@@ -53,16 +55,20 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
     lambda <- lambdas[lambda_step]
 
     # fit the lasso model with the full set of features
-    full_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
-                               lambda = lambda, nsteps = 1, xscale = xscale,
-                               intercept = intercept, active_set = FALSE)
+    full_steps <- lassi_fit_cd(
+      X = x, resids = resid, beta = beta,
+      lambda = lambda, nsteps = 1, xscale = xscale,
+      intercept = intercept, active_set = FALSE
+    )
     active_steps <- 0
-    if(full_steps>0){
+    if (full_steps > 0) {
       # fit the lasso model with only "active set" features
-      active_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
-                                   lambda = lambda, nsteps = 1000,
-                                   xscale = xscale, intercept = intercept, 
-                                   active_set = TRUE)
+      active_steps <- lassi_fit_cd(
+        X = x, resids = resid, beta = beta,
+        lambda = lambda, nsteps = 1000,
+        xscale = xscale, intercept = intercept,
+        active_set = TRUE
+      )
     }
 
     step_counts[lambda_step] <- active_steps
@@ -70,8 +76,8 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
     beta_mat[, lambda_step] <- beta
     intercepts[lambda_step] <- intercept
   }
-  
-  
+
+
   beta_mat <- beta_mat / xscale
 
   # create output object
@@ -81,26 +87,26 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
   return(out)
 }
 
-predict.lassi <- function(fit, new_x_basis, lambdas=NULL){
-  if(is.null(lambdas)){
-    lambdas=fit$lambdas
+predict.lassi <- function(fit, new_x_basis, lambdas=NULL) {
+  if (is.null(lambdas)) {
+    lambdas <- fit$lambdas
   }
-  
-  if(!all(lambdas%in%fit$lambdas)){
+
+  if (!all(lambdas %in% fit$lambdas)) {
     stop("attempting to predict for a lambda that was not fit")
   }
-  
-  preds <- matrix(0, nrow = nrow(new_x_basis), ncol=length(lambdas))
-  
-  for(i in seq_along(lambdas)){
+
+  preds <- matrix(0, nrow = nrow(new_x_basis), ncol = length(lambdas))
+
+  for (i in seq_along(lambdas)) {
     lambda <- lambdas[i]
-    beta_col <- which(lambda==fit$lambdas)
-    beta <- fit$beta_mat[ , beta_col]
+    beta_col <- which(lambda == fit$lambdas)
+    beta <- fit$beta_mat[, beta_col]
     intercept <- fit$intercepts[beta_col]
     pred_col <- lassi_predict(new_x_basis, beta, intercept)
     preds[, i] <- pred_col
     # find corresponding betas
   }
-  
+
   return(preds)
 }
