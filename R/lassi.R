@@ -13,6 +13,24 @@ lambda_seq <- function(lambda_max, lambda_min_ratio = 0.01, nlambda = 100) {
   return(result)
 }
 
+fit_lassi_step <- function(x, resid, beta, lambda, xscale, intercept){
+  
+  # fit the lasso model with the full set of features
+  full_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
+                             lambda = lambda, nsteps = 1, xscale = xscale,
+                             intercept = intercept, active_set = FALSE)
+  active_steps <- 0
+  if(full_steps>0){
+    # fit the lasso model with only "active set" features
+    active_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
+                                 lambda = lambda, nsteps = 1000,
+                                 xscale = xscale, intercept = intercept, 
+                                 active_set = TRUE)
+  }
+  
+  return(active_steps)
+}
+
 #' Custom Lasso implementation for matrices of indicator functions
 #'
 #' @param x The covariate matrix
@@ -51,20 +69,7 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
   for (lambda_step in seq_along(lambdas)) {
     # just the particular lambda we're fitting on
     lambda <- lambdas[lambda_step]
-
-    # fit the lasso model with the full set of features
-    full_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
-                               lambda = lambda, nsteps = 1, xscale = xscale,
-                               intercept = intercept, active_set = FALSE)
-    active_steps <- 0
-    if(full_steps>0){
-      # fit the lasso model with only "active set" features
-      active_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
-                                   lambda = lambda, nsteps = 1000,
-                                   xscale = xscale, intercept = intercept, 
-                                   active_set = TRUE)
-    }
-
+    active_steps <- fit_lassi_step(x, resid, beta, lambda, xscale, intercept)
     step_counts[lambda_step] <- active_steps
     # assign the beta for each given lambda step
     beta_mat[, lambda_step] <- beta

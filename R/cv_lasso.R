@@ -33,9 +33,7 @@ lassi_origami <- function(fold, data, lambdas) {
   lassi_fit <- lassi(x = train_x_basis, y = train_y, lambdas = lambdas)
   pred_mat <- predict(lassi_fit, valid_x_basis)
 
-  # compute the MSE for the given training and validation sets
-  ybar_train <- mean(train_y)
-  mses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar_train -
+  mses <- apply(pred_mat, 2, function(preds) {mean((preds  -
                                                     valid_y)^2)})
 
   # the only output needed is the lambda-wise MSE over each fold

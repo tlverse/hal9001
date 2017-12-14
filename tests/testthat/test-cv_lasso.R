@@ -11,10 +11,10 @@ context("Unit test for the generic cross-validated LASSO estimation procedure.")
 n_folds <- 10
 
 # generate simple test data
-n = 100
+n = 1000
 p = 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
-y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.1)
+y <- x[, 1] + rnorm(n, mean = 0, sd = 0)
 
 testn <- 1e4
 testx <- matrix(rnorm(testn * p), testn, p)
@@ -41,36 +41,6 @@ lambdas_init <- lasso_init$lambdas
 # next, set up a cross-validated lasso using the sequence of lambdas
 full_data_mat <- cbind(y, x_basis)
 folds <- origami::make_folds(full_data_mat, V = n_folds)
-
-# origami cvfun for cross-validating the lasso fits
-lassi_origami <- function(fold, data, lambdas) {
-  # split data for V-fold cross-validation
-  train_data <- origami::training(data)
-  valid_data <- origami::validation(data)
-
-  # extract matrices of basis function from training and validation for X
-  train_x_basis <- train_data[, -1]
-  valid_x_basis <- valid_data[, -1]
-
-  # extract vector of outcomes from training and validation for Y
-  train_y <- train_data[, 1]
-  valid_y <- valid_data[, 1]
-
-  # compute the predicted betas for the given training and validation sets
-  lassi_fit <- hal9001:::lassi(x = train_x_basis, y = train_y,
-                               lambdas = lambdas)
-  pred_mat <- predict(lassi_fit, valid_x_basis)
-
-  # compute the MSE for the given training and validation sets
-  ybar_train <- mean(train_y)
-  mses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar_train -
-                                                    valid_y)^2)})
-
-  # the only output needed is the lambda-wise MSE over each fold
-  mses_out <- matrix(mses, nrow = 1)
-  out <- list(mses = mses_out)
-  return(out)
-}
 
 # run the cross-validated lasso procedure to find the optimal lambda
 cv_lasso_out <- origami::cross_validate(cv_fun = lassi_origami,
@@ -106,11 +76,15 @@ names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se")
 ################################################################################
 
 # create fold ID object for using the same folds between cv.glmnet and origami
+folds <- make_folds(n)
 fold_id <- origami:::folds2foldvec(folds)
 
 # just use the standard implementation available in glmnet
 lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds,
                                   foldid = fold_id)
+
+lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y)
+
 lambda_minmse_cvglmnet <- lasso_glmnet$lambda.min
 lambda_1se_cvglmnet <- lasso_glmnet$lambda.1se
 coef_minmse_cvglmnet <- coef(lasso_glmnet, "lambda.min")
