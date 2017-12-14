@@ -8,4 +8,3 @@
 #' @useDynLib hal9001
 #
 NULL
-

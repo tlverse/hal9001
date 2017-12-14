@@ -94,11 +94,12 @@ fit_hal <- function(X,
       lambda_star <- hal_lasso$lambda_1se
       coefs <- hal_lasso$betas_mat[, "lambda_1se"]
     }
-
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
-    hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y,
-                                   nfolds = n_folds, ...)
+    hal_lasso <- glmnet::cv.glmnet(
+      x = x_basis, y = Y,
+      nfolds = n_folds, ...
+    )
     if (use_min) {
       s <- "lambda.min"
       lambda_star <- hal_lasso$lambda.min
@@ -116,20 +117,22 @@ fit_hal <- function(X,
   time_final <- proc.time()
 
   # bookkeeping: construct table for viewing procedure times
-  times <- rbind(design_matrix = time_design_matrix - time_start,
-                 remove_duplicates = time_rm_duplicates - time_design_matrix,
-                 lasso = time_lasso - time_rm_duplicates,
-                 total = time_final - time_start
-                )
+  times <- rbind(
+    design_matrix = time_design_matrix - time_start,
+    remove_duplicates = time_rm_duplicates - time_design_matrix,
+    lasso = time_lasso - time_rm_duplicates,
+    total = time_final - time_start
+  )
 
   # construct output object with S3
-  fit <- list(call = call,
-              basis_list = basis_list,
-              copy_map = copy_map,
-              coefs = coefs,
-              times = times,
-              lambda_star = lambda_star)
+  fit <- list(
+    call = call,
+    basis_list = basis_list,
+    copy_map = copy_map,
+    coefs = coefs,
+    times = times,
+    lambda_star = lambda_star
+  )
   class(fit) <- "hal9001"
   return(fit)
 }
-

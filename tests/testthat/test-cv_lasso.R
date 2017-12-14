@@ -11,8 +11,8 @@ context("Unit test for the generic cross-validated LASSO estimation procedure.")
 n_folds <- 10
 
 # generate simple test data
-n = 1000
-p = 3
+n <- 100
+p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] + rnorm(n, mean = 0, sd = 0)
 
@@ -43,17 +43,19 @@ full_data_mat <- cbind(y, x_basis)
 folds <- origami::make_folds(full_data_mat, V = n_folds)
 
 # run the cross-validated lasso procedure to find the optimal lambda
-cv_lasso_out <- origami::cross_validate(cv_fun = lassi_origami,
-                                        folds = folds,
-                                        data = full_data_mat,
-                                        lambdas = lambdas_init)
+cv_lasso_out <- origami::cross_validate(
+  cv_fun = lassi_origami,
+  folds = folds,
+  data = full_data_mat,
+  lambdas = lambdas_init
+)
 
 # compute cv-mean of MSEs for each lambda
 lambdas_cvmse <- colMeans(cv_lasso_out$mses)
 
 # also need the CV standard error for each lambda
-#lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, sd)
-#lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
+# lambdas_cvsd <- apply(X = cv_lasso_out$mses, MARGIN = 2, sd)
+# lambdas_cvse <- lambdas_cvsd / sqrt(n_folds)
 lambdas_cvse <- sd(lambdas_cvmse) / sqrt(n_folds)
 
 # find the lambda that minimizes the MSE and the lambda 1 standard error above
@@ -80,11 +82,18 @@ folds <- make_folds(n)
 fold_id <- origami:::folds2foldvec(folds)
 
 # just use the standard implementation available in glmnet
+<<<<<<< HEAD
 lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds,
                                   foldid = fold_id)
 
 lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y)
 
+=======
+lasso_glmnet <- glmnet::cv.glmnet(
+  x = x_basis, y = y, nfolds = n_folds,
+  foldid = fold_id
+)
+>>>>>>> 5c73a8dbd615ba5a57bfef5ebfa03ab13c8062f6
 lambda_minmse_cvglmnet <- lasso_glmnet$lambda.min
 lambda_1se_cvglmnet <- lasso_glmnet$lambda.1se
 coef_minmse_cvglmnet <- coef(lasso_glmnet, "lambda.min")
@@ -97,12 +106,15 @@ betas_cvglmnet <- cbind(coef_1se_cvglmnet, coef_minmse_cvglmnet)
 ################################################################################
 
 test_that("lambda-min difference between cv.glmnet, cv_lasso within 0.5%.", {
-  expect_equal(lambda_minmse_origami, expected = lambda_minmse_cvglmnet,
-               scale = lambda_minmse_cvglmnet, tolerance = 0.005)
+  expect_equal(
+    lambda_minmse_origami, expected = lambda_minmse_cvglmnet,
+    scale = lambda_minmse_cvglmnet, tolerance = 0.005
+  )
 })
 
 test_that("lambda-1se difference between cv.glmnet and cv_lasso within 0.5%.", {
-  expect_equal(lambda_1se_origami, expected = lambda_1se_cvglmnet,
-               scale = lambda_1se_cvglmnet, tolerance = 0.005)
+  expect_equal(
+    lambda_1se_origami, expected = lambda_1se_cvglmnet,
+    scale = lambda_1se_cvglmnet, tolerance = 0.005
+  )
 })
-

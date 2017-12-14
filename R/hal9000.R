@@ -19,4 +19,3 @@ hal9000 <- function() {
   }
   print(hal_says)
 }
-

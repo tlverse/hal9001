@@ -4,12 +4,14 @@
 \alias{lassi_predict}
 \title{LASSO Prediction}
 \usage{
-lassi_predict(X, beta)
+lassi_predict(X, beta, intercept)
 }
 \arguments{
 \item{X}{Sparse matrix containing columns of indicator functions.}
 
 \item{beta}{Numeric for the regression coefficient of a linear model fit.}
+
+\item{intercept}{Numeric value corresponding to the regression intercept.}
 }
 \description{
 Compute predictions based on a LASSO regression

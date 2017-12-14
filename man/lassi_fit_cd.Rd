@@ -4,7 +4,7 @@
 \alias{lassi_fit_cd}
 \title{Fit a LASSO Regression Model}
 \usage{
-lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale, active_set)
+lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale, intercept, active_set)
 }
 \arguments{
 \item{X}{Sparse matrix containing columns of indicator functions.}
@@ -20,8 +20,10 @@ the regression coefficient.}
 
 \item{xscale}{scale factor for covariates. See get_xscale}
 
+\item{intercept}{Numeric value corresponding to the regression intercept.}
+
 \item{active_set, }{update only nonzero coefficients (TRUE), or all
-coefficients (FALSE)}
+coefficients (FALSE).}
 }
 \description{
 Fit a linear regression model with L1 penalization, the LASSO

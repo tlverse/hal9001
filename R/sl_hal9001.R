@@ -39,14 +39,15 @@ SL.hal9001 <- function(Y,
                        family = stats::gaussian(),
                        obsWeights = rep(1, length(Y)),
                        ...) {
-
   if (family$family == "gaussian") {
     # fit HAL
-    hal_out <- fit_hal(Y = Y, X = X, degrees = degrees, fit_type = fit_type,
-                       n_folds = n_folds, use_min = use_min, yolo = FALSE)
+    hal_out <- fit_hal(
+      Y = Y, X = X, degrees = degrees, fit_type = fit_type,
+      n_folds = n_folds, use_min = use_min, yolo = FALSE
+    )
 
     # compute predictions based on `newX` or input `X`
-    if(!is.null(newX)) {
+    if (!is.null(newX)) {
       pred <- stats::predict(object = hal_out, new_data = newX)
     } else {
       pred <- stats::predict(object = hal_out, new_data = X)
@@ -83,4 +84,3 @@ predict.SL.hal9001 <- function(object, newX, ...) {
   pred <- stats::predict(object$object, new_data = newX)
   return(pred)
 }
-

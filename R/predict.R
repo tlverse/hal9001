@@ -29,9 +29,10 @@ predict.hal9001 <- function(object, ..., new_data) {
   pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
 
   # generate predictions
-  preds <- as.vector(Matrix::tcrossprod(x = pred_x_basis,
-                                        y = object$coefs[-1]) +
-                     object$coefs[1])
+  preds <- as.vector(Matrix::tcrossprod(
+    x = pred_x_basis,
+    y = object$coefs[-1]
+  ) +
+    object$coefs[1])
   return(preds)
 }
-

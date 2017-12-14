@@ -27,6 +27,7 @@ apply_copy_map <- function(X, copy_map) {
 #'
 #' @param X Sparse matrix containing columns of indicator functions.
 #' @param beta Numeric for the regression coefficient of a linear model fit.
+#' @param intercept Numeric value corresponding to the regression intercept.
 #'
 lassi_predict <- function(X, beta, intercept) {
     .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta, intercept)
@@ -43,6 +44,14 @@ soft_threshold <- function(beta, lambda) {
     .Call('_hal9001_soft_threshold', PACKAGE = 'hal9001', beta, lambda)
 }
 
+#' Coordinate Descent with Regression Residuals
+#'
+#' @param X A sparse matrix corresponding to the full set of basis functions.
+#' @param resids Residuals from a previous round of regression fits.
+#' @param j A numeric value indexing the columns of X (i.e., basis functions).
+#' @param xscale_j A numeric corresponding to the scaled values of the jth
+#'   column of the sparse matrix X.
+#'
 #' compute $X'r$ for a given column of X
 X_t_resid <- function(X, resids, j, xscale_j) {
     .Call('_hal9001_X_t_resid', PACKAGE = 'hal9001', X, resids, j, xscale_j)
@@ -60,7 +69,7 @@ get_new_beta <- function(X, resids, j, beta_j, xscale_j) {
     .Call('_hal9001_get_new_beta', PACKAGE = 'hal9001', X, resids, j, beta_j, xscale_j)
 }
 
-#' Find maximum L1 regularization constant
+#' Find maximum L1-norm regularization constant
 #'
 #' @param X ...
 #' @param y ...
@@ -93,23 +102,12 @@ update_coords <- function(X, resids, beta, lambda, xscale, intercept, active_set
 #' @param nsteps Maximum number of steps to take until stopping computation of
 #'  the regression coefficient.
 #' @param xscale scale factor for covariates. See get_xscale
+#' @param intercept Numeric value corresponding to the regression intercept.
 #' @param active_set, update only nonzero coefficients (TRUE), or all
-#'  coefficients (FALSE)
+#'  coefficients (FALSE).
 #'
 lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale, intercept, active_set) {
     .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale, intercept, active_set)
-}
-
-non_zeros <- function(X) {
-    .Call('_hal9001_non_zeros', PACKAGE = 'hal9001', X)
-}
-
-get_pnz <- function(X) {
-    .Call('_hal9001_get_pnz', PACKAGE = 'hal9001', X)
-}
-
-get_xscale <- function(X) {
-    .Call('_hal9001_get_xscale', PACKAGE = 'hal9001', X)
 }
 
 #' Sort Basis Functions
@@ -157,7 +155,7 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #' Build HAL Design Matrix
 #'
 #' Make a HAL design matrix based on original design matrix X and a list of
-#' basis functions in blist
+#' basis functions in argument blist
 #'
 #' @param X Matrix of covariates containing observed data in the columns.
 #' @param blist List of basis functions with which to build HAL design matrix.
@@ -179,5 +177,17 @@ make_design_matrix <- function(X, blist) {
 #'
 asdgCMatrix_ <- function(XX_) {
     .Call('_hal9001_asdgCMatrix_', PACKAGE = 'hal9001', XX_)
+}
+
+non_zeros <- function(X) {
+    .Call('_hal9001_non_zeros', PACKAGE = 'hal9001', X)
+}
+
+get_pnz <- function(X) {
+    .Call('_hal9001_get_pnz', PACKAGE = 'hal9001', X)
+}
+
+get_xscale <- function(X) {
+    .Call('_hal9001_get_xscale', PACKAGE = 'hal9001', X)
 }
 
