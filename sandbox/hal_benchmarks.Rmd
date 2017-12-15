@@ -66,13 +66,41 @@ if(os=="Darwin"){
 ### Tests
 
 ```{r lassi}
-# microbenchmark({
-#   glmnet::glmnet(x = x_basis, y = y, intercept = TRUE, nlambda = 100,
-#   lambda.min.ratio = 0.01, family = "gaussian", alpha = 1, standardize = TRUE)
-# }, times = 10)
-# microbenchmark({
-#   lassi(x_basis, y, nlambda=100, lambda_min_ratio = 0.01)
-# }, times = 10)
+microbenchmark({
+   glmnet::glmnet(x = x_basis, y = y, intercept = TRUE, nlambda = 100,
+   lambda.min.ratio = 0.01, family = "gaussian", alpha = 1, standardize = TRUE)
+ }, times = 10)
+microbenchmark({
+   lassi(x_basis, y, nlambda=100, lambda_min_ratio = 0.01, center = FALSE)
+ }, times = 10)
+
+microbenchmark({
+   lassi(x_basis, y, nlambda=100, lambda_min_ratio = 0.01, center = TRUE)
+ }, times = 10)
+
+microbenchmark({
+   glmnet::cv.glmnet(x = x_basis, y = y, intercept = TRUE, nlambda = 100,
+   lambda.min.ratio = 0.01, family = "gaussian", alpha = 1, standardize = TRUE)
+ }, times = 1)
+
+microbenchmark({
+   cv_lasso(x_basis, y, center = FALSE)
+ }, times = 1)
+
+microbenchmark({
+   cv_lasso(x_basis, y, center = TRUE)
+ }, times = 1)
+
+set.seed(1234)
+cv_l_full <- cv_lasso(x_basis, y, center = FALSE)
+set.seed(1234)
+cv_l_es <- cv_lasso_early_stopping(x_basis, y)
+plot(cv_l_es)
+plot(cv_l_full$lambdas_cvmse)
+microbenchmark({
+   cv_lasso_early_stopping(x_basis, y)
+ }, times = 1)
+
 ```
 
 ## Session Information

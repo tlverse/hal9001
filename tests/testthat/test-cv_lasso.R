@@ -11,14 +11,14 @@ context("Unit test for the generic cross-validated LASSO estimation procedure.")
 n_folds <- 10
 
 # generate simple test data
-n <- 100
+n <- 1000
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
-y <- x[, 1] + rnorm(n, mean = 0, sd = 0)
+y <- x[, 1] + rnorm(n, mean = 0, sd = 1)
 
 testn <- 1e4
 testx <- matrix(rnorm(testn * p), testn, p)
-testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, mean = 0, sd = 0.1)
+testy <- testx[, 1] + rnorm(testn, mean = 0, sd = 0.5)
 
 # fit design matrix for HAL
 basis_list <- hal9001:::enumerate_basis(x)
@@ -29,15 +29,31 @@ copy_map <- hal9001:::make_copy_map(x_basis)
 unique_columns <- as.numeric(names(copy_map))
 x_basis <- x_basis[, unique_columns]
 
+################################################################################
+# cv.glmnet reference
+################################################################################
 
+
+# create fold ID object for using the same folds between cv.glmnet and origami
+folds <- make_folds(n)
+fold_id <- origami:::folds2foldvec(folds)
+
+# just use the standard implementation available in glmnet
+lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds,
+                                  foldid = fold_id)
+
+glmnet_nlambda <- length(lasso_glmnet$lambda)
 ################################################################################
 # CV-LASSO custom implementation
 ################################################################################
 
 # first, need to run lasso on the full data to get a sequence of lambdas
-lasso_init <- hal9001:::lassi(y = y, x = x_basis)
+lasso_init <- hal9001:::lassi(y = y, x = x_basis, center = TRUE)
 lambdas_init <- lasso_init$lambdas
 
+
+expect_equal(lambdas_init[seq_len(glmnet_nlambda)], lasso_glmnet$lambda)
+lambdas_init <- lambdas_init[seq_len(glmnet_nlambda)]
 # next, set up a cross-validated lasso using the sequence of lambdas
 full_data_mat <- cbind(y, x_basis)
 folds <- origami::make_folds(full_data_mat, V = n_folds)
@@ -47,7 +63,8 @@ cv_lasso_out <- origami::cross_validate(
   cv_fun = lassi_origami,
   folds = folds,
   data = full_data_mat,
-  lambdas = lambdas_init
+  lambdas = lambdas_init,
+  center = TRUE
 )
 
 # compute cv-mean of MSEs for each lambda
@@ -63,50 +80,33 @@ lambda_optim_index <- which.min(lambdas_cvmse)
 lambda_minmse_origami <- lambdas_init[lambda_optim_index]
 lambda_1se_origami <- lambda_minmse_origami + lambdas_cvse
 lambda_1se_index <- which.min(abs(lasso_init$lambdas - lambda_1se_origami))
-
-# create output object
-get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
-betas_out <- lasso_init$beta_mat[, get_lambda_indices]
-colnames(betas_out) <- c("lambda_1se", "lambda_min")
-coefs_out <- hal9001:::asdgCMatrix_(betas_out * 1.0)
-cv_lasso_out <- list(coefs_out, lambda_minmse_origami, lambda_1se_origami)
-names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se")
-
+lambda_1se_origami <- lambdas_init[lambda_1se_index]
+lassi_selected_lambdas <- c(lambda_minmse_origami, lambda_1se_origami)
 
 ################################################################################
-# CV-LASSO using glmnet
+# test set performance
 ################################################################################
 
-# create fold ID object for using the same folds between cv.glmnet and origami
-folds <- make_folds(n)
-fold_id <- origami:::folds2foldvec(folds)
+# format test data set
+new_data <- as.matrix(testx)
+pred_x_basis <- hal9001:::make_design_matrix(new_data, basis_list)
 
-# just use the standard implementation available in glmnet
-lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds,
-                                  foldid = fold_id)
+pred_x_basis <- hal9001:::apply_copy_map(pred_x_basis, copy_map)
 
-lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y)
-lambda_minmse_cvglmnet <- lasso_glmnet$lambda.min
-lambda_1se_cvglmnet <- lasso_glmnet$lambda.1se
-coef_minmse_cvglmnet <- coef(lasso_glmnet, "lambda.min")
-coef_1se_cvglmnet <- coef(lasso_glmnet, "lambda.1se")
-betas_cvglmnet <- cbind(coef_1se_cvglmnet, coef_minmse_cvglmnet)
-
-
-################################################################################
-# TEST THAT ORIGAMI AND CV-GLMNET IMPLEMENTATIONS MATCH
-################################################################################
-
-test_that("lambda-min difference between cv.glmnet, cv_lasso within 0.5%.", {
-  expect_equal(
-    lambda_minmse_origami, expected = lambda_minmse_cvglmnet,
-    scale = lambda_minmse_cvglmnet, tolerance = 0.005
-  )
+# lassi prediction and mses
+pred_mat <- predict(lasso_init, pred_x_basis, lambdas = lassi_selected_lambdas)
+mses <- apply(pred_mat, 2, function(preds) {
+  mean((preds - testy) ^ 2)
 })
 
-test_that("lambda-1se difference between cv.glmnet and cv_lasso within 0.5%.", {
-  expect_equal(
-    lambda_1se_origami, expected = lambda_1se_cvglmnet,
-    scale = lambda_1se_cvglmnet, tolerance = 0.005
-  )
+
+gpred_mat <- cbind(predict(lasso_glmnet, pred_x_basis, "lambda.min"),
+                   predict(lasso_glmnet, pred_x_basis, "lambda.1se"))
+gmses <- apply(gpred_mat, 2, function(preds) {
+  mean((preds - testy) ^ 2)
 })
+
+test_that(
+  "lassi isn't doing much worse in terms of MSE",
+  expect_lt(abs((min(mses) - min(gmses)) / min(gmses)), 1e-1)
+)

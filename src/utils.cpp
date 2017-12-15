@@ -60,15 +60,26 @@ NumericVector get_pnz(const MSpMat& X) {
 }
 
 //------------------------------------------------------------------------------
+NumericVector not_dumb_sqrt(const NumericVector& x){
+  NumericVector res(x.length());
+  for(int i=0; i<x.length(); i++){
+    res[i] = std::sqrt(x[i]);
+  }
+  
+  return(res);
+}
 
 // [[Rcpp::export]]
-NumericVector get_xscale(const MSpMat& X) {
+NumericVector get_xscale(const MSpMat& X, const NumericVector& xcenter) {
  int n = X.rows();
  NumericVector pnz = get_pnz(X);
- NumericVector xscale = sqrt(pnz);
- double minx = sqrt(1.0 / n);
- xscale[xscale < minx] = minx;
-
+ NumericVector xscale = not_dumb_sqrt(pnz);
+ double minx = std::sqrt(1.0 / n);
+ 
+ xscale = not_dumb_sqrt(xscale * xscale - (xcenter * xcenter));
+ xscale[xscale == 0 ] = minx;
+ 
  return(xscale);
 }
+
 

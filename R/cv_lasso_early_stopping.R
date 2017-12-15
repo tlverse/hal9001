@@ -20,7 +20,7 @@
 #
 cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   # first, need to run lasso on the full data to get a sequence of lambdas
-  lasso_init <- lassi(y = y, x = x_basis, nlambda = n_lambda)
+  lasso_init <- lassi(y = y, x = x_basis, nlambda = n_lambda, center = FALSE)
 
   # next, set up a cross-validated lasso using the sequence of lambdas
   folds <- origami::make_folds(x_basis, V = n_folds)
@@ -33,25 +33,24 @@ cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
     x_valid <- validation(x_basis)
     y_valid <- validation(y)
     
-    intercept <- mean(x_train)
+    intercept <- mean(y_train)
     resid <- y_train - intercept
-    xscale <- get_xscale(x_train)
+    xcenter <- rep(0, ncol(x_basis))
+    xscale <- get_xscale(x_train, xcenter)
     beta <- rep(0, ncol(x_basis))
     
     fold_data <- list(x_train = x_train, x_valid = x_valid, y_valid = y_valid, 
-                      intercept = intercept, resid = resid, xscale = xscale, beta = beta)
+                      intercept = intercept, resid = resid, xscale = xscale, xcenter=xcenter, beta = beta)
     
     return(list(fold_data = fold_data))
   }
-  system.time({
-    all_fold_data <- cross_validate(setup_fold_data, folds, x_basis, y, .combine = FALSE)$fold_data
-  })
 
+  all_fold_data <- cross_validate(setup_fold_data, folds, x_basis, y, .combine = FALSE)$fold_data
   
   cv_lassi_step <- function(fold, all_fold_data, lambda){
     fold_data <- fold_index(all_fold_data)[[1]]
-    n_updates <- with(fold_data, fit_lassi_step(x_train, resid, beta, lambda, xscale, intercept))
-    preds <- with(fold_data, x_valid%*%(beta/xscale)+intercept)
+    n_updates <- with(fold_data, fit_lassi_step(x_train, resid, beta, lambda, xscale, xcenter, intercept, FALSE))
+    preds <- with(fold_data, as.vector(x_valid%*%(beta/xscale))+intercept)
     mse <- with(fold_data, mean((preds-y_valid)^2))
     return(list(fold_data=fold_data, mse = mse))
   }
@@ -60,7 +59,6 @@ cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   null_mse <- NULL
   min_mse <- Inf
   step_mses <- rep(Inf, n_lambda)
-  system.time({
   for(lambda_step in seq_along(lambdas_init)){
     lambda <- lambdas_init[lambda_step]
     step_results <- lapply(folds, cv_lassi_step, all_fold_data, lambda)
@@ -87,19 +85,7 @@ cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
     }
     step_mses[lambda_step] <- step_mse
   }
-  })
-  # next, set up a cross-validated lasso using the sequence of lambdas
-  full_data_mat <- cbind(y, x_basis)
-  system.time({
-  # run the cross-validated lasso procedure to find the optimal lambda
-  cv_lasso_out <- origami::cross_validate(cv_fun = lassi_origami,
-                                          folds = folds,
-                                          data = full_data_mat,
-                                          lambdas = lambdas_init)
-  
-  })
-  # compute cv-mean of MSEs for each lambda
-  lambdas_cvmse <- colMeans(cv_lasso_out$mses)
+
   
   return(step_mses)
 }

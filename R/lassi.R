@@ -13,19 +13,19 @@ lambda_seq <- function(lambda_max, lambda_min_ratio = 0.01, nlambda = 100) {
   return(result)
 }
 
-fit_lassi_step <- function(x, resid, beta, lambda, xscale, intercept){
+fit_lassi_step <- function(x, resid, beta, lambda, xscale, xcenter, intercept, center = FALSE){
   
   # fit the lasso model with the full set of features
   full_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
                              lambda = lambda, nsteps = 1, xscale = xscale,
-                             intercept = intercept, active_set = FALSE)
+                             xcenter = xcenter, intercept = intercept, active_set = FALSE, center)
   active_steps <- 0
   if(full_steps>0){
     # fit the lasso model with only "active set" features
     active_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
                                  lambda = lambda, nsteps = 1000,
-                                 xscale = xscale, intercept = intercept, 
-                                 active_set = TRUE)
+                                 xscale = xscale, xcenter = xcenter, intercept = intercept, 
+                                 active_set = TRUE, center)
   }
   
   return(active_steps)
@@ -44,9 +44,15 @@ fit_lassi_step <- function(x, resid, beta, lambda, xscale, intercept){
 #' @export
 #
 lassi <- function(x, y, lambdas = NULL, nlambda = 100,
-                  lambda_min_ratio = 0.01) {
+                  lambda_min_ratio = 0.01, center = FALSE) {
+  if(center){
+    xcenter <- get_pnz(x)
+  } else {
+    xcenter <- rep(0, ncol(x))
+  }
+  
   # setup
-  xscale <- get_xscale(x)
+  xscale <- get_xscale(x, xcenter)
   ybar <- mean(y)
   resid <- y - ybar
 
@@ -58,7 +64,7 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
 
   # lambdas
   if (is.null(lambdas)) {
-    lambda_max <- find_lambda_max(X = x, y = resid, xscale = xscale)
+    lambda_max <- find_lambda_max(X = x, y = resid, xscale = xscale, xcenter = xcenter)
     lambdas <- lambda_seq(
       lambda_max = lambda_max,
       lambda_min_ratio = lambda_min_ratio,
@@ -71,7 +77,7 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
   for (lambda_step in seq_along(lambdas)) {
     # just the particular lambda we're fitting on
     lambda <- lambdas[lambda_step]
-    active_steps <- fit_lassi_step(x, resid, beta, lambda, xscale, intercept)
+    active_steps <- fit_lassi_step(x, resid, beta, lambda, xscale, xcenter, intercept, center)
 
     step_counts[lambda_step] <- active_steps
     # assign the beta for each given lambda step
@@ -82,6 +88,8 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
 
   beta_mat <- beta_mat / xscale
 
+  intercepts <- intercepts - crossprod(xcenter, beta_mat)
+  
   # create output object
   out <- list(beta_mat, intercepts, lambdas, step_counts)
   names(out) <- c("beta_mat", "intercepts", "lambdas", "steps")

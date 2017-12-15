@@ -15,7 +15,7 @@
 #'
 #' @importFrom origami training validation
 #
-lassi_origami <- function(fold, data, lambdas) {
+lassi_origami <- function(fold, data, lambdas, center = FALSE) {
   # make sure data is an (augmented) sparse matrix of basis functions
   stopifnot(class(data) == "dgCMatrix")
 
@@ -30,7 +30,7 @@ lassi_origami <- function(fold, data, lambdas) {
   valid_y <- valid_data[, 1]
 
   # compute the predicted betas for the given training and validation sets
-  lassi_fit <- lassi(x = train_x_basis, y = train_y, lambdas = lambdas)
+  lassi_fit <- lassi(x = train_x_basis, y = train_y, lambdas = lambdas, center = center)
   pred_mat <- predict(lassi_fit, valid_x_basis)
 
   mses <- apply(pred_mat, 2, function(preds) {mean((preds  -
@@ -62,7 +62,7 @@ lassi_origami <- function(fold, data, lambdas) {
 #' @importFrom origami make_folds cross_validate
 #' @importFrom stats sd
 #
-cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
+cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10, center = FALSE) {
   # first, need to run lasso on the full data to get a sequence of lambdas
   lasso_init <- lassi(y = y, x = x_basis, nlambda = n_lambda)
   lambdas_init <- lasso_init$lambdas
@@ -76,7 +76,8 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
     cv_fun = lassi_origami,
     folds = folds,
     data = full_data_mat,
-    lambdas = lambdas_init
+    lambdas = lambdas_init,
+    center = center
   )
 
   # compute cv-mean of MSEs for each lambda
@@ -101,7 +102,7 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   betas_out <- asdgCMatrix_(betas_out * 1.0)
 
   # create output object
-  cv_lasso_out <- list(betas_out, lambda_minmse, lambda_1se)
-  names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se")
+  cv_lasso_out <- list(betas_out, lambda_minmse, lambda_1se, lambdas_cvmse)
+  names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se", "lambdas_cvmse")
   return(cv_lasso_out)
 }

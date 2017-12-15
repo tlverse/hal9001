@@ -74,7 +74,7 @@ double soft_threshold(double beta, double lambda) {
 //' compute $X'r$ for a given column of X
 // [[Rcpp::export]]
 double X_t_resid(const MSpMat& X, const NumericVector& resids, int j,
-                 double xscale_j) {
+                 double xscale_j, double xcenter_j, double resid_sum) {
 
   double crossprod_sum = 0;
 
@@ -83,8 +83,8 @@ double X_t_resid(const MSpMat& X, const NumericVector& resids, int j,
   }
 
   // to correct for centering + scaling of X
-  // crossprod_sum = (crossprod_sum - xcenter_j * sum(resids)) / xscale_j;
-  crossprod_sum = crossprod_sum / xscale_j;
+  crossprod_sum = (crossprod_sum - xcenter_j * resid_sum) / xscale_j;
+  // crossprod_sum = crossprod_sum / xscale_j;
   return(crossprod_sum);
 }
 
@@ -100,9 +100,9 @@ double X_t_resid(const MSpMat& X, const NumericVector& resids, int j,
 //'
 // [[Rcpp::export]]
 double get_new_beta(const MSpMat& X, const NumericVector& resids, int j,
-                    double beta_j, double xscale_j) {
+                    double beta_j, double xscale_j, double xcenter_j, double resid_sum) {
 
-  double crossprod_sum = X_t_resid(X, resids, j, xscale_j);
+  double crossprod_sum = X_t_resid(X, resids, j, xscale_j, xcenter_j, resid_sum);
   int n = resids.length();
   double new_beta = crossprod_sum / n + beta_j;
   return(new_beta);
@@ -118,12 +118,13 @@ double get_new_beta(const MSpMat& X, const NumericVector& resids, int j,
 //'
 // [[Rcpp::export]]
 double find_lambda_max(const MSpMat& X, const NumericVector& y,
-                       const NumericVector& xscale){
-  int k;
+                       const NumericVector& xscale, const NumericVector& xcenter){
+  int j;
   double lambda_max = 0;
   double new_beta;
-  for (k = 0; k < X.outerSize(); ++k) {
-    new_beta = get_new_beta(X, y, k, 0, xscale[k]);
+  double resid_sum = sum(y);
+  for (j = 0; j < X.outerSize(); ++j) {
+    new_beta = get_new_beta(X, y, j, 0, xscale[j], xcenter[j], resid_sum);
     new_beta = std::abs(new_beta);
     if (new_beta > lambda_max) {
       lambda_max = new_beta;
@@ -142,16 +143,32 @@ bool equal_double(double x, double y){
 //------------------------------------------------------------------------------
 
 double update_resid(const MSpMat& X, NumericVector& resids, double beta_diff,
-                    int j, double xscale_j) {
+                    int j, double xscale_j, double xcenter_j, double& resid_sum, bool center) {
 
   double new_resid;
   double rss=0;
   double scaled_diff = beta_diff / xscale_j;
-  for (MInIterMat i_(X, j); i_; ++i_) {
-    new_resid = resids[i_.index()] - scaled_diff;
-    resids[i_.index()] = new_resid;
-    rss += new_resid * new_resid;
-  }
+  resid_sum = 0;
+  
+  if(center){
+    int n = X.rows();
+    
+    for (int i=0; i<n; ++i) {
+      new_resid = resids[i] -  beta_diff * (X.coeff(i,j) - xcenter_j) /  xscale_j;
+      resids[i] = new_resid;
+      rss += new_resid * new_resid;
+      resid_sum += new_resid;
+    }
+  } else {
+    for (MInIterMat i_(X, j); i_; ++i_) {
+      new_resid = resids[i_.index()] - scaled_diff;
+      resids[i_.index()] = new_resid;
+      rss += new_resid * new_resid;
+      resid_sum += new_resid;
+    }  
+  }  
+  
+  
   return(rss);
 }
 
@@ -159,11 +176,12 @@ double update_resid(const MSpMat& X, NumericVector& resids, double beta_diff,
 
 // [[Rcpp::export]]
 double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                    double lambda, int j, const NumericVector& xscale) {
+                    double lambda, int j, const NumericVector& xscale, const NumericVector& xcenter, double& resid_sum, bool center) {
 
   double beta_j = beta[j];
   double xscale_j = xscale[j];
-  double new_beta = get_new_beta(X, resids, j, beta_j, xscale_j);
+  double xcenter_j = xcenter[j];
+  double new_beta = get_new_beta(X, resids, j, beta_j, xscale_j, xcenter_j, resid_sum);
   double rss= -1;
   // Rcout << std::endl << "beta " << j << std::endl;
   // Rcout << "previous " << beta_j << std::endl;
@@ -174,7 +192,7 @@ double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
   if (!equal_double(new_beta, beta_j)) {
     // Rcout << "Changed beta " << j << std::endl;
     double beta_diff = new_beta-beta_j;
-    rss = update_resid(X, resids, beta_diff, j, xscale_j);
+    rss = update_resid(X, resids, beta_diff, j, xscale_j, xcenter_j, resid_sum, center);
     beta[j] = new_beta;
   }
   return(rss);
@@ -184,16 +202,17 @@ double update_coord(const MSpMat& X, NumericVector& resids, NumericVector& beta,
 
 // [[Rcpp::export]]
 int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                  double lambda, const NumericVector& xscale,
-                  NumericVector& intercept, bool active_set) {
+                  double lambda, const NumericVector& xscale, const NumericVector& xcenter,
+                  NumericVector& intercept, bool active_set, bool center) {
   // update coordinates one-by-one
   int k;
   double old_rss = sum(resids * resids);
   double rss;
+  double resid_sum = sum(resids);
   int updated = 0;
   for (k = 0; k < X.outerSize(); ++k) {
     if(!(active_set) || beta[k]!=0){
-      rss = update_coord(X, resids, beta, lambda, k, xscale);
+      rss = update_coord(X, resids, beta, lambda, k, xscale, xcenter, resid_sum, center);
 
       // see if we decreased the rss
       // todo: should be relative to null deviance
@@ -234,8 +253,8 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
 //'
 // [[Rcpp::export]]
 int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
-                 double lambda, int nsteps, const NumericVector& xscale,
-                 NumericVector& intercept, bool active_set) {
+                 double lambda, int nsteps, const NumericVector& xscale, const NumericVector& xcenter,
+                 NumericVector& intercept, bool active_set, bool center) {
   // int p = X.cols();
   // NumericVector beta(p, 0.0);
   // NumericVector resids = y - lassi_predict(X, beta);
@@ -250,7 +269,7 @@ int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
   for (step_num = 0; step_num < nsteps; step_num++) {
     last_mse = mse;
 
-    updated = update_coords(X, resids, beta, lambda, xscale, intercept, active_set);
+    updated = update_coords(X, resids, beta, lambda, xscale, xcenter, intercept, active_set, center);
 
     // we failed to substantially improve any coords
     if (updated == 0) {
