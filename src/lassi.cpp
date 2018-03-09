@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppEigen)]]
 #include <RcppEigen.h>
+#include "utils.h"
 #include "hal9001_types.h"
 using namespace Rcpp;
 //------------------------------------------------------------------------------
@@ -135,13 +136,6 @@ double find_lambda_max(const MSpMat& X, const NumericVector& y,
 
 //------------------------------------------------------------------------------
 
-// [[Rcpp::export]]
-bool equal_double(double x, double y){
-  return(std::abs(x - y) < 1e-16);
-}
-
-//------------------------------------------------------------------------------
-
 double update_resid(const MSpMat& X, NumericVector& resids, double beta_diff,
                     int j, double xscale_j, double xcenter_j, double& resid_sum, bool center) {
 
@@ -217,10 +211,10 @@ int update_coords(const MSpMat& X, NumericVector& resids, NumericVector& beta,
       // see if we decreased the rss
       // todo: should be relative to null deviance
       if(rss!= -1){
-        if((old_rss-rss)/old_rss > 1e-7){
+        // if((old_rss-rss)/old_rss > 1e-16){
           updated++;
-        }
-        old_rss = rss;
+        // }
+        // old_rss = rss;
       }
     }
   }
@@ -279,8 +273,8 @@ int lassi_fit_cd(const MSpMat& X, NumericVector& resids, NumericVector& beta,
     mse = mean(resids * resids);
     ratio = (last_mse - mse) / last_mse;
 
-    // Rcout << "Step " << step_num << ", mse " << mse << ", ratio " << ratio << std::endl;
-    if (ratio < 1e-3) {
+    Rcout << "Step " << step_num << ", updates " << updated << ", mse " << mse << ", ratio " << ratio << std::endl;
+    if (ratio < 1e-7) {
       break;
     }
   }

@@ -3,7 +3,7 @@ set.seed(749125)
 context("Unit test for the generic LASSO estimation procedure.")
 
 # generate simple test data
-n <- 100
+n <- 1e4
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0, 0.2)
@@ -11,16 +11,23 @@ y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0, 0.2)
 testn <- 1e4
 testx <- matrix(rnorm(testn * p), testn, p)
 testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, 0, 0.2)
-
+system.time({
 # fit design matrix for HAL
 basis_list <- hal9001:::enumerate_basis(x)
 x_basis <- hal9001:::make_design_matrix(x, basis_list)
 time_design_matrix <- proc.time()
-
+})
 # catalog and eliminate duplicates
 copy_map <- hal9001:::make_copy_map(x_basis)
 unique_columns <- as.numeric(names(copy_map))
 x_basis <- x_basis[, unique_columns]
+
+z=lassi_fit__new(x_basis, y, FALSE)
+beta=lassi_fit__get_beta(z)
+resids=lassi_fit__get_resids(z)
+lambda_max=lassi_fit__find_lambda_max(z)
+length(beta)
+dim(x_basis)
 
 #################################################
 # use glmnet fit as reference
@@ -155,4 +162,6 @@ test_that(
   "lassi isn't doing much worse in terms of MSE",
   expect_lt((min(mses) - min(gmses)) / min(gmses), 1e-2)
 )
+
+
 

@@ -19,12 +19,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // apply_copy_map
-SpMat apply_copy_map(const MSpMat& X, const List& copy_map);
+SpMat apply_copy_map(const MSpMat X, const List& copy_map);
 RcppExport SEXP _hal9001_apply_copy_map(SEXP XSEXP, SEXP copy_mapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const MSpMat >::type X(XSEXP);
     Rcpp::traits::input_parameter< const List& >::type copy_map(copy_mapSEXP);
     rcpp_result_gen = Rcpp::wrap(apply_copy_map(X, copy_map));
     return rcpp_result_gen;
@@ -99,18 +99,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type xscale(xscaleSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type xcenter(xcenterSEXP);
     rcpp_result_gen = Rcpp::wrap(find_lambda_max(X, y, xscale, xcenter));
-    return rcpp_result_gen;
-END_RCPP
-}
-// equal_double
-bool equal_double(double x, double y);
-RcppExport SEXP _hal9001_equal_double(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(equal_double(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -268,6 +256,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// equal_double
+bool equal_double(double x, double y);
+RcppExport SEXP _hal9001_equal_double(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(equal_double(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+
+RcppExport SEXP _rcpp_module_boot_lassi_fit_module();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_index_first_copy", (DL_FUNC) &_hal9001_index_first_copy, 1},
@@ -277,7 +279,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_X_t_resid", (DL_FUNC) &_hal9001_X_t_resid, 6},
     {"_hal9001_get_new_beta", (DL_FUNC) &_hal9001_get_new_beta, 7},
     {"_hal9001_find_lambda_max", (DL_FUNC) &_hal9001_find_lambda_max, 4},
-    {"_hal9001_equal_double", (DL_FUNC) &_hal9001_equal_double, 2},
     {"_hal9001_update_coord", (DL_FUNC) &_hal9001_update_coord, 9},
     {"_hal9001_update_coords", (DL_FUNC) &_hal9001_update_coords, 9},
     {"_hal9001_lassi_fit_cd", (DL_FUNC) &_hal9001_lassi_fit_cd, 10},
@@ -289,6 +290,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_non_zeros", (DL_FUNC) &_hal9001_non_zeros, 1},
     {"_hal9001_get_pnz", (DL_FUNC) &_hal9001_get_pnz, 1},
     {"_hal9001_get_xscale", (DL_FUNC) &_hal9001_get_xscale, 2},
+    {"_hal9001_equal_double", (DL_FUNC) &_hal9001_equal_double, 2},
+    {"_rcpp_module_boot_lassi_fit_module", (DL_FUNC) &_rcpp_module_boot_lassi_fit_module, 0},
     {NULL, NULL, 0}
 };
 

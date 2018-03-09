@@ -33,7 +33,7 @@ x_mat_1 <- matrix(rnorm(n * p), n, p)
 basis_test(x_mat_1)
 # basis_timing(x_mat_1)
 
-n <- 1000
+n <- 5000
 p <- 3
 x_mat_2 <- matrix(rnorm(n * p), n, p)
 basis_test(x_mat_2)

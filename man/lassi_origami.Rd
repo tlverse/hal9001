@@ -4,7 +4,7 @@
 \alias{lassi_origami}
 \title{Single LASSO estimation for cross-validation with Origami}
 \usage{
-lassi_origami(fold, data, lambdas)
+lassi_origami(fold, data, lambdas, center = FALSE)
 }
 \arguments{
 \item{fold}{A \code{fold} object produced by a call to \code{make_folds} from

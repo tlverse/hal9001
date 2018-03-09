@@ -86,15 +86,15 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
     intercepts[lambda_step] <- intercept
     
     # http://jmlr.csail.mit.edu/papers/volume17/15-605/15-605.pdf
-    if((lambda_step>1)&&is.null(chichignoud_criterion)){
-      diffs <- sweep(beta_mat[, seq_len(lambda_step)], 1, beta)
-      sup <- apply(abs(diffs), 2, max)
-      ratios <- sup / (lambda + lambdas[seq_len(lambda_step)])
-      stat <- max(ratios)
-      if(stat > 0.75){
-        chichignoud_criterion <- lambda_step
-      }
-    }
+    # if((lambda_step>1)&&is.null(chichignoud_criterion)){
+    #   diffs <- sweep(beta_mat[, seq_len(lambda_step)], 1, beta)
+    #   sup <- apply(abs(diffs), 2, max)
+    #   ratios <- sup / (lambda + lambdas[seq_len(lambda_step)])
+    #   stat <- max(ratios)
+    #   if(stat > 0.75){
+    #     chichignoud_criterion <- lambda_step
+    #   }
+    # }
       
   }
 

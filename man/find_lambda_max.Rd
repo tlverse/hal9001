@@ -4,7 +4,7 @@
 \alias{find_lambda_max}
 \title{Find maximum L1-norm regularization constant}
 \usage{
-find_lambda_max(X, y, xscale)
+find_lambda_max(X, y, xscale, xcenter)
 }
 \arguments{
 \item{X}{...}

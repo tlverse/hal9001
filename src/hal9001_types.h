@@ -1,4 +1,6 @@
 // [[Rcpp::depends(RcppEigen)]]
+#ifndef HAL9001_TYPES_H
+#define HAL9001_TYPES_H
 #include <RcppEigen.h>
 using namespace Rcpp;
 typedef Eigen::SparseMatrix<double> SpMat;
@@ -74,3 +76,4 @@ struct cmpCol {
 
 typedef std::map<MSpMatCol, int, cmpCol> ColMap;
 
+#endif //HAL9001_TYPES_H
