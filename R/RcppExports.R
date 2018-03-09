@@ -79,10 +79,6 @@ find_lambda_max <- function(X, y, xscale, xcenter) {
     .Call('_hal9001_find_lambda_max', PACKAGE = 'hal9001', X, y, xscale, xcenter)
 }
 
-equal_double <- function(x, y) {
-    .Call('_hal9001_equal_double', PACKAGE = 'hal9001', x, y)
-}
-
 update_coord <- function(X, resids, beta, lambda, j, xscale, xcenter, resid_sum, center) {
     .Call('_hal9001_update_coord', PACKAGE = 'hal9001', X, resids, beta, lambda, j, xscale, xcenter, resid_sum, center)
 }
@@ -189,5 +185,9 @@ get_pnz <- function(X) {
 
 get_xscale <- function(X, xcenter) {
     .Call('_hal9001_get_xscale', PACKAGE = 'hal9001', X, xcenter)
+}
+
+equal_double <- function(x, y) {
+    .Call('_hal9001_equal_double', PACKAGE = 'hal9001', x, y)
 }
 

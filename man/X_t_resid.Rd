@@ -4,7 +4,7 @@
 \alias{X_t_resid}
 \title{Coordinate Descent with Regression Residuals}
 \usage{
-X_t_resid(X, resids, j, xscale_j)
+X_t_resid(X, resids, j, xscale_j, xcenter_j, resid_sum)
 }
 \arguments{
 \item{X}{A sparse matrix corresponding to the full set of basis functions.}

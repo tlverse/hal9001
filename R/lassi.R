@@ -74,6 +74,7 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
 
   step_counts <- rep(0, nlambda)
   # fit the lasso with the sequence of lambdas
+  chichignoud_criterion <- NULL
   for (lambda_step in seq_along(lambdas)) {
     # just the particular lambda we're fitting on
     lambda <- lambdas[lambda_step]
@@ -83,6 +84,18 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
     # assign the beta for each given lambda step
     beta_mat[, lambda_step] <- beta
     intercepts[lambda_step] <- intercept
+    
+    # http://jmlr.csail.mit.edu/papers/volume17/15-605/15-605.pdf
+    # if((lambda_step>1)&&is.null(chichignoud_criterion)){
+    #   diffs <- sweep(beta_mat[, seq_len(lambda_step)], 1, beta)
+    #   sup <- apply(abs(diffs), 2, max)
+    #   ratios <- sup / (lambda + lambdas[seq_len(lambda_step)])
+    #   stat <- max(ratios)
+    #   if(stat > 0.75){
+    #     chichignoud_criterion <- lambda_step
+    #   }
+    # }
+      
   }
 
 
@@ -91,8 +104,8 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
   intercepts <- intercepts - crossprod(xcenter, beta_mat)
   
   # create output object
-  out <- list(beta_mat, intercepts, lambdas, step_counts)
-  names(out) <- c("beta_mat", "intercepts", "lambdas", "steps")
+  out <- list(beta_mat, intercepts, lambdas, step_counts, chichignoud_criterion)
+  names(out) <- c("beta_mat", "intercepts", "lambdas", "steps", "chichignoud_criterion")
   class(out) <- "lassi"
   return(out)
 }

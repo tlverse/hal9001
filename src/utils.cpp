@@ -83,3 +83,19 @@ NumericVector get_xscale(const MSpMat& X, const NumericVector& xcenter) {
 }
 
 
+// [[Rcpp::export]]
+bool equal_double(double x, double y){
+  return(std::abs(x - y) < 1e-16);
+}
+
+double soft_max(double beta, double lambda){
+  if (beta > lambda) {
+    beta -= lambda;
+  } else if (beta < -1 * lambda) {
+    beta += lambda;
+  } else {
+    beta = 0;
+  }
+  
+  return(beta);
+}

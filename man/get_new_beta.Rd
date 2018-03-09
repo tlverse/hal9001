@@ -4,7 +4,7 @@
 \alias{get_new_beta}
 \title{Compute updated LASSO coefficients}
 \usage{
-get_new_beta(X, resids, j, beta_j, xscale_j)
+get_new_beta(X, resids, j, beta_j, xscale_j, xcenter_j, resid_sum)
 }
 \arguments{
 \item{X}{...}

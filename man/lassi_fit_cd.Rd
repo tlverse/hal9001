@@ -4,7 +4,8 @@
 \alias{lassi_fit_cd}
 \title{Fit a LASSO Regression Model}
 \usage{
-lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale, intercept, active_set)
+lassi_fit_cd(X, resids, beta, lambda, nsteps, xscale, xcenter, intercept,
+  active_set, center)
 }
 \arguments{
 \item{X}{Sparse matrix containing columns of indicator functions.}
