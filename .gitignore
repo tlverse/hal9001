@@ -13,6 +13,9 @@ sandbox/*.html
 vignettes/*.html
 .ipynb_checkpoints
 
+## macOS
+.DS_Store
+
 ## QtCreator
 Rcpp.pro
 Rcpp.pro.user
