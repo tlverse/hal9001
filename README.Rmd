@@ -1,5 +1,6 @@
 ---
-output: rmarkdown::html_document
+output: rmarkdown::github_document
+bibliography: "`r here::here('README-refs.bib')`"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -43,6 +44,10 @@ intensive nature of the algorithm suggests that writing core routines in C++
 (and making these available in R via the [Rcpp](http://www.rcpp.org/) framework)
 ought to provide significant efficiency gains. `hal9001` is just such an
 implementation.
+
+For detailed discussions of the Highly Adaptive LASSO estimator, the interested
+reader might consider consulting @benkeser2016hal, @vdl2017generally,
+and @vdl2017finite.
 
 ---
 
@@ -135,4 +140,8 @@ Hejazi](http://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license. See
 file `LICENSE` for details.
+
+---
+
+## References
 
