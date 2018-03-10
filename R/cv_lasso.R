@@ -86,16 +86,19 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   # compute cv-mean of MSEs for each lambda
   lambdas_cvmse <- colMeans(cv_lasso_out$mses)
 
-  # also need the CV standard error for each lambda
-  lambdas_cvse <- sd(lambdas_cvmse) / sqrt(n_folds)
-
-  # find the lambda that minimizes the MSE and the lambda 1 standard error above
+  # find the lambda that minimizes the MSE
   lambda_optim_index <- which.min(lambdas_cvmse)
   lambda_minmse <- lambdas_init[lambda_optim_index]
-  lambda_1se <- lambda_minmse + lambdas_cvse
-  lambda_1se_index <- which.min(abs(lasso_init$lambdas - lambda_1se))
 
-  # get beta vectors for lambda-min and lambda-1se
+  # also need the CV standard deviation for each lambda
+  lambdas_cvsd <- apply(cv_lasso_out$mses, 2, sd)
+
+  # find the maximum lambda among those 1 standard error above the minimum
+  lambda_min_1se <- (lambdas_cvmse + lambdas_cvsd)[lambda_optim_index]
+  lambda_1se <- max(lambdas_init[lambdas_cvmse <= lambda_min_1se], na.rm = TRUE)
+  lambda_1se_index <- which.min(abs(lambdas_init - lambda_1se_origami))
+
+  # create output object
   get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
   betas_out <- lasso_init$beta_mat[, get_lambda_indices]
   colnames(betas_out) <- c("lambda_1se", "lambda_min")
