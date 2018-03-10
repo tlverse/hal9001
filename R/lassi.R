@@ -1,7 +1,6 @@
 #' Rcpp module: lassi_fit_module
 #' @import Rcpp
 #' @name lassi_fit_module
-#' @export
 NULL
 loadModule("lassi_module", TRUE)
 
