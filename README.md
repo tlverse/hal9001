@@ -86,7 +86,7 @@ Laan (2016) and van der Laan (2017a).
 # load the hal9001 package
 library(hal9001)
 #> hal9001: A fast and scalable Highly Adaptive LASSO
-#> Version: 0.0.5.0
+#> Version: 0.0.5.1
 
 # simulate data
 set.seed(385971)
@@ -101,9 +101,9 @@ hal_fit <- fit_hal(X = x, Y = y)
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
 #> design_matrix         0.003    0.000   0.004          0         0
-#> remove_duplicates     0.006    0.000   0.006          0         0
-#> lasso                 0.977    0.033   0.966          0         0
-#> total                 0.986    0.033   0.976          0         0
+#> remove_duplicates     0.006    0.000   0.007          0         0
+#> lasso                 0.741    0.035   0.761          0         0
+#> total                 0.750    0.035   0.772          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -155,15 +155,31 @@ See file `LICENSE` for details.
 
 ## References
 
+<div id="refs" class="references">
+
+<div id="ref-benkeser2016hal">
+
 Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive
 Lasso Estimator.” In *2016 IEEE International Conference on Data Science
 and Advanced Analytics (DSAA)*. IEEE.
-doi:[10.1109/dsaa.2016.93](https://doi.org/10.1109/dsaa.2016.93).
+<https://doi.org/10.1109/dsaa.2016.93>.
+
+</div>
+
+<div id="ref-vdl2017generally">
 
 van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum
 Loss Based Estimator Based on the Highly Adaptive Lasso.” *The
 International Journal of Biostatistics*. De Gruyter.
-doi:[10.1515/ijb-2015-0097](https://doi.org/10.1515/ijb-2015-0097).
+<https://doi.org/10.1515/ijb-2015-0097>.
+
+</div>
+
+<div id="ref-vdl2017finite">
 
 ———. 2017b. “Finite Sample Inference for Targeted Learning.” *ArXiv
 E-Prints*.
+
+</div>
+
+</div>
