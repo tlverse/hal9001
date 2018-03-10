@@ -9,7 +9,7 @@
 #
 lambda_seq <- function(lambda_max, lambda_min_ratio = 0.01, nlambda = 100) {
   log_seq <- seq(from = 0, to = log10(lambda_min_ratio), length = nlambda)
-  result <- lambda_max * 10^log_seq
+  result <- lambda_max * 10 ^ log_seq
   return(result)
 }
 
@@ -39,9 +39,11 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
   # lambdas
   if (is.null(lambdas)) {
     lambda_max <- find_lambda_max(X = x, y = resid, xscale = xscale)
-    lambdas <- lambda_seq(lambda_max = lambda_max,
-                          lambda_min_ratio = lambda_min_ratio,
-                          nlambda = nlambda)
+    lambdas <- lambda_seq(
+      lambda_max = lambda_max,
+      lambda_min_ratio = lambda_min_ratio,
+      nlambda = nlambda
+    )
   }
 
   # fit the lasso with the sequence of lambdas
@@ -50,14 +52,18 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
     lambda <- lambdas[lambda_step]
 
     # fit the lasso model with only "active set" features
-    active_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
-                                 lambda = lambda, nsteps = 1000,
-                                 xscale = xscale, active_set = TRUE)
+    active_steps <- lassi_fit_cd(
+      X = x, resids = resid, beta = beta,
+      lambda = lambda, nsteps = 1000,
+      xscale = xscale, active_set = TRUE
+    )
 
     # fit the lasso model with the full set of features
-    full_steps <- lassi_fit_cd(X = x, resids = resid, beta = beta,
-                               lambda = lambda, nsteps = 1000, xscale = xscale,
-                               active_set = FALSE)
+    full_steps <- lassi_fit_cd(
+      X = x, resids = resid, beta = beta,
+      lambda = lambda, nsteps = 1000, xscale = xscale,
+      active_set = FALSE
+    )
 
     # assign the beta for each given lambda step
     beta_mat[, lambda_step] <- beta
@@ -71,4 +77,3 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
   names(out) <- c("beta_mat", "lambdas")
   return(out)
 }
-

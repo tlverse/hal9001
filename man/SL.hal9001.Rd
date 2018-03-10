@@ -4,8 +4,8 @@
 \alias{SL.hal9001}
 \title{Wrapper for Classic SuperLearner}
 \usage{
-SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("origami",
-  "glmnet"), n_folds = 10, use_min = TRUE, family = stats::gaussian(),
+SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("glmnet",
+  "origami"), n_folds = 10, use_min = TRUE, family = stats::gaussian(),
   obsWeights = rep(1, length(Y)), ...)
 }
 \arguments{
@@ -33,13 +33,13 @@ v-fold cross-validation.}
 \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 to \code{"lambda.1se"}.}
 
-\item{family}{Not used by the function directly, but ensures compatibility
-with \code{SuperLearner}.}
+\item{family}{Not used by the function directly, but meant to ensure
+compatibility with \code{SuperLearner}. (THIS IS AN UGLY HACK.)}
 
 \item{obsWeights}{Not used by the function directly, but meant to ensure
-compatibility with \code{SuperLearner}.}
+compatibility with \code{SuperLearner}. (THIS IS AN UGLY HACK.)}
 
-\item{...}{Prevents unexpected process death. DON'T USE. (This is a hack.)}
+\item{...}{Prevents process death. DON'T USE. (THIS IS AN UGLY HACK.)}
 }
 \description{
 Wrapper for package \code{SuperLearner} for objects of class \code{hal9001}

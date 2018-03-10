@@ -19,8 +19,8 @@ squash_hal_fit <- function(object) {
   new_coefs <- object$coefs[c(1, nz_coefs)]
 
   # extract all basis functions belonging to any group with nonzero coefficient
-  nz_basis_groups = object$copy_map[nz_coefs]
-  all_nz_basis_index = sort(unlist(nz_basis_groups))
+  nz_basis_groups <- object$copy_map[nz_coefs]
+  all_nz_basis_index <- sort(unlist(nz_basis_groups))
   new_basis <- object$basis_list[all_nz_basis_index]
 
   # now, reindex and rekey the copy_map
@@ -29,13 +29,13 @@ squash_hal_fit <- function(object) {
   names(new_copy_map) <- new_keys
 
   # create fit object
-  fit <- list(basis_list = new_basis,
-              copy_map = new_copy_map,
-              coefs = new_coefs,
-              times = object$times,
-              lambda_star = object$lambda_star
-             )
+  fit <- list(
+    basis_list = new_basis,
+    copy_map = new_copy_map,
+    coefs = new_coefs,
+    times = object$times,
+    lambda_star = object$lambda_star
+  )
   class(fit) <- "hal9001"
   return(fit)
 }
-

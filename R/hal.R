@@ -3,11 +3,11 @@
 #' Estimation procedure for HAL, the Highly Adaptive LASSO
 #'
 #' @details The procedure uses a custom C++ implementation to generate a design
-#'  matrix (consisting of basis functions corresponding to covariates and
-#'  interactions of covariates) and remove duplicate columns of indicators. The
-#'  LASSO regression is fit to this (usually) very wide matrix using either a
-#'  custom implementation (based on the \code{origami} package) or by a call to
-#'  \code{cv.glmnet} from the \code{glmnet} package.
+#'  matrix consisting of basis functions corresponding to covariates and
+#'  interactions of covariates and to remove duplicate columns of indicators.
+#'  The LASSO regression is fit to this (usually) very wide matrix using either
+#'  a custom implementation (based on the \code{origami} package) or by a call
+#'  to \code{cv.glmnet} from the \code{glmnet} package.
 #'
 #' @param X An input \code{matrix} containing observations and covariates
 #'  following standard conventions in problems of statistical learning.
@@ -26,6 +26,9 @@
 #' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
 #'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 #'  to \code{"lambda.1se"}.
+#' @param family A \code{character} corresponding to the error family for a
+#'  generalized linear model. Options are limited to "gaussian" for fitting a
+#'  standard general linear model and "binomial" for logistic regression.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically acclaimed
 #'  epic science-fiction film "2001: A Space Odyssey" (1968).
@@ -44,15 +47,17 @@
 fit_hal <- function(X,
                     Y,
                     degrees = NULL,
-                    fit_type = c("origami", "glmnet"),
+                    fit_type = c("glmnet", "origami"),
                     n_folds = 10,
                     use_min = TRUE,
+                    family = c("gaussian", "binomial"),
                     ...,
                     yolo = TRUE) {
 
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
+  family <- match.arg(family)
 
   # cast X to matrix -- and don't start the timer until after
   if (!is.matrix(X)) {
@@ -70,9 +75,6 @@ fit_hal <- function(X,
   basis_list <- enumerate_basis(X, degrees)
   x_basis <- make_design_matrix(X, basis_list)
   time_design_matrix <- proc.time()
-
-  # center the outcome vector
-  y_resid <- Y - mean(Y)
 
   # catalog and eliminate duplicates
   copy_map <- make_copy_map(x_basis)
@@ -94,11 +96,14 @@ fit_hal <- function(X,
       lambda_star <- hal_lasso$lambda_1se
       coefs <- hal_lasso$betas_mat[, "lambda_1se"]
     }
-
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
-    hal_lasso <- glmnet::cv.glmnet(x = x_basis, y = Y,
-                                   nfolds = n_folds, ...)
+    hal_lasso <- glmnet::cv.glmnet(
+      x = x_basis, y = Y,
+      nfolds = n_folds,
+      family = family,
+      ...
+    )
     if (use_min) {
       s <- "lambda.min"
       lambda_star <- hal_lasso$lambda.min
@@ -116,20 +121,23 @@ fit_hal <- function(X,
   time_final <- proc.time()
 
   # bookkeeping: construct table for viewing procedure times
-  times <- rbind(design_matrix = time_design_matrix - time_start,
-                 remove_duplicates = time_rm_duplicates - time_design_matrix,
-                 lasso = time_lasso - time_rm_duplicates,
-                 total = time_final - time_start
-                )
+  times <- rbind(
+    design_matrix = time_design_matrix - time_start,
+    remove_duplicates = time_rm_duplicates - time_design_matrix,
+    lasso = time_lasso - time_rm_duplicates,
+    total = time_final - time_start
+  )
 
   # construct output object with S3
-  fit <- list(call = call,
-              basis_list = basis_list,
-              copy_map = copy_map,
-              coefs = coefs,
-              times = times,
-              lambda_star = lambda_star)
+  fit <- list(
+    call = call,
+    basis_list = basis_list,
+    copy_map = copy_map,
+    coefs = coefs,
+    times = times,
+    lambda_star = lambda_star,
+    family = family
+  )
   class(fit) <- "hal9001"
   return(fit)
 }
-

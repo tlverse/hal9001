@@ -35,8 +35,10 @@ lassi_origami <- function(fold, data, lambdas) {
 
   # compute the MSE for the given training and validation sets
   ybar_train <- mean(train_y)
-  mses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar_train -
-                                                    valid_y)^2)})
+  mses <- apply(pred_mat, 2, function(preds) {
+    mean((preds + ybar_train -
+      valid_y) ^ 2)
+  })
 
   # the only output needed is the lambda-wise MSE over each fold
   mses_out <- matrix(mses, nrow = 1)
@@ -74,10 +76,12 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   folds <- origami::make_folds(full_data_mat, V = n_folds)
 
   # run the cross-validated lasso procedure to find the optimal lambda
-  cv_lasso_out <- origami::cross_validate(cv_fun = lassi_origami,
-                                          folds = folds,
-                                          data = full_data_mat,
-                                          lambdas = lambdas_init)
+  cv_lasso_out <- origami::cross_validate(
+    cv_fun = lassi_origami,
+    folds = folds,
+    data = full_data_mat,
+    lambdas = lambdas_init
+  )
 
   # compute cv-mean of MSEs for each lambda
   lambdas_cvmse <- colMeans(cv_lasso_out$mses)
@@ -98,11 +102,10 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
 
   # add in intercept term to coefs matrix and convert to sparse matrix output
   betas_out <- rbind(rep(mean(y), ncol(betas_out)), betas_out)
-  betas_out <- asdgCMatrix_(betas_out * 1.0)
+  betas_out <- as_dgCMatrix(betas_out * 1.0)
 
   # create output object
   cv_lasso_out <- list(betas_out, lambda_minmse, lambda_1se)
   names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se")
   return(cv_lasso_out)
 }
-
