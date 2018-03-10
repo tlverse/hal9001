@@ -51,7 +51,7 @@ IntegerVector non_zeros(const MSpMat& X) {
 //------------------------------------------------------------------------------
 
 // [[Rcpp::export]]
-NumericVector get_pnz(const MSpMat& X) {
+NumericVector calc_pnz(const MSpMat& X) {
   IntegerVector nz = non_zeros(X);
   int n = X.rows();
   NumericVector pnz = as<NumericVector>(nz)/n;
@@ -59,6 +59,14 @@ NumericVector get_pnz(const MSpMat& X) {
   return(pnz);
 }
 
+// [[Rcpp::export]]
+NumericVector get_pnz(const MSpMat& X) {
+  IntegerVector nz = non_zeros(X);
+  int n = X.rows();
+  NumericVector pnz = as<NumericVector>(nz)/n;
+  
+  return(pnz);
+}
 //------------------------------------------------------------------------------
 NumericVector not_dumb_sqrt(const NumericVector& x){
   NumericVector res(x.length());
@@ -70,7 +78,7 @@ NumericVector not_dumb_sqrt(const NumericVector& x){
 }
 
 // [[Rcpp::export]]
-NumericVector get_xscale(const MSpMat& X, const NumericVector& xcenter) {
+NumericVector calc_xscale(const MSpMat& X, const NumericVector& xcenter) {
  int n = X.rows();
  NumericVector pnz = get_pnz(X);
  NumericVector xscale = not_dumb_sqrt(pnz);
@@ -80,6 +88,19 @@ NumericVector get_xscale(const MSpMat& X, const NumericVector& xcenter) {
  xscale[xscale == 0 ] = minx;
  
  return(xscale);
+}
+
+// [[Rcpp::export]]
+NumericVector get_xscale(const MSpMat& X, const NumericVector& xcenter) {
+  int n = X.rows();
+  NumericVector pnz = get_pnz(X);
+  NumericVector xscale = not_dumb_sqrt(pnz);
+  double minx = std::sqrt(1.0 / n);
+  
+  xscale = not_dumb_sqrt(xscale * xscale - (xcenter * xcenter));
+  xscale[xscale == 0 ] = minx;
+  
+  return(xscale);
 }
 
 

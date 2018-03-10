@@ -19,28 +19,28 @@ testx <- matrix(rnorm(testn * p), testn, p)
 testy <- sin(testx[, 1]) * sin(testx[, 2]) + rnorm(testn, 0.2)
 
 # original implementation
-hal_fit <- hal::hal(Y = y, X = x, verbose = FALSE)
+classic_hal_fit <- hal::hal(Y = y, X = x, verbose = FALSE)
+classic_hal_fit$times
+
+# hal9001 implementation
+hal_fit <- fit_hal(X = x, Y = y)
 hal_fit$times
 
-# ml implementation
-ml_hal_fit <- fit_hal(X = x, Y = y)
-ml_hal_fit$times
-
 # training sample prediction
-preds <- predict(ml_hal_fit, new_data = x)
+preds <- predict(hal_fit, new_data = x)
 ml_hal_mse <- mse(preds, y)
 
 # out-of-bag prediction
-oob_preds <- predict(ml_hal_fit, new_data = testx)
+oob_preds <- predict(hal_fit, new_data = testx)
 oob_ml_hal_mse <- mse(oob_preds, y = testy)
 
 # squash object
-squashed <- squash_hal_fit(ml_hal_fit)
-expect_lt(object.size(squashed), object.size(ml_hal_fit))
+squashed <- squash_hal_fit(hal_fit)
+expect_lt(object.size(squashed), object.size(hal_fit))
 
 # verify squashing does not impact prediction
-sq_preds <- predict(ml_hal_fit, new_data = x)
+sq_preds <- predict(hal_fit, new_data = x)
 expect_equal(preds, sq_preds)
 
-sq_oob_preds <- predict(ml_hal_fit, new_data = testx)
+sq_oob_preds <- predict(hal_fit, new_data = testx)
 expect_equal(oob_preds, sq_oob_preds)
