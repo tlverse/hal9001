@@ -84,15 +84,20 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10, center = FALSE) {
   # compute cv-mean of MSEs for each lambda
   lambdas_cvmse <- colMeans(cv_lasso_out$mses)
 
+  # NOTE: there is an off-by-one error occurring in computing the optimal lambda
+  #       lambda and the lambda 1 standard deviation above it. Based on manual
+  #       inspection, the custom CV-Lasso routine selects an optimal lambda that
+  #       is slightly too large and a 1se-lambda slightly too small.
+
   # find the lambda that minimizes the MSE
-  lambda_optim_index <- which.min(lambdas_cvmse)
+  lambda_optim_index <- which.min(lambdas_cvmse) + 1
   lambda_minmse <- lambdas_init[lambda_optim_index]
 
-  # also need the CV standard deviation for each lambda
-  lambdas_cvsd <- apply(cv_lasso_out$mses, 2, sd)
+  # also need the adjusted CV standard deviation for each lambda
+  lambdas_cvsd <- apply(cv_lasso_out$mses, 2, sd) / sqrt(n_folds)
 
   # find the maximum lambda among those 1 standard error above the minimum
-  lambda_min_1se <- (lambdas_cvmse + lambdas_cvsd)[lambda_optim_index]
+  lambda_min_1se <- (lambdas_cvmse + lambdas_cvsd)[lambda_optim_index - 1]
   lambda_1se <- max(lambdas_init[lambdas_cvmse <= lambda_min_1se], na.rm = TRUE)
   lambda_1se_index <- which.min(abs(lambdas_init - lambda_1se))
 

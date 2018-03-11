@@ -8,7 +8,7 @@
 using namespace Rcpp;
 
 
-class lassi_fit {
+class Lassi {
   const MSpMat X;
   int n;
   int p;
@@ -22,6 +22,8 @@ class lassi_fit {
   NumericVector xcenter;
   NumericVector xscale;
   NumericVector lambdas;
+  SpMat beta_mat;
+  NumericVector intercepts;
   /*
    * variable_state is a vector of a lazy-person's enumerated type
    * state=2 is the active_set (possibly also the strong_set)
@@ -32,7 +34,7 @@ class lassi_fit {
   NumericVector safe_lambda;
   double lambda_max;
 public:
-  lassi_fit(const MSpMat X_init, NumericVector y, int nlambda, double lambda_min_ratio, bool center):
+  Lassi(const MSpMat X_init, NumericVector y, int nlambda, double lambda_min_ratio, bool center):
   X(X_init),
   n(X_init.rows()),
   p(X_init.cols()),
@@ -44,16 +46,18 @@ public:
   null_rss(rss),
   beta(NumericVector(p,0.0)),
   lambdas(NumericVector(nlambda, 0.0)),
+  beta_mat(SpMat(p, nlambda)),
+  intercepts(NumericVector(nlambda,0.0)),
   variable_state(IntegerVector(p, 0))
   {
     // get centering and scaling vectors if applicable
     if(center){
-      xcenter = get_pnz(X);
+      xcenter = calc_pnz(X);
     } else {
       xcenter = NumericVector(p, 0.0);
     }
     
-    xscale = get_xscale(X, xcenter);
+    xscale = calc_xscale(X, xcenter);
     
     // initialize lambda_max and lambda vector
     // X_t_resid is used for lots of things:
@@ -87,14 +91,24 @@ public:
     //below this lambda, we must check if variable is now active.
     safe_lambda = NumericVector(p, lambda_max);
     
+    beta_mat.reserve(0.2 * p * nlambda);
   }
   
-  const MSpMat& get_x_basis(){
+  const MSpMat& get_X(){
     return(X);
   }
   
   NumericVector get_beta(){
     return(beta);
+  }
+
+  SpMat get_beta_mat(){
+    beta_mat.makeCompressed();
+    return(beta_mat);
+  }
+  
+  NumericVector get_intercepts(){
+    return(intercepts);
   }
   
   NumericVector get_lambdas(){
@@ -105,15 +119,26 @@ public:
     return(resids);
   }
   
+  NumericVector get_xscale(){
+    return(xscale);
+  }
+
+  NumericVector get_xcenter(){
+    return(xcenter);
+  }
+  
   double X_t_resid(int j) {
     double crossprod_sum = 0;
     for (MInIterMat i_(X, j); i_; ++i_) {
       crossprod_sum += resids[i_.index()];
     }
     
-    // to correct for centering + scaling of X
-    crossprod_sum = (crossprod_sum - xcenter[j] * resid_sum) / xscale[j];
-    // crossprod_sum = crossprod_sum / xscale_j;
+    if(center){
+      crossprod_sum = (crossprod_sum - xcenter[j] * resid_sum) / xscale[j];
+    } else {
+      crossprod_sum = crossprod_sum / xscale[j];
+    }
+    
     return(crossprod_sum);
   }
   
@@ -130,28 +155,38 @@ public:
   
   void update_resid(int j, double beta_diff) {
     
-    double new_resid;
     double scaled_diff = beta_diff / xscale[j];
-    double xcenter_j=xcenter[j];
-    rss=0;
-    resid_sum = 0;
     
+    // if(center){
+    //   for (int i=0; i<n; ++i) {
+    //     resid_shift = scaled_diff * (X.coeff(i,j) - xcenter_j);
+    //     resids[i] -= resid_shift;
+    //     resid_sum -= resid_shift;
+    //   }
+    // } else {
+    //   for (MInIterMat i_(X, j); i_; ++i_) {
+    //     resids[i_.index()] -= scaled_diff;
+    //     resid_sum -= scaled_diff;
+    //   }  
+    // }  
+    
+    for (MInIterMat i_(X, j); i_; ++i_) {
+      resids[i_.index()] -= scaled_diff;
+    }  
+
     if(center){
+      double resid_shift = scaled_diff * xcenter[j];
       for (int i=0; i<n; ++i) {
-        new_resid = resids[i] -  scaled_diff * (X.coeff(i,j) - xcenter_j);
-        resids[i] = new_resid;
-        rss += new_resid * new_resid;
-        resid_sum += new_resid;
+        resids[i] += resid_shift;
       }
-    } else {
-      for (MInIterMat i_(X, j); i_; ++i_) {
-        new_resid = resids[i_.index()] - scaled_diff;
-        resids[i_.index()] = new_resid;
-        rss += new_resid * new_resid;
-        resid_sum += new_resid;
-      }  
+      
+      //resid_sum is only used when centering
+      resid_sum = sum(resids);
     }  
     
+
+    rss = sum( resids * resids);
+    // rss = sum(resids*resids);
   }
   
   double update_coord(int j, double lambda) {
@@ -175,8 +210,7 @@ public:
     
   }
   
-  int update_coords(double lambda) {
-    bool active_set = false;
+  int update_coords(double lambda, bool active_set) {
     // update coordinates one-by-one
     int j;
     double old_rss = rss;
@@ -189,7 +223,7 @@ public:
         // see if we decreased the rss
         // todo: should be relative to null deviance
         if(update!=0){
-          if((old_rss-rss)/old_rss > 1e-7){
+          if((old_rss-rss)/null_rss > 1e-7){
             updates++;
           }
           old_rss = rss;
@@ -210,7 +244,47 @@ public:
     return(0);
   }
   
-  NumericVector do_cd(int lambda_step){
+  int lassi_fit_cd(int lambda_step, bool active_set, int nsteps) {
+    double lambda = lambdas[lambda_step];
+
+    int step_num = 0;
+    double last_rss = rss;
+    double ratio = 0;
+    int updated=0;
+    // Rcout << "Starting mse " << mse << std::endl;
+    for (step_num = 0; step_num < nsteps; step_num++) {
+      last_rss = rss;
+      
+      updated = update_coords(lambda, active_set);
+      // rss = sum(resids*resids);
+      // we failed to substantially improve any coords
+      if (updated == 0) {
+        break;
+      }
+
+      ratio = (last_rss - rss) / last_rss;
+
+      // Rcout << "Step " << step_num << ", updates " << updated << ", mse " << mse << ", ratio " << ratio << std::endl;
+      if (ratio < 1e-2) {
+        break;
+      }
+    }
+    
+    
+    //copy nz betas into beta_mat col
+    for (int j = 0; j < p; j++) {
+      if(beta[j]!=0){
+        beta_mat.insert(j, lambda_step) = beta[j];
+      }
+    }
+    
+    intercepts[lambda_step] = intercept;
+    
+    return(step_num);
+  }
+
+
+  NumericVector complex_approach(int lambda_step){
     
     // use active set
     // update_coords until convergence
@@ -257,7 +331,7 @@ public:
           new_beta = soft_max(new_beta, lambda);
           //if we changed this beta, we must update the residuals
           double beta_diff = new_beta-beta[j];
-          if (std::abs(beta_diff) > 1e-16) {
+          if (std::abs(beta_diff) > 1e-7) {
             
             update_resid(j, beta_diff);
             beta[j] = new_beta;
@@ -325,65 +399,56 @@ public:
       steps++;
     }
     
+    //copy nz betas into beta_mat col
+    for (int j = 0; j < p; j++) {
+      if(beta[j]!=0){
+        beta_mat.insert(j, lambda_step) = beta[j];
+      }
+    }
+    
+    intercepts[lambda_step] = intercept;
+    
     NumericVector res(timer);
     return(res);
   }
 };
 
-RCPP_MODULE(lassi_fit_module) {
-  class_<lassi_fit>( "lassi_fit" )
+RCPP_MODULE(lassi_module) {
+  class_<Lassi>( "Lassi" )
   .constructor<MSpMat, NumericVector, int, double, bool>()
-  .method( "update_coords", &lassi_fit::update_coords )
-  .method( "do_cd", &lassi_fit::do_cd )
-  .property( "beta", &lassi_fit::get_beta)
-  .property( "lambdas", &lassi_fit::get_lambdas)
-  .property( "lambda_max", &lassi_fit::find_lambda_max)
+  .method( "update_coord", &Lassi::update_coord)
+  .method( "update_coords", &Lassi::update_coords)
+  
+  .method( "lassi_fit_cd", &Lassi::lassi_fit_cd )
+  .method( "complex_approach", &Lassi::complex_approach)
+  .method( "X_t_resid", &Lassi::X_t_resid)
+  .property( "beta", &Lassi::get_beta)
+  .property( "beta_mat", &Lassi::get_beta_mat)
+  .property( "intercepts", &Lassi::get_intercepts)
+
+  .property( "resids", &Lassi::get_resids)
+  .property( "xscale", &Lassi::get_xscale)
+  .property( "xcenter", &Lassi::get_xcenter)
+  .property( "X", &Lassi::get_X)
+  .property( "lambdas", &Lassi::get_lambdas)
+  .property( "lambda_max", &Lassi::find_lambda_max)
   ;
 }
-// 
-// /*
-//  * variable has states
-//  * 0 never active, doesn't meet test
-//  * 1 meets test, but never active
-//  * 2 active
-//  */
-// // create an external pointer to a Uniform object
-// // [[Rcpp::export]]
-// SEXP lassi_fit__new(const MSpMat X_init, NumericVector y, bool center) {
-//   // convert inputs to appropriate C++ types
-//   Rcpp::XPtr<lassi_fit> ptr( new lassi_fit(X_init, y, center), true );
-//   // return the external pointer to the R side
-//   return ptr;
-// }
-// 
-// // [[Rcpp::export]]
-// NumericVector lassi_fit__get_beta(SEXP fit){
-//   Rcpp::XPtr<lassi_fit> ptr(fit);
-//   // convert the parameter to int
-//   NumericVector res = ptr->get_beta();
-//   return(res);
-// }
-// 
-// // [[Rcpp::export]]
-// NumericVector lassi_fit__get_resids(SEXP fit){
-//   Rcpp::XPtr<lassi_fit> ptr(fit);
-//   // convert the parameter to int
-//   NumericVector res = ptr->get_resids();
-//   return(res);
-// }
-// 
-// // [[Rcpp::export]]
-// double lassi_fit__find_lambda_max(SEXP fit){
-//   Rcpp::XPtr<lassi_fit> ptr(fit);
-//   // int a;
-//   return(ptr->find_lambda_max());
-//   
-// }
-// 
-// // [[Rcpp::export]]
-// int lassi_fit__update_coords(SEXP fit, double lambda){
-//   Rcpp::XPtr<lassi_fit> ptr(fit);
-//   // int a;
-//   return(ptr->update_coords(lambda));
-//   
-// }
+
+// [[Rcpp::export]]
+NumericVector lassi_predict(const MSpMat X, const NumericVector beta,
+                           double intercept) {
+  int n = X.rows();
+  NumericVector pred(n, intercept);
+  int k = 0;
+  double current_beta;
+
+  for (k = 0; k < X.outerSize(); ++k) {
+    current_beta = beta[k];
+
+    for (MInIterMat it_(X, k); it_; ++it_) {
+      pred[it_.row()] += current_beta;
+    }
+  }
+  return(pred);
+}

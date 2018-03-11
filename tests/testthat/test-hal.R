@@ -23,35 +23,35 @@ test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(
 )
 
 # original implementation
-hal_fit <- hal::hal(Y = y, X = x, verbose = FALSE)
+classic_hal_fit <- hal::hal(Y = y, X = x, verbose = FALSE)
+classic_hal_fit$times
+
+# hal9001 implementation
+hal_fit <- fit_hal(X = x, Y = y)
 hal_fit$times
 
-# ml implementation
-ml_hal_fit <- fit_hal(X = x, Y = y)
-ml_hal_fit$times
-
 # training sample prediction
-preds <- predict(ml_hal_fit, new_data = x)
-ml_hal_mse <- mse(preds, y)
+preds <- predict(hal_fit, new_data = x)
+hal_mse <- mse(preds, y)
 
 # out-of-bag prediction
-oob_preds <- predict(ml_hal_fit, new_data = test_x)
+oob_preds <- predict(hal_fit, new_data = test_x)
 oob_ml_hal_mse <- mse(oob_preds, y = test_y)
 
 # squash object
-squashed <- squash_hal_fit(ml_hal_fit)
+squashed <- squash_hal_fit(hal_fit)
 test_that("Squashed HAL objects are smaller than before squashing", {
-  expect_lt(object.size(squashed), object.size(ml_hal_fit))
+  expect_lt(object.size(squashed), object.size(hal_fit))
 })
 
 # verify squashing does not impact prediction on original data
-sq_preds <- predict(ml_hal_fit, new_data = x)
+sq_preds <- predict(hal_fit, new_data = x)
 test_that("Sqashing HAL objects does not impact prediction (in sample)", {
   expect_equal(preds, sq_preds)
 })
 
 # verify squashing does not impact prediction on test data
-sq_oob_preds <- predict(ml_hal_fit, new_data = test_x)
+sq_oob_preds <- predict(hal_fit, new_data = test_x)
 test_that("Sqashing HAL objects does not impact prediction (out of sample)", {
   expect_equal(oob_preds, sq_oob_preds)
 })

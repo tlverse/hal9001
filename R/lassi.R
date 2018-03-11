@@ -15,14 +15,19 @@ loadModule("lassi_module", TRUE)
 #'  details, see \code{\link{lambda_seq}}
 #' @param center ...
 #'
+#' @importFrom methods new
+#'
 #' @export
 #
 lassi <- function(x, y, lambdas = NULL, nlambda = 100,
                   lambda_min_ratio = 0.01, center = FALSE) {
-  lassi_object <- new(Lassi, x_basis,y, nlambda, lambda_min_ratio, center)
+  # initialize object
+  lassi_object <- methods::new(Lassi, x, y, nlambda, lambda_min_ratio, center)
 
+  # initialize step counter
   step_counts <- rep(0, nlambda)
 
+  # iterative procedure for active step convergence
   for (i in (seq_len(100) - 1)) {
     full_steps <- lassi_object$lassi_fit_cd(i, FALSE, 1)
     if (full_steps > 0) {

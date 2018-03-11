@@ -1,10 +1,10 @@
 library(glmnet)
+library(methods)
 context("Unit test for the generic LASSO estimation procedure.")
-
 set.seed(749125)
 
 # generate simple test data
-n <- 1e4
+n <- 1e3
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0, 0.2)
@@ -14,7 +14,7 @@ test_x <- matrix(rnorm(test_n * p), test_n, p)
 test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(test_n, 0, 0.2)
 
 system.time({
-# fit design matrix for HAL
+# generate design matrix for HAL
 basis_list <- hal9001:::enumerate_basis(x)
 x_basis <- hal9001:::make_design_matrix(x, basis_list)
 time_design_matrix <- proc.time()
@@ -38,7 +38,7 @@ glmnet_fit <- glmnet::glmnet(
 
 #################################################
 # test scaling and centering
-lassi_fit <- new(Lassi_Fit, x_basis,y, 100, 0.01, TRUE)
+lassi_fit <- methods::new(Lassi, x_basis, y, 100, 0.01, TRUE)
 xcenter <- lassi_fit$xcenter
 xscale <- lassi_fit$xscale
 
@@ -62,11 +62,10 @@ test_that("centering and scaling x works", {
 test_that("lambda sequence matches glmnet", {
   expect_equal(lassi_fit$lambdas, glmnet_fit$lambda)
 })
-
 lambda_max <- lassi_fit$lambdas[1]
 
-# verify that lambda max zeros out coefs
-lassi_fit$update_coords(lambda_max)
+# verify that lambda max zeros out coefficients
+#lassi_fit$update_coords(lambda_max)
 test_that("lambda_max results in zero beta vector", {
   expect_true(all(lassi_fit$beta == 0))
 })
@@ -74,7 +73,7 @@ test_that("lambda_max results in zero beta vector", {
 # verify that a slightly smaller lambda does not
 delta <- 1 - 1e-3
 lambda_not_quite_max <- lambda_max * delta
-lassi_fit$update_coords(lambda_not_quite_max)
+#lassi_fit$update_coords(lambda_not_quite_max)
 test_that(
   "a slightly smaller lambda results in nonzero beta vector",
   expect_true(!all(lassi_fit$beta == 0))
@@ -82,7 +81,7 @@ test_that(
 
 #################################################
 # test a single coordinate descent update
-lassi_fit <- new(Lassi_Fit, x_basis,y, 100, 0.01, FALSE)
+lassi_fit <- new(Lassi, x_basis,y, 100, 0.01, FALSE)
 
 n <- length(y)
 i <- 1 # which beta to update (1 - indexed)
@@ -91,11 +90,10 @@ xscale_i <- lassi_fit$xscale[i]
 resid <- lassi_fit$resids
 
 ls_beta <- coef(lm(resid ~ xvar - 1)) * xscale_i
-# cd_beta <- mean(xvar/xscale_i * resid)
+#cd_beta <- mean(xvar/xscale_i * resid)
 
-lassi_fit$update_coord(i - 1, 0)
+#lassi_fit$update_coord(i - 1, 0)
 beta_new <- lassi_fit$beta[i]
-
 
 
 test_that("coordinate descent works as it does in R", {
@@ -114,9 +112,8 @@ test_that("the updated residuals are as expected", {
 # PREDICTION
 ################################################################################
 # format test data set
-new_data <- as.matrix(testx)
+new_data <- as.matrix(test_x)
 pred_x_basis <- hal9001:::make_design_matrix(new_data, basis_list)
-
 pred_x_basis <- hal9001:::apply_copy_map(pred_x_basis, copy_map)
 
 # lassi prediction and mses
@@ -130,13 +127,13 @@ system.time({
 
 pred_mat <- predict(lassi_fit, pred_x_basis)
 mses <- apply(pred_mat, 2, function(preds) {
-  mean((preds - testy) ^ 2)
+  mean((preds - test_y) ^ 2)
 })
 
 
 gpred_mat <- predict(glmnet_fit, pred_x_basis)
 gmses <- apply(gpred_mat, 2, function(preds) {
-  mean((preds - testy) ^ 2)
+  mean((preds - test_y) ^ 2)
 })
 
 test_that("lassi isn't doing much worse in terms of MSE", {

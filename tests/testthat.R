@@ -6,5 +6,6 @@ library(SuperLearner)
 library(glmnet)
 library(hal9001)
 library(hal)
+library(methods)
 
 test_check("hal9001")
