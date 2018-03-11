@@ -11,19 +11,19 @@
 #'  generating basis functions for the full dimensionality of the input matrix.
 #' @param fit_type The specific routine to be called when fitting the LASSO
 #'  regression in a cross-validated manner. Choosing the \code{glmnet} option
-#'  will result in a call to \code{cv.glmnet} while \code{origami} will produce
-#'  a (faster) call to a custom routine based on the \code{origami} package.
+#'  will result in a call to \code{cv.glmnet} while \code{lassi} will produce
+#'  a (faster) call to a custom routine based on the \code{lassi} package.
 #' @param n_folds Integer for the number of folds to be used when splitting the
 #'  data for cross-validation. This defaults to 10 as this is the convention for
 #'  v-fold cross-validation.
 #' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
 #'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 #'  to \code{"lambda.1se"}.
-#' @param family Not used by the function directly, but ensures compatibility
-#'  with \code{SuperLearner}.
+#' @param family Not used by the function directly, but meant to ensure
+#'  compatibility with \code{SuperLearner}. (THIS IS AN UGLY HACK.)
 #' @param obsWeights Not used by the function directly, but meant to ensure
-#'  compatibility with \code{SuperLearner}.
-#' @param ... Prevents unexpected process death. DON'T USE. (This is a hack.)
+#'  compatibility with \code{SuperLearner}. (THIS IS AN UGLY HACK.)
+#' @param ... Prevents process death. DON'T USE. (THIS IS AN UGLY HACK.)
 #'
 #' @importFrom stats predict gaussian
 #'
@@ -33,36 +33,42 @@ SL.hal9001 <- function(Y,
                        X,
                        newX = NULL,
                        degrees = NULL,
-                       fit_type = c("origami", "glmnet"),
+                       fit_type = c("glmnet", "lassi"),
                        n_folds = 10,
                        use_min = TRUE,
                        family = stats::gaussian(),
                        obsWeights = rep(1, length(Y)),
                        ...) {
   if (family$family == "gaussian") {
-    # fit HAL
-    hal_out <- fit_hal(
-      Y = Y, X = X, degrees = degrees, fit_type = fit_type,
-      n_folds = n_folds, use_min = use_min, yolo = FALSE
-    )
-
-    # compute predictions based on `newX` or input `X`
-    if (!is.null(newX)) {
-      pred <- stats::predict(object = hal_out, new_data = newX)
-    } else {
-      pred <- stats::predict(object = hal_out, new_data = X)
-    }
-
-    # build output object
-    fit <- list(object = hal_out)
-    out <- list(pred = pred, fit = fit)
-    class(out$fit) <- "SL.hal9001"
-    return(out)
+      # fit HAL
+      hal_out <- fit_hal(
+        Y = Y, X = X, degrees = degrees, fit_type = fit_type,
+        n_folds = n_folds, use_min = use_min, family = "gaussian",
+        yolo = FALSE
+      )
   }
 
   if (family$family == "binomial") {
-    stop("Only Gaussian error family currently supported with HAL9001")
+      # fit HAL with logistic regression
+      hal_out <- fit_hal(
+        Y = Y, X = X, degrees = degrees, fit_type = fit_type,
+        n_folds = n_folds, use_min = use_min, family = "binomial",
+        yolo = FALSE
+      )
   }
+
+  # compute predictions based on `newX` or input `X`
+  if (!is.null(newX)) {
+    pred <- stats::predict(object = hal_out, new_data = newX)
+  } else {
+    pred <- stats::predict(object = hal_out, new_data = X)
+  }
+
+  # build output object
+  fit <- list(object = hal_out)
+  out <- list(pred = pred, fit = fit)
+  class(out$fit) <- "SL.hal9001"
+  return(out)
 }
 
 ################################################################################
@@ -73,7 +79,7 @@ SL.hal9001 <- function(Y,
 #'
 #' @param object A fitted object of class \code{hal9001}.
 #' @param newX A matrix of new observations on which to obtain predictions.
-#' @param ... Prevents unexpected process death. DON'T USE. (This is a hack.)
+#' @param ... Prevents process death. DON'T USE. (THIS IS AN UGLY HACK.)
 #'
 #' @importFrom stats predict
 #'

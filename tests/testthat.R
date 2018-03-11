@@ -8,4 +8,3 @@ library(hal9001)
 library(hal)
 
 test_check("hal9001")
-

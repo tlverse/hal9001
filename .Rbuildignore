@@ -5,7 +5,6 @@
 
 # Related to using README Rmd.
 ^README\.Rmd$
-^README-withrefs\.Rmd$
 ^README\.html$
 ^README-.*\.png$
 ^README-refs\.bib$

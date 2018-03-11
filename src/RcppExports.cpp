@@ -211,14 +211,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// asdgCMatrix_
-SEXP asdgCMatrix_(SEXP XX_);
-RcppExport SEXP _hal9001_asdgCMatrix_(SEXP XX_SEXP) {
+// as_dgCMatrix
+SEXP as_dgCMatrix(SEXP XX_);
+RcppExport SEXP _hal9001_as_dgCMatrix(SEXP XX_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type XX_(XX_SEXP);
-    rcpp_result_gen = Rcpp::wrap(asdgCMatrix_(XX_));
+    rcpp_result_gen = Rcpp::wrap(as_dgCMatrix(XX_));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -286,7 +286,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_meets_basis", (DL_FUNC) &_hal9001_meets_basis, 4},
     {"_hal9001_evaluate_basis", (DL_FUNC) &_hal9001_evaluate_basis, 4},
     {"_hal9001_make_design_matrix", (DL_FUNC) &_hal9001_make_design_matrix, 2},
-    {"_hal9001_asdgCMatrix_", (DL_FUNC) &_hal9001_asdgCMatrix_, 1},
+    {"_hal9001_as_dgCMatrix", (DL_FUNC) &_hal9001_as_dgCMatrix, 1},
     {"_hal9001_non_zeros", (DL_FUNC) &_hal9001_non_zeros, 1},
     {"_hal9001_get_pnz", (DL_FUNC) &_hal9001_get_pnz, 1},
     {"_hal9001_get_xscale", (DL_FUNC) &_hal9001_get_xscale, 2},

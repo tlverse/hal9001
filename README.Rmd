@@ -1,5 +1,6 @@
 ---
-output: rmarkdown::github_document
+output:
+  rmarkdown::github_document
 bibliography: "`r here::here('README-refs.bib')`"
 ---
 
@@ -30,20 +31,20 @@ Hejazi](https://nimahejazi.org)
 
 ## What's `hal9001`?
 
-`hal9001` is an R package providing an implementation of the Highly Adaptive
-LASSO (HAL), a nonparametric regression estimator that applies L1-regularized
-regression (i.e., the LASSO) to a design matrix composed of indicator functions
-corresponding to a set of covariates and interactions thereof, in a standard
-statistical learning problem. Recent theoretical results show that HAL is
-endowed with several important properties that make it optimally suited for
-the purpose of inference in problem settings where causal parameters are
-estimated via data-adaptive techniques (i.e., machine learning), as is the case
-within the framework of Targeted Minimum Loss-Based Estimation (TMLE). While it
-is certainly possible to implement HAL purely in R, the computationally
-intensive nature of the algorithm suggests that writing core routines in C++
-(and making these available in R via the [Rcpp](http://www.rcpp.org/) framework)
-ought to provide significant efficiency gains. `hal9001` is just such an
-implementation.
+`hal9001` is an R package providing an implementation of the scalable Highly
+Adaptive LASSO (HAL), a nonparametric regression estimator that applies 
+L1-regularized regression (i.e., the LASSO) to a design matrix composed of
+indicator functions corresponding to a set of covariates and interactions
+thereof. Recent theoretical results show that HAL is endowed with several
+important properties that make it optimally suited for the purpose of
+estimating highly complex functions, including for inference in problem
+settings where causal parameters are estimated via data-adaptive techniques
+(i.e., machine learning), as is the case with Targeted Minimum Loss-Based
+Estimation (TMLE). While it is certainly possible to implement HAL purely in R,
+the computationally intensive nature of the algorithm suggests that writing
+core routines in C++ (and making these available in R via the
+[Rcpp](http://www.rcpp.org/) framework) ought to provide significant efficiency
+gains. `hal9001` is just such an implementation.
 
 For detailed discussions of the Highly Adaptive LASSO estimator, the interested
 reader might consider consulting @benkeser2016hal, @vdl2017generally,
@@ -66,7 +67,7 @@ You can install the development version of `hal9001` from GitHub via
 [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with
 
 ```{r gh-installation, eval = FALSE}
-devtools::install_github("jeremyrcoyle/hal9001")
+devtools::install_github("jeremyrcoyle/hal9001", build_vignettes = FALSE)
 ```
 
 ---
@@ -93,7 +94,7 @@ set.seed(385971)
 n = 100
 p = 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
-y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0.2)
+y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
 # fit the HAL regression
 hal_fit <- fit_hal(X = x, Y = y)
@@ -109,11 +110,10 @@ mean(hal_mse <- (preds - y)^2)
 ## Contributions
 
 `hal9001` is the primary implementation of the Highly Adaptive LASSO, an
-estimator with numerous optimality properties, especially useful when employing
-[Targeted Learning](http://www.targetedlearningbook.com/about/). To that end,
-contributions are very welcome, though we ask that interested contributors
-consult our [`contribution
-guidelines`](https://github.com/jeremyrcoyle/hal9001/blob/master/CONTRIBUTING.md)
+nonparametric function estimation procedure with numerous optimality
+properties. While contributions are very welcome, we ask that interested
+contributors consult our [contribution
+guidelines](https://github.com/jeremyrcoyle/hal9001/blob/master/CONTRIBUTING.md)
 prior to submitting a pull request.
 
 ---
@@ -122,10 +122,10 @@ prior to submitting a pull request.
 
 After using the `hal9001` R package, please cite the following:
 
-        @misc{coyle2017hal9001,
+        @misc{coyle2018hal9001,
           author = {Coyle, Jeremy R and Hejazi, Nima S},
-          title = {{hal9001}: A fast and scalable {Highly Adaptive LASSO}},
-          year  = {2017},
+          title = {{hal9001}: The Scalable {Highly Adaptive LASSO}},
+          year  = {2018},
           howpublished = {\url{https://github.com/jeremyrcoyle/hal9001}},
           url = {http://dx.doi.org/DOI_TBD},
           doi = {DOI_TBD}
@@ -135,8 +135,8 @@ After using the `hal9001` R package, please cite the following:
 
 ## License
 
-&copy; 2017 [Jeremy R. Coyle](https://github.com/jeremyrcoyle) & [Nima S.
-Hejazi](http://nimahejazi.org)
+&copy; 2017-2018 [Jeremy R. Coyle](https://github.com/jeremyrcoyle) & [Nima S.
+Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license. See
 file `LICENSE` for details.
@@ -144,4 +144,3 @@ file `LICENSE` for details.
 ---
 
 ## References
-

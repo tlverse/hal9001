@@ -171,8 +171,8 @@ make_design_matrix <- function(X, blist) {
 #'
 #' @return An object of class \code{dgCMatrix}, coerced from input \code{XX_}.
 #'
-asdgCMatrix_ <- function(XX_) {
-    .Call('_hal9001_asdgCMatrix_', PACKAGE = 'hal9001', XX_)
+as_dgCMatrix <- function(XX_) {
+    .Call('_hal9001_as_dgCMatrix', PACKAGE = 'hal9001', XX_)
 }
 
 non_zeros <- function(X) {
