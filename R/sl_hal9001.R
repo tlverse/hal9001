@@ -11,8 +11,8 @@
 #'  generating basis functions for the full dimensionality of the input matrix.
 #' @param fit_type The specific routine to be called when fitting the LASSO
 #'  regression in a cross-validated manner. Choosing the \code{glmnet} option
-#'  will result in a call to \code{cv.glmnet} while \code{origami} will produce
-#'  a (faster) call to a custom routine based on the \code{origami} package.
+#'  will result in a call to \code{cv.glmnet} while \code{lassi} will produce
+#'  a (faster) call to a custom routine based on the \code{lassi} package.
 #' @param n_folds Integer for the number of folds to be used when splitting the
 #'  data for cross-validation. This defaults to 10 as this is the convention for
 #'  v-fold cross-validation.
@@ -33,7 +33,7 @@ SL.hal9001 <- function(Y,
                        X,
                        newX = NULL,
                        degrees = NULL,
-                       fit_type = c("glmnet", "origami"),
+                       fit_type = c("glmnet", "lassi"),
                        n_folds = 10,
                        use_min = TRUE,
                        family = stats::gaussian(),

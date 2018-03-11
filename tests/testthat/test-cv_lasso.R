@@ -47,7 +47,7 @@ folds <- origami::make_folds(full_data_mat, V = n_folds)
 
 # run the cross-validated lasso procedure to find the optimal lambda
 cv_lasso_out <- origami::cross_validate(
-  cv_fun = hal9001::lassi_origami,
+  cv_fun = lassi_origami,
   folds = folds,
   data = full_data_mat,
   lambdas = lambdas_init
@@ -86,7 +86,7 @@ coef_1se_origami <- as.numeric(betas_out[, 1])
 ################################################################################
 
 # create fold ID object for using the same folds between cv.glmnet and origami
-fold_id <- origami:::folds2foldvec(folds)
+fold_id <- origami::folds2foldvec(folds)
 
 # just use the standard implementation available in glmnet with origami folds
 lasso_glmnet <- glmnet::cv.glmnet(

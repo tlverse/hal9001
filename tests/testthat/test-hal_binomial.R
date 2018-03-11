@@ -43,20 +43,3 @@ oob_ml_hal_mse <- mse(oob_preds, y = test_y)
   #expect_lt(oob_ml_hal_mse, mse(rep(mean(test_y_prob), test_n), test_y))
 #})
 
-# squash object
-squashed <- squash_hal_fit(ml_hal_fit)
-test_that("Squashed HAL objects are smaller than before squashing", {
-  expect_lt(object.size(squashed), object.size(ml_hal_fit))
-})
-
-# verify squashing does not impact prediction on original data
-sq_preds <- predict(ml_hal_fit, new_data = x)
-test_that("Squashing HAL objects does not impact prediction (in sample)", {
-  expect_equal(preds, sq_preds)
-})
-
-# verify squashing does not impact prediction on test data
-sq_oob_preds <- predict(ml_hal_fit, new_data = test_x)
-test_that("Squashing HAL objects does not impact prediction (out of sample)", {
-  expect_equal(oob_preds, sq_oob_preds)
-})

@@ -18,8 +18,8 @@
 #'  generating basis functions for the full dimensionality of the input matrix.
 #' @param fit_type The specific routine to be called when fitting the LASSO
 #'  regression in a cross-validated manner. Choosing the \code{glmnet} option
-#'  will result in a call to \code{cv.glmnet} while \code{origami} will produce
-#'  a (faster) call to a custom routine based on the \code{origami} package.
+#'  will result in a call to \code{cv.glmnet} while \code{lassi} will produce
+#'  a (faster) call to a custom LASSO routine using the \code{origami} package.
 #' @param n_folds Integer for the number of folds to be used when splitting the
 #'  data for cross-validation. This defaults to 10 as this is the convention for
 #'  v-fold cross-validation.
@@ -47,7 +47,7 @@
 fit_hal <- function(X,
                     Y,
                     degrees = NULL,
-                    fit_type = c("glmnet", "origami"),
+                    fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     use_min = TRUE,
                     family = c("gaussian", "binomial"),
@@ -58,6 +58,11 @@ fit_hal <- function(X,
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
   family <- match.arg(family)
+
+  # NOT supporting binomial outcomes with lassi method currently
+  if (fit_type == "lassi" && family == "binomial") {
+    stop("For binary outcomes, please set argument 'fit_type' to 'glmnet'.")
+  }
 
   # cast X to matrix -- and don't start the timer until after
   if (!is.matrix(X)) {
@@ -85,7 +90,7 @@ fit_hal <- function(X,
   time_rm_duplicates <- proc.time()
 
   # fit LASSO regression
-  if (fit_type == "origami") {
+  if (fit_type == "lassi") {
     # custom LASSO implementation using the origami package
     hal_lasso <- cv_lasso(x_basis = x_basis, y = Y, n_folds = n_folds)
 

@@ -5,7 +5,7 @@
 \title{Wrapper for Classic SuperLearner}
 \usage{
 SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("glmnet",
-  "origami"), n_folds = 10, use_min = TRUE, family = stats::gaussian(),
+  "lassi"), n_folds = 10, use_min = TRUE, family = stats::gaussian(),
   obsWeights = rep(1, length(Y)), ...)
 }
 \arguments{
@@ -22,8 +22,8 @@ generating basis functions for the full dimensionality of the input matrix.}
 
 \item{fit_type}{The specific routine to be called when fitting the LASSO
 regression in a cross-validated manner. Choosing the \code{glmnet} option
-will result in a call to \code{cv.glmnet} while \code{origami} will produce
-a (faster) call to a custom routine based on the \code{origami} package.}
+will result in a call to \code{cv.glmnet} while \code{lassi} will produce
+a (faster) call to a custom routine based on the \code{lassi} package.}
 
 \item{n_folds}{Integer for the number of folds to be used when splitting the
 data for cross-validation. This defaults to 10 as this is the convention for

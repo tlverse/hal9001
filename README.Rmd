@@ -1,5 +1,7 @@
 ---
-output: rmarkdown::html_document
+output:
+  rmarkdown::github_document
+bibliography: "`r here::here('README-refs.bib')`"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -44,6 +46,10 @@ intensive nature of the algorithm suggests that writing core routines in C++
 ought to provide significant efficiency gains. `hal9001` is just such an
 implementation.
 
+For detailed discussions of the Highly Adaptive LASSO estimator, the interested
+reader might consider consulting @benkeser2016hal, @vdl2017generally,
+and @vdl2017finite.
+
 ---
 
 ## Installation
@@ -61,7 +67,7 @@ You can install the development version of `hal9001` from GitHub via
 [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with
 
 ```{r gh-installation, eval = FALSE}
-devtools::install_github("jeremyrcoyle/hal9001")
+devtools::install_github("jeremyrcoyle/hal9001", build_vignettes = FALSE)
 ```
 
 ---
@@ -105,10 +111,10 @@ mean(hal_mse <- (preds - y)^2)
 
 `hal9001` is the primary implementation of the Highly Adaptive LASSO, an
 estimator with numerous optimality properties, especially useful when employing
-the [Targeted Learning](http://www.targetedlearningbook.com/about/) statistical
-framework. To that end, contributions are very welcome, though we ask that
-interested contributors consult our [contribution
-guidelines](https://github.com/jeremyrcoyle/hal9001/blob/master/CONTRIBUTING.md)
+[Targeted Learning](http://www.targetedlearningbook.com/about/). To that end,
+contributions are very welcome, though we ask that interested contributors
+consult our [`contribution
+guidelines`](https://github.com/jeremyrcoyle/hal9001/blob/master/CONTRIBUTING.md)
 prior to submitting a pull request.
 
 ---
@@ -135,4 +141,8 @@ Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license. See
 file `LICENSE` for details.
+
+---
+
+## References
 
