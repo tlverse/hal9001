@@ -27,8 +27,8 @@ after_success:
 
 script:
   - |
-    R CMD build .
-    travis_wait 40 R CMD check hal9001*tar.gz
+    R CMD build --no-build-vignettes .
+    travis_wait 60 R CMD check --no-build-vignettes hal9001*tar.gz
 
 notifications:
   email:

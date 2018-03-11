@@ -11,7 +11,7 @@
 
 \item{newX}{A matrix of new observations on which to obtain predictions.}
 
-\item{...}{Prevents unexpected process death. DON'T USE. (This is a hack.)}
+\item{...}{Prevents process death. DON'T USE. (THIS IS AN UGLY HACK.)}
 }
 \description{
 Predict method for objects of class \code{SL.hal9001}

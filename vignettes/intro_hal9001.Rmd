@@ -1,6 +1,7 @@
 ---
 title: "Introduction to the HAL estimator"
-author: "Nima Hejazi"
+author: "[Nima Hejazi](https://nimahejazi.org) and [Jeremy
+  Coyle](https://github.com/jeremyrcoyle)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: vignette-refs.bib
@@ -12,15 +13,26 @@ vignette: >
 
 ## Introduction
 
-...
+The _highly adaptive LASSO_ (HAL) is a flexible machine learning algorithm that
+nonparametrically estimates a function based on available data by embedding a
+set of input observations and covariates in an extremely high-dimensional space
+(i.e., generating basis functions from the available data). For an input data
+matrix of $n$ observations and $d$ covariates, the number of basis functions
+generated is approximately $n \cdot 2^{d - 1}$. To select a set of basis
+functions from among the full set generated, the LASSO is employed. The
+`hal9001` R package provides an efficient implementation of this routine,
+relying on the `glmnet` R package for compatibility with the canonical LASSO
+implementation while still providing a (faster) custom C++ routine for using the
+LASSO with an input matrix composed of indicator functions. Consider consulting
+the following references for more detailed descriptions of HAL:
 
-[@benkeser2016hal], [@vdl2015generally], [@vdl2017finite]
+1. [@benkeser2016hal],
+2. [@vdl2015generally],
+3. [@vdl2017finite].
 
 ---
 
 ## Preliminaries
-
-...
 
 ```{r setup, echo=FALSE}
 library(dplyr)
@@ -37,11 +49,11 @@ n_covars <- 3
 
 # make some training data
 x <- replicate(n_covars, rnorm(n_obs))
-y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n_obs, 0, 0.2)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n_obs, mean = 0, sd = 0.2)
 
 # make some testing data
 test_x <- replicate(n_covars, rnorm(n_obs))
-test_y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n_obs, 0, 0.2)
+test_y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n_obs, mean = 0, sd = 0.2)
 ```
 
 Look at simulated data...
@@ -61,61 +73,34 @@ library(hal9001)
 
 ### Fitting the model
 
-```{r fit-hal, eval=FALSE}
-hal_fit <- fit_hal(X = x, Y = y)
+```{r fit-hal}
+hal_fit <- fit_hal(X = x, Y = y, fit_type = "lassi")
 hal_fit$times
 ```
 
-```{r benchmark-hal, eval=FALSE}
-# perform benchmarking
-m_hal <- microbenchmark(unit = "s", times = 20,
-  hal_fit_m <- fit_hal(X = x, Y = y)
-)
-
-# make plot
-p_hal_times <- m_hal %>%
- dplyr::transmute(
-     time_sec = time / 10^9
- ) %>%
- gather() %>%
- ggplot(., aes(x = key, y = value)) + geom_boxplot() + geom_point() +
-   xlab("") + ylab("time (sec.)") + ggtitle("HAL9001") + theme_minimal()
-
-p_hal_times
-summary(m_hal)
+```{r results-hal}
+hal_fit
 ```
 
 ...
 
 ### Obtaining model predictions
 
-```{r eval-mse, eval=FALSE}
+```{r eval-mse}
 # training sample prediction for HAL vs HAL9000
 mse <- function(preds, y) {
     mean((preds - y)^2)
 }
 
-preds_hal <- predict(object = hal_fit, newdata = x)
+preds_hal <- predict(object = hal_fit, new_data = x)
 mse_hal <- mse(preds = preds_hal, y = y)
 mse_hal
 ```
 
-```{r eval-oob, eval=FALSE}
-oob_hal <- predict(object = hal_fit, newdata = test_x)
+```{r eval-oob}
+oob_hal <- predict(object = hal_fit, new_data = test_x)
 oob_hal_mse <- mse(preds = oob_hal, y = test_y)
 oob_hal_mse
-```
-
-### "Squashing" the model object
-
-```{r squash-hal9001, eval=FALSE}
-squashed_hal <- squash_hal_fit(hal_fit)
-
-sq_preds <- predict(object = squashed_hal, newdata = x)
-sq_oob_hal <- predict(object = squashed_hal, newdata = test_x)
-
-cbind(preds_hal, sq_preds)
-cbind(oob_hal, sq_oob_hal)
 ```
 
 ---

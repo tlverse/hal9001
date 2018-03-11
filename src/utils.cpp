@@ -15,7 +15,7 @@ using namespace Rcpp;
 //' @return An object of class \code{dgCMatrix}, coerced from input \code{XX_}.
 //'
 // [[Rcpp::export]]
-SEXP asdgCMatrix_( SEXP XX_ ) {
+SEXP as_dgCMatrix( SEXP XX_ ) {
   typedef Eigen::SparseMatrix<double> SpMat;
   typedef Eigen::Map<Eigen::MatrixXd> MapMatd; // Input: must be double
   MapMatd X(Rcpp::as<MapMatd>(XX_));

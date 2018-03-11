@@ -76,4 +76,3 @@ enumerate_basis <- function(x, degrees = NULL) {
   # output
   return(basis_list)
 }
-

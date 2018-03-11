@@ -4,8 +4,9 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive LASSO estimator}
 \usage{
-fit_hal(X, Y, degrees = NULL, fit_type = c("origami", "glmnet"),
-  n_folds = 10, use_min = TRUE, ..., yolo = TRUE)
+fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
+  n_folds = 10, use_min = TRUE, family = c("gaussian", "binomial"), ...,
+  yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -20,8 +21,8 @@ generating basis functions for the full dimensionality of the input matrix.}
 
 \item{fit_type}{The specific routine to be called when fitting the LASSO
 regression in a cross-validated manner. Choosing the \code{glmnet} option
-will result in a call to \code{cv.glmnet} while \code{origami} will produce
-a (faster) call to a custom routine based on the \code{origami} package.}
+will result in a call to \code{cv.glmnet} while \code{lassi} will produce
+a (faster) call to a custom LASSO routine using the \code{origami} package.}
 
 \item{n_folds}{Integer for the number of folds to be used when splitting the
 data for cross-validation. This defaults to 10 as this is the convention for
@@ -30,6 +31,10 @@ v-fold cross-validation.}
 \item{use_min}{Determines which lambda is selected from \code{cv.glmnet}.
 \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 to \code{"lambda.1se"}.}
+
+\item{family}{A \code{character} corresponding to the error family for a
+generalized linear model. Options are limited to "gaussian" for fitting a
+standard general linear model and "binomial" for logistic regression.}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}
@@ -48,9 +53,9 @@ Estimation procedure for HAL, the Highly Adaptive LASSO
 }
 \details{
 The procedure uses a custom C++ implementation to generate a design
- matrix (consisting of basis functions corresponding to covariates and
- interactions of covariates) and remove duplicate columns of indicators. The
- LASSO regression is fit to this (usually) very wide matrix using either a
- custom implementation (based on the \code{origami} package) or by a call to
- \code{cv.glmnet} from the \code{glmnet} package.
+ matrix consisting of basis functions corresponding to covariates and
+ interactions of covariates and to remove duplicate columns of indicators.
+ The LASSO regression is fit to this (usually) very wide matrix using either
+ a custom implementation (based on the \code{origami} package) or by a call
+ to \code{cv.glmnet} from the \code{glmnet} package.
 }

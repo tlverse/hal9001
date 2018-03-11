@@ -35,8 +35,10 @@ lassi_origami <- function(fold, data, lambdas) {
 
   # compute the MSE for the given training and validation sets
   ybar_train <- mean(train_y)
-  mses <- apply(pred_mat, 2, function(preds) {mean((preds + ybar_train -
-                                                    valid_y)^2)})
+  mses <- apply(pred_mat, 2, function(preds) {
+    mean((preds + ybar_train -
+      valid_y) ^ 2)
+  })
 
   # the only output needed is the lambda-wise MSE over each fold
   mses_out <- matrix(mses, nrow = 1)
@@ -74,35 +76,39 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   folds <- origami::make_folds(full_data_mat, V = n_folds)
 
   # run the cross-validated lasso procedure to find the optimal lambda
-  cv_lasso_out <- origami::cross_validate(cv_fun = lassi_origami,
-                                          folds = folds,
-                                          data = full_data_mat,
-                                          lambdas = lambdas_init)
+  cv_lasso_out <- origami::cross_validate(
+    cv_fun = lassi_origami,
+    folds = folds,
+    data = full_data_mat,
+    lambdas = lambdas_init
+  )
 
   # compute cv-mean of MSEs for each lambda
   lambdas_cvmse <- colMeans(cv_lasso_out$mses)
 
-  # also need the CV standard error for each lambda
-  lambdas_cvse <- sd(lambdas_cvmse) / sqrt(n_folds)
-
-  # find the lambda that minimizes the MSE and the lambda 1 standard error above
+  # find the lambda that minimizes the MSE
   lambda_optim_index <- which.min(lambdas_cvmse)
   lambda_minmse <- lambdas_init[lambda_optim_index]
-  lambda_1se <- lambda_minmse + lambdas_cvse
-  lambda_1se_index <- which.min(abs(lasso_init$lambdas - lambda_1se))
 
-  # get beta vectors for lambda-min and lambda-1se
+  # also need the CV standard deviation for each lambda
+  lambdas_cvsd <- apply(cv_lasso_out$mses, 2, sd)
+
+  # find the maximum lambda among those 1 standard error above the minimum
+  lambda_min_1se <- (lambdas_cvmse + lambdas_cvsd)[lambda_optim_index]
+  lambda_1se <- max(lambdas_init[lambdas_cvmse <= lambda_min_1se], na.rm = TRUE)
+  lambda_1se_index <- which.min(abs(lambdas_init - lambda_1se))
+
+  # create output object
   get_lambda_indices <- c(lambda_1se_index, lambda_optim_index)
   betas_out <- lasso_init$beta_mat[, get_lambda_indices]
   colnames(betas_out) <- c("lambda_1se", "lambda_min")
 
   # add in intercept term to coefs matrix and convert to sparse matrix output
   betas_out <- rbind(rep(mean(y), ncol(betas_out)), betas_out)
-  betas_out <- asdgCMatrix_(betas_out * 1.0)
+  betas_out <- as_dgCMatrix(betas_out * 1.0)
 
   # create output object
   cv_lasso_out <- list(betas_out, lambda_minmse, lambda_1se)
   names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se")
   return(cv_lasso_out)
 }
-
