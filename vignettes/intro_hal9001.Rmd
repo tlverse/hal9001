@@ -1,6 +1,7 @@
 ---
 title: "Introduction to the HAL estimator"
-author: "Nima Hejazi"
+author: "[Nima Hejazi](https://nimahejazi.org) and [Jeremy
+  Coyle](https://github.com/jeremyrcoyle)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: vignette-refs.bib

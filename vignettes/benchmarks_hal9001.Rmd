@@ -1,6 +1,7 @@
 ---
 title: "Benchmarks for the `hal9001` Package"
-author: "[Nima Hejazi](https://nimahejazi.org)"
+author: "[Nima Hejazi](https://nimahejazi.org) and [Jeremy
+  Coyle](https://github.com/jeremyrcoyle)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: vignette-refs.bib
