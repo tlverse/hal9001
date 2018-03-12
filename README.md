@@ -136,7 +136,7 @@ After using the `hal9001` R package, please cite the following:
       title = {{hal9001}: A fast and scalable {Highly Adaptive LASSO}},
       year  = {2018},
       howpublished = {\url{https://github.com/jeremyrcoyle/hal9001}},
-      url = {http://dx.doi.org/DOI_TBD},
+      url = {https://doi.org/DOI_TBD},
       doi = {DOI_TBD}
     }
 ```
