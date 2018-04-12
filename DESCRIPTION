@@ -57,7 +57,7 @@ LinkingTo:
   Rcpp,
   RcppEigen
 Remotes:
-  github::Rdatatable/data.table
-  github::benkeser/halplus,
+  github::Rdatatable/data.table,
+  github::benkeser/halplus
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1.9000
