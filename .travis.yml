@@ -19,6 +19,7 @@ before_install:
 
 r_github_packages:
   - jimhester/covr
+  - Rdatatable/data.table
   - benkeser/halplus
 
 # coverage

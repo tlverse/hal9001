@@ -1,6 +1,6 @@
 Package: hal9001
-Title: A Fast, Computationally Efficient Highly Adaptive LASSO (HAL)
-Version: 0.1.1
+Title: Scalable and Efficient Highly Adaptive Lasso
+Version: 0.1.2
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
          role = c("aut", "cre"),
@@ -57,6 +57,7 @@ LinkingTo:
   Rcpp,
   RcppEigen
 Remotes:
+  github::Rdatatable/data.table
   github::benkeser/halplus,
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1.9000
