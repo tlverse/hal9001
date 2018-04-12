@@ -1,6 +1,6 @@
+context("Unit test for the generic LASSO estimation procedure.")
 library(glmnet)
 library(methods)
-context("Unit test for the generic LASSO estimation procedure.")
 set.seed(749125)
 
 # generate simple test data
@@ -39,6 +39,7 @@ glmnet_fit <- glmnet::glmnet(
 #################################################
 # test scaling and centering
 lassi_fit <- methods::new(Lassi, x_basis, y, 100, 0.01, TRUE)
+
 xcenter <- lassi_fit$xcenter
 xscale <- lassi_fit$xscale
 
@@ -65,7 +66,7 @@ test_that("lambda sequence matches glmnet", {
 lambda_max <- lassi_fit$lambdas[1]
 
 # verify that lambda max zeros out coefficients
-#lassi_fit$update_coords(lambda_max)
+lassi_fit$update_coords(lambda_max, FALSE)
 test_that("lambda_max results in zero beta vector", {
   expect_true(all(lassi_fit$beta == 0))
 })
@@ -73,7 +74,7 @@ test_that("lambda_max results in zero beta vector", {
 # verify that a slightly smaller lambda does not
 delta <- 1 - 1e-3
 lambda_not_quite_max <- lambda_max * delta
-#lassi_fit$update_coords(lambda_not_quite_max)
+lassi_fit$update_coords(lambda_not_quite_max, FALSE)
 test_that(
   "a slightly smaller lambda results in nonzero beta vector",
   expect_true(!all(lassi_fit$beta == 0))
@@ -92,7 +93,7 @@ resid <- lassi_fit$resids
 ls_beta <- coef(lm(resid ~ xvar - 1)) * xscale_i
 #cd_beta <- mean(xvar/xscale_i * resid)
 
-#lassi_fit$update_coord(i - 1, 0)
+lassi_fit$update_coord(i - 1, 0)
 beta_new <- lassi_fit$beta[i]
 
 

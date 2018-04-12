@@ -16,6 +16,9 @@ all other columns. Consult the description of the HAL algorithm for details.}
 
 \item{lambdas}{A \code{numeric} vector corresponding to a sequence of lambda
 values obtained by fitting the LASSO on the full data.}
+
+\item{center}{binary. If TRUE, covariates are centered. This is much slower, 
+but closer to the glmnet implementation.Default FALSE.}
 }
 \description{
 Fits the LASSO regression over a single fold of a cross-validated data set.

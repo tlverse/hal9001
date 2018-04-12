@@ -15,10 +15,9 @@ lassi(x, y, lambdas = NULL, nlambda = 100, lambda_min_ratio = 0.01,
 \item{lambdas}{A sequence of values for the L1 regularization parameter
 (lambda) to be used in fitting the LASSO. Defaults to \code{NULL}.}
 
-\item{nlambda}{number of lambdas to fit. See \code{\link{lambda_seq}}}
+\item{nlambda}{number of lambdas to fit.}
 
-\item{lambda_min_ratio}{ratio of largest to smallest lambda to fit. For
-details, see \code{\link{lambda_seq}}}
+\item{lambda_min_ratio}{ratio of largest to smallest lambda to fit.}
 
 \item{center}{...}
 }

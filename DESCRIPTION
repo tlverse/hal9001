@@ -1,5 +1,5 @@
 Package: hal9001
-Title: A fast, computationally efficient Highly Adaptive LASSO (HAL)
+Title: A Fast, Computationally Efficient Highly Adaptive LASSO (HAL)
 Version: 0.1.1
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
@@ -30,7 +30,6 @@ BugReports: https://github.com/jeremyrcoyle/hal9001/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
-  RcppEigen,
   Matrix,
   stats,
   utils,

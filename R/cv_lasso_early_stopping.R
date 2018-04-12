@@ -21,7 +21,8 @@
 cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   # first, need to run lasso on the full data to get a sequence of lambdas
   lasso_init <- lassi(y = y, x = x_basis, nlambda = n_lambda, center = FALSE)
-
+  lambdas_init <- lasso_init$lambdas
+  
   # next, set up a cross-validated lasso using the sequence of lambdas
   folds <- origami::make_folds(x_basis, V = n_folds)
   

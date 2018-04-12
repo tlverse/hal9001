@@ -1,7 +1,7 @@
-library(glmnet)
+context("Unit test for the generic cross-validated LASSO estimation procedure.")
+# library(glmnet)
 library(origami)
 set.seed(749125)
-context("Unit test for the generic cross-validated LASSO estimation procedure.")
 
 ################################################################################
 ## SIMULATION SETUP
@@ -11,7 +11,7 @@ context("Unit test for the generic cross-validated LASSO estimation procedure.")
 n_folds <- 10
 
 # generate simple test data
-n <- 1000
+n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] + rnorm(n, mean = 0, sd = 1)
@@ -137,15 +137,9 @@ betas_cvglmnet_lassi <- cbind(coef_1se_cvglmnet_lassi,
 # TEST THAT ORIGAMI AND CV-GLMNET IMPLEMENTATIONS MATCH
 ################################################################################
 test_that("lambda-min difference between cv.glmnet, cv_lasso within 0.5%.", {
-  expect_equal(
-    lambda_minmse_origami, expected = lambda_minmse_cvglmnet,
-    scale = lambda_minmse_cvglmnet, tolerance = 0.005
-  )
+  expect_lte(lambda_minmse_origami-lambda_minmse_cvglmnet, lambda_minmse_cvglmnet*0.005)
 })
 
 test_that("lambda-1se difference between cv.glmnet and cv_lasso within 1%.", {
-  expect_equal(
-    lambda_1se_origami, expected = lambda_1se_cvglmnet,
-    scale = lambda_1se_cvglmnet, tolerance = 0.01
-  )
+  expect_lte(lambda_minmse_origami-lambda_minmse_cvglmnet, lambda_minmse_cvglmnet*0.01)
 })

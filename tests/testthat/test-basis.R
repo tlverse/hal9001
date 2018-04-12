@@ -1,5 +1,6 @@
-library(microbenchmark)
 context("Unit test for procedures relating to basis functions.")
+# library(microbenchmark)
+
 
 # Rcpp::compileAttributes() load_all()
 

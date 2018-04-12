@@ -19,6 +19,9 @@ LASSO to the full data. Cross-validation is used to select an optimal lambda
 
 \item{n_folds}{A \code{numeric} scalar for the number of folds to be used in
 the cross-validation procedure to select an optimal value of lambda.}
+
+\item{center}{binary. If TRUE, covariates are centered. This is much slower, 
+but closer to the glmnet implementation. Default FALSE.}
 }
 \description{
 Fits the LASSO regression using a customized procedure, with cross-validation

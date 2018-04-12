@@ -114,6 +114,14 @@ public:
   NumericVector get_lambdas(){
     return(lambdas);
   }
+
+  void set_lambdas(NumericVector new_lambdas){
+    if(new_lambdas.length()!=lambdas.length()){
+      stop("length(lambdas) must match nlambda passed on construction");
+    }
+    
+    lambdas=new_lambdas;
+  }
   
   NumericVector get_resids(){
     return(resids);
@@ -430,7 +438,7 @@ RCPP_MODULE(lassi_module) {
   .property( "xscale", &Lassi::get_xscale)
   .property( "xcenter", &Lassi::get_xcenter)
   .property( "X", &Lassi::get_X)
-  .property( "lambdas", &Lassi::get_lambdas)
+  .property( "lambdas", &Lassi::get_lambdas, &Lassi::set_lambdas)
   .property( "lambda_max", &Lassi::find_lambda_max)
   ;
 }

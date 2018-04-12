@@ -12,8 +12,10 @@
 #'  all other columns. Consult the description of the HAL algorithm for details.
 #' @param lambdas A \code{numeric} vector corresponding to a sequence of lambda
 #'  values obtained by fitting the LASSO on the full data.
+#' @param center binary. If TRUE, covariates are centered. This is much slower, 
+#'  but closer to the glmnet implementation.Default FALSE.
 #'
-#' @importFrom origami training validation
+#' @importFrom origami training validation fold_index
 #
 lassi_origami <- function(fold, data, lambdas, center = FALSE) {
   # make sure data is an (augmented) sparse matrix of basis functions
@@ -59,7 +61,8 @@ lassi_origami <- function(fold, data, lambdas, center = FALSE) {
 #'  (that minimizes the risk) from among these.
 #' @param n_folds A \code{numeric} scalar for the number of folds to be used in
 #'  the cross-validation procedure to select an optimal value of lambda.
-#'
+#' @param center binary. If TRUE, covariates are centered. This is much slower, 
+#'  but closer to the glmnet implementation. Default FALSE.
 #' @importFrom origami make_folds cross_validate
 #' @importFrom stats sd
 #

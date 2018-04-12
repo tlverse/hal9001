@@ -10,9 +10,8 @@ loadModule("lassi_module", TRUE)
 #' @param y The outcome vector
 #' @param lambdas A sequence of values for the L1 regularization parameter
 #'  (lambda) to be used in fitting the LASSO. Defaults to \code{NULL}.
-#' @param nlambda number of lambdas to fit. See \code{\link{lambda_seq}}
-#' @param lambda_min_ratio ratio of largest to smallest lambda to fit. For
-#'  details, see \code{\link{lambda_seq}}
+#' @param nlambda number of lambdas to fit.
+#' @param lambda_min_ratio ratio of largest to smallest lambda to fit.
 #' @param center ...
 #'
 #' @importFrom methods new
@@ -21,14 +20,22 @@ loadModule("lassi_module", TRUE)
 #
 lassi <- function(x, y, lambdas = NULL, nlambda = 100,
                   lambda_min_ratio = 0.01, center = FALSE) {
+  if(!is.null(lambdas)){
+    nlambda <- length(lambdas)
+  }
+  
   # initialize object
   lassi_object <- methods::new(Lassi, x, y, nlambda, lambda_min_ratio, center)
 
+  if(!is.null(lambdas)){
+    lassi_object$lambdas <- lambdas
+  }
+  
   # initialize step counter
   step_counts <- rep(0, nlambda)
 
   # iterative procedure for active step convergence
-  for (i in (seq_len(100) - 1)) {
+  for (i in (seq_len(nlambda) - 1)) {
     full_steps <- lassi_object$lassi_fit_cd(i, FALSE, 1)
     if (full_steps > 0) {
       active_steps <- lassi_object$lassi_fit_cd(i, TRUE, 1000)

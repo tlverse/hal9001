@@ -1,5 +1,5 @@
-library(SuperLearner)
 context("Fits and prediction of classic Super Learner with HAL.")
+library(SuperLearner)
 
 # easily compute MSE
 mse <- function(preds, y) {
