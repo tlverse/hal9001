@@ -2,6 +2,7 @@
 #include <RcppEigen.h>
 #include "hal9001_types.h"
 using namespace Rcpp;
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // Functions to enumerate basis functions
@@ -106,7 +107,7 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
                     int basis_col) {
   int n = X.rows();
   //split basis into x[1] x[-1]
-  //find sub-basises
+  //find sub-bases
   //intersect
 
   IntegerVector cols = as<IntegerVector>(basis["cols"]);
@@ -125,7 +126,7 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
 //' Build HAL Design Matrix
 //'
 //' Make a HAL design matrix based on original design matrix X and a list of
-//' basis functions in blist
+//' basis functions in argument blist
 //'
 //' @param X Matrix of covariates containing observed data in the columns.
 //' @param blist List of basis functions with which to build HAL design matrix.

@@ -13,5 +13,5 @@ make_design_matrix(X, blist)
 }
 \description{
 Make a HAL design matrix based on original design matrix X and a list of
-basis functions in blist
+basis functions in argument blist
 }

@@ -21,86 +21,8 @@ apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
 
-#' LASSO Prediction
-#'
-#' Compute predictions based on a LASSO regression
-#'
-#' @param X Sparse matrix containing columns of indicator functions.
-#' @param beta Numeric for the regression coefficient of a linear model fit.
-#'
-lassi_predict <- function(X, beta) {
-    .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta)
-}
-
-#' Soft thresholding for LASSO fits
-#'
-#' The soft thresholding algorithm given by Hastie et al. (2009)
-#'
-#' @param beta Numeric of the regression coefficients of a linear model.
-#' @param lambda Numeric of the regularization constant for the L1 penalty.
-#'
-soft_threshold <- function(beta, lambda) {
-    .Call('_hal9001_soft_threshold', PACKAGE = 'hal9001', beta, lambda)
-}
-
-#' Compute updated LASSO coefficients
-#'
-#' @param X ...
-#' @param resids ...
-#' @param j ...
-#' @param beta_j ...
-#' @param xscale_j ...
-#'
-get_new_beta <- function(X, resids, j, beta_j, xscale_j) {
-    .Call('_hal9001_get_new_beta', PACKAGE = 'hal9001', X, resids, j, beta_j, xscale_j)
-}
-
-#' Find maximum L1 regularization constant
-#'
-#' @param X ...
-#' @param y ...
-#' @param xscale ...
-#'
-find_lambda_max <- function(X, y, xscale) {
-    .Call('_hal9001_find_lambda_max', PACKAGE = 'hal9001', X, y, xscale)
-}
-
-equal_double <- function(x, y) {
-    .Call('_hal9001_equal_double', PACKAGE = 'hal9001', x, y)
-}
-
-update_coord <- function(X, resids, beta, lambda, j, xscale) {
-    .Call('_hal9001_update_coord', PACKAGE = 'hal9001', X, resids, beta, lambda, j, xscale)
-}
-
-#' Fit a LASSO Regression Model
-#'
-#' Fit a linear regression model with L1 penalization, the LASSO
-#'
-#' @param X Sparse matrix containing columns of indicator functions.
-#' @param resids Numeric of the residuals from a given fit of the LASSO model.
-#' @param beta Numeric vector of initial beta estiamtes
-#' @param lambda Numeric corresponding to the LASSO regularization parameter.
-#' @param nsteps Maximum number of steps to take until stopping computation of
-#'  the regression coefficient.
-#' @param xscale scale factor for covariates. See get_xscale
-#' @param active_set, update only nonzero coefficients (TRUE), or all
-#'  coefficients (FALSE)
-#'
-lassi_fit_cd <- function(X, resids, beta, lambda, nsteps, xscale, active_set) {
-    .Call('_hal9001_lassi_fit_cd', PACKAGE = 'hal9001', X, resids, beta, lambda, nsteps, xscale, active_set)
-}
-
-non_zeros <- function(X) {
-    .Call('_hal9001_non_zeros', PACKAGE = 'hal9001', X)
-}
-
-get_pnz <- function(X) {
-    .Call('_hal9001_get_pnz', PACKAGE = 'hal9001', X)
-}
-
-get_xscale <- function(X) {
-    .Call('_hal9001_get_xscale', PACKAGE = 'hal9001', X)
+lassi_predict <- function(X, beta, intercept) {
+    .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta, intercept)
 }
 
 #' Sort Basis Functions
@@ -148,7 +70,7 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #' Build HAL Design Matrix
 #'
 #' Make a HAL design matrix based on original design matrix X and a list of
-#' basis functions in blist
+#' basis functions in argument blist
 #'
 #' @param X Matrix of covariates containing observed data in the columns.
 #' @param blist List of basis functions with which to build HAL design matrix.
@@ -170,5 +92,29 @@ make_design_matrix <- function(X, blist) {
 #'
 as_dgCMatrix <- function(XX_) {
     .Call('_hal9001_as_dgCMatrix', PACKAGE = 'hal9001', XX_)
+}
+
+non_zeros <- function(X) {
+    .Call('_hal9001_non_zeros', PACKAGE = 'hal9001', X)
+}
+
+calc_pnz <- function(X) {
+    .Call('_hal9001_calc_pnz', PACKAGE = 'hal9001', X)
+}
+
+get_pnz <- function(X) {
+    .Call('_hal9001_get_pnz', PACKAGE = 'hal9001', X)
+}
+
+calc_xscale <- function(X, xcenter) {
+    .Call('_hal9001_calc_xscale', PACKAGE = 'hal9001', X, xcenter)
+}
+
+get_xscale <- function(X, xcenter) {
+    .Call('_hal9001_get_xscale', PACKAGE = 'hal9001', X, xcenter)
+}
+
+equal_double <- function(x, y) {
+    .Call('_hal9001_equal_double', PACKAGE = 'hal9001', x, y)
 }
 

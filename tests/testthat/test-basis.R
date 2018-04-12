@@ -1,5 +1,6 @@
-library(microbenchmark)
 context("Unit test for procedures relating to basis functions.")
+# library(microbenchmark)
+
 
 # Rcpp::compileAttributes() load_all()
 
@@ -33,12 +34,12 @@ x_mat_1 <- matrix(rnorm(n * p), n, p)
 basis_test(x_mat_1)
 # basis_timing(x_mat_1)
 
-n <- 1000
-p <- 3
-x_mat_2 <- matrix(rnorm(n * p), n, p)
-basis_test(x_mat_2)
-# basis_timing(x_mat_2)
-
-x_mat_3 <- matrix(rbinom(n * p, 1, 0.5), n, p)
-basis_test(x_mat_3)
+# n <- 1000
+# p <- 3
+# x_mat_2 <- matrix(rnorm(n * p), n, p)
+# basis_test(x_mat_2)
+# # basis_timing(x_mat_2)
+# 
+# x_mat_3 <- matrix(rbinom(n * p, 1, 0.5), n, p)
+# basis_test(x_mat_3)
 # basis_timing(x_mat_3)

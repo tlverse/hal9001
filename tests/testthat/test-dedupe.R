@@ -1,7 +1,5 @@
 context("Unit test for removing duplicate columns of indicator functions.")
 
-# Rcpp::compileAttributes() load_all()
-
 # generate design matrix for HAL
 n <- 1000
 p <- 3

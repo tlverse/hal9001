@@ -39,7 +39,7 @@ predict.hal9001 <- function(object,
   ) +
     object$coefs[1])
 
-  # do logit transformation for logistic regression predictions
+  # apply logit transformation for logistic regression predictions
   if (object$family == "binomial") {
     preds <- stats::plogis(preds)
   }

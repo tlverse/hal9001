@@ -39,7 +39,6 @@ SL.hal9001 <- function(Y,
                        family = stats::gaussian(),
                        obsWeights = rep(1, length(Y)),
                        ...) {
-
   if (family$family == "gaussian") {
       # fit HAL
       hal_out <- fit_hal(

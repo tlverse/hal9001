@@ -1,5 +1,5 @@
-library(hal)
 context("Unit test for HAL with binary outcomes (logistic regression).")
+library(hal)
 set.seed(45791)
 
 # easily compute MSE

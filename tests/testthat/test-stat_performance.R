@@ -1,3 +1,4 @@
+context("Verify Statistical Performance")
 library(hal9001)
 library(hal)
 #########################################

@@ -1,0 +1,110 @@
+---
+title: "hal90001 Benchmarks"
+author: "Jeremy Coyle"
+date: "10/5/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE, results='hide'}
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+library(sl3)
+library(delayed)
+library(SuperLearner)
+library(future)
+library(ggplot2)
+library(data.table)
+library(stringr)
+library(scales)
+```
+
+## Introduction
+
+This document consists of some simple benchmarks for various choices of SuperLearner implementation, wrapper functions, and parallelization schemes. The purpose of this document is two-fold: 
+
+1. Compare the computational performance of these methods
+2. Illustrate the use of these different methods
+
+## Test Setup
+
+
+### Test System
+
+```{r systemInfo, echo=FALSE, results="asis"}
+uname <- system("uname -a", intern = TRUE)
+os <- sub(" .*", "", uname)
+if(os=="Darwin"){
+  cpu_model <- system("sysctl -n machdep.cpu.brand_string", intern = TRUE)
+  cpus_physical <- as.numeric(system("sysctl -n hw.physicalcpu", intern = TRUE))
+  cpus_logical <- as.numeric(system("sysctl -n hw.logicalcpu", intern = TRUE))
+  cpu_clock <- system("sysctl -n hw.cpufrequency_max", intern = TRUE)
+  memory <- system("sysctl -n hw.memsize", intern = TRUE)
+} else if(os=="Linux"){
+  cpu_model <- system("lscpu | grep 'Model name'", intern = TRUE)
+  cpu_model <- gsub("Model name:[[:blank:]]*","", cpu_model)
+  cpus_logical <- system("lscpu | grep '^CPU(s)'", intern = TRUE)
+  cpus_logical <- as.numeric(gsub("^.*:[[:blank:]]*","", cpus_logical))
+  tpc <- system("lscpu | grep '^Thread(s) per core'", intern = TRUE)
+  tpc <- as.numeric(gsub("^.*:[[:blank:]]*","", tpc))
+  cpus_physical <- cpus_logical/tpc
+  cpu_clock <- as.numeric(gsub("GHz","",gsub("^.*@","",cpu_model)))*10^9
+  memory <- system("cat /proc/meminfo | grep '^MemTotal'", intern = TRUE)
+  memory <- as.numeric(gsub("kB","",gsub("^.*:","",memory)))*2^10
+} else {
+  stop("unsupported OS")
+}
+```
+
+* CPU model: `r cpu_model`
+* Physical cores: `r as.numeric(cpus_physical)`
+* Logical cores: `r as.numeric(cpus_logical)`
+* Clock speed: `r as.numeric(cpu_clock)/10^9`GHz
+* Memory: `r round(as.numeric(memory)/2^30, 1)`GB
+
+### Test Data
+
+### Tests
+
+```{r lassi}
+microbenchmark({
+   glmnet::glmnet(x = x_basis, y = y, intercept = TRUE, nlambda = 100,
+   lambda.min.ratio = 0.01, family = "gaussian", alpha = 1, standardize = TRUE)
+ }, times = 10)
+microbenchmark({
+   lassi(x_basis, y, nlambda=100, lambda_min_ratio = 0.01, center = FALSE)
+ }, times = 10)
+
+microbenchmark({
+   lassi(x_basis, y, nlambda=100, lambda_min_ratio = 0.01, center = TRUE)
+ }, times = 10)
+
+microbenchmark({
+   glmnet::cv.glmnet(x = x_basis, y = y, intercept = TRUE, nlambda = 100,
+   lambda.min.ratio = 0.01, family = "gaussian", alpha = 1, standardize = TRUE)
+ }, times = 1)
+
+microbenchmark({
+   cv_lasso(x_basis, y, center = FALSE)
+ }, times = 1)
+
+microbenchmark({
+   cv_lasso(x_basis, y, center = TRUE)
+ }, times = 1)
+
+set.seed(1234)
+cv_l_full <- cv_lasso(x_basis, y, center = FALSE)
+set.seed(1234)
+cv_l_es <- cv_lasso_early_stopping(x_basis, y)
+plot(cv_l_es)
+plot(cv_l_full$lambdas_cvmse)
+microbenchmark({
+   cv_lasso_early_stopping(x_basis, y)
+ }, times = 1)
+
+```
+
+## Session Information
+
+```{r sessionInfo, echo=FALSE, results="asis"}
+sessionInfo()
+```
