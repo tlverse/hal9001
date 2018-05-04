@@ -5,8 +5,8 @@
 \title{HAL: The Highly Adaptive LASSO estimator}
 \usage{
 fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
-  n_folds = 10, use_min = TRUE, family = c("gaussian", "binomial"), ...,
-  yolo = TRUE)
+  n_folds = 10, use_min = TRUE, family = c("gaussian", "binomial"),
+  return_lasso = FALSE, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -35,6 +35,9 @@ to \code{"lambda.1se"}.}
 \item{family}{A \code{character} corresponding to the error family for a
 generalized linear model. Options are limited to "gaussian" for fitting a
 standard general linear model and "binomial" for logistic regression.}
+
+\item{return_lasso}{A \code{boolean} indicating whether or not to return
+the HAL lasso fit.}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}
