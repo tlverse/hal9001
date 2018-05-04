@@ -147,7 +147,7 @@ fit_hal <- function(X,
     family = family,
     hal_lasso = NULL
   )
-  if(return_model){
+  if(return_lasso){
     fit$hal_lasso <- hal_lasso
   }
   class(fit) <- "hal9001"
