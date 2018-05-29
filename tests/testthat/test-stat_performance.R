@@ -10,7 +10,7 @@ g0_linear <- function(W1, W2, W3, W4) {
 
 Q0_trig1 <- function(A, W1, W2, W3, W4) {
   plogis(0.14 * (2 * A + 2 * A * W1 + 20 * cos(W1) * A - 3 * W1 * sin(2 * W2) +
-    cos(W1) - 3 * W2 + 4 * A * (W2 ^ 2) + 3 * cos(W4) * A + A * W1 ^ 2
+    cos(W1) - 3 * W2 + 4 * A * (W2^2) + 3 * cos(W4) * A + A * W1^2
     - 2 * sin(W2) * W4 - 6 * A * W3 * W4 - 3))
 }
 
@@ -54,8 +54,8 @@ set.seed(1234) # attempt to control randomness in cv.glmnet fold generation
 halres9001 <- fit_hal(Y = Y, X = X)
 pred9001 <- predict(halres9001, new_data = testdata)
 
-mean((pred - testY) ^ 2)
-mean((pred9001 - testY) ^ 2)
+mean((pred - testY)^2)
+mean((pred9001 - testY)^2)
 
 default_coef <- halres9001$coef
 #########################################
@@ -91,5 +91,5 @@ pred_x_basis_uniq <- apply_copy_map(pred_x_basis, copy_map)
 
 # still doesn't quite match
 match_pred <- predict(hal_lasso, pred_x_basis_uniq, "lambda.min")
-mean((match_pred - testY) ^ 2)
+mean((match_pred - testY)^2)
 plot(pred, match_pred)

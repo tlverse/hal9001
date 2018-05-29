@@ -18,13 +18,22 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
+
+<meta property="og:title" content="HAL: The Highly Adaptive LASSO estimator — fit_hal" />
+
+<meta property="og:description" content="Estimation procedure for HAL, the Highly Adaptive LASSO" />
+<meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -47,12 +56,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">hal9001</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">hal9001</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.2.0</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -68,9 +81,6 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/benchmarks_hal9001.html">Benchmarks for the `hal9001` Package</a>
-    </li>
-    <li>
       <a href="../articles/intro_hal9001.html">Introduction to the HAL estimator</a>
     </li>
   </ul>
@@ -85,6 +95,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -92,20 +103,25 @@
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>HAL: The Highly Adaptive LASSO estimator</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jeremyrcoyle/hal9001/blob/master/R/hal.R'><code>R/hal.R</code></a></small>
+    <div class="hidden name"><code>fit_hal.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Estimation procedure for HAL, the Highly Adaptive LASSO</p>
     
+    </div>
 
-    <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"origami"</span>, <span class='st'>"glmnet"</span>),
-  <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>),
+  <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>),
+  <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -128,8 +144,8 @@ generating basis functions for the full dimensionality of the input matrix.</p><
       <th>fit_type</th>
       <td><p>The specific routine to be called when fitting the LASSO
 regression in a cross-validated manner. Choosing the <code>glmnet</code> option
-will result in a call to <code>cv.glmnet</code> while <code>origami</code> will produce
-a (faster) call to a custom routine based on the <code>origami</code> package.</p></td>
+will result in a call to <code>cv.glmnet</code> while <code>lassi</code> will produce
+a (faster) call to a custom LASSO routine using the <code>origami</code> package.</p></td>
     </tr>
     <tr>
       <th>n_folds</th>
@@ -142,6 +158,17 @@ v-fold cross-validation.</p></td>
       <td><p>Determines which lambda is selected from <code>cv.glmnet</code>.
 <code>TRUE</code> corresponds to <code>"lambda.min"</code> and <code>FALSE</code> corresponds
 to <code>"lambda.1se"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>family</th>
+      <td><p>A <code>character</code> corresponding to the error family for a
+generalized linear model. Options are limited to "gaussian" for fitting a
+standard general linear model and "binomial" for logistic regression.</p></td>
+    </tr>
+    <tr>
+      <th>return_lasso</th>
+      <td><p>A <code>boolean</code> indicating whether or not to return
+the HAL lasso fit.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -165,11 +192,11 @@ epic science-fiction film "2001: A Space Odyssey" (1968).</p></td>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The procedure uses a custom C++ implementation to generate a design
- matrix (consisting of basis functions corresponding to covariates and
- interactions of covariates) and remove duplicate columns of indicators. The
- LASSO regression is fit to this (usually) very wide matrix using either a
- custom implementation (based on the <code>origami</code> package) or by a call to
- <code>cv.glmnet</code> from the <code>glmnet</code> package.</p>
+ matrix consisting of basis functions corresponding to covariates and
+ interactions of covariates and to remove duplicate columns of indicators.
+ The LASSO regression is fit to this (usually) very wide matrix using either
+ a custom implementation (based on the <code>origami</code> package) or by a call
+ to <code>cv.glmnet</code> from the <code>glmnet</code> package.</p>
     
 
   </div>
@@ -188,15 +215,18 @@ epic science-fiction film "2001: A Space Odyssey" (1968).</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jeremy Coyle, Nima Hejazi.</p>
+  <p>Developed by Jeremy Coyle, Nima Hejazi, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

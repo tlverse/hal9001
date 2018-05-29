@@ -3,7 +3,7 @@ library(SuperLearner)
 
 # easily compute MSE
 mse <- function(preds, y) {
-  mean((preds - y) ^ 2)
+  mean((preds - y)^2)
 }
 
 # simulation constants
@@ -52,9 +52,10 @@ test_that("HAL beats SuperLearner-HAL in MSE (due to cross-validation)", {
 # (hence the rather low tolerance, esp. given an additive scale)
 test_that("HAL dominates other algorithms when used in SuperLearner", {
   expect_equal(mse(pred_sl_test, test_y),
-               expected = mse(pred_hal_sl_test, test_y),
-               scale = mse(pred_hal_sl_test, test_y),
-               tolerance = 0.05)
+    expected = mse(pred_hal_sl_test, test_y),
+    scale = mse(pred_hal_sl_test, test_y),
+    tolerance = 0.05
+  )
 })
 
 # test of SL-HAL risk: HAL has lowest CV-risk in the learner library

@@ -18,13 +18,19 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
+
+<meta property="og:title" content="Function reference" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -47,12 +53,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">hal9001</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">hal9001</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.2.0</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -68,9 +78,6 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/benchmarks_hal9001.html">Benchmarks for the `hal9001` Package</a>
-    </li>
-    <li>
       <a href="../articles/intro_hal9001.html">Introduction to the HAL estimator</a>
     </li>
   </ul>
@@ -85,6 +92,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -92,202 +100,179 @@
       
       </header>
 
-      <div class="row">
-  <div class="col-md-9">
+<div class="row">
+  <div class="contents col-md-9">
     <div class="page-header">
-      <h1>
-        Reference
-        <small>version&nbsp;0.0.5.1</small>
-      </h1>
+      <h1>Reference</h1>
     </div>
 
-    <div class="contents">
-      <table class="ref-index">
+    <table class="ref-index">
 
-      <colgroup>
-        <col class="alias" />
-        <col class="title" />
-      </colgroup>
+    <colgroup>
+      <col class="alias" />
+      <col class="title" />
+    </colgroup>
 
-      <tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-            <p class="section-desc"></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="apply_copy_map.html">apply_copy_map</a></code> </p>
-          </td>
-          <td><p>Apply copy map</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="asdgCMatrix_.html">asdgCMatrix_</a></code> </p>
-          </td>
-          <td><p>Fast Coercion to Sparse Matrix</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="basis_list_cols.html">basis_list_cols</a></code> </p>
-          </td>
-          <td><p>List Basis Functions</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="basis_of_degree.html">basis_of_degree</a></code> </p>
-          </td>
-          <td><p>Compute Degree of Basis Functions</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="cv_lasso.html">cv_lasso</a></code> </p>
-          </td>
-          <td><p>Cross-validated LASSO on Indicator Bases</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="enumerate_basis.html">enumerate_basis</a></code> </p>
-          </td>
-          <td><p>Enumerate Basis Functions</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="evaluate_basis.html">evaluate_basis</a></code> </p>
-          </td>
-          <td><p>Generate Basis Functions</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="find_lambda_max.html">find_lambda_max</a></code> </p>
-          </td>
-          <td><p>Find maximum L1 regularization constant</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="fit_hal.html">fit_hal</a></code> </p>
-          </td>
-          <td><p>HAL: The Highly Adaptive LASSO estimator</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="get_new_beta.html">get_new_beta</a></code> </p>
-          </td>
-          <td><p>Compute updated LASSO coefficients</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="hal_quotes.html">hal_quotes</a></code> </p>
-          </td>
-          <td><p>HAL9000 Quotes from "2001: A Space Odyssey"</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="hal9000.html">hal9000</a></code> </p>
-          </td>
-          <td><p>HAL 9000 Quotes</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="hal9001.html">hal9001</a></code> </p>
-          </td>
-          <td><p>hal9001</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="index_first_copy.html">index_first_copy</a></code> </p>
-          </td>
-          <td><p>Find Copies of Columns</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="lambda_seq.html">lambda_seq</a></code> </p>
-          </td>
-          <td><p>Generate sequence of lambdas</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="lassi_fit_cd.html">lassi_fit_cd</a></code> </p>
-          </td>
-          <td><p>Fit a LASSO Regression Model</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="lassi_origami.html">lassi_origami</a></code> </p>
-          </td>
-          <td><p>Single LASSO estimation for cross-validation with Origami</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="lassi_predict.html">lassi_predict</a></code> </p>
-          </td>
-          <td><p>LASSO Prediction</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="lassi.html">lassi</a></code> </p>
-          </td>
-          <td><p>Custom Lasso implementation for matrices of indicator functions</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="make_basis_list.html">make_basis_list</a></code> </p>
-          </td>
-          <td><p>Sort Basis Functions</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="make_copy_map.html">make_copy_map</a></code> </p>
-          </td>
-          <td><p>Build Copy Maps</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="make_design_matrix.html">make_design_matrix</a></code> </p>
-          </td>
-          <td><p>Build HAL Design Matrix</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="meets_basis.html">meets_basis</a></code> </p>
-          </td>
-          <td><p>Compute Values of Basis Functions</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="predict.hal9001.html">predict</a></code> </p>
-          </td>
-          <td><p>Prediction from HAL fits</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="predict.SL.hal9001.html">predict</a></code> </p>
-          </td>
-          <td><p>predict.SL.hal9001</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="SL.hal9001.html">SL.hal9001</a></code> </p>
-          </td>
-          <td><p>Wrapper for Classic SuperLearner</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="soft_threshold.html">soft_threshold</a></code> </p>
-          </td>
-          <td><p>Soft thresholding for LASSO fits</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="squash_hal_fit.html">squash_hal_fit</a></code> </p>
-          </td>
-          <td><p>Squash HAL objects</p></td>
-        </tr>
-      </tbody>
-      </table>
-    </div>
+    <tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="SL.hal9001.html">SL.hal9001()</a></code> </p>
+        </td>
+        <td><p>Wrapper for Classic SuperLearner</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="apply_copy_map.html">apply_copy_map()</a></code> </p>
+        </td>
+        <td><p>Apply copy map</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="as_dgCMatrix.html">as_dgCMatrix()</a></code> </p>
+        </td>
+        <td><p>Fast Coercion to Sparse Matrix</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="basis_list_cols.html">basis_list_cols()</a></code> </p>
+        </td>
+        <td><p>List Basis Functions</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="basis_of_degree.html">basis_of_degree()</a></code> </p>
+        </td>
+        <td><p>Compute Degree of Basis Functions</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="cv_lasso.html">cv_lasso()</a></code> </p>
+        </td>
+        <td><p>Cross-validated LASSO on Indicator Bases</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="cv_lasso_early_stopping.html">cv_lasso_early_stopping()</a></code> </p>
+        </td>
+        <td><p>Cross-validated LASSO on Indicator Bases</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="enumerate_basis.html">enumerate_basis()</a></code> </p>
+        </td>
+        <td><p>Enumerate Basis Functions</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="evaluate_basis.html">evaluate_basis()</a></code> </p>
+        </td>
+        <td><p>Generate Basis Functions</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="fit_hal.html">fit_hal()</a></code> </p>
+        </td>
+        <td><p>HAL: The Highly Adaptive LASSO estimator</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="hal9000.html">hal9000()</a></code> </p>
+        </td>
+        <td><p>HAL 9000 Quotes</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="hal9001.html">hal9001</a></code> </p>
+        </td>
+        <td><p>hal9001</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="hal_quotes.html">hal_quotes</a></code> </p>
+        </td>
+        <td><p>HAL9000 Quotes from "2001: A Space Odyssey"</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="index_first_copy.html">index_first_copy()</a></code> </p>
+        </td>
+        <td><p>Find Copies of Columns</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="lassi.html">lassi()</a></code> </p>
+        </td>
+        <td><p>Custom Lasso implementation for matrices of indicator functions</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="lassi_fit_module.html">lassi_fit_module</a></code> </p>
+        </td>
+        <td><p>Rcpp module: lassi_fit_module</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="lassi_origami.html">lassi_origami()</a></code> </p>
+        </td>
+        <td><p>Single LASSO estimation for cross-validation with Origami</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="make_basis_list.html">make_basis_list()</a></code> </p>
+        </td>
+        <td><p>Sort Basis Functions</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="make_copy_map.html">make_copy_map()</a></code> </p>
+        </td>
+        <td><p>Build Copy Maps</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="make_design_matrix.html">make_design_matrix()</a></code> </p>
+        </td>
+        <td><p>Build HAL Design Matrix</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="meets_basis.html">meets_basis()</a></code> </p>
+        </td>
+        <td><p>Compute Values of Basis Functions</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="predict.SL.hal9001.html">predict(<i>&lt;SL.hal9001&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>predict.SL.hal9001</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="predict.hal9001.html">predict(<i>&lt;hal9001&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Prediction from HAL fits</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="predict.lassi.html">predict(<i>&lt;lassi&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Predict Method for Lasso on Indicator Bases</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="squash_hal_fit.html">squash_hal_fit()</a></code> </p>
+        </td>
+        <td><p>Squash HAL objects</p></td>
+      </tr>
+    </tbody>
+    </table>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -300,15 +285,18 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jeremy Coyle, Nima Hejazi.</p>
+  <p>Developed by Jeremy Coyle, Nima Hejazi, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

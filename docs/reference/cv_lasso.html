@@ -18,13 +18,23 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
+
+<meta property="og:title" content="Cross-validated LASSO on Indicator Bases — cv_lasso" />
+
+<meta property="og:description" content="Fits the LASSO regression using a customized procedure, with cross-validation
+based on origami" />
+<meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -47,12 +57,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">hal9001</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">hal9001</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.2.0</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -68,9 +82,6 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/benchmarks_hal9001.html">Benchmarks for the `hal9001` Package</a>
-    </li>
-    <li>
       <a href="../articles/intro_hal9001.html">Introduction to the HAL estimator</a>
     </li>
   </ul>
@@ -85,6 +96,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -92,20 +104,24 @@
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Cross-validated LASSO on Indicator Bases</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jeremyrcoyle/hal9001/blob/master/R/cv_lasso.R'><code>R/cv_lasso.R</code></a></small>
+    <div class="hidden name"><code>cv_lasso.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Fits the LASSO regression using a customized procedure, with cross-validation
 based on origami</p>
     
+    </div>
 
-    <pre class="usage"><span class='fu'>cv_lasso</span>(<span class='no'>x_basis</span>, <span class='no'>y</span>, <span class='kw'>n_lambda</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
+    <pre class="usage"><span class='fu'>cv_lasso</span>(<span class='no'>x_basis</span>, <span class='no'>y</span>, <span class='kw'>n_lambda</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>center</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -129,6 +145,11 @@ LASSO to the full data. Cross-validation is used to select an optimal lambda
       <td><p>A <code>numeric</code> scalar for the number of folds to be used in
 the cross-validation procedure to select an optimal value of lambda.</p></td>
     </tr>
+    <tr>
+      <th>center</th>
+      <td><p>binary. If TRUE, covariates are centered. This is much slower,
+but closer to the glmnet implementation. Default FALSE.</p></td>
+    </tr>
     </table>
     
 
@@ -144,15 +165,18 @@ the cross-validation procedure to select an optimal value of lambda.</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jeremy Coyle, Nima Hejazi.</p>
+  <p>Developed by Jeremy Coyle, Nima Hejazi, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+
