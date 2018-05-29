@@ -20,17 +20,17 @@ loadModule("lassi_module", TRUE)
 #
 lassi <- function(x, y, lambdas = NULL, nlambda = 100,
                   lambda_min_ratio = 0.01, center = FALSE) {
-  if(!is.null(lambdas)){
+  if (!is.null(lambdas)) {
     nlambda <- length(lambdas)
   }
-  
+
   # initialize object
   lassi_object <- methods::new(Lassi, x, y, nlambda, lambda_min_ratio, center)
 
-  if(!is.null(lambdas)){
+  if (!is.null(lambdas)) {
     lassi_object$lambdas <- lambdas
   }
-  
+
   # initialize step counter
   step_counts <- rep(0, nlambda)
 
@@ -52,13 +52,17 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
     intercepts <- intercepts - crossprod(lassi_object$xcenter, beta_mat)
   }
 
-  chichignoud_criterion = NULL
+  chichignoud_criterion <- NULL
 
   # create output object
-  out <- list(beta_mat, intercepts, lambdas = lassi_object$lambdas,
-              step_counts, chichignoud_criterion)
-  names(out) <- c("beta_mat", "intercepts", "lambdas", "steps",
-                  "chichignoud_criterion")
+  out <- list(beta_mat, intercepts,
+    lambdas = lassi_object$lambdas,
+    step_counts, chichignoud_criterion
+  )
+  names(out) <- c(
+    "beta_mat", "intercepts", "lambdas", "steps",
+    "chichignoud_criterion"
+  )
   class(out) <- "lassi"
   return(out)
 }

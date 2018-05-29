@@ -14,26 +14,27 @@ test_x <- matrix(rnorm(test_n * p), test_n, p)
 test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(test_n, 0, 0.2)
 
 system.time({
-# generate design matrix for HAL
-basis_list <- hal9001:::enumerate_basis(x)
-x_basis <- hal9001:::make_design_matrix(x, basis_list)
-time_design_matrix <- proc.time()
+  # generate design matrix for HAL
+  basis_list <- hal9001:::enumerate_basis(x)
+  x_basis <- hal9001:::make_design_matrix(x, basis_list)
+  time_design_matrix <- proc.time()
 })
 
 system.time({
-# catalog and eliminate duplicates
-copy_map <- hal9001:::make_copy_map(x_basis)
-unique_columns <- as.numeric(names(copy_map))
-x_basis <- x_basis[, unique_columns]
+  # catalog and eliminate duplicates
+  copy_map <- hal9001:::make_copy_map(x_basis)
+  unique_columns <- as.numeric(names(copy_map))
+  x_basis <- x_basis[, unique_columns]
 })
 
 #################################################
 # use glmnet fit as reference
 system.time({
-glmnet_fit <- glmnet::glmnet(
-  x = x_basis, y = y, intercept = TRUE,
-  nlambda = 100, lambda.min.ratio = 0.01, family = "gaussian",
-  alpha = 1, standardize.response = FALSE, standardize = TRUE)
+  glmnet_fit <- glmnet::glmnet(
+    x = x_basis, y = y, intercept = TRUE,
+    nlambda = 100, lambda.min.ratio = 0.01, family = "gaussian",
+    alpha = 1, standardize.response = FALSE, standardize = TRUE
+  )
 })
 
 #################################################
@@ -54,7 +55,7 @@ cs_sd <- apply(xcenter_scaled, 2, sd) * sqrt((n - 1) / n) # bessel correction
 
 test_that("centering and scaling x works", {
   expect_lt(max(abs(cs_means)), 1e-8)
-  expect_lt(max(abs(cs_sd[cs_sd !=0 ] - 1)), 1e-8)
+  expect_lt(max(abs(cs_sd[cs_sd != 0 ] - 1)), 1e-8)
 })
 
 
@@ -82,7 +83,7 @@ test_that(
 
 #################################################
 # test a single coordinate descent update
-lassi_fit <- new(Lassi, x_basis,y, 100, 0.01, FALSE)
+lassi_fit <- new(Lassi, x_basis, y, 100, 0.01, FALSE)
 
 n <- length(y)
 i <- 1 # which beta to update (1 - indexed)
@@ -91,7 +92,7 @@ xscale_i <- lassi_fit$xscale[i]
 resid <- lassi_fit$resids
 
 ls_beta <- coef(lm(resid ~ xvar - 1)) * xscale_i
-#cd_beta <- mean(xvar/xscale_i * resid)
+# cd_beta <- mean(xvar/xscale_i * resid)
 
 lassi_fit$update_coord(i - 1, 0)
 beta_new <- lassi_fit$beta[i]
@@ -119,7 +120,7 @@ pred_x_basis <- hal9001:::apply_copy_map(pred_x_basis, copy_map)
 
 # lassi prediction and mses
 system.time({
-lassi_fit <- hal9001:::lassi(x_basis, y, center = FALSE)
+  lassi_fit <- hal9001:::lassi(x_basis, y, center = FALSE)
 })
 
 system.time({
@@ -128,20 +129,20 @@ system.time({
 
 pred_mat <- predict(lassi_fit, pred_x_basis)
 mses <- apply(pred_mat, 2, function(preds) {
-  mean((preds - test_y) ^ 2)
+  mean((preds - test_y)^2)
 })
 
 
 gpred_mat <- predict(glmnet_fit, pred_x_basis)
 gmses <- apply(gpred_mat, 2, function(preds) {
-  mean((preds - test_y) ^ 2)
+  mean((preds - test_y)^2)
 })
 
 test_that("lassi isn't doing much worse in terms of MSE", {
   expect_lt((min(mses) - min(gmses)) / min(gmses), 0.05)
 })
 
-#library(ggplot2)
-#combined = data.frame(lambda = seq_len(100), mse = c(mses, gmses),
+# library(ggplot2)
+# combined = data.frame(lambda = seq_len(100), mse = c(mses, gmses),
 #                      type = rep(c("lassi", "glmnet"), each = 100))
-#ggplot(combined, aes(x = lambda, y = mse, color = type)) + geom_line()
+# ggplot(combined, aes(x = lambda, y = mse, color = type)) + geom_line()

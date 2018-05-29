@@ -39,8 +39,10 @@ folds <- make_folds(n)
 fold_id <- origami:::folds2foldvec(folds)
 
 # just use the standard implementation available in glmnet
-lasso_glmnet <- glmnet::cv.glmnet(x = x_basis, y = y, nfolds = n_folds,
-                                  foldid = fold_id)
+lasso_glmnet <- glmnet::cv.glmnet(
+  x = x_basis, y = y, nfolds = n_folds,
+  foldid = fold_id
+)
 glmnet_nlambda <- length(lasso_glmnet$lambda)
 
 
@@ -88,7 +90,8 @@ lambdas_cvsd <- apply(cv_lasso_out$mses, 2, sd) / sqrt(n_folds)
 # find the maximum lambda among those 1 standard error above the minimum
 lambda_min_1se <- (lambdas_cvmse + lambdas_cvsd)[lambda_optim_index]
 lambda_1se_origami <- max(lambdas_init[lambdas_cvmse <= lambda_min_1se],
-                          na.rm = TRUE)
+  na.rm = TRUE
+)
 lambda_1se_index <- which.min(abs(lambdas_init - lambda_1se_origami))
 
 # create output object
@@ -130,16 +133,18 @@ lambda_minmse_cvglmnet_lassi <- lassi_glmnet$lambda.min
 lambda_1se_cvglmnet_lassi <- lassi_glmnet$lambda.1se
 coef_minmse_cvglmnet_lassi <- coef(lassi_glmnet, "lambda.min")
 coef_1se_cvglmnet_lassi <- coef(lassi_glmnet, "lambda.1se")
-betas_cvglmnet_lassi <- cbind(coef_1se_cvglmnet_lassi,
-                              coef_minmse_cvglmnet_lassi)
+betas_cvglmnet_lassi <- cbind(
+  coef_1se_cvglmnet_lassi,
+  coef_minmse_cvglmnet_lassi
+)
 
 ################################################################################
 # TEST THAT ORIGAMI AND CV-GLMNET IMPLEMENTATIONS MATCH
 ################################################################################
 test_that("lambda-min difference between cv.glmnet, cv_lasso within 0.5%.", {
-  expect_lte(lambda_minmse_origami-lambda_minmse_cvglmnet, lambda_minmse_cvglmnet*0.005)
+  expect_lte(lambda_minmse_origami - lambda_minmse_cvglmnet, lambda_minmse_cvglmnet * 0.005)
 })
 
 test_that("lambda-1se difference between cv.glmnet and cv_lasso within 1%.", {
-  expect_lte(lambda_minmse_origami-lambda_minmse_cvglmnet, lambda_minmse_cvglmnet*0.01)
+  expect_lte(lambda_minmse_origami - lambda_minmse_cvglmnet, lambda_minmse_cvglmnet * 0.01)
 })

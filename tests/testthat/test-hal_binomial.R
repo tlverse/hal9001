@@ -4,7 +4,7 @@ set.seed(45791)
 
 # easily compute MSE
 mse <- function(preds, y) {
-  mean((preds - y) ^ 2)
+  mean((preds - y)^2)
 }
 
 
@@ -39,7 +39,6 @@ test_that("MSE for logistic regression results is less than for null model", {
 oob_preds <- predict(ml_hal_fit, new_data = test_x)
 oob_ml_hal_mse <- mse(oob_preds, y = test_y)
 
-#test_that("MSE for logistic regression on test set is less than for nulll", {
-  #expect_lt(oob_ml_hal_mse, mse(rep(mean(test_y_prob), test_n), test_y))
-#})
-
+# test_that("MSE for logistic regression on test set is less than for nulll", {
+# expect_lt(oob_ml_hal_mse, mse(rep(mean(test_y_prob), test_n), test_y))
+# })

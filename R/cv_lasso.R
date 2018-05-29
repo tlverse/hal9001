@@ -12,7 +12,7 @@
 #'  all other columns. Consult the description of the HAL algorithm for details.
 #' @param lambdas A \code{numeric} vector corresponding to a sequence of lambda
 #'  values obtained by fitting the LASSO on the full data.
-#' @param center binary. If TRUE, covariates are centered. This is much slower, 
+#' @param center binary. If TRUE, covariates are centered. This is much slower,
 #'  but closer to the glmnet implementation.Default FALSE.
 #'
 #' @importFrom origami training validation fold_index
@@ -32,12 +32,16 @@ lassi_origami <- function(fold, data, lambdas, center = FALSE) {
   valid_y <- valid_data[, 1]
 
   # compute the predicted betas for the given training and validation sets
-  lassi_fit <- lassi(x = train_x_basis, y = train_y, lambdas = lambdas,
-                     center = center)
+  lassi_fit <- lassi(
+    x = train_x_basis, y = train_y, lambdas = lambdas,
+    center = center
+  )
   pred_mat <- predict(lassi_fit, valid_x_basis)
 
   # compute the MSE for the given training and validation sets
-  mses <- apply(pred_mat, 2, function(preds) {mean((preds  - valid_y)^2)})
+  mses <- apply(pred_mat, 2, function(preds) {
+    mean((preds - valid_y)^2)
+  })
 
   # the only output needed is the lambda-wise MSE over each fold
   mses_out <- matrix(mses, nrow = 1)
@@ -61,7 +65,7 @@ lassi_origami <- function(fold, data, lambdas, center = FALSE) {
 #'  (that minimizes the risk) from among these.
 #' @param n_folds A \code{numeric} scalar for the number of folds to be used in
 #'  the cross-validation procedure to select an optimal value of lambda.
-#' @param center binary. If TRUE, covariates are centered. This is much slower, 
+#' @param center binary. If TRUE, covariates are centered. This is much slower,
 #'  but closer to the glmnet implementation. Default FALSE.
 #' @importFrom origami make_folds cross_validate
 #' @importFrom stats sd
@@ -115,7 +119,9 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10, center = FALSE) {
 
   # create output object
   cv_lasso_out <- list(betas_out, lambda_minmse, lambda_1se, lambdas_cvmse)
-  names(cv_lasso_out) <- c("betas_mat", "lambda_min", "lambda_1se",
-                           "lambdas_cvmse")
+  names(cv_lasso_out) <- c(
+    "betas_mat", "lambda_min", "lambda_1se",
+    "lambdas_cvmse"
+  )
   return(cv_lasso_out)
 }

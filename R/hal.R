@@ -30,7 +30,7 @@
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
 #'  standard general linear model and "binomial" for logistic regression.
 #' @param return_lasso A \code{boolean} indicating whether or not to return
-#' the HAL lasso fit. 
+#' the HAL lasso fit.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically acclaimed
 #'  epic science-fiction film "2001: A Space Odyssey" (1968).
@@ -53,7 +53,7 @@ fit_hal <- function(X,
                     n_folds = 10,
                     use_min = TRUE,
                     family = c("gaussian", "binomial"),
-                    return_lasso = FALSE, 
+                    return_lasso = FALSE,
                     ...,
                     yolo = TRUE) {
 
@@ -147,7 +147,7 @@ fit_hal <- function(X,
     family = family,
     hal_lasso = NULL
   )
-  if(return_lasso){
+  if (return_lasso) {
     fit$hal_lasso <- hal_lasso
   }
   class(fit) <- "hal9001"

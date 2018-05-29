@@ -52,21 +52,21 @@ SL.hal9001 <- function(Y,
   }
 
   if (family$family == "gaussian") {
-      # fit HAL
-      hal_out <- fit_hal(
-        Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
-        n_folds = n_folds, use_min = use_min, family = "gaussian",
-        yolo = FALSE
-      )
+    # fit HAL
+    hal_out <- fit_hal(
+      Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
+      n_folds = n_folds, use_min = use_min, family = "gaussian",
+      yolo = FALSE
+    )
   }
 
   if (family$family == "binomial") {
-      # fit HAL with logistic regression
-      hal_out <- fit_hal(
-        Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
-        n_folds = n_folds, use_min = use_min, family = "binomial",
-        yolo = FALSE
-      )
+    # fit HAL with logistic regression
+    hal_out <- fit_hal(
+      Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
+      n_folds = n_folds, use_min = use_min, family = "binomial",
+      yolo = FALSE
+    )
   }
 
   # compute predictions based on `newX` or input `X`
@@ -109,4 +109,3 @@ predict.SL.hal9001 <- function(object, newdata, ...) {
   pred <- stats::predict(object$object, new_data = newdata_in)
   return(pred)
 }
-
