@@ -39,10 +39,22 @@ SL.hal9001 <- function(Y,
                        family = stats::gaussian(),
                        obsWeights = rep(1, length(Y)),
                        ...) {
+  # create matrix version of X and newX for use with hal9001::fit_hal
+  if (!is.matrix(X)) {
+    X_in <- as.matrix(X)
+  } else {
+    X_in <- X
+  }
+  if (!is.null(newX) & !is.matrix(newX)) {
+    newX_in <- as.matrix(newX)
+  } else {
+    newX_in <- newX
+  }
+
   if (family$family == "gaussian") {
       # fit HAL
       hal_out <- fit_hal(
-        Y = Y, X = X, degrees = degrees, fit_type = fit_type,
+        Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
         n_folds = n_folds, use_min = use_min, family = "gaussian",
         yolo = FALSE
       )
@@ -51,7 +63,7 @@ SL.hal9001 <- function(Y,
   if (family$family == "binomial") {
       # fit HAL with logistic regression
       hal_out <- fit_hal(
-        Y = Y, X = X, degrees = degrees, fit_type = fit_type,
+        Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
         n_folds = n_folds, use_min = use_min, family = "binomial",
         yolo = FALSE
       )
@@ -59,9 +71,9 @@ SL.hal9001 <- function(Y,
 
   # compute predictions based on `newX` or input `X`
   if (!is.null(newX)) {
-    pred <- stats::predict(object = hal_out, new_data = newX)
+    pred <- stats::predict(hal_out, new_data = newX_in)
   } else {
-    pred <- stats::predict(object = hal_out, new_data = X)
+    pred <- stats::predict(hal_out, new_data = X_in)
   }
 
   # build output object
@@ -78,15 +90,23 @@ SL.hal9001 <- function(Y,
 #' Predict method for objects of class \code{SL.hal9001}
 #'
 #' @param object A fitted object of class \code{hal9001}.
-#' @param newX A matrix of new observations on which to obtain predictions.
+#' @param newdata A matrix of new observations on which to obtain predictions.
 #' @param ... Prevents process death. DON'T USE. (THIS IS AN UGLY HACK.)
 #'
 #' @importFrom stats predict
 #'
 #' @export
 #
-predict.SL.hal9001 <- function(object, newX, ...) {
+predict.SL.hal9001 <- function(object, newdata, ...) {
+  # coerce newdata to matrix if not already so
+  if (!is.matrix(newdata)) {
+    newdata_in <- as.matrix(newdata)
+  } else {
+    newdata_in <- newdata
+  }
+
   # generate predictions and return
-  pred <- stats::predict(object$object, new_data = newX)
+  pred <- stats::predict(object$object, new_data = newdata_in)
   return(pred)
 }
+
