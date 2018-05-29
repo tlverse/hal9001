@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>HAL 9000 Quotes — hal9000 • hal9001</title>
+<title>Fast Coercion to Sparse Matrix — as_dgCMatrix • hal9001</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,11 @@
 
 
 
-<meta property="og:title" content="HAL 9000 Quotes — hal9000" />
+<meta property="og:title" content="Fast Coercion to Sparse Matrix — as_dgCMatrix" />
 
-<meta property="og:description" content="Prints a quote from the HAL 9000 robot from 2001: A Space Odyssey" />
+<meta property="og:description" content="Fast and efficient coercion of standard matrix objects to sparse matrices.
+Borrowed from http://gallery.rcpp.org/articles/sparse-matrix-coercion/.
+INTERNAL USE ONLY." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -106,25 +108,44 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>HAL 9000 Quotes</h1>
-    <small class="dont-index">Source: <a href='https://github.com/jeremyrcoyle/hal9001/blob/master/R/hal9000.R'><code>R/hal9000.R</code></a></small>
-    <div class="hidden name"><code>hal9000.Rd</code></div>
+    <h1>Fast Coercion to Sparse Matrix</h1>
+    <small class="dont-index">Source: <a href='https://github.com/jeremyrcoyle/hal9001/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
+    <div class="hidden name"><code>as_dgCMatrix.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Prints a quote from the HAL 9000 robot from 2001: A Space Odyssey</p>
+    <p>Fast and efficient coercion of standard matrix objects to sparse matrices.
+Borrowed from http://gallery.rcpp.org/articles/sparse-matrix-coercion/.
+INTERNAL USE ONLY.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>hal9000</span>()</pre>
-        
+    <pre class="usage"><span class='fu'>as_dgCMatrix</span>(<span class='no'>XX_</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>XX_</th>
+      <td><p>An object of class <code>Matrix</code> that has a sparse structure
+suitable for coercion to a sparse matrix format of <code>dgCMatrix</code>.</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>An object of class <code>dgCMatrix</code>, coerced from input <code>XX_</code>.</p>
+    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-                </ul>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+          </ul>
 
   </div>
 </div>
