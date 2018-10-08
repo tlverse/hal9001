@@ -54,6 +54,7 @@ fit_hal <- function(X,
                     use_min = TRUE,
                     family = c("gaussian", "binomial"),
                     return_lasso = FALSE,
+                    basis_list = NULL,
                     ...,
                     yolo = TRUE) {
 
@@ -80,7 +81,9 @@ fit_hal <- function(X,
   time_start <- proc.time()
 
   # make design matrix for HAL
-  basis_list <- enumerate_basis(X, degrees)
+  if (is.null(basis_list)) {
+    basis_list <- enumerate_basis(X, degrees)
+  }
   x_basis <- make_design_matrix(X, basis_list)
   time_design_matrix <- proc.time()
 
