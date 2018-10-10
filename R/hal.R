@@ -31,11 +31,12 @@
 #'  standard general linear model and "binomial" for logistic regression.
 #' @param return_lasso A \code{boolean} indicating whether or not to return
 #' the HAL lasso fit.
+#' @param basis_list TO BE DOCUMENTED.
+#' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
+#'  documentation for \code{glmnet} for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically acclaimed
 #'  epic science-fiction film "2001: A Space Odyssey" (1968).
-#' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
-#'  documentation for \code{glmnet} for a full list of options.
 #'
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats coef

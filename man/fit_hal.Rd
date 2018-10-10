@@ -6,7 +6,7 @@
 \usage{
 fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
   n_folds = 10, use_min = TRUE, family = c("gaussian", "binomial"),
-  return_lasso = FALSE, ..., yolo = TRUE)
+  return_lasso = FALSE, basis_list = NULL, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -38,6 +38,8 @@ standard general linear model and "binomial" for logistic regression.}
 
 \item{return_lasso}{A \code{boolean} indicating whether or not to return
 the HAL lasso fit.}
+
+\item{basis_list}{TO BE DOCUMENTED.}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}

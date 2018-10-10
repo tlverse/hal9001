@@ -18,3 +18,4 @@
 ^LICENSE$
 ^sandbox$
 ^docs$
+^_pkgdown\.yml$

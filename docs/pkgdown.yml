@@ -1,6 +1,9 @@
 pandoc: 2.2.1
-pkgdown: 1.0.0
+pkgdown: 1.1.0
 pkgdown_sha: ~
 articles:
   intro_hal9001: intro_hal9001.html
+urls:
+  reference: https://hal9001.tlverse.org/reference
+  article: https://hal9001.tlverse.org/articles
 

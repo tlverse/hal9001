@@ -2,7 +2,7 @@ Package: hal9001
 Title: The Scalable Highly Adaptive Lasso
 Version: 0.2.0
 Authors@R: c(
-  person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
+  person("Jeremy", "Coyle", email = "tlverse@gmail.com",
          role = c("aut", "cre"),
          comment = c(ORCID = "0000-0002-9874-6649")),
   person("Nima", "Hejazi", email = "nh@nimahejazi.org",
@@ -14,7 +14,8 @@ Authors@R: c(
   person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com",
          role = "ctb"),
   person("Mark", "van der Laan", email = "laan@berkeley.edu",
-         role = c("aut", "cph", "ths"))
+         role = c("aut", "cph", "ths"),
+         comment = c(ORCID = "0000-0003-1432-5511"))
   )
 Description: Routines for constructing sparse matrices of basis functions, as
   well as a custom implementation of L1-regularized regression (i.e. the LASSO),
@@ -25,8 +26,8 @@ Depends:
   R (>= 3.1.0),
   Rcpp
 License: GPL-3
-URL: https://github.com/jeremyrcoyle/hal9001
-BugReports: https://github.com/jeremyrcoyle/hal9001/issues
+URL: https://github.com/tlverse/hal9001
+BugReports: https://github.com/tlverse/hal9001/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -60,4 +61,4 @@ Remotes:
   github::Rdatatable/data.table,
   github::benkeser/halplus
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.1.0.9000
