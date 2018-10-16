@@ -46,7 +46,6 @@
 #'
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats coef
-#' @importFrom assertthat assert_that
 #'
 #' @return Object of class \code{hal9001}, containing a list of basis functions,
 #'  a copy map, coefficients estimated for basis functions, and timing results
@@ -105,10 +104,8 @@ fit_hal <- function(X,
 
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
   if (!is.null(reduce_basis) && is.numeric(reduce_basis)) {
-    assertthat::assert_that(reduce_basis < 1 && reduce_basis > 0)
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
-    reduced_basis_columns <- as.numeric(names(reduced_basis_map))
-    x_basis <- x_basis[, reduced_basis_columns]
+    x_basis <- x_basis[, reduced_basis_map]
   }
 
   # bookkeeping: get end time of basis reduction procedure

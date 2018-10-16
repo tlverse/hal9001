@@ -71,18 +71,56 @@ head(y)
 library(hal9001)
 ```
 
-### Fitting the model
+### Fitting the HAL model: "lassi"
 
-```{r fit-hal}
-hal_fit <- fit_hal(X = x, Y = y, fit_type = "lassi")
-hal_fit$times
+Our custom implementation of the Lasso has been dubbed _lassi_. For the purposes
+of HAL, it is faster than using the standard `glmnet` approach, but it is not
+yet available for generalized linear models (i.e., iteratively re-weighted least
+squares has not yet been implemented).
+
+```{r fit-hal-lassi}
+hal_fit1 <- fit_hal(X = x, Y = y, fit_type = "lassi")
+hal_fit1$times
 ```
 
-```{r results-hal}
-hal_fit
+```{r results-hal-lassi}
+hal_fit1
 ```
 
-...
+### Fitting the model: `glmnet`
+
+HAL may also be fit through a call to the popular `glmnet` R package:
+
+```{r fit-hal-glmnet}
+hal_fit2 <- fit_hal(X = x, Y = y, fit_type = "glmnet")
+hal_fit2$times
+```
+
+```{r results-hal-glmnet}
+hal_fit2
+```
+
+### Reducing basis functions
+
+As described in @benkeser2016hal, the HAL algorithm operates by first
+constructing a set of basis functions and subsequently fitting a Lasso model
+with this set of basis functions as the design matrix. Several approaches are
+considered for reducing this set of basis functions:
+1. Removing duplicated basis functions (done by default in the `fit_hal`
+   function),
+2. Removing basis functions that correspond to only a small set of observations.
+
+The second of these two options may be invoked by specifying the `reduce_basis`
+argument to the `fit_hal` function:
+
+```{r fit-hal-reduced}
+hal_fit3 <- fit_hal(X = x, Y = y, fit_type = "lassi", reduce_basis = 0.2)
+hal_fit3$times
+```
+
+In the above, all basis functions with fewer than 20% of observations meeting
+the criterion imposed are automatically removed prior to the Lasso step of
+fitting the HAL regression.
 
 ### Obtaining model predictions
 
@@ -92,13 +130,13 @@ mse <- function(preds, y) {
     mean((preds - y)^2)
 }
 
-preds_hal <- predict(object = hal_fit, new_data = x)
+preds_hal <- predict(object = hal_fit1, new_data = x)
 mse_hal <- mse(preds = preds_hal, y = y)
 mse_hal
 ```
 
 ```{r eval-oob}
-oob_hal <- predict(object = hal_fit, new_data = test_x)
+oob_hal <- predict(object = hal_fit1, new_data = test_x)
 oob_hal_mse <- mse(preds = oob_hal, y = test_y)
 oob_hal_mse
 ```
