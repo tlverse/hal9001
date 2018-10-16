@@ -1,5 +1,5 @@
 ---
-title: "Introduction to the HAL estimator"
+title: "Fitting the Highly Adaptive Lasso with `hal9001`"
 author: "[Nima Hejazi](https://nimahejazi.org) and [Jeremy
   Coyle](https://github.com/jeremyrcoyle)"
 date: "`r Sys.Date()`"
