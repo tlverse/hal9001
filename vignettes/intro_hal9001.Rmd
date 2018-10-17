@@ -108,19 +108,25 @@ with this set of basis functions as the design matrix. Several approaches are
 considered for reducing this set of basis functions:
 1. Removing duplicated basis functions (done by default in the `fit_hal`
    function),
-2. Removing basis functions that correspond to only a small set of observations.
+2. Removing basis functions that correspond to only a small set of observations;
+   a good rule of thumb is to scale with $\frac{1}{\sqrt{n}}$.
 
 The second of these two options may be invoked by specifying the `reduce_basis`
 argument to the `fit_hal` function:
 
 ```{r fit-hal-reduced}
-hal_fit3 <- fit_hal(X = x, Y = y, fit_type = "lassi", reduce_basis = 0.2)
+hal_fit3 <- fit_hal(X = x, Y = y, fit_type = "lassi",
+                    reduce_basis = 1/sqrt(length(y)))
 hal_fit3$times
 ```
 
-In the above, all basis functions with fewer than 20% of observations meeting
-the criterion imposed are automatically removed prior to the Lasso step of
-fitting the HAL regression.
+In the above, all basis functions with fewer than `r 1/sqrt(length(y)) * 100`%
+of observations meeting the criterion imposed are automatically removed prior to
+the Lasso step of fitting the HAL regression. The results appear below
+
+```{r results-hal-reduced}
+hal_fit3
+```
 
 ### Obtaining model predictions
 
