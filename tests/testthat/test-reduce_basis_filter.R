@@ -31,9 +31,3 @@ test_that("Basis reduction passes fewer beta estimates to the lasso model", {
   expect_lt(coef_hal_reduced, coef_hal_full)
 })
 
-test_that("Basis reduction has non-zero time when invoked", {
-  time_hal_reduced <- hal_fit_reduced$times[3, ]
-  time_hal_full <- hal_fit_full$times[3, ]
-  expect_lt(sum(time_hal_full), sum(time_hal_reduced))
-  expect_equal(sum(time_hal_full), 0)
-})
