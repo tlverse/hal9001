@@ -152,10 +152,10 @@
 <pre><code>## [1] "Good afternoon... gentlemen. I am a HAL 9000... computer. I became operational at the H.A.L. plant in Urbana, Illinois... on the 12th of January 1992. My instructor was Mr. Langley... and he taught me to sing a song. If you'd like to hear it I can sing it for you."</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">hal_fit1<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.144    0.036   0.180          0         0
-## remove_duplicates     0.204    0.008   0.211          0         0
-## lasso                 5.493    0.055   5.550          0         0
-## total                 5.841    0.099   5.941          0         0</code></pre>
+## design_matrix         0.127    0.012   0.139          0         0
+## remove_duplicates     0.178    0.005   0.183          0         0
+## lasso                 5.183    0.049   5.233          0         0
+## total                 5.488    0.066   5.555          0         0</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">hal_fit1</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "lassi")
@@ -78085,10 +78085,10 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.144    0.036   0.180          0         0
-## remove_duplicates     0.204    0.008   0.211          0         0
-## lasso                 5.493    0.055   5.550          0         0
-## total                 5.841    0.099   5.941          0         0
+## design_matrix         0.127    0.012   0.139          0         0
+## remove_duplicates     0.178    0.005   0.183          0         0
+## lasso                 5.183    0.049   5.233          0         0
+## total                 5.488    0.066   5.555          0         0
 ## 
 ## $lambda_star
 ## [1] 0.003135347
@@ -78111,10 +78111,10 @@
 <pre><code>## [1] "I've just picked up a fault in the AE35 unit. It's going to go 100% failure in 72 hours."</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">hal_fit2<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.159    0.000   0.160          0         0
-## remove_duplicates     0.028    0.000   0.027          0         0
-## lasso                11.465    0.024  11.495          0         0
-## total                11.652    0.024  11.682          0         0</code></pre>
+## design_matrix         0.111    0.000   0.111          0         0
+## remove_duplicates     0.020    0.000   0.020          0         0
+## lasso                 9.926    0.048   9.974          0         0
+## total                10.057    0.048  10.105          0         0</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">hal_fit2</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "glmnet")
@@ -161103,10 +161103,10 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.159    0.000   0.160          0         0
-## remove_duplicates     0.028    0.000   0.027          0         0
-## lasso                11.465    0.024  11.495          0         0
-## total                11.652    0.024  11.682          0         0
+## design_matrix         0.111    0.000   0.111          0         0
+## remove_duplicates     0.020    0.000   0.020          0         0
+## lasso                 9.926    0.048   9.974          0         0
+## total                10.057    0.048  10.105          0         0
 ## 
 ## $lambda_star
 ## [1] 0.004955143
@@ -161130,10 +161130,10 @@
 <pre><code>## [1] "Just what do you think you're doing, Dave?"</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">hal_fit3<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.121    0.000   0.121          0         0
-## remove_duplicates     0.022    0.000   0.021          0         0
-## lasso                 5.098    0.012   5.111          0         0
-## total                 5.241    0.012   5.253          0         0</code></pre>
+## design_matrix         0.126    0.000   0.126          0         0
+## remove_duplicates     0.022    0.000   0.022          0         0
+## lasso                 6.069    0.016   6.085          0         0
+## total                 6.217    0.016   6.233          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 3.1622777% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">hal_fit3</a></code></pre></div>
 <pre><code>## $call
@@ -239064,10 +239064,10 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.121    0.000   0.121          0         0
-## remove_duplicates     0.022    0.000   0.021          0         0
-## lasso                 5.098    0.012   5.111          0         0
-## total                 5.241    0.012   5.253          0         0
+## design_matrix         0.126    0.000   0.126          0         0
+## remove_duplicates     0.022    0.000   0.022          0         0
+## lasso                 6.069    0.016   6.085          0         0
+## total                 6.217    0.016   6.233          0         0
 ## 
 ## $lambda_star
 ## [1] 0.002992841

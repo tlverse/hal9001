@@ -27,6 +27,6 @@ make_reduced_basis_map <- function(x_basis, reduce_basis_crit) {
 
   # filter over the matrix of basis functions
   basis_filled_prop <- get_pnz(x_basis)
-  reduced_basis_col_ind <- as.numeric(basis_filled_prop > reduce_basis_crit)
+  reduced_basis_col_ind <- which(basis_filled_prop > reduce_basis_crit)
   return(reduced_basis_col_ind)
 }
