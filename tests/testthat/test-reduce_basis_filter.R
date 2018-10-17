@@ -1,30 +1,17 @@
-context("Does basis function reduction perform as expected?")
+context("Unit test for elementary basis function reduction procedure.")
 set.seed(45791)
 
-# easily compute MSE
-mse <- function(preds, y) {
-  mean((preds - y)^2)
-}
-
-
 # generate simple test data
-n <- 1000
+n <- 200
 p <- 4
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
-test_n <- 10000
-test_x <- matrix(rnorm(test_n * p), test_n, p)
-test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(
-  test_n,
-  mean = 0,
-  sd = 0.2
-)
-
 # hal9001 implementation without basis function reduction
 hal_fit_full <- fit_hal(
   X = x, Y = y, fit_type = "lassi",
-  return_lasso = TRUE
+  return_lasso = TRUE,
+  yolo = FALSE
 )
 hal_fit_full$times
 
@@ -32,7 +19,8 @@ hal_fit_full$times
 hal_fit_reduced <- fit_hal(
   X = x, Y = y, fit_type = "lassi",
   return_lasso = TRUE,
-  reduce_basis = 1 / sqrt(length(y))
+  reduce_basis = 1 / sqrt(n),
+  yolo = FALSE
 )
 hal_fit_reduced$times
 

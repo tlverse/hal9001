@@ -24,7 +24,7 @@ stopifnot(max(test_y_prob) <= 1 && min(test_y_prob) >= 0)
 test_y <- rbinom(n = test_n, size = 1, prob = y_prob)
 
 # ml implementation
-ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial")
+ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
 ml_hal_fit$times
 
 # training sample prediction

@@ -51,7 +51,7 @@ coefs <- coef(halres$object, "lambda.min")
 # hal9001 with default arguments
 # fold_id <- sample(1:10,length(Y),replace=T)
 set.seed(1234) # attempt to control randomness in cv.glmnet fold generation
-halres9001 <- fit_hal(Y = Y, X = X)
+halres9001 <- fit_hal(Y = Y, X = X, yolo = FALSE)
 pred9001 <- predict(halres9001, new_data = testdata)
 
 mean((pred - testY)^2)
