@@ -2,11 +2,12 @@
 % Please edit documentation in R/hal.R
 \name{fit_hal}
 \alias{fit_hal}
-\title{HAL: The Highly Adaptive LASSO estimator}
+\title{HAL: The Highly Adaptive Lasso}
 \usage{
 fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
-  n_folds = 10, use_min = TRUE, family = c("gaussian", "binomial"),
-  return_lasso = FALSE, basis_list = NULL, ..., yolo = TRUE)
+  n_folds = 10, use_min = TRUE, reduce_basis = NULL,
+  family = c("gaussian", "binomial"), return_lasso = FALSE,
+  basis_list = NULL, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -31,6 +32,13 @@ v-fold cross-validation.}
 \item{use_min}{Determines which lambda is selected from \code{cv.glmnet}.
 \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 to \code{"lambda.1se"}.}
+
+\item{reduce_basis}{A \code{numeric} value bounded in the open interval (0,1)
+indicating the minimum proportion of 1's in a basis function column needed
+for the basis function to be included in the procedure to fit the Lasso. Any
+basis functions with a lower proportion of 1's than the specified cutoff
+will be removed. This argument defaults to \code{NULL}, in which case all
+basis functions are used in the lasso-fitting stage of the HAL algorithm.}
 
 \item{family}{A \code{character} corresponding to the error family for a
 generalized linear model. Options are limited to "gaussian" for fitting a

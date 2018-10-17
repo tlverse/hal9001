@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Single LASSO estimation for cross-validation with Origami — lassi_origami • hal9001</title>
+<title>Single Lasso estimation for cross-validation with Origami — lassi_origami • hal9001</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Single LASSO estimation for cross-validation with Origami — lassi_origami" />
+<meta property="og:title" content="Single Lasso estimation for cross-validation with Origami — lassi_origami" />
 
-<meta property="og:description" content="Fits the LASSO regression over a single fold of a cross-validated data set.
+<meta property="og:description" content="Fits the Lasso regression over a single fold of a cross-validated data set.
 This is meant to be called using cross_validate from the
 origami package, which is done through cv_lasso. Note that this
 procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
@@ -113,14 +113,14 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Single LASSO estimation for cross-validation with Origami</h1>
+    <h1>Single Lasso estimation for cross-validation with Origami</h1>
     <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/cv_lasso.R'><code>R/cv_lasso.R</code></a></small>
     <div class="hidden name"><code>lassi_origami.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Fits the LASSO regression over a single fold of a cross-validated data set.
+    <p>Fits the Lasso regression over a single fold of a cross-validated data set.
 This is meant to be called using <code>cross_validate</code> from the
 <code>origami</code> package, which is done through <code>cv_lasso</code>. Note that this
 procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.</p>
@@ -146,12 +146,12 @@ all other columns. Consult the description of the HAL algorithm for details.</p>
     <tr>
       <th>lambdas</th>
       <td><p>A <code>numeric</code> vector corresponding to a sequence of lambda
-values obtained by fitting the LASSO on the full data.</p></td>
+values obtained by fitting the Lasso on the full data.</p></td>
     </tr>
     <tr>
       <th>center</th>
-      <td><p>binary. If TRUE, covariates are centered. This is much slower,
-but closer to the glmnet implementation.Default FALSE.</p></td>
+      <td><p>binary. If <code>TRUE</code>, covariates are centered. This is much
+slower, but matches the <code>glmnet</code> implementation. Default <code>FALSE</code>.</p></td>
     </tr>
     </table>
     

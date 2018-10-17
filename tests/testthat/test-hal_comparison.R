@@ -28,7 +28,7 @@ classic_hal_fit <- hal::hal(Y = y, X = x, verbose = FALSE)
 classic_hal_fit$times
 
 # hal9001 implementation
-hal_fit <- fit_hal(X = x, Y = y)
+hal_fit <- fit_hal(X = x, Y = y, yolo = FALSE)
 hal_fit$times
 
 # training sample prediction

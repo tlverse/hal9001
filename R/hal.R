@@ -1,4 +1,4 @@
-#' HAL: The Highly Adaptive LASSO estimator
+#' HAL: The Highly Adaptive Lasso
 #'
 #' Estimation procedure for HAL, the Highly Adaptive LASSO
 #'
@@ -26,6 +26,12 @@
 #' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
 #'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 #'  to \code{"lambda.1se"}.
+#' @param reduce_basis A \code{numeric} value bounded in the open interval (0,1)
+#'  indicating the minimum proportion of 1's in a basis function column needed
+#'  for the basis function to be included in the procedure to fit the Lasso. Any
+#'  basis functions with a lower proportion of 1's than the specified cutoff
+#'  will be removed. This argument defaults to \code{NULL}, in which case all
+#'  basis functions are used in the lasso-fitting stage of the HAL algorithm.
 #' @param family A \code{character} corresponding to the error family for a
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
 #'  standard general linear model and "binomial" for logistic regression.
@@ -53,6 +59,7 @@ fit_hal <- function(X,
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     use_min = TRUE,
+                    reduce_basis = NULL,
                     family = c("gaussian", "binomial"),
                     return_lasso = FALSE,
                     basis_list = NULL,
@@ -64,7 +71,7 @@ fit_hal <- function(X,
   fit_type <- match.arg(fit_type)
   family <- match.arg(family)
 
-  # NOT supporting binomial outcomes with lassi method currently
+  # NOTE: NOT supporting binomial outcomes with lassi method currently
   if (fit_type == "lassi" && family == "binomial") {
     stop("For binary outcomes, please set argument 'fit_type' to 'glmnet'.")
   }
@@ -74,8 +81,7 @@ fit_hal <- function(X,
     X <- as.matrix(X)
   }
 
-  # FUN: quotes from HAL 9000
-  # note: this is the robot from the classic film "2001: A Space Odyssey"
+  # FUN: quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
   if (yolo) hal9000()
 
   # bookkeeping: get start time of duplicate removal procedure
@@ -95,6 +101,15 @@ fit_hal <- function(X,
 
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
+
+  # NOTE: keep only basis functions with some (or higher) proportion of 1's
+  if (!is.null(reduce_basis) && is.numeric(reduce_basis)) {
+    reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
+    x_basis <- x_basis[, reduced_basis_map]
+  }
+
+  # bookkeeping: get end time of basis reduction procedure
+  time_reduce_basis <- proc.time()
 
   # fit LASSO regression
   if (fit_type == "lassi") {
@@ -136,6 +151,7 @@ fit_hal <- function(X,
   times <- rbind(
     design_matrix = time_design_matrix - time_start,
     remove_duplicates = time_rm_duplicates - time_design_matrix,
+    reduce_basis = time_reduce_basis - time_rm_duplicates,
     lasso = time_lasso - time_rm_duplicates,
     total = time_final - time_start
   )
@@ -149,11 +165,12 @@ fit_hal <- function(X,
     times = times,
     lambda_star = lambda_star,
     family = family,
-    hal_lasso = NULL
+    hal_lasso = if (return_lasso) {
+      hal_lasso
+    } else {
+      NULL
+    }
   )
-  if (return_lasso) {
-    fit$hal_lasso <- hal_lasso
-  }
   class(fit) <- "hal9001"
   return(fit)
 }

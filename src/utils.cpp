@@ -64,7 +64,7 @@ NumericVector get_pnz(const MSpMat& X) {
   IntegerVector nz = non_zeros(X);
   int n = X.rows();
   NumericVector pnz = as<NumericVector>(nz)/n;
-  
+
   return(pnz);
 }
 //------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ NumericVector not_dumb_sqrt(const NumericVector& x){
   for(int i=0; i<x.length(); i++){
     res[i] = std::sqrt(x[i]);
   }
-  
+
   return(res);
 }
 
