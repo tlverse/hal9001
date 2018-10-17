@@ -22,12 +22,11 @@
 #' @keywords internal
 #
 make_reduced_basis_map <- function(x_basis, reduce_basis_crit) {
-    # check that the provided option is a proportion
-    assertthat::assert_that(reduce_basis_crit < 1 && reduce_basis_crit > 0)
+  # check that the provided option is a proportion
+  assertthat::assert_that(reduce_basis_crit < 1 && reduce_basis_crit > 0)
 
-    # filter over the matrix of basis functions
-    basis_filled_prop <- apply(x_basis, 2, sum) / nrow(x_basis)
-    reduced_basis_col_ind <- as.numeric(basis_filled_prop > reduce_basis_crit)
-    return(reduced_basis_col_ind)
+  # filter over the matrix of basis functions
+  basis_filled_prop <- apply(x_basis, 2, sum) / nrow(x_basis)
+  reduced_basis_col_ind <- as.numeric(basis_filled_prop > reduce_basis_crit)
+  return(reduced_basis_col_ind)
 }
-

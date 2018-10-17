@@ -165,7 +165,11 @@ fit_hal <- function(X,
     times = times,
     lambda_star = lambda_star,
     family = family,
-    hal_lasso = if(return_lasso) {hal_lasso} else {NULL}
+    hal_lasso = if (return_lasso) {
+      hal_lasso
+    } else {
+      NULL
+    }
   )
   class(fit) <- "hal9001"
   return(fit)

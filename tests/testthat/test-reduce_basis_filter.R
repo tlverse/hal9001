@@ -22,14 +22,18 @@ test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(
 )
 
 # hal9001 implementation without basis function reduction
-hal_fit_full <- fit_hal(X = x, Y = y, fit_type = "lassi",
-                        return_lasso = TRUE)
+hal_fit_full <- fit_hal(
+  X = x, Y = y, fit_type = "lassi",
+  return_lasso = TRUE
+)
 hal_fit_full$times
 
 # hal9001 implementation without basis function reduction
-hal_fit_reduced <- fit_hal(X = x, Y = y, fit_type = "lassi",
-                           return_lasso = TRUE,
-                           reduce_basis = 1/sqrt(length(y)))
+hal_fit_reduced <- fit_hal(
+  X = x, Y = y, fit_type = "lassi",
+  return_lasso = TRUE,
+  reduce_basis = 1 / sqrt(length(y))
+)
 hal_fit_reduced$times
 
 # TEST: reduced HAL object contains fewer lasso coefficients than full object
@@ -45,4 +49,3 @@ test_that("Basis reduction has non-zero time when invoked", {
   expect_lt(sum(time_hal_full), sum(time_hal_reduced))
   expect_equal(sum(time_hal_full), 0)
 })
-

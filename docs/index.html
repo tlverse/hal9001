@@ -141,10 +141,10 @@ install.packages("hal9001")
 <a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; [1] "Look Dave, I can see you're really upset about this. I honestly think you ought to sit down calmly, take a stress pill, and think things over."</span></a>
 <a class="sourceLine" id="cb2-16" data-line-number="16">hal_fit<span class="op">$</span>times</a>
 <a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; design_matrix         0.003    0.000   0.002          0         0</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; remove_duplicates     0.004    0.000   0.005          0         0</span></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; lasso                 0.316    0.004   0.321          0         0</span></a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; total                 0.323    0.004   0.328          0         0</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; design_matrix         0.002    0.000   0.003          0         0</span></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; remove_duplicates     0.005    0.000   0.004          0         0</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; lasso                 0.297    0.012   0.310          0         0</span></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; total                 0.304    0.012   0.317          0         0</span></a>
 <a class="sourceLine" id="cb2-22" data-line-number="22"></a>
 <a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co"># training sample prediction</span></a>
 <a class="sourceLine" id="cb2-24" data-line-number="24">preds &lt;-<span class="st"> </span><span class="kw">predict</span>(hal_fit, <span class="dt">new_data =</span> x)</a>

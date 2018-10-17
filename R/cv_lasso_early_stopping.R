@@ -50,13 +50,16 @@ cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   }
 
   all_fold_data <- cross_validate(setup_fold_data, folds, x_basis, y,
-                                  .combine = FALSE)$fold_data
+    .combine = FALSE
+  )$fold_data
 
   cv_lassi_step <- function(fold, all_fold_data, lambda) {
     fold_data <- fold_index(all_fold_data)[[1]]
-    n_updates <- with(fold_data, fit_lassi_step(x_train, resid, beta, lambda,
-                                                xscale, xcenter, intercept,
-                                                FALSE))
+    n_updates <- with(fold_data, fit_lassi_step(
+      x_train, resid, beta, lambda,
+      xscale, xcenter, intercept,
+      FALSE
+    ))
     preds <- with(fold_data, as.vector(x_valid %*% (beta / xscale)) + intercept)
     mse <- with(fold_data, mean((preds - y_valid)^2))
     return(list(fold_data = fold_data, mse = mse))

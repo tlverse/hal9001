@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>HAL: The Highly Adaptive LASSO estimator — fit_hal • hal9001</title>
+<title>HAL: The Highly Adaptive Lasso — fit_hal • hal9001</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="HAL: The Highly Adaptive LASSO estimator — fit_hal" />
+<meta property="og:title" content="HAL: The Highly Adaptive Lasso — fit_hal" />
 
 <meta property="og:description" content="Estimation procedure for HAL, the Highly Adaptive LASSO" />
 <meta name="twitter:card" content="summary" />
@@ -110,7 +110,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>HAL: The Highly Adaptive LASSO estimator</h1>
+    <h1>HAL: The Highly Adaptive Lasso</h1>
     <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/hal.R'><code>R/hal.R</code></a></small>
     <div class="hidden name"><code>fit_hal.Rd</code></div>
     </div>
@@ -122,8 +122,9 @@
     </div>
 
     <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>),
-  <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>),
-  <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>reduce_basis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>), <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,6 +163,15 @@ v-fold cross-validation.</p></td>
       <td><p>Determines which lambda is selected from <code>cv.glmnet</code>.
 <code>TRUE</code> corresponds to <code>"lambda.min"</code> and <code>FALSE</code> corresponds
 to <code>"lambda.1se"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>reduce_basis</th>
+      <td><p>A <code>numeric</code> value bounded in the open interval (0,1)
+indicating the minimum proportion of 1's in a basis function column needed
+for the basis function to be included in the procedure to fit the Lasso. Any
+basis functions with a lower proportion of 1's than the specified cutoff
+will be removed. This argument defaults to <code>NULL</code>, in which case all
+basis functions are used in the lasso-fitting stage of the HAL algorithm.</p></td>
     </tr>
     <tr>
       <th>family</th>
