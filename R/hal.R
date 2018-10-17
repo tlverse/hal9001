@@ -114,7 +114,6 @@ fit_hal <- function(X,
   # fit LASSO regression
   if (fit_type == "lassi") {
     # custom LASSO implementation using the origami package
-    browser()
     hal_lasso <- cv_lasso(x_basis = x_basis, y = Y, n_folds = n_folds)
 
     if (use_min) {
