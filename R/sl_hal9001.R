@@ -56,7 +56,7 @@ SL.hal9001 <- function(Y,
     hal_out <- fit_hal(
       Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
       n_folds = n_folds, use_min = use_min, family = "gaussian",
-      yolo = FALSE
+      yolo = FALSE, weights = obsWeights
     )
   }
 
@@ -65,7 +65,7 @@ SL.hal9001 <- function(Y,
     hal_out <- fit_hal(
       Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
       n_folds = n_folds, use_min = use_min, family = "binomial",
-      yolo = FALSE
+      yolo = FALSE, weights = obsWeights
     )
   }
 

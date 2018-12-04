@@ -38,6 +38,8 @@
 #' @param return_lasso A \code{boolean} indicating whether or not to return
 #' the HAL lasso fit.
 #' @param basis_list TO BE DOCUMENTED.
+#' @param lambda user-specified array of lambda values. if NULL, then the
+#' program will propose the array.
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #'  documentation for \code{glmnet} for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -63,9 +65,14 @@ fit_hal <- function(X,
                     family = c("gaussian", "binomial"),
                     return_lasso = FALSE,
                     basis_list = NULL,
+                    lambda = NULL,
                     ...,
                     yolo = TRUE) {
-
+  if (!is.null(lambda) & length(lambda) == 1) {
+    fit_single_lambda <- TRUE
+  } else {
+    fit_single_lambda <- FALSE
+  }
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
@@ -125,20 +132,33 @@ fit_hal <- function(X,
     }
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
-    hal_lasso <- glmnet::cv.glmnet(
-      x = x_basis, y = Y,
-      nfolds = n_folds,
-      family = family,
-      ...
-    )
-    if (use_min) {
-      s <- "lambda.min"
-      lambda_star <- hal_lasso$lambda.min
+    if (fit_single_lambda) {
+      hal_lasso <- glmnet::glmnet(
+        x = x_basis,
+        y = Y,
+        family = family,
+        lambda = lambda,
+        ...
+      )
+      lambda_star <- hal_lasso$lambda
+      coefs <- stats::coef(hal_lasso)
     } else {
-      s <- "lambda.1se"
-      lambda_star <- hal_lasso$lambda.1se
+      hal_lasso <- glmnet::cv.glmnet(
+        x = x_basis, y = Y,
+        nfolds = n_folds,
+        family = family,
+        lambda = lambda,
+        ...
+      )
+      if (use_min) {
+        s <- "lambda.min"
+        lambda_star <- hal_lasso$lambda.min
+      } else {
+        s <- "lambda.1se"
+        lambda_star <- hal_lasso$lambda.1se
+      }
+      coefs <- stats::coef(hal_lasso, s)
     }
-    coefs <- stats::coef(hal_lasso, s)
   }
 
   # bookkeeping: get time for computation of the LASSO regression
@@ -156,6 +176,10 @@ fit_hal <- function(X,
     total = time_final - time_start
   )
 
+  # glmnet_lasso records the best glmnet object
+  glmnet_lasso <- NULL
+  if (fit_single_lambda & return_lasso) glmnet_lasso <- hal_lasso
+  if (!fit_single_lambda & return_lasso) glmnet_lasso <- hal_lasso$glmnet.fit
   # construct output object with S3
   fit <- list(
     call = call,
@@ -165,11 +189,12 @@ fit_hal <- function(X,
     times = times,
     lambda_star = lambda_star,
     family = family,
-    hal_lasso = if (return_lasso) {
+    hal_lasso = if (return_lasso & !fit_single_lambda) {
       hal_lasso
     } else {
       NULL
-    }
+    },
+    glmnet_lasso = glmnet_lasso
   )
   class(fit) <- "hal9001"
   return(fit)

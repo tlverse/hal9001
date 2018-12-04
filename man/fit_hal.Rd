@@ -7,7 +7,7 @@
 fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
   n_folds = 10, use_min = TRUE, reduce_basis = NULL,
   family = c("gaussian", "binomial"), return_lasso = FALSE,
-  basis_list = NULL, ..., yolo = TRUE)
+  basis_list = NULL, lambda = NULL, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -48,6 +48,9 @@ standard general linear model and "binomial" for logistic regression.}
 the HAL lasso fit.}
 
 \item{basis_list}{TO BE DOCUMENTED.}
+
+\item{lambda}{user-specified array of lambda values. if NULL, then the
+program will propose the array.}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}
