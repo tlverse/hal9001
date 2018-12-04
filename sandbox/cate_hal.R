@@ -1,5 +1,5 @@
-#' Estimate the CATE via HAL using the delta method
-load_all()
+# Estimate the CATE via HAL using the delta method
+devtools::load_all()
 n_obs <- 1000
 W <- replicate(3, rbinom(n_obs, 1, 0.5))
 A <- rbinom(n_obs, 1, plogis(rowSums(W[, -3])))

@@ -35,8 +35,10 @@
 #' @param family A \code{character} corresponding to the error family for a
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
 #'  standard general linear model and "binomial" for logistic regression.
-#' @param return_lasso A \code{boolean} indicating whether or not to return
+#' @param return_lasso A \code{logical} indicating whether or not to return
 #' the HAL lasso fit.
+#' @param return_x_basis A \code{logical} indicating whether or not to return
+#' the matrix of (possibly reduced) basis functions used in the HAL lasso fit.
 #' @param basis_list TO BE DOCUMENTED.
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #'  documentation for \code{glmnet} for a full list of options.
@@ -62,6 +64,7 @@ fit_hal <- function(X,
                     reduce_basis = NULL,
                     family = c("gaussian", "binomial"),
                     return_lasso = FALSE,
+                    return_x_basis = FALSE,
                     basis_list = NULL,
                     ...,
                     yolo = TRUE) {
@@ -159,18 +162,24 @@ fit_hal <- function(X,
   # construct output object with S3
   fit <- list(
     call = call,
-    x_basis = x_basis,
+    x_basis =
+      if (return_x_basis) {
+        x_basis
+      } else {
+        NULL
+      },
     basis_list = basis_list,
     copy_map = copy_map,
     coefs = coefs,
     times = times,
     lambda_star = lambda_star,
     family = family,
-    hal_lasso = if (return_lasso) {
-      hal_lasso
-    } else {
-      NULL
-    }
+    hal_lasso =
+      if (return_lasso) {
+        hal_lasso
+      } else {
+        NULL
+      }
   )
   class(fit) <- "hal9001"
   return(fit)
