@@ -102,8 +102,9 @@ hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
 #> design_matrix         0.002    0.000   0.003          0         0
 #> remove_duplicates     0.004    0.000   0.004          0         0
-#> lasso                 0.249    0.007   0.255          0         0
-#> total                 0.255    0.007   0.262          0         0
+#> reduce_basis          0.000    0.000   0.000          0         0
+#> lasso                 0.251    0.004   0.254          0         0
+#> total                 0.257    0.004   0.261          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
