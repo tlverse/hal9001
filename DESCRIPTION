@@ -1,6 +1,6 @@
 Package: hal9001
 Title: The Scalable Highly Adaptive Lasso
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(
   person("Jeremy", "Coyle", email = "tlverse@gmail.com",
          role = c("aut", "cre"),
@@ -62,4 +62,4 @@ Remotes:
   github::Rdatatable/data.table,
   github::benkeser/halplus
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0.9000
+RoxygenNote: 6.1.1

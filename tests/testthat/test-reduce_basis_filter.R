@@ -30,4 +30,3 @@ test_that("Basis reduction passes fewer beta estimates to the lasso model", {
   coef_hal_full <- dim(hal_fit_full$hal_lasso$betas_mat)[1]
   expect_lt(coef_hal_reduced, coef_hal_full)
 })
-

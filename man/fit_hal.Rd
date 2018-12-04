@@ -7,7 +7,8 @@
 fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
   n_folds = 10, use_min = TRUE, reduce_basis = NULL,
   family = c("gaussian", "binomial"), return_lasso = FALSE,
-  basis_list = NULL, ..., yolo = TRUE)
+  return_x_basis = FALSE, basis_list = NULL, lambda = NULL, ...,
+  yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -44,10 +45,21 @@ basis functions are used in the lasso-fitting stage of the HAL algorithm.}
 generalized linear model. Options are limited to "gaussian" for fitting a
 standard general linear model and "binomial" for logistic regression.}
 
-\item{return_lasso}{A \code{boolean} indicating whether or not to return
+\item{return_lasso}{A \code{logical} indicating whether or not to return
 the HAL lasso fit.}
 
-\item{basis_list}{TO BE DOCUMENTED.}
+\item{return_x_basis}{A \code{logical} indicating whether or not to return
+the matrix of (possibly reduced) basis functions used in the HAL lasso fit.}
+
+\item{basis_list}{The full set of basis functions generated from the input
+data X (via a call to \code{enumerate_basis}). The dimensionality of this
+structure is dim = (n * 2^(d - 1)), where n is the number of observations
+and d is the number of columns in X.}
+
+\item{lambda}{A user-specified array of values of the lambda tuning parameter
+of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
+automatically select a CV-optimal value of this parameter. If specified, the
+Lasso L1 regression model will be fit via \code{glmnet}.}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}

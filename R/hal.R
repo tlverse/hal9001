@@ -39,14 +39,21 @@
 #' the HAL lasso fit.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
 #' the matrix of (possibly reduced) basis functions used in the HAL lasso fit.
-#' @param basis_list TO BE DOCUMENTED.
+#' @param basis_list The full set of basis functions generated from the input
+#'  data X (via a call to \code{enumerate_basis}). The dimensionality of this
+#'  structure is dim = (n * 2^(d - 1)), where n is the number of observations
+#'  and d is the number of columns in X.
+#' @param lambda A user-specified array of values of the lambda tuning parameter
+#'  of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
+#'  automatically select a CV-optimal value of this parameter. If specified, the
+#'  Lasso L1 regression model will be fit via \code{glmnet}.
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #'  documentation for \code{glmnet} for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically acclaimed
 #'  epic science-fiction film "2001: A Space Odyssey" (1968).
 #'
-#' @importFrom glmnet cv.glmnet
+#' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
 #'
 #' @return Object of class \code{hal9001}, containing a list of basis functions,
@@ -66,9 +73,9 @@ fit_hal <- function(X,
                     return_lasso = FALSE,
                     return_x_basis = FALSE,
                     basis_list = NULL,
+                    lambda = NULL,
                     ...,
                     yolo = TRUE) {
-
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
@@ -84,7 +91,14 @@ fit_hal <- function(X,
     X <- as.matrix(X)
   }
 
-  # FUN: quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
+  # set boolean for later use in fitting Lasso model via glmnet
+  if (!is.null(lambda) & length(lambda) == 1) {
+    fit_single_lambda <- TRUE
+  } else {
+    fit_single_lambda <- FALSE
+  }
+
+  # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
   if (yolo) hal9000()
 
   # bookkeeping: get start time of duplicate removal procedure
@@ -128,20 +142,33 @@ fit_hal <- function(X,
     }
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
-    hal_lasso <- glmnet::cv.glmnet(
-      x = x_basis, y = Y,
-      nfolds = n_folds,
-      family = family,
-      ...
-    )
-    if (use_min) {
-      s <- "lambda.min"
-      lambda_star <- hal_lasso$lambda.min
+    if (fit_single_lambda) {
+      hal_lasso <- glmnet::glmnet(
+        x = x_basis,
+        y = Y,
+        family = family,
+        lambda = lambda,
+        ...
+      )
+      lambda_star <- hal_lasso$lambda
+      coefs <- stats::coef(hal_lasso)
     } else {
-      s <- "lambda.1se"
-      lambda_star <- hal_lasso$lambda.1se
+      hal_lasso <- glmnet::cv.glmnet(
+        x = x_basis, y = Y,
+        nfolds = n_folds,
+        family = family,
+        lambda = lambda,
+        ...
+      )
+      if (use_min) {
+        s <- "lambda.min"
+        lambda_star <- hal_lasso$lambda.min
+      } else {
+        s <- "lambda.1se"
+        lambda_star <- hal_lasso$lambda.1se
+      }
+      coefs <- stats::coef(hal_lasso, s)
     }
-    coefs <- stats::coef(hal_lasso, s)
   }
 
   # bookkeeping: get time for computation of the LASSO regression
@@ -159,6 +186,10 @@ fit_hal <- function(X,
     total = time_final - time_start
   )
 
+  # glmnet_lasso records the best glmnet object
+  glmnet_lasso <- NULL
+  if (fit_single_lambda & return_lasso) glmnet_lasso <- hal_lasso
+  if (!fit_single_lambda & return_lasso) glmnet_lasso <- hal_lasso$glmnet.fit
   # construct output object with S3
   fit <- list(
     call = call,
@@ -175,11 +206,12 @@ fit_hal <- function(X,
     lambda_star = lambda_star,
     family = family,
     hal_lasso =
-      if (return_lasso) {
+      if (return_lasso & !fit_single_lambda) {
         hal_lasso
       } else {
         NULL
-      }
+      },
+    glmnet_lasso = glmnet_lasso
   )
   class(fit) <- "hal9001"
   return(fit)
