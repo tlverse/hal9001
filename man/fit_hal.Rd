@@ -7,7 +7,8 @@
 fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
   n_folds = 10, use_min = TRUE, reduce_basis = NULL,
   family = c("gaussian", "binomial"), return_lasso = FALSE,
-  basis_list = NULL, lambda = NULL, ..., yolo = TRUE)
+  return_x_basis = FALSE, basis_list = NULL, lambda = NULL, ...,
+  yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -44,8 +45,11 @@ basis functions are used in the lasso-fitting stage of the HAL algorithm.}
 generalized linear model. Options are limited to "gaussian" for fitting a
 standard general linear model and "binomial" for logistic regression.}
 
-\item{return_lasso}{A \code{boolean} indicating whether or not to return
+\item{return_lasso}{A \code{logical} indicating whether or not to return
 the HAL lasso fit.}
+
+\item{return_x_basis}{A \code{logical} indicating whether or not to return
+the matrix of (possibly reduced) basis functions used in the HAL lasso fit.}
 
 \item{basis_list}{The full set of basis functions generated from the input
 data X (via a call to \code{enumerate_basis}). The dimensionality of this

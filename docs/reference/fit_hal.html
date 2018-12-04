@@ -126,7 +126,8 @@
     <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>),
   <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>reduce_basis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>), <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>return_x_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>,
+  <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -183,8 +184,13 @@ standard general linear model and "binomial" for logistic regression.</p></td>
     </tr>
     <tr>
       <th>return_lasso</th>
-      <td><p>A <code>boolean</code> indicating whether or not to return
+      <td><p>A <code>logical</code> indicating whether or not to return
 the HAL lasso fit.</p></td>
+    </tr>
+    <tr>
+      <th>return_x_basis</th>
+      <td><p>A <code>logical</code> indicating whether or not to return
+the matrix of (possibly reduced) basis functions used in the HAL lasso fit.</p></td>
     </tr>
     <tr>
       <th>basis_list</th>
