@@ -159,6 +159,7 @@ fit_hal <- function(X,
   # construct output object with S3
   fit <- list(
     call = call,
+    x_basis = x_basis,
     basis_list = basis_list,
     copy_map = copy_map,
     coefs = coefs,
