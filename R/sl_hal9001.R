@@ -20,10 +20,11 @@
 #'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 #'  to \code{"lambda.1se"}.
 #' @param family Not used by the function directly, but meant to ensure
-#'  compatibility with \code{SuperLearner}. (THIS IS AN UGLY HACK.)
+#'  compatibility with \code{SuperLearner}.
 #' @param obsWeights Not used by the function directly, but meant to ensure
-#'  compatibility with \code{SuperLearner}. (THIS IS AN UGLY HACK.)
-#' @param ... Prevents process death. DON'T USE. (THIS IS AN UGLY HACK.)
+#'  compatibility with \code{SuperLearner}. These are passed to \code{cv.glmnet}
+#'  or \code{glmnet} through the \code{...} argument of \code{fit_hal}.
+#' @param ... Prevents process death. DON'T USE.
 #'
 #' @importFrom stats predict gaussian
 #'
@@ -56,7 +57,7 @@ SL.hal9001 <- function(Y,
     hal_out <- fit_hal(
       Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
       n_folds = n_folds, use_min = use_min, family = "gaussian",
-      yolo = FALSE, weights = obsWeights
+      weights = obsWeights, yolo = FALSE
     )
   }
 
@@ -65,7 +66,7 @@ SL.hal9001 <- function(Y,
     hal_out <- fit_hal(
       Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
       n_folds = n_folds, use_min = use_min, family = "binomial",
-      yolo = FALSE, weights = obsWeights
+      weights = obsWeights, yolo = FALSE
     )
   }
 
@@ -91,7 +92,7 @@ SL.hal9001 <- function(Y,
 #'
 #' @param object A fitted object of class \code{hal9001}.
 #' @param newdata A matrix of new observations on which to obtain predictions.
-#' @param ... Prevents process death. DON'T USE. (THIS IS AN UGLY HACK.)
+#' @param ... Prevents process death. WHY WOULD YOU PUT ANYTING IN HERE?
 #'
 #' @importFrom stats predict
 #'

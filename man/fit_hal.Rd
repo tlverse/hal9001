@@ -47,10 +47,15 @@ standard general linear model and "binomial" for logistic regression.}
 \item{return_lasso}{A \code{boolean} indicating whether or not to return
 the HAL lasso fit.}
 
-\item{basis_list}{TO BE DOCUMENTED.}
+\item{basis_list}{The full set of basis functions generated from the input
+data X (via a call to \code{enumerate_basis}). The dimensionality of this
+structure is dim = (n * 2^(d - 1)), where n is the number of observations
+and d is the number of columns in X.}
 
-\item{lambda}{user-specified array of lambda values. if NULL, then the
-program will propose the array.}
+\item{lambda}{A user-specified array of values of the lambda tuning parameter
+of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
+automatically select a CV-optimal value of this parameter. If specified, the
+Lasso L1 regression model will be fit via \code{glmnet}.}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}

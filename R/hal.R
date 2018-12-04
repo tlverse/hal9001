@@ -37,9 +37,14 @@
 #'  standard general linear model and "binomial" for logistic regression.
 #' @param return_lasso A \code{boolean} indicating whether or not to return
 #' the HAL lasso fit.
-#' @param basis_list TO BE DOCUMENTED.
-#' @param lambda user-specified array of lambda values. if NULL, then the
-#' program will propose the array.
+#' @param basis_list The full set of basis functions generated from the input
+#'  data X (via a call to \code{enumerate_basis}). The dimensionality of this
+#'  structure is dim = (n * 2^(d - 1)), where n is the number of observations
+#'  and d is the number of columns in X.
+#' @param lambda A user-specified array of values of the lambda tuning parameter
+#'  of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
+#'  automatically select a CV-optimal value of this parameter. If specified, the
+#'  Lasso L1 regression model will be fit via \code{glmnet}.
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #'  documentation for \code{glmnet} for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -68,11 +73,6 @@ fit_hal <- function(X,
                     lambda = NULL,
                     ...,
                     yolo = TRUE) {
-  if (!is.null(lambda) & length(lambda) == 1) {
-    fit_single_lambda <- TRUE
-  } else {
-    fit_single_lambda <- FALSE
-  }
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
@@ -88,7 +88,14 @@ fit_hal <- function(X,
     X <- as.matrix(X)
   }
 
-  # FUN: quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
+  # set boolean for later use in fitting Lasso model via glmnet
+  if (!is.null(lambda) & length(lambda) == 1) {
+    fit_single_lambda <- TRUE
+  } else {
+    fit_single_lambda <- FALSE
+  }
+
+  # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
   if (yolo) hal9000()
 
   # bookkeeping: get start time of duplicate removal procedure

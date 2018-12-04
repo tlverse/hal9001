@@ -34,12 +34,13 @@ v-fold cross-validation.}
 to \code{"lambda.1se"}.}
 
 \item{family}{Not used by the function directly, but meant to ensure
-compatibility with \code{SuperLearner}. (THIS IS AN UGLY HACK.)}
+compatibility with \code{SuperLearner}.}
 
 \item{obsWeights}{Not used by the function directly, but meant to ensure
-compatibility with \code{SuperLearner}. (THIS IS AN UGLY HACK.)}
+compatibility with \code{SuperLearner}. These are passed to \code{cv.glmnet}
+or \code{glmnet} through the \code{...} argument of \code{fit_hal}.}
 
-\item{...}{Prevents process death. DON'T USE. (THIS IS AN UGLY HACK.)}
+\item{...}{Prevents process death. DON'T USE.}
 }
 \description{
 Wrapper for package \code{SuperLearner} for objects of class \code{hal9001}
