@@ -46,7 +46,7 @@
 #'  selection of quotes from the HAL9000 computer, from the critically acclaimed
 #'  epic science-fiction film "2001: A Space Odyssey" (1968).
 #'
-#' @importFrom glmnet cv.glmnet
+#' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
 #'
 #' @return Object of class \code{hal9001}, containing a list of basis functions,
