@@ -36,7 +36,7 @@
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
 #'  standard general linear model and "binomial" for logistic regression.
 #' @param return_lasso A \code{logical} indicating whether or not to return
-#' the HAL lasso fit.
+#'  the \code{glmnet} fit of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
 #' the matrix of (possibly reduced) basis functions used in the HAL lasso fit.
 #' @param basis_list The full set of basis functions generated from the input
@@ -45,8 +45,13 @@
 #'  and d is the number of columns in X.
 #' @param lambda A user-specified array of values of the lambda tuning parameter
 #'  of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
-#'  automatically select a CV-optimal value of this parameter. If specified, the
-#'  Lasso L1 regression model will be fit via \code{glmnet}.
+#'  automatically select a CV-optimal value of this regularization parameter. If
+#'  specified, the Lasso L1 regression model will be fit via \code{glmnet},
+#'  returning regularized coefficient values for each value in the input array.
+#' @param fit_glmnet A \code{logical} specifying whether the array of values
+#'  specified should be passed to \code{cv.glmnet} in order to pick the optimal
+#'  value (based on cross-validation) (when set to \code{FALSE}) or to simply
+#'  fit along the sequence of values (or single value) using \code{glmnet}.
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #'  documentation for \code{glmnet} for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -74,6 +79,7 @@ fit_hal <- function(X,
                     return_x_basis = FALSE,
                     basis_list = NULL,
                     lambda = NULL,
+                    fit_glmnet = FALSE,
                     ...,
                     yolo = TRUE) {
   # check arguments and catch function call
@@ -89,13 +95,6 @@ fit_hal <- function(X,
   # cast X to matrix -- and don't start the timer until after
   if (!is.matrix(X)) {
     X <- as.matrix(X)
-  }
-
-  # set boolean for later use in fitting Lasso model via glmnet
-  if (!is.null(lambda) & length(lambda) == 1) {
-    fit_single_lambda <- TRUE
-  } else {
-    fit_single_lambda <- FALSE
   }
 
   # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
@@ -142,7 +141,7 @@ fit_hal <- function(X,
     }
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
-    if (fit_single_lambda) {
+    if (fit_glmnet) {
       hal_lasso <- glmnet::glmnet(
         x = x_basis,
         y = Y,
@@ -188,8 +187,9 @@ fit_hal <- function(X,
 
   # glmnet_lasso records the best glmnet object
   glmnet_lasso <- NULL
-  if (fit_single_lambda & return_lasso) glmnet_lasso <- hal_lasso
-  if (!fit_single_lambda & return_lasso) glmnet_lasso <- hal_lasso$glmnet.fit
+  if (fit_glmnet & return_lasso) glmnet_lasso <- hal_lasso
+  if (!fit_glmnet & return_lasso) glmnet_lasso <- hal_lasso$glmnet.fit
+
   # construct output object with S3
   fit <- list(
     call = call,
@@ -206,7 +206,7 @@ fit_hal <- function(X,
     lambda_star = lambda_star,
     family = family,
     hal_lasso =
-      if (return_lasso & !fit_single_lambda) {
+      if (return_lasso & !fit_glmnet) {
         hal_lasso
       } else {
         NULL

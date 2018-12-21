@@ -7,8 +7,8 @@
 fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
   n_folds = 10, use_min = TRUE, reduce_basis = NULL,
   family = c("gaussian", "binomial"), return_lasso = FALSE,
-  return_x_basis = FALSE, basis_list = NULL, lambda = NULL, ...,
-  yolo = TRUE)
+  return_x_basis = FALSE, basis_list = NULL, lambda = NULL,
+  fit_glmnet = FALSE, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -46,7 +46,7 @@ generalized linear model. Options are limited to "gaussian" for fitting a
 standard general linear model and "binomial" for logistic regression.}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
-the HAL lasso fit.}
+the \code{glmnet} fit of the lasso model.}
 
 \item{return_x_basis}{A \code{logical} indicating whether or not to return
 the matrix of (possibly reduced) basis functions used in the HAL lasso fit.}
@@ -58,8 +58,14 @@ and d is the number of columns in X.}
 
 \item{lambda}{A user-specified array of values of the lambda tuning parameter
 of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
-automatically select a CV-optimal value of this parameter. If specified, the
-Lasso L1 regression model will be fit via \code{glmnet}.}
+automatically select a CV-optimal value of this regularization parameter. If
+specified, the Lasso L1 regression model will be fit via \code{glmnet},
+returning regularized coefficient values for each value in the input array.}
+
+\item{fit_glmnet}{A \code{logical} specifying whether the array of values
+specified should be passed to \code{cv.glmnet} in order to pick the optimal
+value (based on cross-validation) (when set to \code{FALSE}) or to simply
+fit along the sequence of values (or single value) using \code{glmnet}.}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}

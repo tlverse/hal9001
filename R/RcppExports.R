@@ -15,8 +15,10 @@ index_first_copy <- function(X) {
 #' Apply copy map
 #'
 #' OR duplicate training set columns together
+#'
 #' @param X Sparse matrix containing columns of indicator functions.
 #' @param copy_map the copy map
+#'
 apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
