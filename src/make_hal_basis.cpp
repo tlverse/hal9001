@@ -131,6 +131,8 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
 //' @param X Matrix of covariates containing observed data in the columns.
 //' @param blist List of basis functions with which to build HAL design matrix.
 //'
+//' @export
+//'
 // [[Rcpp::export]]
 SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
   //now generate an indicator vector for each
