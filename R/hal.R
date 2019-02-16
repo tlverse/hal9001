@@ -48,10 +48,11 @@
 #'  automatically select a CV-optimal value of this regularization parameter. If
 #'  specified, the Lasso L1 regression model will be fit via \code{glmnet},
 #'  returning regularized coefficient values for each value in the input array.
-#' @param fit_glmnet A \code{logical} specifying whether the array of values
+#' @param cv_select A \code{logical} specifying whether the array of values
 #'  specified should be passed to \code{cv.glmnet} in order to pick the optimal
-#'  value (based on cross-validation) (when set to \code{FALSE}) or to simply
-#'  fit along the sequence of values (or single value) using \code{glmnet}.
+#'  value (based on cross-validation) (when set to \code{TRUE}) or to simply
+#'  fit along the sequence of values (or single value) using \code{glmnet} (when
+#'  set to \code{FALSE}).
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #'  documentation for \code{glmnet} for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -79,7 +80,7 @@ fit_hal <- function(X,
                     return_x_basis = FALSE,
                     basis_list = NULL,
                     lambda = NULL,
-                    fit_glmnet = FALSE,
+                    cv_select = TRUE,
                     ...,
                     yolo = TRUE) {
   # check arguments and catch function call
@@ -141,7 +142,7 @@ fit_hal <- function(X,
     }
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
-    if (fit_glmnet) {
+    if (!cv_select) {
       hal_lasso <- glmnet::glmnet(
         x = x_basis,
         y = Y,
@@ -187,8 +188,8 @@ fit_hal <- function(X,
 
   # glmnet_lasso records the best glmnet object
   glmnet_lasso <- NULL
-  if (fit_glmnet & return_lasso) glmnet_lasso <- hal_lasso
-  if (!fit_glmnet & return_lasso) glmnet_lasso <- hal_lasso$glmnet.fit
+  if (!cv_select & return_lasso) glmnet_lasso <- hal_lasso
+  if (cv_select & return_lasso) glmnet_lasso <- hal_lasso$glmnet.fit
 
   # construct output object with S3
   fit <- list(
@@ -206,7 +207,7 @@ fit_hal <- function(X,
     lambda_star = lambda_star,
     family = family,
     hal_lasso =
-      if (return_lasso & !fit_glmnet) {
+      if (return_lasso & cv_select) {
         hal_lasso
       } else {
         NULL

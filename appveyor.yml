@@ -10,7 +10,7 @@ install:
   ps: Bootstrap
 
 cache:
-  - C:\RLibrary -> appveyor.yml
+  - C:\RLibrary
 
 # Adapt as necessary starting from here
 branches:

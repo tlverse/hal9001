@@ -17,7 +17,7 @@ hal_fit <- fit_hal(
   fit_type = "glmnet",
   family = "binomial",
   lambda = 2e-2,
-  fit_glmnet = TRUE,
+  cv_select = FALSE,
   return_lasso = TRUE
 )
 
@@ -30,4 +30,3 @@ test_that("a single glmnet object is output", {
 test_that("cv.glmnet object is not output", {
   expect(is.null(hal_fit$hal_lasso))
 })
-

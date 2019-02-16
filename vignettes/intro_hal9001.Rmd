@@ -13,22 +13,19 @@ vignette: >
 
 ## Introduction
 
-The _highly adaptive LASSO_ (HAL) is a flexible machine learning algorithm that
+The _highly adaptive Lasso_ (HAL) is a flexible machine learning algorithm that
 nonparametrically estimates a function based on available data by embedding a
 set of input observations and covariates in an extremely high-dimensional space
 (i.e., generating basis functions from the available data). For an input data
 matrix of $n$ observations and $d$ covariates, the number of basis functions
 generated is approximately $n \cdot 2^{d - 1}$. To select a set of basis
-functions from among the full set generated, the LASSO is employed. The
+functions from among the full set generated, the Lasso is employed. The
 `hal9001` R package provides an efficient implementation of this routine,
-relying on the `glmnet` R package for compatibility with the canonical LASSO
+relying on the `glmnet` R package for compatibility with the canonical Lasso
 implementation while still providing a (faster) custom C++ routine for using the
-LASSO with an input matrix composed of indicator functions. Consider consulting
-the following references for more detailed descriptions of HAL:
-
-1. [@benkeser2016hal],
-2. [@vdl2015generally],
-3. [@vdl2017finite].
+Lasso with an input matrix composed of indicator functions. Consider consulting
+@benkeser2016hal, @vdl2015generally, @vdl2017finite for detailed theoretical
+descriptions of the highly adaptive Lasso and its various optimality properties.
 
 ---
 
@@ -65,7 +62,7 @@ head(y)
 
 ---
 
-## Using the Highly Adaptive LASSO
+## Using the Highly Adaptive Lasso
 
 ```{r}
 library(hal9001)
