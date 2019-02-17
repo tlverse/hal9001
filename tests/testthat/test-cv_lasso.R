@@ -142,9 +142,15 @@ betas_cvglmnet_lassi <- cbind(
 # TEST THAT ORIGAMI AND CV-GLMNET IMPLEMENTATIONS MATCH
 ################################################################################
 test_that("lambda-min difference between cv.glmnet, cv_lasso within 0.5%.", {
-  expect_lte(lambda_minmse_origami - lambda_minmse_cvglmnet, lambda_minmse_cvglmnet * 0.005)
+  expect_lte(
+    lambda_minmse_origami - lambda_minmse_cvglmnet,
+    lambda_minmse_cvglmnet * 0.005
+  )
 })
 
 test_that("lambda-1se difference between cv.glmnet and cv_lasso within 1%.", {
-  expect_lte(lambda_minmse_origami - lambda_minmse_cvglmnet, lambda_minmse_cvglmnet * 0.01)
+  expect_lte(
+    lambda_minmse_origami - lambda_minmse_cvglmnet,
+    lambda_minmse_cvglmnet * 0.01
+  )
 })

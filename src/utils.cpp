@@ -83,10 +83,10 @@ NumericVector calc_xscale(const MSpMat& X, const NumericVector& xcenter) {
  NumericVector pnz = get_pnz(X);
  NumericVector xscale = not_dumb_sqrt(pnz);
  double minx = std::sqrt(1.0 / n);
- 
+
  xscale = not_dumb_sqrt(xscale * xscale - (xcenter * xcenter));
  xscale[xscale == 0 ] = minx;
- 
+
  return(xscale);
 }
 
@@ -96,10 +96,10 @@ NumericVector get_xscale(const MSpMat& X, const NumericVector& xcenter) {
   NumericVector pnz = get_pnz(X);
   NumericVector xscale = not_dumb_sqrt(pnz);
   double minx = std::sqrt(1.0 / n);
-  
+
   xscale = not_dumb_sqrt(xscale * xscale - (xcenter * xcenter));
   xscale[xscale == 0 ] = minx;
-  
+
   return(xscale);
 }
 
@@ -117,6 +117,5 @@ double soft_max(double beta, double lambda){
   } else {
     beta = 0;
   }
-  
   return(beta);
 }
