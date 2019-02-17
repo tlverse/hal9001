@@ -125,9 +125,9 @@
 
     <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>),
   <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>reduce_basis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>), <span class='kw'>return_glmnet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>), <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>return_x_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>fit_cv_glmnet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>cv_select</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -183,7 +183,7 @@ generalized linear model. Options are limited to "gaussian" for fitting a
 standard general linear model and "binomial" for logistic regression.</p></td>
     </tr>
     <tr>
-      <th>return_glmnet</th>
+      <th>return_lasso</th>
       <td><p>A <code>logical</code> indicating whether or not to return
 the <code>glmnet</code> fit of the lasso model.</p></td>
     </tr>
@@ -208,11 +208,12 @@ specified, the Lasso L1 regression model will be fit via <code>glmnet</code>,
 returning regularized coefficient values for each value in the input array.</p></td>
     </tr>
     <tr>
-      <th>fit_cv_glmnet</th>
+      <th>cv_select</th>
       <td><p>A <code>logical</code> specifying whether the array of values
 specified should be passed to <code>cv.glmnet</code> in order to pick the optimal
-value (based on cross-validation) (when set to <code>FALSE</code>) or to simply
-fit along the sequence of values using <code>glmnet</code>.</p></td>
+value (based on cross-validation) (when set to <code>TRUE</code>) or to simply
+fit along the sequence of values (or single value) using <code>glmnet</code> (when
+set to <code>FALSE</code>).</p></td>
     </tr>
     <tr>
       <th>...</th>

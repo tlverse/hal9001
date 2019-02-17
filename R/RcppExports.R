@@ -19,6 +19,8 @@ index_first_copy <- function(X) {
 #' @param X Sparse matrix containing columns of indicator functions.
 #' @param copy_map the copy map
 #'
+#' @export
+#'
 apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
@@ -76,6 +78,8 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'
 #' @param X Matrix of covariates containing observed data in the columns.
 #' @param blist List of basis functions with which to build HAL design matrix.
+#'
+#' @export
 #'
 make_design_matrix <- function(X, blist) {
     .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist)
