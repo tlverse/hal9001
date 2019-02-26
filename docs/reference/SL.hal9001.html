@@ -123,7 +123,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>SL.hal9001</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>newX</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"glmnet"</span>,
+    <pre class="usage"><span class='fu'>SL.hal9001</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>newX</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"glmnet"</span>,
   <span class='st'>"lassi"</span>), <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/family'>gaussian</a></span>(),
   <span class='kw'>obsWeights</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>Y</span>)), <span class='no'>...</span>)</pre>
     
@@ -144,9 +144,9 @@
 default of <code>NULL</code> computes predictions on training inputs <code>X</code>.</p></td>
     </tr>
     <tr>
-      <th>degrees</th>
+      <th>max_degree</th>
       <td><p>The highest order of interaction terms for which the basis
-functions ought to be generated. The default (<code>NULL</code>) corresponds to
+functions ought to be generated. (<code>NULL</code>) corresponds to
 generating basis functions for the full dimensionality of the input matrix.</p></td>
     </tr>
     <tr>

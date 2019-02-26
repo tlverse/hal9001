@@ -124,7 +124,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for hal9001</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='no'>...</span>, <span class='no'>new_data</span>)</pre>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='no'>new_data</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,6 +133,10 @@
       <th>object</th>
       <td><p>An object of class <code>hal9001</code>, containing the results of
 fitting the Highly Adaptive LASSO, as produced by a call to <code>fit_hal</code>.</p></td>
+    </tr>
+    <tr>
+      <th>offset</th>
+      <td><p>A vector of offsets. Must be provided if provided at training</p></td>
     </tr>
     <tr>
       <th>...</th>

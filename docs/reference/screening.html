@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Enumerate Basis Functions — enumerate_basis • hal9001</title>
+<title>Screen HAL Columns, Basis Functions, and lambda — screening • hal9001</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,9 @@
 
 
 
-<meta property="og:title" content="Enumerate Basis Functions — enumerate_basis" />
+<meta property="og:title" content="Screen HAL Columns, Basis Functions, and lambda — screening" />
 
-<meta property="og:description" content="Generate basis functions for all covariates and interaction terms thereof, up
-to a specified order/degree" />
+<meta property="og:description" content="Smart Screening Stuff. TODO: Document fully" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -113,19 +112,25 @@ to a specified order/degree" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Enumerate Basis Functions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/make_basis.R'><code>R/make_basis.R</code></a></small>
-    <div class="hidden name"><code>enumerate_basis.Rd</code></div>
+    <h1>Screen HAL Columns, Basis Functions, and lambda</h1>
+    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/screening.R'><code>R/screening.R</code></a></small>
+    <div class="hidden name"><code>screening.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Generate basis functions for all covariates and interaction terms thereof, up
-to a specified order/degree</p>
+    <p>Smart Screening Stuff. TODO: Document fully</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>enumerate_basis</span>(<span class='no'>x</span>, <span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>hal_screen_cols</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>family</span>, <span class='kw'>col_lists</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+
+<span class='fu'>hal_screen_basis</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>family</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>main_terms</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='fu'>hal_screen_lambda</span>(<span class='no'>x_basis</span>, <span class='no'>y</span>, <span class='no'>family</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -136,10 +141,53 @@ to a specified order/degree</p>
 following standard conventions in problems of statistical learning.</p></td>
     </tr>
     <tr>
+      <th>y</th>
+      <td><p>A <code>numeric</code> vector of obervations of the outcome variable of
+interest, following standard conventions in problems of statistical learning.</p></td>
+    </tr>
+    <tr>
+      <th>family</th>
+      <td><p>A <code>character</code> corresponding to the error family for a
+generalized linear model. Options are limited to "gaussian" for fitting a
+standard general linear model and "binomial" for logistic regression.</p></td>
+    </tr>
+    <tr>
+      <th>col_lists</th>
+      <td><p>a list of lists of column number, indicating which basis to screen</p></td>
+    </tr>
+    <tr>
+      <th>foldid</th>
+      <td><p>a foldid vector,as in cv.glmnet</p></td>
+    </tr>
+    <tr>
+      <th>offset</th>
+      <td><p>a vector of offset values, used in fitting</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>if TRUE, print details of screening steps</p></td>
+    </tr>
+    <tr>
       <th>max_degree</th>
       <td><p>The highest order of interaction terms for which the basis
 functions ought to be generated. The default (<code>NULL</code>) corresponds to
 generating basis functions for the full dimensionality of the input matrix.</p></td>
+    </tr>
+    <tr>
+      <th>main_terms</th>
+      <td><p>if TRUE, only screen interactions for siginficant main terms</p></td>
+    </tr>
+    <tr>
+      <th>x_basis</th>
+      <td><p>an x_basis sparse matrix</p></td>
+    </tr>
+    <tr>
+      <th>lambda</th>
+      <td><p>A user-specified array of values of the lambda tuning parameter
+of the Lasso L1 regression. If <code>NULL</code>, <code>cv.glmnet</code> will be used to
+automatically select a CV-optimal value of this regularization parameter. If
+specified, the Lasso L1 regression model will be fit via <code>glmnet</code>,
+returning regularized coefficient values for each value in the input array.</p></td>
     </tr>
     </table>
     

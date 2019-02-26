@@ -123,11 +123,12 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>),
+    <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>),
   <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>reduce_basis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>), <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>), <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>return_x_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>cv_select</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>id</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cv_select</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>screen_basis</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>screen_lambda</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -143,7 +144,7 @@ following standard conventions in problems of statistical learning.</p></td>
 interest, following standard conventions in problems of statistical learning.</p></td>
     </tr>
     <tr>
-      <th>degrees</th>
+      <th>max_degree</th>
       <td><p>The highest order of interaction terms for which the basis
 functions ought to be generated. The default (<code>NULL</code>) corresponds to
 generating basis functions for the full dimensionality of the input matrix.</p></td>
@@ -208,12 +209,30 @@ specified, the Lasso L1 regression model will be fit via <code>glmnet</code>,
 returning regularized coefficient values for each value in the input array.</p></td>
     </tr>
     <tr>
+      <th>id</th>
+      <td><p>a vector of id values, used to generate cross-validation folds for cv.lambda</p></td>
+    </tr>
+    <tr>
+      <th>offset</th>
+      <td><p>a vector of offset values, used in fitting</p></td>
+    </tr>
+    <tr>
       <th>cv_select</th>
       <td><p>A <code>logical</code> specifying whether the array of values
 specified should be passed to <code>cv.glmnet</code> in order to pick the optimal
 value (based on cross-validation) (when set to <code>TRUE</code>) or to simply
 fit along the sequence of values (or single value) using <code>glmnet</code> (when
 set to <code>FALSE</code>).</p></td>
+    </tr>
+    <tr>
+      <th>screen_basis</th>
+      <td><p>If TRUE, use a screening procedure to reduce the number
+of basis functions fitted</p></td>
+    </tr>
+    <tr>
+      <th>screen_lambda</th>
+      <td><p>If TURE, use a screening procedure to reduce the number of
+lambda values evaluated</p></td>
     </tr>
     <tr>
       <th>...</th>
