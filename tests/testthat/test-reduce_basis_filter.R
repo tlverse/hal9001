@@ -11,6 +11,8 @@ y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 hal_fit_full <- fit_hal(
   X = x, Y = y, fit_type = "lassi",
   return_lasso = TRUE,
+  screen_basis = FALSE,
+  screen_lambda = FALSE,
   yolo = FALSE
 )
 hal_fit_full$times
@@ -20,6 +22,8 @@ hal_fit_reduced <- fit_hal(
   X = x, Y = y, fit_type = "lassi",
   return_lasso = TRUE,
   reduce_basis = 1 / sqrt(n),
+  screen_basis = FALSE,
+  screen_lambda = FALSE,
   yolo = FALSE
 )
 
