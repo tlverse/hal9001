@@ -1,7 +1,7 @@
 #' Screen HAL Columns, Basis Functions, and lambda
-#' 
+#'
 #' Smart Screening Stuff. TODO: Document fully
-#' 
+#'
 #' @param x An input \code{matrix} containing observations and covariates
 #'  following standard conventions in problems of statistical learning.
 #' @param y A \code{numeric} vector of obervations of the outcome variable of
@@ -18,6 +18,12 @@
 #'  specified, the Lasso L1 regression model will be fit via \code{glmnet},
 #'  returning regularized coefficient values for each value in the input array.
 #' @param offset a vector of offset values, used in fitting
+#' @param foldid a foldid vector,as in cv.glmnet
+#' @param verbose if TRUE, print details of screening steps
+#' @param col_lists a list of lists of column number, indicating which basis to screen
+#' @param x_basis an x_basis sparse matrix
+#' @param main_terms if TRUE, only screen interactions for siginficant main terms
+#' @export
 #' @name screening
 hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offset = NULL, verbose = FALSE) {
   n <- length(y)
@@ -37,16 +43,16 @@ hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offse
 
 
   # TODO: subsample param
-  subsample_size <- min(100, n * 0.1)
+  subsample_size <- min(max(100, n * 0.1), n)
   basis_subsample <- sample(seq_len(n), subsample_size, replace = FALSE)
-
+  x_sub <- x[basis_subsample, , drop = FALSE]
   null_risk <- NA
   col_results <- list()
 
   for (i in seq_along(col_lists)) {
     col_list <- col_lists[[i]]
-    basis_list <- hal9001::make_basis_list(x[basis_subsample, ], col_list)
-    x_basis <- hal9001::make_design_matrix(x, basis_list)
+    basis_list <- basis_list_cols(col_list, x_sub)
+    x_basis <- make_design_matrix(x, basis_list)
     screen_glmnet <- cv.glmnet(x = x_basis, y = y, family = family, intercept = FALSE, offset = offset, maxit = 1, thresh = 1, foldid = foldid, nlambda = 10)
 
     if (is.na(null_risk)) {
@@ -99,12 +105,18 @@ hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offse
 }
 
 #' @name screening
-hal_screen_basis <- function(x, y, family, foldid = NULL, offset = NULL, verbose = FALSE, max_degree = NULL) {
+#' @export
+hal_screen_basis <- function(x, y, family, foldid = NULL, offset = NULL, verbose = FALSE, max_degree = NULL, main_terms = NULL) {
   n <- length(y)
   p <- ncol(x)
 
+
   if (is.null(max_degree)) {
     max_degree <- p
+  }
+
+  if (is.null(main_terms)) {
+    main_terms <- (p > 10)
   }
 
   # screen 1-d basis functions
@@ -118,9 +130,16 @@ hal_screen_basis <- function(x, y, family, foldid = NULL, offset = NULL, verbose
   )
 
 
+  # limit to significant main terms if enabled
+  if (main_terms) {
+    good_cols <- unlist(screened$selected_cols)
+  } else {
+    good_cols <- unlist(col_lists)
+  }
+
   # construct all basis up to max based on selected columns
   max_degree <- 3
-  good_cols <- unlist(screened$selected_cols)
+
   actual_max_degree <- min(max_degree, length(good_cols))
 
   interaction_col_lists <- list()
@@ -148,6 +167,7 @@ hal_screen_basis <- function(x, y, family, foldid = NULL, offset = NULL, verbose
 }
 
 #' @name screening
+#' @export
 hal_screen_lambda <- function(x_basis, y, family, offset = NULL, foldid = NULL, lambda = NULL) {
   if (!is.null(lambda)) {
     # TODO: maybe downsample lambda here?

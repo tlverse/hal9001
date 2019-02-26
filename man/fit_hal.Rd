@@ -4,7 +4,7 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive Lasso}
 \usage{
-fit_hal(X, Y, max_degree = NULL, fit_type = c("glmnet", "lassi"),
+fit_hal(X, Y, max_degree = 3, fit_type = c("glmnet", "lassi"),
   n_folds = 10, use_min = TRUE, reduce_basis = NULL,
   family = c("gaussian", "binomial"), return_lasso = TRUE,
   return_x_basis = FALSE, basis_list = NULL, lambda = NULL,

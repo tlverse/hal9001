@@ -5,7 +5,7 @@ set.seed(45791)
 n <- 200
 p <- 4
 x <- xmat <- matrix(rnorm(n * p), n, p)
-y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
+y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
 # hal9001 implementation without basis function reduction
 hal_fit_full <- fit_hal(
@@ -22,6 +22,7 @@ hal_fit_reduced <- fit_hal(
   reduce_basis = 1 / sqrt(n),
   yolo = FALSE
 )
+
 hal_fit_reduced$times
 
 # TEST: reduced HAL object contains fewer lasso coefficients than full object

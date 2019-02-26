@@ -113,30 +113,31 @@ fit_hal <- function(X,
 
   # Generate fold_ids that respect id
   n <- length(Y)
-  if(is.null(id)){
-    foldid <- sample(seq_len(n_folds),n,replace=T)
+  if (is.null(id)) {
+    foldid <- sample(seq_len(n_folds), n, replace = T)
   } else {
     unique_ids <- unique(id)
-    id_foldid <- sample(seq_len(n_folds),length(unique_ids),replace=T)
-    fold_id <- id_foldid[match(id,unique_ids)]  
+    id_foldid <- sample(seq_len(n_folds), length(unique_ids), replace = T)
+    foldid <- id_foldid[match(id, unique_ids)]
   }
-  
+
   # bookkeeping: get start time of duplicate removal procedure
   time_start <- proc.time()
 
-  
+
 
   # make design matrix for HAL
   if (is.null(basis_list)) {
     if (screen_basis) {
       good_basis <- hal_screen_basis(
         x = X,
-        y = y,
+        y = Y,
         family = family,
         offset = offset,
+        foldid = foldid,
         max_degree = max_degree
       )
-      basis_lists <- lapply(good_basis, function(basis_cols) make_basis_list(x, basis_cols))
+      basis_lists <- lapply(good_basis, function(basis_cols) make_basis_list(X, basis_cols))
       basis_list <- unlist(basis_lists, recursive = FALSE)
     } else {
       basis_list <- enumerate_basis(X, max_degree)
@@ -188,7 +189,7 @@ fit_hal <- function(X,
       coefs <- hal_lasso$betas_mat[, "lambda_1se"]
     }
   } else if (fit_type == "glmnet") {
-    if (screen_lambda) {
+    if ((screen_lambda) && (length(lambda) != 1)) {
       # reduce the set of lambdas to fit
       lambda <- hal_screen_lambda(x_basis, Y,
         family = family,
@@ -214,6 +215,7 @@ fit_hal <- function(X,
         nfolds = n_folds,
         family = family,
         lambda = lambda,
+        foldid = foldid,
         ...
       )
       if (use_min) {

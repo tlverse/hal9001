@@ -35,7 +35,7 @@ predict.hal9001 <- function(object,
   pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
 
   if (!is.null(object$glmnet_lasso)) {
-    preds <- predict(object$glmnet_lasso, newx = pred_x_basis, offset = offset, type = "response")
+    preds <- predict(object$glmnet_lasso, newx = pred_x_basis, offset = offset, type = "response", s = object$lambda_star)
   } else {
     # generate predictions manually
     preds <- as.vector(Matrix::tcrossprod(

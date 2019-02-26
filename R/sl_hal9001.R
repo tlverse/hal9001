@@ -6,8 +6,8 @@
 #' @param X A \code{matrix} of predictors/covariates.
 #' @param newX A matrix of new observations on which to obtain predictions. The
 #'  default of \code{NULL} computes predictions on training inputs \code{X}.
-#' @param degrees The highest order of interaction terms for which the basis
-#'  functions ought to be generated. The default (\code{NULL}) corresponds to
+#' @param max_degree The highest order of interaction terms for which the basis
+#'  functions ought to be generated. (\code{NULL}) corresponds to
 #'  generating basis functions for the full dimensionality of the input matrix.
 #' @param fit_type The specific routine to be called when fitting the LASSO
 #'  regression in a cross-validated manner. Choosing the \code{glmnet} option
@@ -33,7 +33,7 @@
 SL.hal9001 <- function(Y,
                        X,
                        newX = NULL,
-                       degrees = NULL,
+                       max_degree = 3,
                        fit_type = c("glmnet", "lassi"),
                        n_folds = 10,
                        use_min = TRUE,
@@ -55,7 +55,7 @@ SL.hal9001 <- function(Y,
   if (family$family == "gaussian") {
     # fit HAL
     hal_out <- fit_hal(
-      Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
+      Y = Y, X = X_in, max_degree = max_degree, fit_type = fit_type,
       n_folds = n_folds, use_min = use_min, family = "gaussian",
       weights = obsWeights, yolo = FALSE
     )
@@ -64,7 +64,7 @@ SL.hal9001 <- function(Y,
   if (family$family == "binomial") {
     # fit HAL with logistic regression
     hal_out <- fit_hal(
-      Y = Y, X = X_in, degrees = degrees, fit_type = fit_type,
+      Y = Y, X = X_in, max_degree = max_degree, fit_type = fit_type,
       n_folds = n_folds, use_min = use_min, family = "binomial",
       weights = obsWeights, yolo = FALSE
     )

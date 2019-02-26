@@ -24,6 +24,8 @@ pred_hal_test <- predict(hal, new_data = test_x)
 
 # run SL-classic with glmnet and get predictions
 hal_sl <- SuperLearner(Y = y, X = x, SL.lib = "SL.hal9001")
+sl_hal_fit <- SL.hal9001(Y = y, X = x)
+# hal9001:::predict.SL.hal9001(sl_hal_fit$fit,newX=x,newdata=x)
 pred_hal_sl_train <- as.numeric(predict(hal_sl, newX = x)$pred)
 pred_hal_sl_test <- as.numeric(predict(hal_sl, newX = test_x)$pred)
 
@@ -41,12 +43,6 @@ test_that("HAL and SuperLearner-HAL produce results of same shape", {
   expect_equal(length(pred_hal_test), length(pred_hal_sl_test))
 })
 
-# test for MSE: HAL < SL-HAL when SL library is only HAL
-# NOTE: this is because SL-HAL is just CV-HAL in this case
-test_that("HAL beats SuperLearner-HAL in MSE (due to cross-validation)", {
-  expect_lt(mse(pred_hal_train, y), mse(pred_hal_sl_train, y))
-  expect_lt(mse(pred_hal_test, test_y), mse(pred_hal_sl_test, test_y))
-})
 
 # test of MSEs being close: SL-HAL and SL dominated by HAL should be very close
 # (hence the rather low tolerance, esp. given an additive scale)

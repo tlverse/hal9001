@@ -11,7 +11,7 @@ hal_screen_cols(x, y, family, col_lists = NULL, foldid = NULL,
   offset = NULL, verbose = FALSE)
 
 hal_screen_basis(x, y, family, foldid = NULL, offset = NULL,
-  verbose = FALSE, max_degree = NULL)
+  verbose = FALSE, max_degree = NULL, main_terms = NULL)
 
 hal_screen_lambda(x_basis, y, family, offset = NULL, foldid = NULL,
   lambda = NULL)
@@ -27,11 +27,21 @@ interest, following standard conventions in problems of statistical learning.}
 generalized linear model. Options are limited to "gaussian" for fitting a
 standard general linear model and "binomial" for logistic regression.}
 
+\item{col_lists}{a list of lists of column number, indicating which basis to screen}
+
+\item{foldid}{a foldid vector,as in cv.glmnet}
+
 \item{offset}{a vector of offset values, used in fitting}
+
+\item{verbose}{if TRUE, print details of screening steps}
 
 \item{max_degree}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
+
+\item{main_terms}{if TRUE, only screen interactions for siginficant main terms}
+
+\item{x_basis}{an x_basis sparse matrix}
 
 \item{lambda}{A user-specified array of values of the lambda tuning parameter
 of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
