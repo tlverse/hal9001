@@ -1,4 +1,4 @@
-context("Unit test for HAL with binary outcomes (logistic regression).")
+context("HAL with screening for high-dimensional data")
 library(hal)
 set.seed(45791)
 
@@ -10,7 +10,7 @@ mse <- function(preds, y) {
 
 # generate simple test data
 n <- 1000
-p <- 3
+p <- 100
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
 stopifnot(max(y_prob) <= 1 && min(y_prob) >= 0)
@@ -25,6 +25,7 @@ test_y <- rbinom(n = test_n, size = 1, prob = y_prob)
 # ml implementation
 ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
 ml_hal_fit$times
+ml_hal_fit$col_lists
 
 # training sample prediction
 preds <- predict(ml_hal_fit, new_data = x)
@@ -38,6 +39,6 @@ test_that("MSE for logistic regression results is less than for null model", {
 oob_preds <- predict(ml_hal_fit, new_data = test_x)
 oob_ml_hal_mse <- mse(oob_preds, y = test_y_prob)
 
-test_that("MSE for logistic regression on test set is less than for nulll", {
+test_that("MSE for logistic regression on test set is less than for null", {
   expect_lt(oob_ml_hal_mse, mse(rep(mean(y), test_n), test_y_prob))
 })

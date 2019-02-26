@@ -13,7 +13,7 @@
 #'  following standard conventions in problems of statistical learning.
 #' @param Y A \code{numeric} vector of obervations of the outcome variable of
 #'  interest, following standard conventions in problems of statistical learning.
-#' @param degrees The highest order of interaction terms for which the basis
+#' @param max_degree The highest order of interaction terms for which the basis
 #'  functions ought to be generated. The default (\code{NULL}) corresponds to
 #'  generating basis functions for the full dimensionality of the input matrix.
 #' @param fit_type The specific routine to be called when fitting the LASSO
@@ -53,6 +53,12 @@
 #'  value (based on cross-validation) (when set to \code{TRUE}) or to simply
 #'  fit along the sequence of values (or single value) using \code{glmnet} (when
 #'  set to \code{FALSE}).
+#' @param id a vector of id values, used to generate cross-validation folds for cv.lambda
+#' @param offset a vector of offset values, used in fitting
+#' @param screen_basis If TRUE, use a screening procedure to reduce the number
+#'  of basis functions fitted
+#' @param screen_lambda If TURE, use a screening procedure to reduce the number of
+#'  lambda values evaluated
 #' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
 #'  documentation for \code{glmnet} for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -70,17 +76,21 @@
 #
 fit_hal <- function(X,
                     Y,
-                    degrees = NULL,
+                    max_degree = 3,
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     use_min = TRUE,
                     reduce_basis = NULL,
                     family = c("gaussian", "binomial"),
-                    return_lasso = FALSE,
+                    return_lasso = TRUE,
                     return_x_basis = FALSE,
                     basis_list = NULL,
                     lambda = NULL,
+                    id = NULL,
+                    offset = NULL,
                     cv_select = TRUE,
+                    screen_basis = TRUE,
+                    screen_lambda = TRUE,
                     ...,
                     yolo = TRUE) {
   # check arguments and catch function call
@@ -101,13 +111,48 @@ fit_hal <- function(X,
   # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
   if (yolo) hal9000()
 
+  # Generate fold_ids that respect id
+  n <- length(Y)
+  if(is.null(id)){
+    foldid <- sample(seq_len(n_folds),n,replace=T)
+  } else {
+    unique_ids <- unique(id)
+    id_foldid <- sample(seq_len(n_folds),length(unique_ids),replace=T)
+    fold_id <- id_foldid[match(id,unique_ids)]  
+  }
+  
   # bookkeeping: get start time of duplicate removal procedure
   time_start <- proc.time()
 
+  
+
   # make design matrix for HAL
   if (is.null(basis_list)) {
-    basis_list <- enumerate_basis(X, degrees)
+    if (screen_basis) {
+      good_basis <- hal_screen_basis(
+        x = X,
+        y = y,
+        family = family,
+        offset = offset,
+        max_degree = max_degree
+      )
+      basis_lists <- lapply(good_basis, function(basis_cols) make_basis_list(x, basis_cols))
+      basis_list <- unlist(basis_lists, recursive = FALSE)
+    } else {
+      basis_list <- enumerate_basis(X, max_degree)
+    }
   }
+
+  # generate a vector of col lists corresponding to the bases generated
+  col_lists <- unique(lapply(basis_list, `[[`, "cols"))
+  col_names <- colnames(X)
+  if (!is.null(colnames(X))) {
+    col_lists <- lapply(col_lists, function(col_list) col_names[col_list])
+  }
+  col_lists <- sapply(col_lists, paste, collapse = ",")
+
+  time_enumerate_basis <- proc.time()
+
   x_basis <- make_design_matrix(X, basis_list)
   time_design_matrix <- proc.time()
 
@@ -130,6 +175,8 @@ fit_hal <- function(X,
 
   # fit LASSO regression
   if (fit_type == "lassi") {
+    warning("lassi is experimental. We recommend using fit_type='glmnet' for almost all cases")
+
     # custom LASSO implementation using the origami package
     hal_lasso <- cv_lasso(x_basis = x_basis, y = Y, n_folds = n_folds)
 
@@ -141,6 +188,15 @@ fit_hal <- function(X,
       coefs <- hal_lasso$betas_mat[, "lambda_1se"]
     }
   } else if (fit_type == "glmnet") {
+    if (screen_lambda) {
+      # reduce the set of lambdas to fit
+      lambda <- hal_screen_lambda(x_basis, Y,
+        family = family,
+        lambda = lambda,
+        foldid = foldid,
+        offset = offset
+      )
+    }
     # just use the standard implementation available in glmnet
     if (!cv_select) {
       hal_lasso <- glmnet::glmnet(
@@ -179,7 +235,8 @@ fit_hal <- function(X,
 
   # bookkeeping: construct table for viewing procedure times
   times <- rbind(
-    design_matrix = time_design_matrix - time_start,
+    enumerate_basis = time_enumerate_basis - time_start,
+    design_matrix = time_design_matrix - time_enumerate_basis,
     remove_duplicates = time_rm_duplicates - time_design_matrix,
     reduce_basis = time_reduce_basis - time_rm_duplicates,
     lasso = time_lasso - time_rm_duplicates,
@@ -201,6 +258,7 @@ fit_hal <- function(X,
         NULL
       },
     basis_list = basis_list,
+    col_lists = col_lists,
     copy_map = copy_map,
     coefs = coefs,
     times = times,
