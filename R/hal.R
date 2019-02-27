@@ -137,7 +137,7 @@ fit_hal <- function(X,
         foldid = foldid,
         max_degree = max_degree
       )
-      basis_lists <- lapply(good_basis, function(basis_cols) make_basis_list(X, basis_cols))
+      basis_lists <- lapply(good_basis, basis_list_cols,X)
       basis_list <- unlist(basis_lists, recursive = FALSE)
     } else {
       basis_list <- enumerate_basis(X, max_degree)
