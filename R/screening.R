@@ -47,7 +47,7 @@ hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offse
 
   for (i in seq_along(col_lists)) {
     col_list <- col_lists[[i]]
-    basis_list <- basis_list_cols(col_list, x_sub)
+    basis_list <- basis_list_cols(col_list, x)
     
     # TODO: subsample param
     subsample_size <- min(max(100, n * 0.1), length(basis_list))
