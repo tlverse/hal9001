@@ -51,9 +51,9 @@ hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offse
     
     # TODO: subsample param
     subsample_size <- min(max(100, n * 0.1), length(basis_list))
-    basis_subsample <- sample(basis_list, subsample_size, replace = FALSE)
+    basis_subsample <- sort(sample(seq_along(basis_list), subsample_size, replace = FALSE))
     
-    x_basis <- make_design_matrix(x, basis_subsample)
+    x_basis <- make_design_matrix(x, basis_list[basis_subsample])
     screen_glmnet <- cv.glmnet(x = x_basis, y = y, family = family, intercept = FALSE, offset = offset, maxit = 1, thresh = 1, foldid = foldid, nlambda = 10)
 
     if (is.na(null_risk)) {
