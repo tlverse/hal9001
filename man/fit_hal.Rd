@@ -4,11 +4,11 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive Lasso}
 \usage{
-fit_hal(X, Y, degrees = NULL, fit_type = c("glmnet", "lassi"),
-  n_folds = 10, use_min = TRUE, reduce_basis = NULL,
-  family = c("gaussian", "binomial"), return_lasso = FALSE,
-  return_x_basis = FALSE, basis_list = NULL, lambda = NULL,
-  cv_select = TRUE, ..., yolo = TRUE)
+fit_hal(X, Y, X_unpenalized = NULL, degrees = NULL,
+  fit_type = c("glmnet", "lassi"), n_folds = 10, use_min = TRUE,
+  reduce_basis = NULL, family = c("gaussian", "binomial"),
+  return_lasso = FALSE, return_x_basis = FALSE, basis_list = NULL,
+  lambda = NULL, cv_select = TRUE, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -16,6 +16,10 @@ following standard conventions in problems of statistical learning.}
 
 \item{Y}{A \code{numeric} vector of obervations of the outcome variable of
 interest, following standard conventions in problems of statistical learning.}
+
+\item{X_unpenalized}{An input \code{matrix} with the same format as X, that
+directly get appended into the design matrix (no basis expansion) and no L-1
+penalization is placed on these covariates}
 
 \item{degrees}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
