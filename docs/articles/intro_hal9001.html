@@ -36,7 +36,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>
 </h4>
             
-            <h4 class="date">2019-02-16</h4>
+            <h4 class="date">2019-04-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -136,7 +136,7 @@
 <a href="#using-the-highly-adaptive-lasso" class="anchor"></a>Using the Highly Adaptive Lasso</h2>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(hal9001)</a></code></pre></div>
 <pre><code>## Loading required package: Rcpp</code></pre>
-<pre><code>## hal9001 v0.2.1: The Scalable Highly Adaptive Lasso</code></pre>
+<pre><code>## hal9001 v0.2.2: The Scalable Highly Adaptive Lasso</code></pre>
 <div id="fitting-the-hal-model-lassi" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fitting-the-hal-model-lassi" class="anchor"></a>Fitting the HAL model: “lassi”</h3>
@@ -145,11 +145,11 @@
 <pre><code>## [1] "Good afternoon... gentlemen. I am a HAL 9000... computer. I became operational at the H.A.L. plant in Urbana, Illinois... on the 12th of January 1992. My instructor was Mr. Langley... and he taught me to sing a song. If you'd like to hear it I can sing it for you."</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">hal_fit1<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.114    0.020   0.134          0         0
-## remove_duplicates     0.184    0.003   0.188          0         0
+## design_matrix         0.138    0.022   0.160          0         0
+## remove_duplicates     0.208    0.011   0.220          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 4.546    0.046   4.593          0         0
-## total                 4.844    0.069   4.915          0         0</code></pre>
+## lasso                 4.773    0.352   5.133          0         0
+## total                 5.119    0.385   5.513          0         0</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">hal_fit1</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "lassi")
@@ -78082,11 +78082,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.114    0.020   0.134          0         0
-## remove_duplicates     0.184    0.003   0.188          0         0
+## design_matrix         0.138    0.022   0.160          0         0
+## remove_duplicates     0.208    0.011   0.220          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 4.546    0.046   4.593          0         0
-## total                 4.844    0.069   4.915          0         0
+## lasso                 4.773    0.352   5.133          0         0
+## total                 5.119    0.385   5.513          0         0
 ## 
 ## $lambda_star
 ## [1] 0.003284639
@@ -78100,6 +78100,9 @@
 ## $glmnet_lasso
 ## NULL
 ## 
+## $unpenalized_covariates
+## [1] 0
+## 
 ## attr(,"class")
 ## [1] "hal9001"</code></pre>
 </div>
@@ -78112,11 +78115,11 @@
 <pre><code>## [1] "I've just picked up a fault in the AE35 unit. It's going to go 100% failure in 72 hours."</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">hal_fit2<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.105    0.000   0.105          0         0
-## remove_duplicates     0.022    0.002   0.024          0         0
+## design_matrix         0.136    0.022   0.159          0         0
+## remove_duplicates     0.029    0.009   0.037          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 8.495    0.007   8.506          0         0
-## total                 8.622    0.009   8.635          0         0</code></pre>
+## lasso                12.371    0.389  12.776          0         0
+## total                12.536    0.420  12.972          0         0</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">hal_fit2</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "glmnet")
@@ -161108,11 +161111,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.105    0.000   0.105          0         0
-## remove_duplicates     0.022    0.002   0.024          0         0
+## design_matrix         0.136    0.022   0.159          0         0
+## remove_duplicates     0.029    0.009   0.037          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 8.495    0.007   8.506          0         0
-## total                 8.622    0.009   8.635          0         0
+## lasso                12.371    0.389  12.776          0         0
+## total                12.536    0.420  12.972          0         0
 ## 
 ## $lambda_star
 ## [1] 0.004955143
@@ -161125,6 +161128,9 @@
 ## 
 ## $glmnet_lasso
 ## NULL
+## 
+## $unpenalized_covariates
+## [1] 0
 ## 
 ## attr(,"class")
 ## [1] "hal9001"</code></pre>
@@ -161139,11 +161145,11 @@
 <pre><code>## [1] "Just what do you think you're doing, Dave?"</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">hal_fit3<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.104    0.000   0.104          0         0
-## remove_duplicates     0.019    0.000   0.019          0         0
-## reduce_basis          0.018    0.000   0.018          0         0
-## lasso                 4.334    0.004   4.340          0         0
-## total                 4.457    0.004   4.463          0         0</code></pre>
+## design_matrix         0.137    0.022   0.159          0         0
+## remove_duplicates     0.028    0.010   0.038          0         0
+## reduce_basis          0.022    0.009   0.030          0         0
+## lasso                 4.241    0.421   4.663          0         0
+## total                 4.406    0.453   4.860          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 3.1622777% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">hal_fit3</a></code></pre></div>
 <pre><code>## $call
@@ -238901,11 +238907,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.104    0.000   0.104          0         0
-## remove_duplicates     0.019    0.000   0.019          0         0
-## reduce_basis          0.018    0.000   0.018          0         0
-## lasso                 4.334    0.004   4.340          0         0
-## total                 4.457    0.004   4.463          0         0
+## design_matrix         0.137    0.022   0.159          0         0
+## remove_duplicates     0.028    0.010   0.038          0         0
+## reduce_basis          0.022    0.009   0.030          0         0
+## lasso                 4.241    0.421   4.663          0         0
+## total                 4.406    0.453   4.860          0         0
 ## 
 ## $lambda_star
 ## [1] 0.003956359
@@ -238918,6 +238924,9 @@
 ## 
 ## $glmnet_lasso
 ## NULL
+## 
+## $unpenalized_covariates
+## [1] 0
 ## 
 ## attr(,"class")
 ## [1] "hal9001"</code></pre>
@@ -238946,7 +238955,7 @@
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-benkeser2016hal">
-<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93" class="uri">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
+<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
 </div>
 <div id="ref-vdl2015generally">
 <p>van der Laan, Mark J. 2015. “A Generally Efficient Targeted Minimum Loss Based Estimator.” bepress.</p>

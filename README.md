@@ -86,7 +86,7 @@ Laan (2016) and van der Laan (2017a).
 # load the hal9001 package
 library(hal9001)
 #> Loading required package: Rcpp
-#> hal9001 v0.2.1: The Scalable Highly Adaptive Lasso
+#> hal9001 v0.2.2: The Scalable Highly Adaptive Lasso
 
 # simulate data
 set.seed(385971)
@@ -100,16 +100,16 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "Look Dave, I can see you're really upset about this. I honestly think you ought to sit down calmly, take a stress pill, and think things over."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> design_matrix         0.008    0.000   0.008          0         0
-#> remove_duplicates     0.011    0.000   0.011          0         0
+#> design_matrix         0.004    0.000   0.004          0         0
+#> remove_duplicates     0.007    0.001   0.007          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
-#> lasso                 0.255    0.008   0.264          0         0
-#> total                 0.274    0.008   0.283          0         0
+#> lasso                 0.442    0.022   0.466          0         0
+#> total                 0.453    0.023   0.477          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
-#> [1] 0.009266171
+#> [1] 0.008827644
 ```
 
 -----
