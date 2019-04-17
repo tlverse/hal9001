@@ -145,11 +145,11 @@
 <pre><code>## [1] "Good afternoon... gentlemen. I am a HAL 9000... computer. I became operational at the H.A.L. plant in Urbana, Illinois... on the 12th of January 1992. My instructor was Mr. Langley... and he taught me to sing a song. If you'd like to hear it I can sing it for you."</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">hal_fit1<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.138    0.022   0.160          0         0
-## remove_duplicates     0.208    0.011   0.220          0         0
+## design_matrix         0.136    0.032   0.168          0         0
+## remove_duplicates     0.171    0.008   0.179          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 4.773    0.352   5.133          0         0
-## total                 5.119    0.385   5.513          0         0</code></pre>
+## lasso                 5.030    0.057   5.093          0         0
+## total                 5.337    0.097   5.440          0         0</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">hal_fit1</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "lassi")
@@ -78082,11 +78082,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.138    0.022   0.160          0         0
-## remove_duplicates     0.208    0.011   0.220          0         0
+## design_matrix         0.136    0.032   0.168          0         0
+## remove_duplicates     0.171    0.008   0.179          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 4.773    0.352   5.133          0         0
-## total                 5.119    0.385   5.513          0         0
+## lasso                 5.030    0.057   5.093          0         0
+## total                 5.337    0.097   5.440          0         0
 ## 
 ## $lambda_star
 ## [1] 0.003284639
@@ -78115,11 +78115,11 @@
 <pre><code>## [1] "I've just picked up a fault in the AE35 unit. It's going to go 100% failure in 72 hours."</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">hal_fit2<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.136    0.022   0.159          0         0
-## remove_duplicates     0.029    0.009   0.037          0         0
+## design_matrix         0.105    0.012   0.117          0         0
+## remove_duplicates     0.020    0.000   0.020          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                12.371    0.389  12.776          0         0
-## total                12.536    0.420  12.972          0         0</code></pre>
+## lasso                 9.191    0.000   9.202          0         0
+## total                 9.316    0.012   9.340          0         0</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">hal_fit2</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "glmnet")
@@ -161111,11 +161111,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.136    0.022   0.159          0         0
-## remove_duplicates     0.029    0.009   0.037          0         0
+## design_matrix         0.105    0.012   0.117          0         0
+## remove_duplicates     0.020    0.000   0.020          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                12.371    0.389  12.776          0         0
-## total                12.536    0.420  12.972          0         0
+## lasso                 9.191    0.000   9.202          0         0
+## total                 9.316    0.012   9.340          0         0
 ## 
 ## $lambda_star
 ## [1] 0.004955143
@@ -161145,11 +161145,11 @@
 <pre><code>## [1] "Just what do you think you're doing, Dave?"</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">hal_fit3<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.137    0.022   0.159          0         0
-## remove_duplicates     0.028    0.010   0.038          0         0
-## reduce_basis          0.022    0.009   0.030          0         0
-## lasso                 4.241    0.421   4.663          0         0
-## total                 4.406    0.453   4.860          0         0</code></pre>
+## design_matrix         0.106     0.00   0.107          0         0
+## remove_duplicates     0.021     0.00   0.021          0         0
+## reduce_basis          0.015     0.00   0.015          0         0
+## lasso                 4.033     0.02   4.055          0         0
+## total                 4.160     0.02   4.183          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 3.1622777% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">hal_fit3</a></code></pre></div>
 <pre><code>## $call
@@ -238907,11 +238907,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.137    0.022   0.159          0         0
-## remove_duplicates     0.028    0.010   0.038          0         0
-## reduce_basis          0.022    0.009   0.030          0         0
-## lasso                 4.241    0.421   4.663          0         0
-## total                 4.406    0.453   4.860          0         0
+## design_matrix         0.106     0.00   0.107          0         0
+## remove_duplicates     0.021     0.00   0.021          0         0
+## reduce_basis          0.015     0.00   0.015          0         0
+## lasso                 4.033     0.02   4.055          0         0
+## total                 4.160     0.02   4.183          0         0
 ## 
 ## $lambda_star
 ## [1] 0.003956359
@@ -238955,7 +238955,7 @@
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-benkeser2016hal">
-<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
+<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93" class="uri">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
 </div>
 <div id="ref-vdl2015generally">
 <p>van der Laan, Mark J. 2015. “A Generally Efficient Targeted Minimum Loss Based Estimator.” bepress.</p>

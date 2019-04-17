@@ -142,16 +142,16 @@ install.packages("hal9001")
 <a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; [1] "Look Dave, I can see you're really upset about this. I honestly think you ought to sit down calmly, take a stress pill, and think things over."</span></a>
 <a class="sourceLine" id="cb2-16" data-line-number="16">hal_fit<span class="op">$</span>times</a>
 <a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; design_matrix         0.004    0.000   0.003          0         0</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; remove_duplicates     0.006    0.000   0.006          0         0</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; design_matrix         0.002    0.000   0.002          0         0</span></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; remove_duplicates     0.005    0.000   0.005          0         0</span></a>
 <a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span></a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; lasso                 0.419    0.022   0.442          0         0</span></a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt; total                 0.429    0.022   0.451          0         0</span></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; lasso                 0.247    0.005   0.252          0         0</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt; total                 0.254    0.005   0.259          0         0</span></a>
 <a class="sourceLine" id="cb2-23" data-line-number="23"></a>
 <a class="sourceLine" id="cb2-24" data-line-number="24"><span class="co"># training sample prediction</span></a>
 <a class="sourceLine" id="cb2-25" data-line-number="25">preds &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/predict">predict</a></span>(hal_fit, <span class="dt">new_data =</span> x)</a>
 <a class="sourceLine" id="cb2-26" data-line-number="26"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(hal_mse &lt;-<span class="st"> </span>(preds <span class="op">-</span><span class="st"> </span>y)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co">#&gt; [1] 0.008827644</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co">#&gt; [1] 0.009266171</span></a></code></pre></div>
 <hr>
 </div>
 <div id="contributions" class="section level2">
@@ -186,10 +186,10 @@ install.packages("hal9001")
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-benkeser2016hal">
-<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
+<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93" class="uri">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
 </div>
 <div id="ref-vdl2017generally">
-<p>van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum Loss Based Estimator Based on the Highly Adaptive Lasso.” <em>The International Journal of Biostatistics</em>. De Gruyter. <a href="https://doi.org/10.1515/ijb-2015-0097">https://doi.org/10.1515/ijb-2015-0097</a>.</p>
+<p>van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum Loss Based Estimator Based on the Highly Adaptive Lasso.” <em>The International Journal of Biostatistics</em>. De Gruyter. <a href="https://doi.org/10.1515/ijb-2015-0097" class="uri">https://doi.org/10.1515/ijb-2015-0097</a>.</p>
 </div>
 <div id="ref-vdl2017finite">
 <p>———. 2017b. “Finite Sample Inference for Targeted Learning.” <em>ArXiv E-Prints</em>.</p>
