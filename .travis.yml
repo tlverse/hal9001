@@ -1,13 +1,19 @@
+branches:
+  only:
+    - master
+
 env:
   global:
-    - R_BUILD_ARGS="--no-build-vignettes --no-manual"
-    - R_CHECK_ARGS="--no-build-vignettes --no-manual"
     - RGL_USE_NULL=TRUE
 
 language: r
 sudo: false
 cache: packages
+cran: https://cran.rstudio.com
+
 warnings_are_errors: true
+r_build_args: '--no-manual'
+r_check_args: '--no-build-vignettes --no-manual'
 
 r:
   - oldrel
@@ -17,22 +23,21 @@ r:
 before_install:
   Rscript -e 'update.packages(ask = FALSE)'
 
+r_packages:
+  - devtools
+  - covr
+
 r_github_packages:
-  - jimhester/covr
+  - r-lib/covr
+  - r-lib/sessioninfo
   - Rdatatable/data.table
   - benkeser/halplus
 
 # coverage
 after_success:
-  - Rscript -e 'covr::codecov()'
-
-script:
-  - |
-    R CMD build --no-build-vignettes .
-    travis_wait 60 R CMD check --no-build-vignettes hal9001*tar.gz
+  - travis_wait 60 Rscript -e 'covr::codecov()'
 
 notifications:
   email:
     on_success: change
     on_failure: change
-
