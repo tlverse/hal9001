@@ -73,7 +73,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -124,7 +124,8 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for hal9001</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='no'>...</span>, <span class='no'>new_data</span>)</pre>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></span>(<span class='no'>object</span>, <span class='no'>...</span>, <span class='no'>new_data</span>,
+  <span class='kw'>new_X_unpenalized</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,6 +145,12 @@ fitting the Highly Adaptive LASSO, as produced by a call to <code>fit_hal</code>
 (observations NOT used in fitting the <code>hal9001</code> object passed in via
 the <code>object</code> argument above) for which the <code>hal9001</code> object will
 compute predicted values.</p></td>
+    </tr>
+    <tr>
+      <th>new_X_unpenalized</th>
+      <td><p>(optional) if in training stage user supplied
+`X_unpenalized` #'  argument, user should also supply this matrix with the
+same number of #'  observations as `new_data`</p></td>
     </tr>
     </table>
     

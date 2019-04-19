@@ -1,6 +1,6 @@
 Package: hal9001
 Title: The Scalable Highly Adaptive Lasso
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: c(
   person("Jeremy", "Coyle", email = "tlverse@gmail.com",
          role = c("aut", "cre"),
@@ -13,6 +13,9 @@ Authors@R: c(
          comment = c(ORCID = "0000-0002-1019-8343")),
   person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com",
          role = "ctb"),
+  person("Weixin", "Cai", email = "wcai@berkeley.edu",
+         role = "ctb",
+         comment = c(ORCID = "0000-0003-2680-3066")),
   person("Mark", "van der Laan", email = "laan@berkeley.edu",
          role = c("aut", "cph", "ths"),
          comment = c(ORCID = "0000-0003-1432-5511"))

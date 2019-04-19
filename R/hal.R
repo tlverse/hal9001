@@ -11,6 +11,9 @@
 #'
 #' @param X An input \code{matrix} containing observations and covariates
 #'  following standard conventions in problems of statistical learning.
+#' @param X_unpenalized An input \code{matrix} with the same format as X, that
+#'  directly get appended into the design matrix (no basis expansion) and no L-1
+#'  penalization is placed on these covariates
 #' @param Y A \code{numeric} vector of obervations of the outcome variable of
 #'  interest, following standard conventions in problems of statistical learning.
 #' @param degrees The highest order of interaction terms for which the basis
@@ -61,6 +64,7 @@
 #'
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
+#' @importFrom assertthat assert_that
 #'
 #' @return Object of class \code{hal9001}, containing a list of basis functions,
 #'  a copy map, coefficients estimated for basis functions, and timing results
@@ -70,6 +74,7 @@
 #
 fit_hal <- function(X,
                     Y,
+                    X_unpenalized = NULL,
                     degrees = NULL,
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
@@ -115,6 +120,21 @@ fit_hal <- function(X,
   copy_map <- make_copy_map(x_basis)
   unique_columns <- as.numeric(names(copy_map))
   x_basis <- x_basis[, unique_columns]
+  # the HAL basis are subject to L1 penalty
+  penalty.factor <- rep(1, ncol(x_basis))
+  unpenalized_covariates <- ifelse(
+    test = is.null(X_unpenalized),
+    yes = 0,
+    no = {
+      assert_that(is.matrix(X_unpenalized))
+      assert_that(nrow(X_unpenalized) == nrow(x_basis))
+      ncol(X_unpenalized)
+    }
+  )
+  if (unpenalized_covariates > 0) {
+    x_basis <- cbind(x_basis, X_unpenalized)
+    penalty.factor <- c(penalty.factor, rep(0, ncol(X_unpenalized)))
+  }
 
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
@@ -148,6 +168,7 @@ fit_hal <- function(X,
         y = Y,
         family = family,
         lambda = lambda,
+        penalty.factor = penalty.factor,
         ...
       )
       lambda_star <- hal_lasso$lambda
@@ -158,6 +179,7 @@ fit_hal <- function(X,
         nfolds = n_folds,
         family = family,
         lambda = lambda,
+        penalty.factor = penalty.factor,
         ...
       )
       if (use_min) {
@@ -212,7 +234,8 @@ fit_hal <- function(X,
       } else {
         NULL
       },
-    glmnet_lasso = glmnet_lasso
+    glmnet_lasso = glmnet_lasso,
+    unpenalized_covariates = unpenalized_covariates
   )
   class(fit) <- "hal9001"
   return(fit)

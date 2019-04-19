@@ -41,13 +41,6 @@ test_that("HAL and SuperLearner-HAL produce results of same shape", {
   expect_equal(length(pred_hal_test), length(pred_hal_sl_test))
 })
 
-# test for MSE: HAL < SL-HAL when SL library is only HAL
-# NOTE: this is because SL-HAL is just CV-HAL in this case
-test_that("HAL beats SuperLearner-HAL in MSE (due to cross-validation)", {
-  expect_lt(mse(pred_hal_train, y), mse(pred_hal_sl_train, y))
-  expect_lt(mse(pred_hal_test, test_y), mse(pred_hal_sl_test, test_y))
-})
-
 # test of MSEs being close: SL-HAL and SL dominated by HAL should be very close
 # (hence the rather low tolerance, esp. given an additive scale)
 test_that("HAL dominates other algorithms when used in SuperLearner", {
