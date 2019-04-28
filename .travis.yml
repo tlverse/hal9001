@@ -18,8 +18,7 @@ before_install:
   Rscript -e 'update.packages(ask = FALSE)'
 
 r_github_packages:
-  - jimhester/covr
-  - Rdatatable/data.table
+  - r-lib/covr
   - benkeser/halplus
 
 # coverage

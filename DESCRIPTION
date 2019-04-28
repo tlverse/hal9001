@@ -59,7 +59,6 @@ LinkingTo:
   Rcpp,
   RcppEigen
 Remotes:
-  github::Rdatatable/data.table,
   github::tlverse/origami,
   github::benkeser/halplus
 VignetteBuilder: knitr
