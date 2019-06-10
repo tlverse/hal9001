@@ -120,8 +120,9 @@ fit_hal <- function(X,
   copy_map <- make_copy_map(x_basis)
   unique_columns <- as.numeric(names(copy_map))
   x_basis <- x_basis[, unique_columns]
+
   # the HAL basis are subject to L1 penalty
-  penalty.factor <- rep(1, ncol(x_basis))
+  penalty_factor <- rep(1, ncol(x_basis))
   unpenalized_covariates <- ifelse(
     test = is.null(X_unpenalized),
     yes = 0,
@@ -133,7 +134,7 @@ fit_hal <- function(X,
   )
   if (unpenalized_covariates > 0) {
     x_basis <- cbind(x_basis, X_unpenalized)
-    penalty.factor <- c(penalty.factor, rep(0, ncol(X_unpenalized)))
+    penalty_factor <- c(penalty_factor, rep(0, ncol(X_unpenalized)))
   }
 
   # bookkeeping: get end time of duplicate removal procedure
@@ -168,7 +169,7 @@ fit_hal <- function(X,
         y = Y,
         family = family,
         lambda = lambda,
-        penalty.factor = penalty.factor,
+        penalty.factor = penalty_factor,
         ...
       )
       lambda_star <- hal_lasso$lambda
@@ -179,17 +180,17 @@ fit_hal <- function(X,
         nfolds = n_folds,
         family = family,
         lambda = lambda,
-        penalty.factor = penalty.factor,
+        penalty.factor = penalty_factor,
         ...
       )
       if (use_min) {
-        s <- "lambda.min"
+        lambda_type <- "lambda.min"
         lambda_star <- hal_lasso$lambda.min
       } else {
-        s <- "lambda.1se"
+        lambda_type <- "lambda.1se"
         lambda_star <- hal_lasso$lambda.1se
       }
-      coefs <- stats::coef(hal_lasso, s)
+      coefs <- stats::coef(hal_lasso, lambda_type)
     }
   }
 
@@ -208,12 +209,10 @@ fit_hal <- function(X,
     total = time_final - time_start
   )
 
-  # glmnet_lasso records the best glmnet object
-  glmnet_lasso <- NULL
-  if (!cv_select & return_lasso) glmnet_lasso <- hal_lasso
-  if (cv_select & return_lasso) glmnet_lasso <- hal_lasso$glmnet.fit
-
-  # construct output object with S3
+  # construct output object via lazy S3 list
+  # NOTE: hal_lasso and glmnet_lasso slots seem to contain the same information
+  #       This should be cleaned up in a future release but is retained at this
+  #       time (10 June 2019) to preserve code that depends on hal9001
   fit <- list(
     call = call,
     x_basis =
@@ -227,14 +226,23 @@ fit_hal <- function(X,
     coefs = coefs,
     times = times,
     lambda_star = lambda_star,
+    reduce_basis = reduce_basis,
     family = family,
     hal_lasso =
-      if (return_lasso & cv_select) {
+      if (cv_select & return_lasso) {
         hal_lasso
       } else {
         NULL
       },
-    glmnet_lasso = glmnet_lasso,
+    glmnet_lasso =
+      # record only the best glmnet object
+      if (!cv_select & return_lasso) {
+        hal_lasso
+      } else if (cv_select & return_lasso) {
+        hal_lasso$glmnet.fit
+      } else {
+        NULL
+      },
     unpenalized_covariates = unpenalized_covariates
   )
   class(fit) <- "hal9001"

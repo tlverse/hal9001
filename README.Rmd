@@ -22,31 +22,28 @@ knitr::opts_chunk$set(
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
-> _Fast_ and _scalable_ estimation procedure for the Highly Adaptive LASSO
+> The _Scalable_ Highly Adaptive Lasso
 
-__Authors:__ [Jeremy Coyle](https://github.com/tlverse) and [Nima
-Hejazi](https://nimahejazi.org)
+__Authors:__ [Jeremy Coyle](https://github.com/tlverse), [Nima
+Hejazi](https://nimahejazi.org), and [Mark van der
+Laan](https://vanderlaan-lab.org/)
 
 ---
 
 ## What's `hal9001`?
 
 `hal9001` is an R package providing an implementation of the scalable Highly
-Adaptive LASSO (HAL), a nonparametric regression estimator that applies
-L1-regularized regression (i.e., the LASSO) to a design matrix composed of
+Adaptive Lasso (HAL), a nonparametric regression estimator that applies
+L1-regularized regression (i.e., the Lasso) to a design matrix composed of
 indicator functions corresponding to a set of covariates and interactions
 thereof. Recent theoretical results show that HAL is endowed with several
-important properties that make it optimally suited for the purpose of
-estimating highly complex functions, including for inference in problem
-settings where causal parameters are estimated via data-adaptive techniques
-(i.e., machine learning), as is the case with Targeted Minimum Loss-Based
-Estimation (TMLE). While it is certainly possible to implement HAL purely in R,
-the computationally intensive nature of the algorithm suggests that writing
-core routines in C++ (and making these available in R via the
-[Rcpp](http://www.rcpp.org/) framework) ought to provide significant efficiency
-gains. `hal9001` is just such an implementation.
+important optimality properties, making it well-suited for the estimation of
+highly complex functional forms as well as to attain fast convergence rates of
+nuisance functions via data-adaptive techniques (i.e., machine learning) in the
+context of nonparametric causal inference (e.g., the construction of targeted
+minimum loss-based estimators).
 
-For detailed discussions of the Highly Adaptive LASSO estimator, the interested
+For detailed discussions of the Highly Adaptive Lasso estimator, the interested
 reader might consider consulting @benkeser2016hal, @vdl2017generally,
 and @vdl2017finite.
 
@@ -82,7 +79,7 @@ issue](https://github.com/tlverse/hal9001/issues).
 ## Example
 
 This minimal example shows how to use `hal9001` to obtain predictions based on
-the Highly Adaptive LASSO. For details on the properties of the estimator, the
+the Highly Adaptive Lasso. For details on the properties of the estimator, the
 interested reader is referred to @benkeser2016hal and @vdl2017generally.
 
 ```{r example}
@@ -109,7 +106,7 @@ mean(hal_mse <- (preds - y)^2)
 
 ## Contributions
 
-`hal9001` is the primary implementation of the Highly Adaptive LASSO, an
+`hal9001` is the primary implementation of the Highly Adaptive Lasso, an
 nonparametric function estimation procedure with numerous optimality
 properties. While contributions are very welcome, we ask that interested
 contributors consult our [contribution
@@ -124,18 +121,18 @@ After using the `hal9001` R package, please cite the following:
 
         @misc{coyle2018hal9001,
           author = {Coyle, Jeremy R and Hejazi, Nima S},
-          title = {{hal9001}: The Scalable {Highly Adaptive LASSO}},
+          title = {{hal9001}: The Scalable {Highly Adaptive Lasso}},
           year  = {2018},
           howpublished = {\url{https://github.com/tlverse/hal9001}},
-          url = {https://doi.org/DOI_TBD},
-          doi = {DOI_TBD}
+          url = {},
+          doi = {}
         }
 
 ---
 
 ## License
 
-&copy; 2017-2018 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
+&copy; 2017-2019 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
 Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license. See

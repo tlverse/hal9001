@@ -39,7 +39,7 @@ system.time({
 
 #################################################
 # test scaling and centering
-lassi_fit <- methods::new(Lassi, x_basis, y, 100, 0.01, TRUE)
+lassi_fit <- methods::new(hal9001:::Lassi, x_basis, y, 100, 0.01, TRUE)
 
 xcenter <- lassi_fit$xcenter
 xscale <- lassi_fit$xscale
@@ -83,7 +83,7 @@ test_that(
 
 #################################################
 # test a single coordinate descent update
-lassi_fit <- new(Lassi, x_basis, y, 100, 0.01, FALSE)
+lassi_fit <- new(hal9001:::Lassi, x_basis, y, 100, 0.01, FALSE)
 
 n <- length(y)
 i <- 1 # which beta to update (1 - indexed)

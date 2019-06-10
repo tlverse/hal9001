@@ -20,11 +20,12 @@ Authors@R: c(
          role = c("aut", "cph", "ths"),
          comment = c(ORCID = "0000-0003-1432-5511"))
   )
-Description: Routines for constructing sparse matrices of basis functions, as
-  well as a custom implementation of L1-regularized regression (i.e. the LASSO),
-  altogether providing a fast, computationally efficient implementation of the
-  Highly Adaptive LASSO (HAL), primarily in C++ but made available for use in R
-  through Rcpp.
+Description: A scalable implementation of the highly adaptive lasso algorithm,
+  including routines for constructing sparse matrices of basis functions of the
+  observed data, as well as a custom implementation of Lasso regression tailored
+  to enhance efficiency when the matrix of predictors is composed exclusively of
+  indicator functions. For ease of use and increased flexibility, the Lasso
+  fitting routines may invoke code from the glmnet package optionally.
 Depends:
   R (>= 3.1.0),
   Rcpp
