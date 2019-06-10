@@ -39,8 +39,10 @@ predict.hal9001 <- function(object,
 
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
   if (!is.null(object$reduce_basis) && is.numeric(object$reduce_basis)) {
-    reduced_basis_map <- make_reduced_basis_map(pred_x_basis,
-                                                object$reduce_basis)
+    reduced_basis_map <- make_reduced_basis_map(
+      pred_x_basis,
+      object$reduce_basis
+    )
     pred_x_basis <- pred_x_basis[, reduced_basis_map]
   }
 

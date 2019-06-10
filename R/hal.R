@@ -236,13 +236,13 @@ fit_hal <- function(X,
       },
     glmnet_lasso =
       # record only the best glmnet object
-      if (!cv_select & return_lasso) {
-        hal_lasso
-      } else if (cv_select & return_lasso) {
-        hal_lasso$glmnet.fit
-      } else {
-        NULL
-      },
+    if (!cv_select & return_lasso) {
+      hal_lasso
+    } else if (cv_select & return_lasso) {
+      hal_lasso$glmnet.fit
+    } else {
+      NULL
+    },
     unpenalized_covariates = unpenalized_covariates
   )
   class(fit) <- "hal9001"
