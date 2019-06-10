@@ -151,11 +151,11 @@
 <pre><code>## [1] "Look Dave, I can see you're really upset about this. I honestly think you ought to sit down calmly, take a stress pill, and think things over."</code></pre>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">hal_fit1<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.126    0.009   0.135          0         0
-## remove_duplicates     0.181    0.020   0.201          0         0
+## design_matrix         0.116    0.016   0.131          0         0
+## remove_duplicates     0.187    0.007   0.196          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 4.630    0.047   4.677          0         0
-## total                 4.937    0.076   5.013          0         0</code></pre>
+## lasso                 4.568    0.088   4.662          0         0
+## total                 4.871    0.111   4.989          0         0</code></pre>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">hal_fit1</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "lassi")
@@ -78088,11 +78088,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.126    0.009   0.135          0         0
-## remove_duplicates     0.181    0.020   0.201          0         0
+## design_matrix         0.116    0.016   0.131          0         0
+## remove_duplicates     0.187    0.007   0.196          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 4.630    0.047   4.677          0         0
-## total                 4.937    0.076   5.013          0         0
+## lasso                 4.568    0.088   4.662          0         0
+## total                 4.871    0.111   4.989          0         0
 ## 
 ## $lambda_star
 ## [1] 0.002856812
@@ -78121,11 +78121,11 @@
 <pre><code>## [1] "Without your space helmet, Dave. You're going to find that rather difficult."</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">hal_fit2<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.109    0.000   0.108          0         0
-## remove_duplicates     0.017    0.000   0.018          0         0
-## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 8.708    0.028   8.736          0         0
-## total                 8.834    0.028   8.862          0         0</code></pre>
+## design_matrix         0.103    0.000   0.103          0         0
+## remove_duplicates     0.018    0.000   0.017          0         0
+## reduce_basis          0.000    0.000   0.001          0         0
+## lasso                 8.403    0.036   8.440          0         0
+## total                 8.524    0.036   8.560          0         0</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">hal_fit2</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "glmnet")
@@ -161117,11 +161117,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.109    0.000   0.108          0         0
-## remove_duplicates     0.017    0.000   0.018          0         0
-## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 8.708    0.028   8.736          0         0
-## total                 8.834    0.028   8.862          0         0
+## design_matrix         0.103    0.000   0.103          0         0
+## remove_duplicates     0.018    0.000   0.017          0         0
+## reduce_basis          0.000    0.000   0.001          0         0
+## lasso                 8.403    0.036   8.440          0         0
+## total                 8.524    0.036   8.560          0         0
 ## 
 ## $lambda_star
 ## [1] 0.006550408
@@ -161151,11 +161151,11 @@
 <pre><code>## [1] "Just what do you think you're doing, Dave?"</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">hal_fit3<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.127    0.000   0.126          0         0
-## remove_duplicates     0.025    0.000   0.026          0         0
-## reduce_basis          0.015    0.000   0.014          0         0
-## lasso                 4.345    0.012   4.357          0         0
-## total                 4.497    0.012   4.509          0         0</code></pre>
+## design_matrix         0.106    0.000   0.105          0         0
+## remove_duplicates     0.023    0.000   0.023          0         0
+## reduce_basis          0.014    0.000   0.015          0         0
+## lasso                 4.097    0.028   4.126          0         0
+## total                 4.226    0.028   4.254          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 3.1622777% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">hal_fit3</a></code></pre></div>
 <pre><code>## $call
@@ -238913,11 +238913,11 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## design_matrix         0.127    0.000   0.126          0         0
-## remove_duplicates     0.025    0.000   0.026          0         0
-## reduce_basis          0.015    0.000   0.014          0         0
-## lasso                 4.345    0.012   4.357          0         0
-## total                 4.497    0.012   4.509          0         0
+## design_matrix         0.106    0.000   0.105          0         0
+## remove_duplicates     0.023    0.000   0.023          0         0
+## reduce_basis          0.014    0.000   0.015          0         0
+## lasso                 4.097    0.028   4.126          0         0
+## total                 4.226    0.028   4.254          0         0
 ## 
 ## $lambda_star
 ## [1] 0.00344104

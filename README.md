@@ -9,6 +9,9 @@ Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis
 Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
+[![CRAN](http://www.r-pkg.org/badges/version/medshift)](http://www.r-pkg.org/pkg/medshift)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/medshift)](https://CRAN.R-project.org/package=medshift)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
@@ -96,11 +99,11 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> design_matrix         0.003    0.000   0.002          0         0
-#> remove_duplicates     0.004    0.000   0.005          0         0
+#> design_matrix         0.008    0.000   0.007          0         0
+#> remove_duplicates     0.014    0.000   0.015          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
-#> lasso                 0.274    0.003   0.279          0         0
-#> total                 0.281    0.003   0.286          0         0
+#> lasso                 0.260    0.009   0.269          0         0
+#> total                 0.282    0.009   0.291          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -112,10 +115,8 @@ mean(hal_mse <- (preds - y)^2)
 
 ## Contributions
 
-`hal9001` is the primary implementation of the Highly Adaptive Lasso, an
-nonparametric function estimation procedure with numerous optimality
-properties. While contributions are very welcome, we ask that interested
-contributors consult our [contribution
+Contributions are very welcome. Interested contributors should consult
+our [contribution
 guidelines](https://github.com/tlverse/hal9001/blob/master/CONTRIBUTING.md)
 prior to submitting a pull request.
 
