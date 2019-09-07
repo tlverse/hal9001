@@ -25,6 +25,7 @@ test_y <- rbinom(n = test_n, size = 1, prob = y_prob)
 # ml implementation
 ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
 ml_hal_fit$times
+x_basis <- make_design_matrix(x, ml_hal_fit$basis_list)
 
 # training sample prediction
 preds <- predict(ml_hal_fit, new_data = x)

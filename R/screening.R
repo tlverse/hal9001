@@ -54,14 +54,17 @@ hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offse
     basis_subsample <- sort(sample(seq_along(basis_list), subsample_size, replace = FALSE))
     
     x_basis <- make_design_matrix(x, basis_list[basis_subsample])
-    screen_glmnet <- cv.glmnet(x = x_basis, y = y, family = family, intercept = FALSE, offset = offset, maxit = 1, thresh = 1, foldid = foldid, nlambda = 10)
-
-    if (is.na(null_risk)) {
-      null_risk <- screen_glmnet$cvm[1]
+    if(all(apply(x_basis,2,var)==0)){
+     reduction = 0
+    } else {
+      screen_glmnet <- cv.glmnet(x = x_basis, y = y, family = family, intercept = FALSE, offset = offset, maxit = 1, thresh = 1, foldid = foldid, nlambda = 10)
+  
+      if (is.na(null_risk)) {
+        null_risk <- screen_glmnet$cvm[1]
+      }
+  
+      reduction <- (screen_glmnet$cvm[1] - min(screen_glmnet$cvm)) / null_risk
     }
-
-    reduction <- (screen_glmnet$cvm[1] - min(screen_glmnet$cvm)) / null_risk
-
 
     if (verbose) {
       print(sprintf(
