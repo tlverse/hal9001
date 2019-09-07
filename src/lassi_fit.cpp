@@ -56,9 +56,9 @@ public:
     } else {
       xcenter = NumericVector(p, 0.0);
     }
-    
+
     xscale = calc_xscale(X, xcenter);
-    
+
     // initialize lambda_max and lambda vector
     // X_t_resid is used for lots of things:
     // strong rule
@@ -67,37 +67,36 @@ public:
     // so we compute beta updates
     // then we check strong filtering
     // then we check for kkt violations (all at once, but why)
-    
+
     lambda_max = 0;
     double new_beta;
     for (int j = 0; j < p; ++j) {
       new_beta = X_t_resid(j) / n;
       new_beta = std::abs(new_beta);
       if (new_beta > lambda_max) {
-        
+
         lambda_max = new_beta;
       }
     }
-    
+
     double log_lambda_max = log(lambda_max);
     double log_lambda_min = log(lambda_min_ratio*lambda_max);
     double lambda_step_size = (log_lambda_max - log_lambda_min) / (nlambda - 1);
-    
+
     for(int i = 0; i < nlambda; i++){
       lambdas[i] = exp(log_lambda_max - i*lambda_step_size);
     }
-    
-    
+
     //below this lambda, we must check if variable is now active.
     safe_lambda = NumericVector(p, lambda_max);
-    
+
     beta_mat.reserve(0.2 * p * nlambda);
   }
-  
+
   const MSpMat& get_X(){
     return(X);
   }
-  
+
   NumericVector get_beta(){
     return(beta);
   }
@@ -106,11 +105,11 @@ public:
     beta_mat.makeCompressed();
     return(beta_mat);
   }
-  
+
   NumericVector get_intercepts(){
     return(intercepts);
   }
-  
+
   NumericVector get_lambdas(){
     return(lambdas);
   }
@@ -119,14 +118,14 @@ public:
     if(new_lambdas.length()!=lambdas.length()){
       stop("length(lambdas) must match nlambda passed on construction");
     }
-    
+
     lambdas=new_lambdas;
   }
-  
+
   NumericVector get_resids(){
     return(resids);
   }
-  
+
   NumericVector get_xscale(){
     return(xscale);
   }
@@ -134,37 +133,36 @@ public:
   NumericVector get_xcenter(){
     return(xcenter);
   }
-  
+
   double X_t_resid(int j) {
     double crossprod_sum = 0;
     for (MInIterMat i_(X, j); i_; ++i_) {
       crossprod_sum += resids[i_.index()];
     }
-    
+
     if(center){
       crossprod_sum = (crossprod_sum - xcenter[j] * resid_sum) / xscale[j];
     } else {
       crossprod_sum = crossprod_sum / xscale[j];
     }
-    
+
     return(crossprod_sum);
   }
-  
+
   double get_new_beta(int j) {
     double crossprod_sum = X_t_resid(j);
     double new_beta = crossprod_sum / n + beta[j];
     return(new_beta);
   }
-  
+
   double find_lambda_max(){
     return(lambda_max);
   }
-  
-  
+
   void update_resid(int j, double beta_diff) {
-    
+
     double scaled_diff = beta_diff / xscale[j];
-    
+
     // if(center){
     //   for (int i=0; i<n; ++i) {
     //     resid_shift = scaled_diff * (X.coeff(i,j) - xcenter_j);
@@ -175,49 +173,45 @@ public:
     //   for (MInIterMat i_(X, j); i_; ++i_) {
     //     resids[i_.index()] -= scaled_diff;
     //     resid_sum -= scaled_diff;
-    //   }  
-    // }  
-    
+    //   }
+    // }
+
     for (MInIterMat i_(X, j); i_; ++i_) {
       resids[i_.index()] -= scaled_diff;
-    }  
+    }
 
     if(center){
       double resid_shift = scaled_diff * xcenter[j];
       for (int i=0; i<n; ++i) {
         resids[i] += resid_shift;
       }
-      
+
       //resid_sum is only used when centering
       resid_sum = sum(resids);
-    }  
-    
+    }
 
     rss = sum( resids * resids);
     // rss = sum(resids*resids);
   }
-  
+
   double update_coord(int j, double lambda) {
-    
+
     double new_beta = get_new_beta(j);
-    
+
     new_beta = soft_max(new_beta, lambda);
-    
+
     //if we changed this beta, we must update the residuals
     double beta_diff = new_beta-beta[j];
     if (std::abs(beta_diff) > 1e-7) {
-      
+
       update_resid(j, beta_diff);
       beta[j] = new_beta;
     } else {
       beta_diff = 0;
     }
-    
-    
     return(beta_diff);
-    
   }
-  
+
   int update_coords(double lambda, bool active_set) {
     // update coordinates one-by-one
     int j;
@@ -227,7 +221,7 @@ public:
     for (j = 0; j < X.outerSize(); ++j) {
       if(!(active_set) || beta[j]!=0){
         update = update_coord(j, lambda);
-        
+
         // see if we decreased the rss
         // todo: should be relative to null deviance
         if(update!=0){
@@ -238,20 +232,20 @@ public:
         }
       }
     }
-    
+
     // update intercept
     double mean_resid = mean(resids);
     resids = resids - mean_resid;
     intercept += mean_resid;
-    
+
     // Rcout << "Updated " << updated << " coords" << std::endl;
     return(updates);
   }
-  
+
   int check_kkt(double lambda) {
     return(0);
   }
-  
+
   int lassi_fit_cd(int lambda_step, bool active_set, int nsteps) {
     double lambda = lambdas[lambda_step];
 
@@ -262,7 +256,7 @@ public:
     // Rcout << "Starting mse " << mse << std::endl;
     for (step_num = 0; step_num < nsteps; step_num++) {
       last_rss = rss;
-      
+
       updated = update_coords(lambda, active_set);
       // rss = sum(resids*resids);
       // we failed to substantially improve any coords
@@ -277,29 +271,25 @@ public:
         break;
       }
     }
-    
-    
+
     //copy nz betas into beta_mat col
     for (int j = 0; j < p; j++) {
       if(beta[j]!=0){
         beta_mat.insert(j, lambda_step) = beta[j];
       }
     }
-    
+
     intercepts[lambda_step] = intercept;
-    
     return(step_num);
   }
 
-
   NumericVector complex_approach(int lambda_step){
-    
     // use active set
     // update_coords until convergence
     // check kkt for strong set, if violations, add to active, continue iterating
     // check kkt for all preds, if violations, add to active, recompute strong, continue iterating
     // basically, prioritize strong set before other preds when activating vars
-    
+
     // kkt violations in non strong preds are very rare
     // step 2 is active set
     // step 1 is strong set
@@ -318,7 +308,7 @@ public:
       old_lambda = lambdas[lambda_step-1];
     }
     double strong_criterion = 2*lambda - old_lambda;
-    
+
     Timer timer;
     timer.step("start");
     while((steps<max_steps ) && (step_num>=0)){
@@ -327,7 +317,7 @@ public:
       int checked=0;
       double max_update=0.0;
       for(int j=0; j<p; j++){
-        
+
         // only update if step_num matches the variable state
         if((variable_state[j]==step_num) && lambda < safe_lambda[j]){
           checked++;
@@ -335,39 +325,37 @@ public:
           update = X_t_resid(j) / n;
           double old_beta = beta[j];
           double new_beta = update + old_beta;
-          
+
           new_beta = soft_max(new_beta, lambda);
           //if we changed this beta, we must update the residuals
           double beta_diff = new_beta-beta[j];
           if (std::abs(beta_diff) > 1e-7) {
-            
+
             update_resid(j, beta_diff);
             beta[j] = new_beta;
             updates++;
-          } 
-          
+          }
+
           double something = beta_diff * beta_diff;
           if(something>max_update){
             max_update=something;
           }
-          
+
           if(std::abs(update) > lambda){
             if(step_num<2){
-              // if not already, put in active set  
+              // if not already, put in active set
               variable_state[j]=2;
             }
-            
-            
-            
+
           } else {
             //put in strong if not currently and criteria met
             if(step_num==0){
-              
+
               //update strong
               if(std::abs(update) > strong_criterion){
                 variable_state[j]=1;
               }
-              
+
               //update safe
               //we need to start checking this predictor again
               //when lambda gets smaller than safe_lambda
@@ -376,26 +364,20 @@ public:
               // Rcout << "rnorm: " << rnorm << " update: " << update << " current: " 
               //       << lambda << " next_safe: "<< safe_lambda[j] << std::endl;
             }
-            
-            
           }
-
-          
         }
       }
-      
-      
+
       if(max_update<thresh){
         // Rcout << "rss: " << rss << std::endl;
         updates=0;
-        
       }
-      
+
       timer.step(sprintf<100>("%d, %d, %d, %d, %f", steps, step_num, checked, updates, max_update));
       // Rcout << "step: " << steps << " step_num: " << step_num << " updates: " << updates
       //       << " loop_rss: "<< loop_rss << " old_rss: "<< old_rss << " ratio: " << (loop_rss-old_rss)/loop_rss << std::endl;
       loop_rss = rss;
-      
+
       if(updates==0){
         //if we failed to update, move on to the next step (lower numbered)
         step_num--;
@@ -403,19 +385,15 @@ public:
         //if we updated anything, we should go back to the active set step
         step_num=2;
       }
-      
       steps++;
     }
-    
     //copy nz betas into beta_mat col
     for (int j = 0; j < p; j++) {
       if(beta[j]!=0){
         beta_mat.insert(j, lambda_step) = beta[j];
       }
     }
-    
     intercepts[lambda_step] = intercept;
-    
     NumericVector res(timer);
     return(res);
   }
@@ -426,7 +404,7 @@ RCPP_MODULE(lassi_module) {
   .constructor<MSpMat, NumericVector, int, double, bool>()
   .method( "update_coord", &Lassi::update_coord)
   .method( "update_coords", &Lassi::update_coords)
-  
+
   .method( "lassi_fit_cd", &Lassi::lassi_fit_cd )
   .method( "complex_approach", &Lassi::complex_approach)
   .method( "X_t_resid", &Lassi::X_t_resid)

@@ -4,7 +4,12 @@
 \alias{predict.hal9001}
 \title{Prediction from HAL fits}
 \usage{
+<<<<<<< HEAD
 \method{predict}{hal9001}(object, offset = NULL, ..., new_data)
+=======
+\method{predict}{hal9001}(object, ..., new_data,
+  new_X_unpenalized = NULL)
+>>>>>>> c94eb49259d9ea98b2546e0bdede1ecc78ab6641
 }
 \arguments{
 \item{object}{An object of class \code{hal9001}, containing the results of
@@ -18,6 +23,10 @@ fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.}
 (observations NOT used in fitting the \code{hal9001} object passed in via
 the \code{object} argument above) for which the \code{hal9001} object will
 compute predicted values.}
+
+\item{new_X_unpenalized}{(optional) if in training stage user supplied
+`X_unpenalized` #'  argument, user should also supply this matrix with the
+same number of #'  observations as `new_data`}
 }
 \description{
 Prediction from HAL fits
