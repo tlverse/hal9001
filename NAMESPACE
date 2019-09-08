@@ -10,10 +10,7 @@ export(hal_screen_basis)
 export(hal_screen_cols)
 export(hal_screen_lambda)
 export(lassi)
-<<<<<<< HEAD
 export(make_basis_list)
-=======
->>>>>>> c94eb49259d9ea98b2546e0bdede1ecc78ab6641
 export(make_design_matrix)
 export(squash_hal_fit)
 import(Rcpp)

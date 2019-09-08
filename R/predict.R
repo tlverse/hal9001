@@ -75,13 +75,13 @@ predict.hal9001 <- function(object,
   ) +
     object$coefs[1])
 
-    if (!is.null(offset)) {
-      preds <- preds + offset
-    }
-    # apply logit transformation for logistic regression predictions
-    if (object$family == "binomial") {
-      preds <- stats::plogis(preds)
-    }
+  if (!is.null(offset)) {
+    preds <- preds + offset
   }
+  # apply logit transformation for logistic regression predictions
+  if (object$family == "binomial") {
+    preds <- stats::plogis(preds)
+  }
+  
   return(preds)
 }

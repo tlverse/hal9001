@@ -109,9 +109,6 @@ fit <- glmnet(x = x_basis, y = y, family = "gaussian", offset=offset,
               intercept = FALSE,maxit=1, thresh=1,lambda=0.03)
 b3 <- coef(fit)
 
-plot(y,all_pred)
-mean((y-all_pred)^2)
-
 # hal9001 implementation without basis function reduction
 system.time({
 hal_fit_full <- fit_hal(

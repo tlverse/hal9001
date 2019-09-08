@@ -4,20 +4,12 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive Lasso}
 \usage{
-<<<<<<< HEAD
-fit_hal(X, Y, max_degree = 3, fit_type = c("glmnet", "lassi"),
-  n_folds = 10, use_min = TRUE, reduce_basis = NULL,
-  family = c("gaussian", "binomial"), return_lasso = TRUE,
-  return_x_basis = FALSE, basis_list = NULL, lambda = NULL,
-  id = NULL, offset = NULL, cv_select = TRUE, screen_basis = TRUE,
-  screen_lambda = TRUE, ..., yolo = TRUE)
-=======
 fit_hal(X, Y, X_unpenalized = NULL, degrees = NULL,
   fit_type = c("glmnet", "lassi"), n_folds = 10, use_min = TRUE,
   reduce_basis = NULL, family = c("gaussian", "binomial"),
-  return_lasso = FALSE, return_x_basis = FALSE, basis_list = NULL,
-  lambda = NULL, cv_select = TRUE, ..., yolo = TRUE)
->>>>>>> c94eb49259d9ea98b2546e0bdede1ecc78ab6641
+  return_lasso = TRUE, return_x_basis = FALSE, basis_list = NULL,
+  lambda = NULL, id = NULL, offset = NULL, cv_select = TRUE,
+  screen_basis = TRUE, screen_lambda = TRUE, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -26,17 +18,9 @@ following standard conventions in problems of statistical learning.}
 \item{Y}{A \code{numeric} vector of obervations of the outcome variable of
 interest, following standard conventions in problems of statistical learning.}
 
-<<<<<<< HEAD
-\item{max_degree}{The highest order of interaction terms for which the basis
-=======
 \item{X_unpenalized}{An input \code{matrix} with the same format as X, that
 directly get appended into the design matrix (no basis expansion) and no L-1
 penalization is placed on these covariates}
-
-\item{degrees}{The highest order of interaction terms for which the basis
->>>>>>> c94eb49259d9ea98b2546e0bdede1ecc78ab6641
-functions ought to be generated. The default (\code{NULL}) corresponds to
-generating basis functions for the full dimensionality of the input matrix.}
 
 \item{fit_type}{The specific routine to be called when fitting the LASSO
 regression in a cross-validated manner. Choosing the \code{glmnet} option
@@ -101,6 +85,10 @@ documentation for \code{glmnet} for a full list of options.}
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically acclaimed
 epic science-fiction film "2001: A Space Odyssey" (1968).}
+
+\item{max_degree}{The highest order of interaction terms for which the basis
+functions ought to be generated. The default (\code{NULL}) corresponds to
+generating basis functions for the full dimensionality of the input matrix.}
 }
 \value{
 Object of class \code{hal9001}, containing a list of basis functions,

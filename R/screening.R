@@ -44,54 +44,66 @@ hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offse
 
   null_risk <- NA
   col_results <- list()
-
+  thresh=1/n
   for (i in seq_along(col_lists)) {
     col_list <- col_lists[[i]]
     basis_list <- basis_list_cols(col_list, x)
     
     # TODO: subsample param
-    subsample_size <- min(max(100, n * 0.1), length(basis_list))
-    basis_subsample <- sort(sample(seq_along(basis_list), subsample_size, replace = FALSE))
-    
+    # subsample_size <- min(max(100, n * 0.1), length(basis_list))
+    # basis_subsample <- sort(sample(seq_along(basis_list), subsample_size, replace = FALSE))
+    basis_subsample <- seq_along(basis_list)
     x_basis <- make_design_matrix(x, basis_list[basis_subsample])
-    if(all(apply(x_basis,2,var)==0)){
-     reduction = 0
+   
+    screen_glmnet <- try({cv.glmnet(x = x_basis, y = y, family = family, intercept = FALSE, offset = offset, maxit = 10, thresh = thresh, foldid = foldid, nlambda = 20)
+    }, silent=TRUE)
+    
+    if(inherits(screen_glmnet,"try-error")){
+      reduction <- 0
+      lambda_min <- NA
+      lambda_1se <- NA
     } else {
-      screen_glmnet <- cv.glmnet(x = x_basis, y = y, family = family, intercept = FALSE, offset = offset, maxit = 1, thresh = 1, foldid = foldid, nlambda = 10)
-  
       if (is.na(null_risk)) {
         null_risk <- screen_glmnet$cvm[1]
+        old_risk <- null_risk
       }
   
-      reduction <- (screen_glmnet$cvm[1] - min(screen_glmnet$cvm)) / null_risk
+      
+      old_risk <- screen_glmnet$cvm[1]
+      new_risk <- min(screen_glmnet$cvm)
+      reduction <- (old_risk -new_risk) / null_risk
+      lambda_min <- screen_glmnet$lambda.min
+      lambda_1se <- screen_glmnet$lambda.1se
     }
+  
 
     if (verbose) {
       print(sprintf(
         "screening col %s -- null risk: %0.2f, old risk: %0.2f, new risk: %0.2f, percent reduction:%0.2f, min lambda: %0.3f",
         paste0(col_list, collapse = ","),
         null_risk,
-        screen_glmnet$cvm[1],
-        min(screen_glmnet$cvm),
+        old_risk,
+        new_risk,
         100 * reduction,
-        screen_glmnet$lambda.min
+        lambda_min
       ))
     }
 
-    keep <- (reduction > 0.01)
+    keep <- (reduction > thresh)
     if (keep) {
       new_offset <- predict(screen_glmnet, s = "lambda.min", x_basis, newoffset = offset)
       offset <- new_offset
+      old_risk <- new_risk
     }
 
     col_result <- list(
       col_list = list(col_list),
       reduction = reduction,
       null_risk = null_risk,
-      old_risk = screen_glmnet$cvm[1],
-      risk = min(screen_glmnet$cvm),
-      lambda_min = screen_glmnet$lambda.min,
-      lambda_1se = screen_glmnet$lambda.1se,
+      old_risk = old_risk,
+      risk = new_risk,
+      lambda_min = lambda_min,
+      lambda_1se = lambda_1se,
       selected = keep
     )
 
@@ -142,8 +154,6 @@ hal_screen_basis <- function(x, y, family, foldid = NULL, offset = NULL, verbose
   }
 
   # construct all basis up to max based on selected columns
-  max_degree <- 3
-
   actual_max_degree <- min(max_degree, length(good_cols))
 
   interaction_col_lists <- list()
@@ -157,7 +167,7 @@ hal_screen_basis <- function(x, y, family, foldid = NULL, offset = NULL, verbose
     interaction_screened <- hal_screen_cols(x, y,
       family = family,
       foldid = foldid,
-      offset = offset,
+      offset = screened$final_offset,
       col_lists = interaction_col_lists,
       verbose = verbose
     )
