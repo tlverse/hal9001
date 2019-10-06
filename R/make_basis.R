@@ -57,17 +57,21 @@ basis_of_degree <- function(x, degree) {
 #'
 #' @param x An input \code{matrix} containing observations and covariates
 #'  following standard conventions in problems of statistical learning.
-#' @param degrees The highest order of interaction terms for which the basis
+#' @param max_degree The highest order of interaction terms for which the basis
 #'  functions ought to be generated. The default (\code{NULL}) corresponds to
 #'  generating basis functions for the full dimensionality of the input matrix.
 #'
 #' @export
 #
-enumerate_basis <- function(x, degrees = NULL) {
+enumerate_basis <- function(x, max_degree = NULL) {
   # if degree is not specified, set it as the full dimensionality of input x
-  if (is.null(degrees)) {
-    degrees <- seq_len(ncol(x))
+  if (is.null(max_degree)) {
+    max_degree <- ncol(x)
   }
+  
+  max_degree <- min(ncol(x),max_degree)
+
+  degrees <- seq_len(max_degree)
 
   # generate all basis functions up to the specified degree
   all_bases <- lapply(degrees, function(degree) basis_of_degree(x, degree))

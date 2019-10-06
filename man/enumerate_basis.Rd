@@ -4,13 +4,13 @@
 \alias{enumerate_basis}
 \title{Enumerate Basis Functions}
 \usage{
-enumerate_basis(x, degrees = NULL)
+enumerate_basis(x, max_degree = NULL)
 }
 \arguments{
 \item{x}{An input \code{matrix} containing observations and covariates
 following standard conventions in problems of statistical learning.}
 
-\item{degrees}{The highest order of interaction terms for which the basis
+\item{max_degree}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 }

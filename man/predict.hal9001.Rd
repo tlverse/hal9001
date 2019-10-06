@@ -4,12 +4,17 @@
 \alias{predict.hal9001}
 \title{Prediction from HAL fits}
 \usage{
-\method{predict}{hal9001}(object, ..., new_data,
-  new_X_unpenalized = NULL)
+\method{predict}{hal9001}(object, offset = NULL, lambda = NULL, ...,
+  new_data, new_X_unpenalized = NULL)
 }
 \arguments{
 \item{object}{An object of class \code{hal9001}, containing the results of
 fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.}
+
+\item{offset}{A vector of offsets. Must be provided if provided at training}
+
+\item{lambda}{A single lambda value or a vector of lambdas to use for prediction.
+If null, use the lambda selected by cv.lasso}
 
 \item{...}{Additional arguments passed to \code{predict} as necessary.}
 

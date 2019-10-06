@@ -4,7 +4,7 @@
 \alias{SL.hal9001}
 \title{Wrapper for Classic SuperLearner}
 \usage{
-SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("glmnet",
+SL.hal9001(Y, X, newX = NULL, max_degree = 3, fit_type = c("glmnet",
   "lassi"), n_folds = 10, use_min = TRUE, family = stats::gaussian(),
   obsWeights = rep(1, length(Y)), ...)
 }
@@ -16,8 +16,8 @@ SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("glmnet",
 \item{newX}{A matrix of new observations on which to obtain predictions. The
 default of \code{NULL} computes predictions on training inputs \code{X}.}
 
-\item{degrees}{The highest order of interaction terms for which the basis
-functions ought to be generated. The default (\code{NULL}) corresponds to
+\item{max_degree}{The highest order of interaction terms for which the basis
+functions ought to be generated. (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
 \item{fit_type}{The specific routine to be called when fitting the LASSO

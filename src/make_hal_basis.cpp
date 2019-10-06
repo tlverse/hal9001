@@ -39,7 +39,7 @@ BasisMap enumerate_basis(const NumericMatrix& X_sub,
 //'
 //' @param X_sub A subset of the columns of X, the original design matrix.
 //' @param cols An index of the columns that were reduced to by sub-setting.
-//'
+//' @export
 // [[Rcpp::export]]
 List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols){
 

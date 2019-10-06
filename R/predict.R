@@ -6,6 +6,9 @@
 #'
 #' @param object An object of class \code{hal9001}, containing the results of
 #'  fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.
+#' @param offset A vector of offsets. Must be provided if provided at training
+#' @param lambda A single lambda value or a vector of lambdas to use for prediction.
+#' If null, use the lambda selected by cv.lasso
 #' @param ... Additional arguments passed to \code{predict} as necessary.
 #' @param new_data A \code{matrix} or \code{data.frame} containing new data
 #'  (observations NOT used in fitting the \code{hal9001} object passed in via
@@ -22,6 +25,8 @@
 #' @export
 #
 predict.hal9001 <- function(object,
+                            offset = NULL,
+                            lambda = NULL,
                             ...,
                             new_data,
                             new_X_unpenalized = NULL) {
@@ -70,9 +75,13 @@ predict.hal9001 <- function(object,
   ) +
     object$coefs[1])
 
+  if (!is.null(offset)) {
+    preds <- preds + offset
+  }
   # apply logit transformation for logistic regression predictions
   if (object$family == "binomial") {
     preds <- stats::plogis(preds)
   }
+  
   return(preds)
 }

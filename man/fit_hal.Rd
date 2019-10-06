@@ -4,11 +4,12 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive Lasso}
 \usage{
-fit_hal(X, Y, X_unpenalized = NULL, degrees = NULL,
+fit_hal(X, Y, X_unpenalized = NULL, max_degree = 3,
   fit_type = c("glmnet", "lassi"), n_folds = 10, use_min = TRUE,
   reduce_basis = NULL, family = c("gaussian", "binomial"),
-  return_lasso = FALSE, return_x_basis = FALSE, basis_list = NULL,
-  lambda = NULL, cv_select = TRUE, ..., yolo = TRUE)
+  return_lasso = TRUE, return_x_basis = FALSE, basis_list = NULL,
+  lambda = NULL, id = NULL, offset = NULL, cv_select = TRUE,
+  screen_basis = FALSE, screen_lambda = FALSE, ..., yolo = TRUE)
 }
 \arguments{
 \item{X}{An input \code{matrix} containing observations and covariates
@@ -21,7 +22,7 @@ interest, following standard conventions in problems of statistical learning.}
 directly get appended into the design matrix (no basis expansion) and no L-1
 penalization is placed on these covariates}
 
-\item{degrees}{The highest order of interaction terms for which the basis
+\item{max_degree}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
@@ -66,11 +67,21 @@ automatically select a CV-optimal value of this regularization parameter. If
 specified, the Lasso L1 regression model will be fit via \code{glmnet},
 returning regularized coefficient values for each value in the input array.}
 
+\item{id}{a vector of id values, used to generate cross-validation folds for cv.lambda}
+
+\item{offset}{a vector of offset values, used in fitting}
+
 \item{cv_select}{A \code{logical} specifying whether the array of values
 specified should be passed to \code{cv.glmnet} in order to pick the optimal
 value (based on cross-validation) (when set to \code{TRUE}) or to simply
 fit along the sequence of values (or single value) using \code{glmnet} (when
 set to \code{FALSE}).}
+
+\item{screen_basis}{If TRUE, use a screening procedure to reduce the number
+of basis functions fitted}
+
+\item{screen_lambda}{If TURE, use a screening procedure to reduce the number of
+lambda values evaluated}
 
 \item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
 documentation for \code{glmnet} for a full list of options.}
