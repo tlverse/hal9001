@@ -68,6 +68,8 @@ enumerate_basis <- function(x, max_degree = NULL) {
   if (is.null(max_degree)) {
     max_degree <- ncol(x)
   }
+  
+  max_degree <- min(ncol(x),max_degree)
 
   degrees <- seq_len(max_degree)
 
