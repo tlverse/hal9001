@@ -33,7 +33,7 @@ pred_hal_sl_test <- as.numeric(predict(hal_sl, newX = test_x)$pred)
 sl <- SuperLearner(Y = y, X = x, SL.lib = c(
   "SL.mean", "SL.glm", "SL.glmnet",
   "SL.hal9001"
-))
+), cvControl = list(validRows=hal_sl$validRows))
 pred_sl_train <- as.numeric(predict(sl, newX = x)$pred)
 pred_sl_test <- as.numeric(predict(sl, newX = test_x)$pred)
 
