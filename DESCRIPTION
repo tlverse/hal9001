@@ -1,6 +1,6 @@
 Package: hal9001
 Title: The Scalable Highly Adaptive Lasso
-Version: 0.2.2
+Version: 0.2.3
 Authors@R: c(
   person("Jeremy", "Coyle", email = "tlverse@gmail.com",
          role = c("aut", "cre"),
@@ -66,4 +66,4 @@ Remotes:
   github::tlverse/origami,
   github::benkeser/halplus
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.1

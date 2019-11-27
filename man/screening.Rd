@@ -7,14 +7,35 @@
 \alias{hal_screen_lambda}
 \title{Screen HAL Columns, Basis Functions, and lambda}
 \usage{
-hal_screen_cols(x, y, family, col_lists = NULL, foldid = NULL,
-  offset = NULL, verbose = FALSE)
+hal_screen_cols(
+  x,
+  y,
+  family,
+  col_lists = NULL,
+  foldid = NULL,
+  offset = NULL,
+  verbose = FALSE
+)
 
-hal_screen_basis(x, y, family, foldid = NULL, offset = NULL,
-  verbose = FALSE, max_degree = NULL, main_terms = NULL)
+hal_screen_basis(
+  x,
+  y,
+  family,
+  foldid = NULL,
+  offset = NULL,
+  verbose = FALSE,
+  max_degree = NULL,
+  main_terms = NULL
+)
 
-hal_screen_lambda(x_basis, y, family, offset = NULL, foldid = NULL,
-  lambda = NULL)
+hal_screen_lambda(
+  x_basis,
+  y,
+  family,
+  offset = NULL,
+  foldid = NULL,
+  lambda = NULL
+)
 }
 \arguments{
 \item{x}{An input \code{matrix} containing observations and covariates

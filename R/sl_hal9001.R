@@ -1,21 +1,22 @@
 #' Wrapper for Classic SuperLearner
 #'
-#' Wrapper for package \code{SuperLearner} for objects of class \code{hal9001}
+#' Wrapper for \pkg{SuperLearner} for objects of class \code{hal9001}
 #'
 #' @param Y A \code{numeric} of outcomes.
 #' @param X A \code{matrix} of predictors/covariates.
 #' @param newX A matrix of new observations on which to obtain predictions. The
 #'  default of \code{NULL} computes predictions on training inputs \code{X}.
 #' @param max_degree The highest order of interaction terms for which the basis
-#'  functions ought to be generated. (\code{NULL}) corresponds to
-#'  generating basis functions for the full dimensionality of the input matrix.
-#' @param fit_type The specific routine to be called when fitting the LASSO
-#'  regression in a cross-validated manner. Choosing the \code{glmnet} option
-#'  will result in a call to \code{cv.glmnet} while \code{lassi} will produce
-#'  a (faster) call to a custom routine based on the \code{lassi} package.
+#'  functions ought to be generated. \code{NULL} corresponds to generating basis
+#'  functions for the full dimensionality of the input matrix.
+#' @param fit_type The specific routine to be called when fitting the Lasso
+#'  regression via cross-validation. Choosing \code{cv.glmnet} option results in
+#'  option results in a call to \code{\link[glmnet]{cv.glmnet}} while
+#'  \code{lassi} produces a (faster) call to a custom routine based on a custom
+#'  routine for fitting the Lasso.
 #' @param n_folds Integer for the number of folds to be used when splitting the
 #'  data for cross-validation. This defaults to 10 as this is the convention for
-#'  v-fold cross-validation.
+#'  V-fold cross-validation.
 #' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
 #'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 #'  to \code{"lambda.1se"}.
@@ -24,7 +25,7 @@
 #' @param obsWeights Not used by the function directly, but meant to ensure
 #'  compatibility with \code{SuperLearner}. These are passed to \code{cv.glmnet}
 #'  or \code{glmnet} through the \code{...} argument of \code{fit_hal}.
-#' @param ... Prevents process death. DON'T USE.
+#' @param ... Placeholder.
 #'
 #' @importFrom stats predict gaussian
 #'
@@ -92,7 +93,7 @@ SL.hal9001 <- function(Y,
 #'
 #' @param object A fitted object of class \code{hal9001}.
 #' @param newdata A matrix of new observations on which to obtain predictions.
-#' @param ... Prevents process death. WHY WOULD YOU PUT ANYTING IN HERE?
+#' @param ... Placeholder.
 #'
 #' @importFrom stats predict
 #'

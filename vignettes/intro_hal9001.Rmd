@@ -4,7 +4,7 @@ author: "[Nima Hejazi](https://nimahejazi.org) and [Jeremy
   Coyle](https://github.com/jeremyrcoyle)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: vignette-refs.bib
+bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteIndexEntry{Introduction to the HAL estimator}
   %\VignetteEngine{knitr::rmarkdown}

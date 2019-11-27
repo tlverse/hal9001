@@ -4,40 +4,59 @@
 \alias{fit_hal}
 \title{HAL: The Highly Adaptive Lasso}
 \usage{
-fit_hal(X, Y, X_unpenalized = NULL, max_degree = 3,
-  fit_type = c("glmnet", "lassi"), n_folds = 10, use_min = TRUE,
-  reduce_basis = NULL, family = c("gaussian", "binomial"),
-  return_lasso = TRUE, return_x_basis = FALSE, basis_list = NULL,
-  lambda = NULL, id = NULL, offset = NULL, cv_select = TRUE,
-  screen_basis = FALSE, screen_lambda = FALSE, ..., yolo = TRUE)
+fit_hal(
+  X,
+  Y,
+  X_unpenalized = NULL,
+  max_degree = 3,
+  fit_type = c("glmnet", "lassi"),
+  n_folds = 10,
+  foldid = NULL,
+  use_min = TRUE,
+  reduce_basis = NULL,
+  family = c("gaussian", "binomial"),
+  return_lasso = TRUE,
+  return_x_basis = FALSE,
+  basis_list = NULL,
+  lambda = NULL,
+  id = NULL,
+  offset = NULL,
+  cv_select = TRUE,
+  screen_basis = FALSE,
+  screen_lambda = FALSE,
+  ...,
+  yolo = TRUE
+)
 }
 \arguments{
-\item{X}{An input \code{matrix} containing observations and covariates
-following standard conventions in problems of statistical learning.}
+\item{X}{An input \code{matrix} containing observations and covariates.}
 
-\item{Y}{A \code{numeric} vector of obervations of the outcome variable of
-interest, following standard conventions in problems of statistical learning.}
+\item{Y}{A \code{numeric} vector of obervations of the outcome variable.}
 
 \item{X_unpenalized}{An input \code{matrix} with the same format as X, that
-directly get appended into the design matrix (no basis expansion) and no L-1
-penalization is placed on these covariates}
+directly get appended into the design matrix (no basis expansion). No L-1
+penalization is performed on these covariates.}
 
 \item{max_degree}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
-\item{fit_type}{The specific routine to be called when fitting the LASSO
+\item{fit_type}{The specific routine to be called when fitting the Lasso
 regression in a cross-validated manner. Choosing the \code{glmnet} option
-will result in a call to \code{cv.glmnet} while \code{lassi} will produce
-a (faster) call to a custom LASSO routine using the \code{origami} package.}
+will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
+will produce a (faster) call to a custom Lasso routine.}
 
 \item{n_folds}{Integer for the number of folds to be used when splitting the
-data for cross-validation. This defaults to 10 as this is the convention for
-v-fold cross-validation.}
+data for V-fold cross-validation. This defaults to 10.}
 
-\item{use_min}{Determines which lambda is selected from \code{cv.glmnet}.
-\code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
-to \code{"lambda.1se"}.}
+\item{foldid}{An optional vector of values between 1 and \code{n_folds}
+identifying what fold each observation is in. If supplied, \code{n_folds}
+can be missing. When supplied, this is passed to
+\code{\link[glmnet]{cv.glmnet}}.}
+
+\item{use_min}{Determines which lambda is selected from
+\code{\link[glmnet]{cv.glmnet}}. \code{TRUE} corresponds to
+\code{"lambda.min"} and \code{FALSE} corresponds to \code{"lambda.1se"}.}
 
 \item{reduce_basis}{A \code{numeric} value bounded in the open interval (0,1)
 indicating the minimum proportion of 1's in a basis function column needed
@@ -62,29 +81,31 @@ structure is dim = (n * 2^(d - 1)), where n is the number of observations
 and d is the number of columns in X.}
 
 \item{lambda}{A user-specified array of values of the lambda tuning parameter
-of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
-automatically select a CV-optimal value of this regularization parameter. If
-specified, the Lasso L1 regression model will be fit via \code{glmnet},
-returning regularized coefficient values for each value in the input array.}
+of the Lasso L1 regression. If \code{NULL}, \code{\link[glmnet]{cv.glmnet}}
+will be used to automatically select a CV-optimal value of this
+regularization parameter. If specified, the Lasso L1 regression model will
+be fit via \code{glmnet}, returning regularized coefficient values for each
+value in the input array.}
 
-\item{id}{a vector of id values, used to generate cross-validation folds for cv.lambda}
+\item{id}{a vector of ID values, used to generate cross-validation folds for
+cross-validated selection of the regularization parameter lambda.}
 
-\item{offset}{a vector of offset values, used in fitting}
+\item{offset}{a vector of offset values, used in fitting.}
 
 \item{cv_select}{A \code{logical} specifying whether the array of values
-specified should be passed to \code{cv.glmnet} in order to pick the optimal
-value (based on cross-validation) (when set to \code{TRUE}) or to simply
-fit along the sequence of values (or single value) using \code{glmnet} (when
-set to \code{FALSE}).}
+specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
+pick the optimal value (based on cross-validation) (when set to \code{TRUE})
+or to simply fit along the sequence of values (or single value) using
+\code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
 
 \item{screen_basis}{If TRUE, use a screening procedure to reduce the number
-of basis functions fitted}
+of basis functions fitted.}
 
-\item{screen_lambda}{If TURE, use a screening procedure to reduce the number of
-lambda values evaluated}
+\item{screen_lambda}{If TURE, use a screening procedure to reduce the number
+of lambda values evaluated.}
 
-\item{...}{Other arguments passed to \code{cv.glmnet}. Please consult the
-documentation for \code{glmnet} for a full list of options.}
+\item{...}{Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
+consult its documentation for a full list of options.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically acclaimed
@@ -96,13 +117,13 @@ Object of class \code{hal9001}, containing a list of basis functions,
  (for assessing computational efficiency).
 }
 \description{
-Estimation procedure for HAL, the Highly Adaptive LASSO
+Estimation procedure for HAL, the Highly Adaptive Lasso
 }
 \details{
 The procedure uses a custom C++ implementation to generate a design
  matrix consisting of basis functions corresponding to covariates and
  interactions of covariates and to remove duplicate columns of indicators.
- The LASSO regression is fit to this (usually) very wide matrix using either
+ The Lasso regression is fit to this (usually) very wide matrix using either
  a custom implementation (based on the \code{origami} package) or by a call
  to \code{cv.glmnet} from the \code{glmnet} package.
 }

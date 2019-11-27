@@ -1,13 +1,13 @@
 ## Test environments
-* local OS X install, R 3.4.0
-* ubuntu 12.04 (on travis-ci), R 3.4.0
-* windows (on appveyor), R 3.4.0
+* local OS X install, R 3.6.1
+* local ubuntu 18.04 (and 16.04 travis-ci), R 3.6.1
+* Windows (on appveyor and CRAN winbuilder), R 3.6.1
 
 ## R CMD check results
-There were no ERRORs or WARNINGs
-
-There were 0 NOTEs
+* There were 0 ERRORs
+* There were 0 WARNINGs
+* There were 0 NOTEs
 
 ## Downstream dependencies
-There are no known downstream dependencies. This is a new CRAN submission.
-
+* There are no known downstream dependencies.
+* This is a new CRAN submission.
