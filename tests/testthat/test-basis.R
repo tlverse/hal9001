@@ -19,13 +19,18 @@ basis_test <- function(x) {
 
 basis_timing <- function(x) {
   basis_list <- enumerate_basis(x)
-  microbenchmark({
-    hal:::makeSparseMat(x)
-  }, {
-    basis_list <- enumerate_basis(x)
-  }, {
-    x_basis <- make_design_matrix(x, basis_list)
-  }, times = 1)
+  microbenchmark(
+    {
+      hal:::makeSparseMat(x)
+    },
+    {
+      basis_list <- enumerate_basis(x)
+    },
+    {
+      x_basis <- make_design_matrix(x, basis_list)
+    },
+    times = 1
+  )
 }
 
 n <- 100

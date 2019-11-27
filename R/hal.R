@@ -146,7 +146,7 @@ fit_hal <- function(X,
         foldid = foldid,
         max_degree = max_degree
       )
-      basis_lists <- lapply(good_basis, basis_list_cols,X)
+      basis_lists <- lapply(good_basis, basis_list_cols, X)
       basis_list <- unlist(basis_lists, recursive = FALSE)
     } else {
       basis_list <- enumerate_basis(X, max_degree)
@@ -201,8 +201,10 @@ fit_hal <- function(X,
 
   # fit Lasso regression
   if (fit_type == "lassi") {
-    warning(paste("Fit method lassi is experimental.",
-                  "We recommend using fit_type='glmnet' in nearly all cases."))
+    warning(paste(
+      "Fit method lassi is experimental.",
+      "We recommend using fit_type='glmnet' in nearly all cases."
+    ))
 
     # custom Lasso implementation using the origami package
     hal_lasso <- cv_lasso(x_basis = x_basis, y = Y, n_folds = n_folds)

@@ -82,6 +82,6 @@ predict.hal9001 <- function(object,
   if (object$family == "binomial") {
     preds <- stats::plogis(preds)
   }
-  
+
   return(preds)
 }
