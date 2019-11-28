@@ -48,17 +48,13 @@ Suggests:
   rmarkdown,
   microbenchmark,
   future,
-  devtools,
   ggplot2,
-  wesanderson,
   dplyr,
   tidyr,
-  tidyverse,
-  bit,
   stringr,
-  SuperLearner,
+  bit,
   data.table,
-  hal
+  SuperLearner
 LinkingTo:
   Rcpp,
   RcppEigen

@@ -17,7 +17,6 @@ knitr::opts_chunk$set(echo = TRUE)
 set.seed(7194568)
 
 library(ggplot2)
-library(wesanderson)
 library(stringr)
 library(tidyverse)
 
