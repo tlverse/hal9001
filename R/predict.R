@@ -62,7 +62,8 @@ predict.hal9001 <- function(object,
     }
   )
 
-  # prediction and training phases should have same column rank of X_unpenalized
+  # column rank of X_unpenalized should be consistent between the prediction
+  # and training phases
   assertthat::assert_that(object$unpenalized_covariates ==
     new_unpenalized_covariates)
   if (new_unpenalized_covariates > 0) {

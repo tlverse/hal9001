@@ -1,12 +1,12 @@
 context("Unit test for elementary basis function reduction procedure.")
 set.seed(45791)
+library(origami)
 
 # generate simple test data
 n <- 100
 p <- 10
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
-library(origami)
 
 system.time({
   new_i <- 1
@@ -26,8 +26,8 @@ system.time({
     # b1 = enumerate_basis(x[new_i,,drop=FALSE],1:3)
     # x_basis <- make_design_matrix(x,c(old_basis,b1))
     # screen_glmnet <- cv.glmnet(x = x_basis, y = y, family = "gaussian",
-    #                            intercept = TRUE,maxit=1,thresh=1,foldid=foldid,nlambda=10,
-    #                            keep=TRUE)
+    #                            intercept = TRUE, maxit=1, thresh=1,
+    #                            foldid=foldid, nlambda=10, keep=TRUE)
     # lambda_min_index <- which.min(screen_glmnet$cvm)
     # cvm_min <- min(screen_glmnet$cvm)
     # preds <- screen_glmnet$fit.preval[,lambda_min_index]
@@ -36,7 +36,8 @@ system.time({
     x_basis <- make_design_matrix(x, b1)
     screen_glmnet <- cv.glmnet(
       x = x_basis, y = y, family = "gaussian", offset = offset,
-      intercept = FALSE, maxit = 10, thresh = 1e-1, foldid = foldid, nlambda = 10,
+      intercept = FALSE, maxit = 10, thresh = 1e-1, foldid = foldid,
+      nlambda = 10,
       keep = TRUE
     )
     lambda_min_index <- which.min(screen_glmnet$cvm)
@@ -59,11 +60,12 @@ system.time({
       old_basis <- unique(c(old_basis, b1))
     }
 
-
-
     mses <- c(mses, old_mse)
     recent_mses <- mses[(max(length(mses) - 10, 0) + 1):length(mses)]
-    r <- lm.fit(cbind(rep(1, length(recent_mses)), 1:length(recent_mses)), recent_mses)
+    r <- lm.fit(
+      cbind(rep(1, length(recent_mses)), 1:length(recent_mses)),
+      recent_mses
+    )
     rate <- unlist(coef(r)[2] / coef(r)[1])
     if (is.na(rate)) {
       rate <- -Inf
@@ -100,7 +102,6 @@ fit <- glmnet(
   x = x_basis, y = y, family = "gaussian", offset = offset,
   intercept = FALSE, lambda = 0.03
 )
-
 b1 <- coef(fit)
 
 fit <- glmnet(
@@ -131,7 +132,7 @@ hal_fit_full$times
 hal_pred_full <- predict(hal_fit_full, new_data = x)
 mse_hal_full <- mean((y - hal_pred_full)^2)
 
-# hal9001 implementation without basis function reduction
+# hal9001 implementation with basis function reduction
 hal_fit_reduced <- fit_hal(
   X = x, Y = y, fit_type = "lassi",
   return_lasso = TRUE,

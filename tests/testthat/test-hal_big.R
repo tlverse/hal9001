@@ -25,7 +25,10 @@ test_y <- rbinom(n = test_n, size = 1, prob = y_prob)
 col_lists <- as.list(1:p)
 i <- 1
 
-linear_glmnet <- glmnet(x = cbind(y, y), y = y, family = "binomial", maxit = 1, thresh = 0.01)
+linear_glmnet <- glmnet(
+  x = cbind(y, y), y = y, family = "binomial", maxit = 1,
+  thresh = 0.01
+)
 linear_glmnet$lambda
 
 # TODO: test screening functionality

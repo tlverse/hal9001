@@ -102,6 +102,7 @@ fit_hal <- function(X,
                     screen_lambda = FALSE,
                     ...,
                     yolo = TRUE) {
+
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
@@ -201,9 +202,9 @@ fit_hal <- function(X,
 
   # fit Lasso regression
   if (fit_type == "lassi") {
-    warning(paste(
-      "Fit method lassi is experimental.",
-      "We recommend using fit_type='glmnet' in nearly all cases."
+    message(paste(
+      "'lassi' is experimental:",
+      "fit_type='glmnet' is recommended in nearly all cases."
     ))
 
     # custom Lasso implementation using the origami package
@@ -290,7 +291,7 @@ fit_hal <- function(X,
     basis_list = basis_list,
     col_lists = col_lists,
     copy_map = copy_map,
-    coefs = coefs,
+    coefs = as.matrix(coefs),
     times = times,
     lambda_star = lambda_star,
     reduce_basis = reduce_basis,
