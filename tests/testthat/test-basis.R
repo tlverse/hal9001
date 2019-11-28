@@ -10,27 +10,29 @@ compare_basis <- function(ab1, ab2) {
   all(basis_str1 %in% basis_str2) && all(basis_str2 %in% basis_str1)
 }
 
-basis_test <- function(x) {
-  basis_list <- enumerate_basis(x)
-  x_basis <- make_design_matrix(x, basis_list)
-  x_basis_hal <- hal:::makeSparseMat(x)
-  expect_true(compare_basis(x_basis, x_basis_hal))
-}
+if ("hal" %in% installed.packages()) {
+  basis_test <- function(x) {
+    basis_list <- enumerate_basis(x)
+    x_basis <- make_design_matrix(x, basis_list)
+    x_basis_hal <- hal:::makeSparseMat(x)
+    expect_true(compare_basis(x_basis, x_basis_hal))
+  }
 
-basis_timing <- function(x) {
-  basis_list <- enumerate_basis(x)
-  microbenchmark(
-    {
-      hal:::makeSparseMat(x)
-    },
-    {
-      basis_list <- enumerate_basis(x)
-    },
-    {
-      x_basis <- make_design_matrix(x, basis_list)
-    },
-    times = 1
-  )
+  basis_timing <- function(x) {
+    basis_list <- enumerate_basis(x)
+    microbenchmark(
+      {
+        hal:::makeSparseMat(x)
+      },
+      {
+        basis_list <- enumerate_basis(x)
+      },
+      {
+        x_basis <- make_design_matrix(x, basis_list)
+      },
+      times = 1
+    )
+  }
 }
 
 n <- 100

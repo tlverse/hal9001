@@ -59,6 +59,9 @@ if ("hal" %in% installed.packages()) {
   # how many basis functions did we generate?
   nbasis <- length(coef(halres$object))
   coefs <- coef(halres$object, "lambda.min")
+
+  # compute MSE
+  mean((pred - testY)^2)
 }
 
 #########################################
@@ -74,7 +77,7 @@ halres9001 <- fit_hal(
 )
 pred9001 <- predict(halres9001, new_data = testX)
 
-mean((pred - testY)^2)
+# compute MSE
 mean((pred9001 - testY)^2)
 
 default_coef <- halres9001$coef
@@ -112,4 +115,4 @@ pred_x_basis_uniq <- apply_copy_map(pred_x_basis, copy_map)
 # still doesn't quite match
 match_pred <- predict(hal_lasso, pred_x_basis_uniq, "lambda.min")
 mean((match_pred - testY)^2)
-plot(pred, match_pred)
+#plot(pred9001, match_pred)
