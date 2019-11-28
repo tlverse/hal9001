@@ -1,6 +1,6 @@
 Package: hal9001
 Title: The Scalable Highly Adaptive Lasso
-Version: 0.2.2
+Version: 0.2.5
 Authors@R: c(
   person("Jeremy", "Coyle", email = "tlverse@gmail.com",
          role = c("aut", "cre"),
@@ -48,22 +48,15 @@ Suggests:
   rmarkdown,
   microbenchmark,
   future,
-  devtools,
   ggplot2,
-  wesanderson,
   dplyr,
   tidyr,
-  tidyverse,
-  bit,
   stringr,
-  SuperLearner,
+  bit,
   data.table,
-  hal
+  SuperLearner
 LinkingTo:
   Rcpp,
   RcppEigen
-Remotes:
-  github::tlverse/origami,
-  github::benkeser/halplus
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.1

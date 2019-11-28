@@ -4,7 +4,7 @@ author: "[Nima Hejazi](https://nimahejazi.org) and [Jeremy
   Coyle](https://github.com/jeremyrcoyle)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: vignette-refs.bib
+bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteIndexEntry{Introduction to the HAL estimator}
   %\VignetteEngine{knitr::rmarkdown}
@@ -46,11 +46,11 @@ n_covars <- 3
 
 # make some training data
 x <- replicate(n_covars, rnorm(n_obs))
-y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n_obs, mean = 0, sd = 0.2)
+y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n_obs, mean = 0, sd = 0.2)
 
 # make some testing data
 test_x <- replicate(n_covars, rnorm(n_obs))
-test_y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n_obs, mean = 0, sd = 0.2)
+test_y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n_obs, mean = 0, sd = 0.2)
 ```
 
 Look at simulated data...
@@ -68,33 +68,33 @@ head(y)
 library(hal9001)
 ```
 
-### Fitting the HAL model: "lassi"
+<!-- ### Fitting the HAL model: "lassi" -->
 
-Our custom implementation of the Lasso has been dubbed _lassi_. For the purposes
-of HAL, it is faster than using the standard `glmnet` approach, but it is not
-yet available for generalized linear models (i.e., iteratively re-weighted least
-squares has not yet been implemented).
+<!-- Our custom implementation of the Lasso has been dubbed _lassi_. For the purposes -->
+<!-- of HAL, it is faster than using the standard `glmnet` approach, but it is not -->
+<!-- yet available for generalized linear models (i.e., iteratively re-weighted least -->
+<!-- squares has not yet been implemented). -->
 
-```{r fit-hal-lassi}
-hal_fit1 <- fit_hal(X = x, Y = y, fit_type = "lassi")
-hal_fit1$times
-```
+<!-- ```{r fit-hal-lassi} -->
+<!-- hal_fit1 <- fit_hal(X = x, Y = y, fit_type = "lassi") -->
+<!-- hal_fit1$times -->
+<!-- ``` -->
 
-```{r results-hal-lassi}
-hal_fit1
-```
+<!-- ```{r results-hal-lassi} -->
+<!-- hal_fit1 -->
+<!-- ``` -->
 
 ### Fitting the model: `glmnet`
 
-HAL may also be fit through a call to the popular `glmnet` R package:
+HAL uses the popular `glmnet` R package for the lasso step:
 
 ```{r fit-hal-glmnet}
-hal_fit2 <- fit_hal(X = x, Y = y, fit_type = "glmnet")
-hal_fit2$times
+hal_fit <- fit_hal(X = x, Y = y, fit_type = "glmnet")
+hal_fit$times
 ```
 
 ```{r results-hal-glmnet}
-hal_fit2
+hal_fit
 ```
 
 ### Reducing basis functions
@@ -112,9 +112,9 @@ The second of these two options may be invoked by specifying the `reduce_basis`
 argument to the `fit_hal` function:
 
 ```{r fit-hal-reduced}
-hal_fit3 <- fit_hal(X = x, Y = y, fit_type = "lassi",
+hal_fit2 <- fit_hal(X = x, Y = y, fit_type = "lassi",
                     reduce_basis = 1/sqrt(length(y)))
-hal_fit3$times
+hal_fit2$times
 ```
 
 In the above, all basis functions with fewer than `r 1/sqrt(length(y)) * 100`%
@@ -122,7 +122,7 @@ of observations meeting the criterion imposed are automatically removed prior to
 the Lasso step of fitting the HAL regression. The results appear below
 
 ```{r results-hal-reduced}
-hal_fit3
+hal_fit2
 ```
 
 ### Obtaining model predictions
@@ -133,13 +133,13 @@ mse <- function(preds, y) {
     mean((preds - y)^2)
 }
 
-preds_hal <- predict(object = hal_fit1, new_data = x)
+preds_hal <- predict(object = hal_fit, new_data = x)
 mse_hal <- mse(preds = preds_hal, y = y)
 mse_hal
 ```
 
 ```{r eval-oob}
-oob_hal <- predict(object = hal_fit1, new_data = test_x)
+oob_hal <- predict(object = hal_fit, new_data = test_x)
 oob_hal_mse <- mse(preds = oob_hal, y = test_y)
 oob_hal_mse
 ```

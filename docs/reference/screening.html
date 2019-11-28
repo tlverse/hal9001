@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Single Lasso estimation for cross-validation with Origami — lassi_origami • hal9001</title>
+<title>Screen HAL Columns, Basis Functions, and lambda — screening • hal9001</title>
 
 
 <!-- jquery -->
@@ -35,11 +35,8 @@
 
 
 
-<meta property="og:title" content="Single Lasso estimation for cross-validation with Origami — lassi_origami" />
-<meta property="og:description" content="Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using cross_validate from the
-origami package, which is done through cv_lasso. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
+<meta property="og:title" content="Screen HAL Columns, Basis Functions, and lambda — screening" />
+<meta property="og:description" content="Smart Screening Stuff. TODO: Document fully" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -121,43 +118,101 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Single Lasso estimation for cross-validation with Origami</h1>
-    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/cv_lasso.R'><code>R/cv_lasso.R</code></a></small>
-    <div class="hidden name"><code>lassi_origami.Rd</code></div>
+    <h1>Screen HAL Columns, Basis Functions, and lambda</h1>
+    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/screening.R'><code>R/screening.R</code></a></small>
+    <div class="hidden name"><code>screening.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using <code>cross_validate</code> from the
-<code>origami</code> package, which is done through <code>cv_lasso</code>. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.</p>
+    <p>Smart Screening Stuff. TODO: Document fully</p>
     </div>
 
-    <pre class="usage"><span class='fu'>lassi_origami</span>(<span class='no'>fold</span>, <span class='no'>data</span>, <span class='no'>lambdas</span>, <span class='kw'>center</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>hal_screen_cols</span>(
+  <span class='no'>x</span>,
+  <span class='no'>y</span>,
+  <span class='no'>family</span>,
+  <span class='kw'>col_lists</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)
+
+<span class='fu'>hal_screen_basis</span>(
+  <span class='no'>x</span>,
+  <span class='no'>y</span>,
+  <span class='no'>family</span>,
+  <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>main_terms</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)
+
+<span class='fu'>hal_screen_lambda</span>(
+  <span class='no'>x_basis</span>,
+  <span class='no'>y</span>,
+  <span class='no'>family</span>,
+  <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>fold</th>
-      <td><p>A <code>fold</code> object produced by a call to <code>make_folds</code> from
-the <code>origami</code> package.</p></td>
+      <th>x</th>
+      <td><p>An input <code>matrix</code> containing observations and covariates
+following standard conventions in problems of statistical learning.</p></td>
     </tr>
     <tr>
-      <th>data</th>
-      <td><p>A <code>dgCMatrix</code> object containing the outcome values (Y) in
-its first column and vectors corresponding to the basis functions of HAL in
-all other columns. Consult the description of the HAL algorithm for details.</p></td>
+      <th>y</th>
+      <td><p>A <code>numeric</code> vector of obervations of the outcome variable of
+interest, following standard conventions in problems of statistical learning.</p></td>
     </tr>
     <tr>
-      <th>lambdas</th>
-      <td><p>A <code>numeric</code> vector corresponding to a sequence of lambda
-values obtained by fitting the Lasso on the full data.</p></td>
+      <th>family</th>
+      <td><p>A <code>character</code> corresponding to the error family for a
+generalized linear model. Options are limited to "gaussian" for fitting a
+standard general linear model and "binomial" for logistic regression.</p></td>
     </tr>
     <tr>
-      <th>center</th>
-      <td><p>binary. If <code>TRUE</code>, covariates are centered. This is much
-slower, but matches the <code>glmnet</code> implementation. Default <code>FALSE</code>.</p></td>
+      <th>col_lists</th>
+      <td><p>a list of lists of column number, indicating which basis to screen</p></td>
+    </tr>
+    <tr>
+      <th>foldid</th>
+      <td><p>a foldid vector,as in cv.glmnet</p></td>
+    </tr>
+    <tr>
+      <th>offset</th>
+      <td><p>a vector of offset values, used in fitting</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>if TRUE, print details of screening steps</p></td>
+    </tr>
+    <tr>
+      <th>max_degree</th>
+      <td><p>The highest order of interaction terms for which the basis
+functions ought to be generated. The default (<code>NULL</code>) corresponds to
+generating basis functions for the full dimensionality of the input matrix.</p></td>
+    </tr>
+    <tr>
+      <th>main_terms</th>
+      <td><p>if TRUE, only screen interactions for siginficant main terms</p></td>
+    </tr>
+    <tr>
+      <th>x_basis</th>
+      <td><p>an x_basis sparse matrix</p></td>
+    </tr>
+    <tr>
+      <th>lambda</th>
+      <td><p>A user-specified array of values of the lambda tuning parameter
+of the Lasso L1 regression. If <code>NULL</code>, <code>cv.glmnet</code> will be used to
+automatically select a CV-optimal value of this regularization parameter. If
+specified, the Lasso L1 regression model will be fit via <code>glmnet</code>,
+returning regularized coefficient values for each value in the input array.</p></td>
     </tr>
     </table>
 

@@ -4,9 +4,18 @@
 \alias{SL.hal9001}
 \title{Wrapper for Classic SuperLearner}
 \usage{
-SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("glmnet",
-  "lassi"), n_folds = 10, use_min = TRUE, family = stats::gaussian(),
-  obsWeights = rep(1, length(Y)), ...)
+SL.hal9001(
+  Y,
+  X,
+  newX = NULL,
+  max_degree = 3,
+  fit_type = c("glmnet", "lassi"),
+  n_folds = 10,
+  use_min = TRUE,
+  family = stats::gaussian(),
+  obsWeights = rep(1, length(Y)),
+  ...
+)
 }
 \arguments{
 \item{Y}{A \code{numeric} of outcomes.}
@@ -16,18 +25,19 @@ SL.hal9001(Y, X, newX = NULL, degrees = NULL, fit_type = c("glmnet",
 \item{newX}{A matrix of new observations on which to obtain predictions. The
 default of \code{NULL} computes predictions on training inputs \code{X}.}
 
-\item{degrees}{The highest order of interaction terms for which the basis
-functions ought to be generated. The default (\code{NULL}) corresponds to
-generating basis functions for the full dimensionality of the input matrix.}
+\item{max_degree}{The highest order of interaction terms for which the basis
+functions ought to be generated. \code{NULL} corresponds to generating basis
+functions for the full dimensionality of the input matrix.}
 
-\item{fit_type}{The specific routine to be called when fitting the LASSO
-regression in a cross-validated manner. Choosing the \code{glmnet} option
-will result in a call to \code{cv.glmnet} while \code{lassi} will produce
-a (faster) call to a custom routine based on the \code{lassi} package.}
+\item{fit_type}{The specific routine to be called when fitting the Lasso
+regression via cross-validation. Choosing \code{cv.glmnet} option results in
+option results in a call to \code{\link[glmnet]{cv.glmnet}} while
+\code{lassi} produces a (faster) call to a custom routine based on a custom
+routine for fitting the Lasso.}
 
 \item{n_folds}{Integer for the number of folds to be used when splitting the
 data for cross-validation. This defaults to 10 as this is the convention for
-v-fold cross-validation.}
+V-fold cross-validation.}
 
 \item{use_min}{Determines which lambda is selected from \code{cv.glmnet}.
 \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
@@ -40,8 +50,8 @@ compatibility with \code{SuperLearner}.}
 compatibility with \code{SuperLearner}. These are passed to \code{cv.glmnet}
 or \code{glmnet} through the \code{...} argument of \code{fit_hal}.}
 
-\item{...}{Prevents process death. DON'T USE.}
+\item{...}{Placeholder.}
 }
 \description{
-Wrapper for package \code{SuperLearner} for objects of class \code{hal9001}
+Wrapper for \pkg{SuperLearner} for objects of class \code{hal9001}
 }

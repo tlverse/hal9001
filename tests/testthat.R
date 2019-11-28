@@ -1,11 +1,9 @@
 library(testthat)
-library(devtools)
+library(methods)
 library(data.table)
 library(microbenchmark)
-library(SuperLearner)
 library(glmnet)
+library(SuperLearner)
 library(hal9001)
-library(hal)
-library(methods)
 
 test_check("hal9001")

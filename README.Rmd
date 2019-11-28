@@ -1,7 +1,7 @@
 ---
 output:
   rmarkdown::github_document
-bibliography: "README-refs.bib"
+bibliography: "inst/REFERENCES.bib"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -19,8 +19,8 @@ knitr::opts_chunk$set(
 [![Travis-CI Build Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis-ci.org/tlverse/hal9001)
 [![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
 [![Coverage Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
-[![CRAN](http://www.r-pkg.org/badges/version/medshift)](http://www.r-pkg.org/pkg/medshift)
-[![CRAN downloads](https://cranlogs.r-pkg.org/badges/medshift)](https://CRAN.R-project.org/package=medshift)
+[![CRAN](http://www.r-pkg.org/badges/version/hal9001)](http://www.r-pkg.org/pkg/hal9001)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
@@ -34,20 +34,21 @@ Laan](https://vanderlaan-lab.org/)
 
 ## What's `hal9001`?
 
-`hal9001` is an R package providing an implementation of the scalable Highly
-Adaptive Lasso (HAL), a nonparametric regression estimator that applies
-L1-regularized regression (i.e., the Lasso) to a design matrix composed of
+`hal9001` is an R package providing an implementation of the scalable _highly
+adaptive lasso_ (HAL), a nonparametric regression estimator that applies
+L1-regularized regression (i.e., the lasso) to a design matrix composed of
 indicator functions corresponding to a set of covariates and interactions
 thereof. Recent theoretical results show that HAL is endowed with several
 important optimality properties, making it well-suited for the estimation of
-highly complex functional forms as well as to attain fast convergence rates of
-nuisance functions via data-adaptive techniques (i.e., machine learning) in the
-context of nonparametric causal inference (e.g., the construction of targeted
-minimum loss-based estimators).
+highly complex functional forms while attaining fast convergence rates
+($n^(1/4)$ and better) when used in the estimation of nuisance functions. HAL
+has been quite successfully used in the construction of estimators at the
+intersection of semiparametric theory and nonparametric causal inference (e.g.,
+the construction of efficient one-step or targeted minimum loss estimators).
 
-For detailed discussions of the Highly Adaptive Lasso estimator, the interested
-reader might consider consulting @benkeser2016hal, @vdl2017generally,
-and @vdl2017finite.
+For detailed discussions of the highly adaptive lasso estimator, consider
+consulting @benkeser2016hal, @vdl2017generally, and @vdl2017finite, among other
+recent works.
 
 ---
 
@@ -62,11 +63,11 @@ install.packages("hal9001")
 ```
 -->
 
-You can install the development version of `hal9001` from GitHub via
-[`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with
+To contribute, install the _development version_ of `hal9001` from GitHub via
+[`remotes`](https://CRAN.R-project.org/package=remotes):
 
-```{r gh-installation, eval = FALSE}
-devtools::install_github("tlverse/hal9001", build_vignettes = FALSE)
+```{r gh-master-installation, eval = FALSE}
+remotes::install_github("tlverse/hal9001", build_vignettes = FALSE)
 ```
 
 ---
@@ -90,8 +91,8 @@ library(hal9001)
 
 # simulate data
 set.seed(385971)
-n = 100
-p = 3
+n <- 100
+p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
@@ -119,13 +120,12 @@ prior to submitting a pull request.
 
 After using the `hal9001` R package, please cite the following:
 
-        @misc{coyle2018hal9001,
-          author = {Coyle, Jeremy R and Hejazi, Nima S},
-          title = {{hal9001}: The Scalable {Highly Adaptive Lasso}},
-          year  = {2018},
-          howpublished = {\url{https://github.com/tlverse/hal9001}},
-          url = {},
-          doi = {}
+        @manual{coyle2019hal9001,
+          author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
+            J},
+          title = {{\texttt{hal9001}}: The scalable highly adaptive lasso},
+          year  = {2019},
+          howpublished = {\url{https://github.com/tlverse/hal9001}}
         }
 
 ---
@@ -141,3 +141,4 @@ file `LICENSE` for details.
 ---
 
 ## References
+

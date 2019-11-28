@@ -24,6 +24,8 @@ pred_hal_test <- predict(hal, new_data = test_x)
 
 # run SL-classic with glmnet and get predictions
 hal_sl <- SuperLearner(Y = y, X = x, SL.lib = "SL.hal9001")
+sl_hal_fit <- SL.hal9001(Y = y, X = x)
+# hal9001:::predict.SL.hal9001(sl_hal_fit$fit,newX=x,newdata=x)
 pred_hal_sl_train <- as.numeric(predict(hal_sl, newX = x)$pred)
 pred_hal_sl_test <- as.numeric(predict(hal_sl, newX = test_x)$pred)
 
@@ -31,7 +33,7 @@ pred_hal_sl_test <- as.numeric(predict(hal_sl, newX = test_x)$pred)
 sl <- SuperLearner(Y = y, X = x, SL.lib = c(
   "SL.mean", "SL.glm", "SL.glmnet",
   "SL.hal9001"
-))
+), cvControl = list(validRows = hal_sl$validRows))
 pred_sl_train <- as.numeric(predict(sl, newX = x)$pred)
 pred_sl_test <- as.numeric(predict(sl, newX = test_x)$pred)
 

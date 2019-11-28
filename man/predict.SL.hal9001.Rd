@@ -11,7 +11,7 @@
 
 \item{newdata}{A matrix of new observations on which to obtain predictions.}
 
-\item{...}{Prevents process death. WHY WOULD YOU PUT ANYTING IN HERE?}
+\item{...}{Placeholder.}
 }
 \description{
 Predict method for objects of class \code{SL.hal9001}

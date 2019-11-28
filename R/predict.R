@@ -1,19 +1,22 @@
 #' Prediction from HAL fits
 #'
 #' @details Method for computing and extracting predictions from fits of the
-#'  Highly Adaptive LASSO estimator, returned as a single S3 objects of class
+#'  Highly Adaptive Lasso estimator, returned as a single S3 objects of class
 #'  \code{hal9001}.
 #'
 #' @param object An object of class \code{hal9001}, containing the results of
-#'  fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.
+#'  fitting the Highly Adaptive Lasso, as produced by a call to \code{fit_hal}.
+#' @param offset A vector of offsets. Must be provided if provided at training
+#' @param lambda A single lambda value or a vector of lambdas to use for
+#'  prediction. If \code{NULL}, use lambda from \code{\link[glmnet]{cv.glmnet}}.
 #' @param ... Additional arguments passed to \code{predict} as necessary.
 #' @param new_data A \code{matrix} or \code{data.frame} containing new data
 #'  (observations NOT used in fitting the \code{hal9001} object passed in via
 #'  the \code{object} argument above) for which the \code{hal9001} object will
 #'  compute predicted values.
-#' @param new_X_unpenalized (optional) if in training stage user supplied
-#' `X_unpenalized` #'  argument, user should also supply this matrix with the
-#' same number of #'  observations as `new_data`
+#' @param new_X_unpenalized If the user supplied \code{X_unpenalized} during
+#'  training, the user should also supply this matrix with the same number of
+#'  observations as \code{new_data}. Optional.
 #'
 #' @importFrom Matrix tcrossprod
 #' @importFrom stats plogis
@@ -22,6 +25,8 @@
 #' @export
 #
 predict.hal9001 <- function(object,
+                            offset = NULL,
+                            lambda = NULL,
                             ...,
                             new_data,
                             new_X_unpenalized = NULL) {
@@ -56,23 +61,40 @@ predict.hal9001 <- function(object,
       ncol(new_X_unpenalized)
     }
   )
-  # the prediction phase and training phase should have the same number of
-  # columns of `X_unpenalized`
-  assert_that(object$unpenalized_covariates == new_unpenalized_covariates)
+
+  # column rank of X_unpenalized should be consistent between the prediction
+  # and training phases
+  assertthat::assert_that(object$unpenalized_covariates ==
+    new_unpenalized_covariates)
   if (new_unpenalized_covariates > 0) {
     pred_x_basis <- cbind(pred_x_basis, new_X_unpenalized)
   }
 
+  browser()
   # generate predictions
-  preds <- as.vector(Matrix::tcrossprod(
-    x = pred_x_basis,
-    y = object$coefs[-1]
-  ) +
-    object$coefs[1])
+  if (ncol(object$coefs) > 1) {
+    preds <- apply(object$coefs, 2, function(hal_coefs) {
+      as.vector(Matrix::tcrossprod(
+        x = pred_x_basis,
+        y = hal_coefs[-1]
+      ) + hal_coefs[1])
+    })
+  } else {
+    preds <- as.vector(Matrix::tcrossprod(
+      x = pred_x_basis,
+      y = object$coefs[-1]
+    ) + object$coefs[1])
+  }
+
+  if (!is.null(offset)) {
+    preds <- preds + offset
+  }
 
   # apply logit transformation for logistic regression predictions
   if (object$family == "binomial") {
     preds <- stats::plogis(preds)
   }
+
+  # output
   return(preds)
 }
