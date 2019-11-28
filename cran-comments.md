@@ -1,12 +1,16 @@
 ## Test environments
-* local OS X install, R 3.6.1
-* local ubuntu 18.04 (and 16.04 travis-ci), R 3.6.1
-* Windows (on appveyor and CRAN winbuilder), R 3.6.1
+* local Ubuntu 18.04: R 3.6.1 (stable)
+* remote Ubuntu 16.04 on travis-ci:
+  * R 3.6.1 (stable)
+  * R 3.5.3 (old release)
+  * R 4.0.0 (under development)
+* local macOS install: R 3.6.1
+* Windows (on appveyor and winbuilder): R 3.6.1
 
 ## R CMD check results
-* There were 0 ERRORs
-* There were 0 WARNINGs
-* There were 0 NOTEs
+* There were no ERRORs
+* There were no WARNINGs
+* There were no NOTEs
 
 ## Downstream dependencies
 * There are no known downstream dependencies.

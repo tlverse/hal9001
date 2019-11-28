@@ -28,7 +28,6 @@ build_script:
   - travis-tool.sh install_deps
   - travis-tool.sh install_github r-lib/covr
   - travis-tool.sh install_github r-lib/sessioninfo
-  - travis-tool.sh install_github benkeser/halplus
 
 test_script:
   - travis-tool.sh run_tests
