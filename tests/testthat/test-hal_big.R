@@ -1,5 +1,4 @@
 context("HAL with screening for high-dimensional data")
-library(hal)
 set.seed(45791)
 
 # easily compute MSE

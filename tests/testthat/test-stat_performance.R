@@ -1,9 +1,9 @@
 context("Verify Statistical Performance")
 library(hal9001)
-library(hal)
+
 #########################################
 # generate training and test data
-# adapted from https://github.com/jeremyrcoyle/hal9001/issues/9
+# adapted from https://github.com/tlverse/hal9001/issues/9
 g0_linear <- function(W1, W2, W3, W4) {
   plogis(0.5 * (-0.8 * W1 + 0.39 * W2 + 0.08 * W3 - 0.12 * W4 - 0.15))
 }
@@ -46,16 +46,21 @@ testX <- X # testdata[, covars, drop = F]
 #########################################
 # hal classic fit and prediction
 
-set.seed(1234) # attempt to control randomness in cv.glmnet fold generation
-halres <- hal(Y = Y, newX = testX, X = X, verbose = FALSE, parallel = FALSE)
-pred <- halres$pred
+if ("hal" %in% installed.packages()) {
+  # NOTE: see https://github.com/benkeser/halplus
+  library(hal)
+  set.seed(1234) # attempt to control randomness in cv.glmnet fold generation
+  halres <- hal(Y = Y, newX = testX, X = X, verbose = FALSE, parallel = FALSE)
+  pred <- halres$pred
 
-# should be nonzero
-length(halres$dupInds)
+  # should be nonzero
+  length(halres$dupInds)
 
-# how many basis functions did we generate?
-nbasis <- length(coef(halres$object))
-coefs <- coef(halres$object, "lambda.min")
+  # how many basis functions did we generate?
+  nbasis <- length(coef(halres$object))
+  coefs <- coef(halres$object, "lambda.min")
+}
+
 #########################################
 # hal9001 with default arguments
 # fold_id <- sample(1:10,length(Y),replace=T)
