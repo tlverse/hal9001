@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Single Lasso estimation for cross-validation with Origami — lassi_origami • hal9001</title>
+<title>Changelog • hal9001</title>
 
 
 <!-- jquery -->
@@ -35,12 +35,7 @@
 
 
 
-<meta property="og:title" content="Single Lasso estimation for cross-validation with Origami — lassi_origami" />
-<meta property="og:description" content="Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using cross_validate from the
-origami package, which is done through cv_lasso. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="Changelog" />
 
 
 
@@ -69,7 +64,7 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -121,55 +116,28 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Single Lasso estimation for cross-validation with Origami</h1>
-    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/cv_lasso.R'><code>R/cv_lasso.R</code></a></small>
-    <div class="hidden name"><code>lassi_origami.Rd</code></div>
+      <h1>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/tlverse/hal9001/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using <code>cross_validate</code> from the
-<code>origami</code> package, which is done through <code>cv_lasso</code>. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>lassi_origami</span>(<span class='no'>fold</span>, <span class='no'>data</span>, <span class='no'>lambdas</span>, <span class='kw'>center</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>fold</th>
-      <td><p>A <code>fold</code> object produced by a call to <code>make_folds</code> from
-the <code>origami</code> package.</p></td>
-    </tr>
-    <tr>
-      <th>data</th>
-      <td><p>A <code>dgCMatrix</code> object containing the outcome values (Y) in
-its first column and vectors corresponding to the basis functions of HAL in
-all other columns. Consult the description of the HAL algorithm for details.</p></td>
-    </tr>
-    <tr>
-      <th>lambdas</th>
-      <td><p>A <code>numeric</code> vector corresponding to a sequence of lambda
-values obtained by fitting the Lasso on the full data.</p></td>
-    </tr>
-    <tr>
-      <th>center</th>
-      <td><p>binary. If <code>TRUE</code>, covariates are centered. This is much
-slower, but matches the <code>glmnet</code> implementation. Default <code>FALSE</code>.</p></td>
-    </tr>
-    </table>
-
-
+    <div id="hal9001-0-2-5" class="section level1">
+<h1 class="page-header">
+<a href="#hal9001-0-2-5" class="anchor"></a>hal9001 0.2.5</h1>
+<ul>
+<li>First CRAN release.</li>
+</ul>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-    </ul>
-
+    <div id="tocnav">
+      <h2>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+        <li><a href="#hal9001-0-2-5">0.2.5</a></li>
+      </ul>
+    </div>
   </div>
+
 </div>
 
 

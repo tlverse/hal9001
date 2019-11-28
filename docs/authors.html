@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Single Lasso estimation for cross-validation with Origami — lassi_origami • hal9001</title>
+<title>Citation and Authors • hal9001</title>
 
 
 <!-- jquery -->
@@ -29,18 +29,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
-<link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script>
+<link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script>
 
 
 
 
-<meta property="og:title" content="Single Lasso estimation for cross-validation with Origami — lassi_origami" />
-<meta property="og:description" content="Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using cross_validate from the
-origami package, which is done through cv_lasso. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="Citation and Authors" />
 
 
 
@@ -69,7 +64,7 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-citation-authors">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -81,7 +76,7 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">hal9001</a>
+        <a class="navbar-link" href="index.html">hal9001</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
       </span>
     </div>
@@ -92,13 +87,13 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
   <a href="https://tlverse.org">tlverse</a>
 </li>
 <li>
-  <a href="../articles/intro_hal9001.html">Overview</a>
+  <a href="articles/intro_hal9001.html">Overview</a>
 </li>
 <li>
-  <a href="../articles/index.html">Articles</a>
+  <a href="articles/index.html">Articles</a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="reference/index.html">Reference</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -119,58 +114,59 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
       </header>
 
 <div class="row">
-  <div class="col-md-9 contents">
+  <div class="contents col-md-9">
     <div class="page-header">
-    <h1>Single Lasso estimation for cross-validation with Origami</h1>
-    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/cv_lasso.R'><code>R/cv_lasso.R</code></a></small>
-    <div class="hidden name"><code>lassi_origami.Rd</code></div>
+      <h1>Citation</h1>
+      <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/inst/CITATION'><code>inst/CITATION</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using <code>cross_validate</code> from the
-<code>origami</code> package, which is done through <code>cv_lasso</code>. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.</p>
+    <p>Coyle JR, Hejazi NS, van der Laan MJ (2019).
+<em>hal9001: The scalable highly adaptive lasso</em>.
+R package version 0.2.5, <a href="https://github.com/tlverse/hal9001">https://github.com/tlverse/hal9001</a>. 
+</p>
+    <pre>@Manual{,
+  title = {{hal9001}: The scalable highly adaptive lasso},
+  author = {Jeremy R Coyle and Nima S Hejazi and Mark J {van der Laan}},
+  year = {2019},
+  note = {R package version 0.2.5},
+  url = {https://github.com/tlverse/hal9001},
+}</pre>
+
+    <div class="page-header">
+      <h1>Authors</h1>
     </div>
 
-    <pre class="usage"><span class='fu'>lassi_origami</span>(<span class='no'>fold</span>, <span class='no'>data</span>, <span class='no'>lambdas</span>, <span class='kw'>center</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>fold</th>
-      <td><p>A <code>fold</code> object produced by a call to <code>make_folds</code> from
-the <code>origami</code> package.</p></td>
-    </tr>
-    <tr>
-      <th>data</th>
-      <td><p>A <code>dgCMatrix</code> object containing the outcome values (Y) in
-its first column and vectors corresponding to the basis functions of HAL in
-all other columns. Consult the description of the HAL algorithm for details.</p></td>
-    </tr>
-    <tr>
-      <th>lambdas</th>
-      <td><p>A <code>numeric</code> vector corresponding to a sequence of lambda
-values obtained by fitting the Lasso on the full data.</p></td>
-    </tr>
-    <tr>
-      <th>center</th>
-      <td><p>binary. If <code>TRUE</code>, covariates are centered. This is much
-slower, but matches the <code>glmnet</code> implementation. Default <code>FALSE</code>.</p></td>
-    </tr>
-    </table>
-
-
-  </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
+    <ul class="list-unstyled">
+      <li>
+        <p><strong>Jeremy Coyle</strong>. Author, maintainer. <a href='https://orcid.org/0000-0002-9874-6649' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID'></a>
+        </p>
+      </li>
+      <li>
+        <p><strong>Nima Hejazi</strong>. Author. <a href='https://orcid.org/0000-0002-7127-2789' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID'></a>
+        </p>
+      </li>
+      <li>
+        <p><strong>David Benkeser</strong>. Contributor. <a href='https://orcid.org/0000-0002-1019-8343' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID'></a>
+        </p>
+      </li>
+      <li>
+        <p><strong>Oleg Sofrygin</strong>. Contributor. 
+        </p>
+      </li>
+      <li>
+        <p><strong>Weixin Cai</strong>. Contributor. <a href='https://orcid.org/0000-0003-2680-3066' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID'></a>
+        </p>
+      </li>
+      <li>
+        <p><strong>Mark van der Laan</strong>. Author, copyright holder, thesis advisor. <a href='https://orcid.org/0000-0003-1432-5511' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID'></a>
+        </p>
+      </li>
     </ul>
 
   </div>
+
 </div>
+
 
 
       <footer>
