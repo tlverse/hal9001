@@ -17,12 +17,13 @@ knitr::opts_chunk$set(
 # R/`hal9001`
 
 [![Travis-CI Build Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis-ci.org/tlverse/hal9001)
-[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
 [![Coverage Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
 [![CRAN](http://www.r-pkg.org/badges/version/hal9001)](http://www.r-pkg.org/pkg/hal9001)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3558314.svg)](https://doi.org/10.5281/zenodo.3558314)
 
 > The _Scalable_ Highly Adaptive Lasso
 
@@ -123,9 +124,12 @@ After using the `hal9001` R package, please cite the following:
         @manual{coyle2019hal9001,
           author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
             J},
-          title = {{\texttt{hal9001}}: The scalable highly adaptive lasso},
+          title = {{hal9001}: The scalable highly adaptive lasso},
           year  = {2019},
-          howpublished = {\url{https://github.com/tlverse/hal9001}}
+          howpublished = {\url{https://github.com/tlverse/hal9001}},
+          note = {{R} package version 0.2.5},
+          url = {https://doi.org/10.5281/zenodo.3558314},
+          doi = {10.5281/zenodo.3558314}
         }
 
 ---

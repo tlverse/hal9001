@@ -17,6 +17,7 @@ state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3558314.svg)](https://doi.org/10.5281/zenodo.3558314)
 
 > The *Scalable* Highly Adaptive Lasso
 
@@ -102,10 +103,10 @@ hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
 #> enumerate_basis       0.002    0.000   0.002          0         0
 #> design_matrix         0.001    0.000   0.001          0         0
-#> remove_duplicates     0.005    0.000   0.005          0         0
+#> remove_duplicates     0.006    0.000   0.006          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
-#> lasso                 0.278    0.012   0.290          0         0
-#> total                 0.286    0.012   0.298          0         0
+#> lasso                 0.314    0.008   0.322          0         0
+#> total                 0.323    0.008   0.331          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -132,9 +133,12 @@ After using the `hal9001` R package, please cite the following:
     @manual{coyle2019hal9001,
       author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
         J},
-      title = {{\texttt{hal9001}}: The scalable highly adaptive lasso},
+      title = {{hal9001}: The scalable highly adaptive lasso},
       year  = {2019},
-      howpublished = {\url{https://github.com/tlverse/hal9001}}
+      howpublished = {\url{https://github.com/tlverse/hal9001}},
+      note = {{R} package version 0.2.5},
+      url = {https://doi.org/10.5281/zenodo.3558314},
+      doi = {10.5281/zenodo.3558314}
     }
 ```
 
