@@ -140,12 +140,12 @@ install.packages("hal9001")
 <a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span></a>
 <a class="sourceLine" id="cb2-16" data-line-number="16">hal_fit<span class="op">$</span>times</a>
 <a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; enumerate_basis       0.001    0.001   0.001          0         0</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; enumerate_basis       0.002    0.000   0.002          0         0</span></a>
 <a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; design_matrix         0.001    0.000   0.001          0         0</span></a>
 <a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; remove_duplicates     0.005    0.000   0.005          0         0</span></a>
 <a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span></a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt; lasso                 0.256    0.003   0.264          0         0</span></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt; total                 0.263    0.004   0.271          0         0</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt; lasso                 0.278    0.012   0.290          0         0</span></a>
+<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt; total                 0.286    0.012   0.298          0         0</span></a>
 <a class="sourceLine" id="cb2-24" data-line-number="24"></a>
 <a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co"># training sample prediction</span></a>
 <a class="sourceLine" id="cb2-26" data-line-number="26">preds &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(hal_fit, <span class="dt">new_data =</span> x)</a>
