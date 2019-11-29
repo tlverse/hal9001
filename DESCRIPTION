@@ -52,6 +52,7 @@ Suggests:
   dplyr,
   tidyr,
   stringr,
+  survival,
   bit,
   data.table,
   SuperLearner

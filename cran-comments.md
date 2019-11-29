@@ -2,7 +2,6 @@
 * local Ubuntu 18.04: R 3.6.1 (stable)
 * remote Ubuntu 16.04 on travis-ci:
   * R 3.6.1 (stable)
-  * R 3.5.3 (old release)
   * R 4.0.0 (under development)
 * local macOS install: R 3.6.1
 * Windows (on appveyor and winbuilder): R 3.6.1
