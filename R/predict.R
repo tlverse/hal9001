@@ -70,20 +70,39 @@ predict.hal9001 <- function(object,
     pred_x_basis <- cbind(pred_x_basis, new_X_unpenalized)
   }
 
-  browser()
   # generate predictions
-  if (ncol(object$coefs) > 1) {
-    preds <- apply(object$coefs, 2, function(hal_coefs) {
-      as.vector(Matrix::tcrossprod(
+  if (object$family != "cox") {
+    if (ncol(object$coefs) > 1) {
+      preds <- apply(object$coefs, 2, function(hal_coefs) {
+        as.vector(Matrix::tcrossprod(
+          x = pred_x_basis,
+          y = hal_coefs[-1]
+        ) + hal_coefs[1])
+      })
+    } else {
+      preds <- as.vector(Matrix::tcrossprod(
         x = pred_x_basis,
-        y = hal_coefs[-1]
-      ) + hal_coefs[1])
-    })
+        y = object$coefs[-1]
+      ) + object$coefs[1])
+    }
   } else {
-    preds <- as.vector(Matrix::tcrossprod(
-      x = pred_x_basis,
-      y = object$coefs[-1]
-    ) + object$coefs[1])
+    # Note: there is no intercept in the Cox mode (its built into the baseline
+    #       hazard, and like it, would cancel in the partial likelihood.)
+    message(paste("The Cox Model is not commonly used for prediction,",
+                  "proceed with caution."))
+    if (ncol(object$coefs) > 1) {
+      preds <- apply(object$coefs, 2, function(hal_coefs) {
+        as.vector(Matrix::tcrossprod(
+          x = pred_x_basis,
+          y = hal_coefs
+        ))
+      })
+    } else {
+      preds <- as.vector(Matrix::tcrossprod(
+        x = pred_x_basis,
+        y = as.vector(object$coefs)
+      ))
+    }
   }
 
   if (!is.null(offset)) {
@@ -93,6 +112,8 @@ predict.hal9001 <- function(object,
   # apply logit transformation for logistic regression predictions
   if (object$family == "binomial") {
     preds <- stats::plogis(preds)
+  } else if (object$family == "cox") {
+    preds <- exp(preds)
   }
 
   # output
