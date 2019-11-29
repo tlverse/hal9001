@@ -115,4 +115,4 @@ pred_x_basis_uniq <- apply_copy_map(pred_x_basis, copy_map)
 # still doesn't quite match
 match_pred <- predict(hal_lasso, pred_x_basis_uniq, "lambda.min")
 mean((match_pred - testY)^2)
-#plot(pred9001, match_pred)
+# plot(pred9001, match_pred)

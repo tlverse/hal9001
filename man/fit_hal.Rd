@@ -14,7 +14,7 @@ fit_hal(
   foldid = NULL,
   use_min = TRUE,
   reduce_basis = NULL,
-  family = c("gaussian", "binomial"),
+  family = c("gaussian", "binomial", "cox"),
   return_lasso = TRUE,
   return_x_basis = FALSE,
   basis_list = NULL,
@@ -67,7 +67,11 @@ basis functions are used in the lasso-fitting stage of the HAL algorithm.}
 
 \item{family}{A \code{character} corresponding to the error family for a
 generalized linear model. Options are limited to "gaussian" for fitting a
-standard general linear model and "binomial" for logistic regression.}
+standard general linear model, "binomial" for penalized logistic regression,
+"cox" for a penalized proportional hazards model. Note that in the case of
+"binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
+documentation of the glmnet package should be consulted for any errors
+resulting from the Lasso fitting step in these cases.}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
 the \code{glmnet} fit of the lasso model.}

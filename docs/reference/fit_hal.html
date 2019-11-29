@@ -137,7 +137,7 @@
   <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>reduce_basis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>),
+  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>, <span class='st'>"cox"</span>),
   <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>return_x_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -212,7 +212,11 @@ basis functions are used in the lasso-fitting stage of the HAL algorithm.</p></t
       <th>family</th>
       <td><p>A <code>character</code> corresponding to the error family for a
 generalized linear model. Options are limited to "gaussian" for fitting a
-standard general linear model and "binomial" for logistic regression.</p></td>
+standard general linear model, "binomial" for penalized logistic regression,
+"cox" for a penalized proportional hazards model. Note that in the case of
+"binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
+documentation of the glmnet package should be consulted for any errors
+resulting from the Lasso fitting step in these cases.</p></td>
     </tr>
     <tr>
       <th>return_lasso</th>

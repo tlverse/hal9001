@@ -38,7 +38,11 @@
 #'  basis functions are used in the lasso-fitting stage of the HAL algorithm.
 #' @param family A \code{character} corresponding to the error family for a
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
-#'  standard general linear model and "binomial" for logistic regression.
+#'  standard general linear model, "binomial" for penalized logistic regression,
+#'  "cox" for a penalized proportional hazards model. Note that in the case of
+#'  "binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
+#'  documentation of the glmnet package should be consulted for any errors
+#'  resulting from the Lasso fitting step in these cases.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{glmnet} fit of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -90,7 +94,7 @@ fit_hal <- function(X,
                     foldid = NULL,
                     use_min = TRUE,
                     reduce_basis = NULL,
-                    family = c("gaussian", "binomial"),
+                    family = c("gaussian", "binomial", "cox"),
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     basis_list = NULL,
@@ -111,6 +115,9 @@ fit_hal <- function(X,
   # NOTE: NOT supporting binomial outcomes with lassi method currently
   if (fit_type == "lassi" && family == "binomial") {
     stop("For binary outcomes, please set argument 'fit_type' to 'glmnet'.")
+  }
+  if (fit_type == "lassi" && family == "cox") {
+    stop("For Cox models, please set argument 'fit_type' to 'glmnet'.")
   }
 
   # cast X to matrix -- and don't start the timer until after
@@ -200,6 +207,11 @@ fit_hal <- function(X,
   # bookkeeping: get end time of basis reduction procedure
   time_reduce_basis <- proc.time()
 
+  # NOTE: dumb workaround for "Cox model not implemented for sparse x in glmnet"
+  if (family == "cox") {
+    x_basis <- as.matrix(x_basis)
+  }
+
   # fit Lasso regression
   if (fit_type == "lassi") {
     message(paste(
@@ -241,7 +253,8 @@ fit_hal <- function(X,
       coefs <- stats::coef(hal_lasso)
     } else {
       hal_lasso <- glmnet::cv.glmnet(
-        x = x_basis, y = Y,
+        x = x_basis,
+        y = Y,
         nfolds = n_folds,
         family = family,
         lambda = lambda,
@@ -303,14 +316,13 @@ fit_hal <- function(X,
         NULL
       },
     glmnet_lasso =
-      # record only the best glmnet object
-    if (!cv_select & return_lasso) {
-      hal_lasso
-    } else if (cv_select & return_lasso) {
-      hal_lasso$glmnet.fit
-    } else {
-      NULL
-    },
+      if (!cv_select & return_lasso) {
+        hal_lasso
+      } else if (cv_select & return_lasso) {
+        hal_lasso$glmnet.fit
+      } else {
+        NULL
+      },
     unpenalized_covariates = unpenalized_covariates
   )
   class(fit) <- "hal9001"
