@@ -88,8 +88,8 @@ predict.hal9001 <- function(object,
   } else {
     # Note: there is no intercept in the Cox mode (its built into the baseline
     #       hazard, and like it, would cancel in the partial likelihood.)
-    message(paste("The Cox Model is not commonly used for prediction,",
-                  "proceed with caution."))
+    # message(paste("The Cox Model is not commonly used for prediction,",
+    # "proceed with caution."))
     if (ncol(object$coefs) > 1) {
       preds <- apply(object$coefs, 2, function(hal_coefs) {
         as.vector(Matrix::tcrossprod(
