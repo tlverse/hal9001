@@ -4,8 +4,14 @@
 \alias{lassi}
 \title{Custom Lasso implementation for matrices of indicator functions}
 \usage{
-lassi(x, y, lambdas = NULL, nlambda = 100, lambda_min_ratio = 0.01,
-  center = FALSE)
+lassi(
+  x,
+  y,
+  lambdas = NULL,
+  nlambda = 100,
+  lambda_min_ratio = 0.01,
+  center = FALSE
+)
 }
 \arguments{
 \item{x}{The covariate matrix}

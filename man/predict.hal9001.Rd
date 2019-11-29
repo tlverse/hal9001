@@ -4,17 +4,23 @@
 \alias{predict.hal9001}
 \title{Prediction from HAL fits}
 \usage{
-\method{predict}{hal9001}(object, offset = NULL, lambda = NULL, ...,
-  new_data, new_X_unpenalized = NULL)
+\method{predict}{hal9001}(
+  object,
+  offset = NULL,
+  lambda = NULL,
+  ...,
+  new_data,
+  new_X_unpenalized = NULL
+)
 }
 \arguments{
 \item{object}{An object of class \code{hal9001}, containing the results of
-fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.}
+fitting the Highly Adaptive Lasso, as produced by a call to \code{fit_hal}.}
 
 \item{offset}{A vector of offsets. Must be provided if provided at training}
 
-\item{lambda}{A single lambda value or a vector of lambdas to use for prediction.
-If null, use the lambda selected by cv.lasso}
+\item{lambda}{A single lambda value or a vector of lambdas to use for
+prediction. If \code{NULL}, use lambda from \code{\link[glmnet]{cv.glmnet}}.}
 
 \item{...}{Additional arguments passed to \code{predict} as necessary.}
 
@@ -23,15 +29,15 @@ If null, use the lambda selected by cv.lasso}
 the \code{object} argument above) for which the \code{hal9001} object will
 compute predicted values.}
 
-\item{new_X_unpenalized}{(optional) if in training stage user supplied
-`X_unpenalized` #'  argument, user should also supply this matrix with the
-same number of #'  observations as `new_data`}
+\item{new_X_unpenalized}{If the user supplied \code{X_unpenalized} during
+training, the user should also supply this matrix with the same number of
+observations as \code{new_data}. Optional.}
 }
 \description{
 Prediction from HAL fits
 }
 \details{
 Method for computing and extracting predictions from fits of the
- Highly Adaptive LASSO estimator, returned as a single S3 objects of class
+ Highly Adaptive Lasso estimator, returned as a single S3 objects of class
  \code{hal9001}.
 }

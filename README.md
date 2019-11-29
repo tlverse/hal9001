@@ -9,9 +9,9 @@ Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis
 Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
-[![CRAN](http://www.r-pkg.org/badges/version/medshift)](http://www.r-pkg.org/pkg/medshift)
+[![CRAN](http://www.r-pkg.org/badges/version/hal9001)](http://www.r-pkg.org/pkg/hal9001)
 [![CRAN
-downloads](https://cranlogs.r-pkg.org/badges/medshift)](https://CRAN.R-project.org/package=medshift)
+downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
@@ -29,20 +29,21 @@ Laan](https://vanderlaan-lab.org/)
 ## What’s `hal9001`?
 
 `hal9001` is an R package providing an implementation of the scalable
-Highly Adaptive Lasso (HAL), a nonparametric regression estimator that
-applies L1-regularized regression (i.e., the Lasso) to a design matrix
+*highly adaptive lasso* (HAL), a nonparametric regression estimator that
+applies L1-regularized regression (i.e., the lasso) to a design matrix
 composed of indicator functions corresponding to a set of covariates and
 interactions thereof. Recent theoretical results show that HAL is
 endowed with several important optimality properties, making it
-well-suited for the estimation of highly complex functional forms as
-well as to attain fast convergence rates of nuisance functions via
-data-adaptive techniques (i.e., machine learning) in the context of
-nonparametric causal inference (e.g., the construction of targeted
-minimum loss-based estimators).
+well-suited for the estimation of highly complex functional forms while
+attaining fast convergence rates (\(n^(1/4)\) and better) when used in
+the estimation of nuisance functions. HAL has been quite successfully
+used in the construction of estimators at the intersection of
+semiparametric theory and nonparametric causal inference (e.g., the
+construction of efficient one-step or targeted minimum loss estimators).
 
-For detailed discussions of the Highly Adaptive Lasso estimator, the
-interested reader might consider consulting Benkeser and van der Laan
-(2016), van der Laan (2017a), and van der Laan (2017b).
+For detailed discussions of the highly adaptive lasso estimator,
+consider consulting Benkeser and van der Laan (2016), van der Laan
+(2017a), and van der Laan (2017b), among other recent works.
 
 -----
 
@@ -58,11 +59,11 @@ install.packages("hal9001")
 ```
 -->
 
-You can install the development version of `hal9001` from GitHub via
-[`devtools`](https://www.rstudio.com/products/rpackages/devtools/) with
+To contribute, install the *development version* of `hal9001` from
+GitHub via [`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ``` r
-devtools::install_github("tlverse/hal9001", build_vignettes = FALSE)
+remotes::install_github("tlverse/hal9001", build_vignettes = FALSE)
 ```
 
 -----
@@ -85,12 +86,12 @@ Laan (2016) and van der Laan (2017a).
 # load the hal9001 package
 library(hal9001)
 #> Loading required package: Rcpp
-#> hal9001 v0.2.2: The Scalable Highly Adaptive Lasso
+#> hal9001 v0.2.5: The Scalable Highly Adaptive Lasso
 
 # simulate data
 set.seed(385971)
-n = 100
-p = 3
+n <- 100
+p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
@@ -99,16 +100,17 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> design_matrix         0.008    0.000   0.007          0         0
-#> remove_duplicates     0.014    0.000   0.015          0         0
+#> enumerate_basis       0.002    0.000   0.002          0         0
+#> design_matrix         0.001    0.000   0.001          0         0
+#> remove_duplicates     0.005    0.000   0.005          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
-#> lasso                 0.260    0.009   0.269          0         0
-#> total                 0.282    0.009   0.291          0         0
+#> lasso                 0.278    0.012   0.290          0         0
+#> total                 0.286    0.012   0.298          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
-#> [1] 0.005114472
+#> [1] 0.006991539
 ```
 
 -----
@@ -127,13 +129,12 @@ prior to submitting a pull request.
 After using the `hal9001` R package, please cite the following:
 
 ``` 
-    @misc{coyle2018hal9001,
-      author = {Coyle, Jeremy R and Hejazi, Nima S},
-      title = {{hal9001}: The Scalable {Highly Adaptive Lasso}},
-      year  = {2018},
-      howpublished = {\url{https://github.com/tlverse/hal9001}},
-      url = {},
-      doi = {}
+    @manual{coyle2019hal9001,
+      author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
+        J},
+      title = {{\texttt{hal9001}}: The scalable highly adaptive lasso},
+      year  = {2019},
+      howpublished = {\url{https://github.com/tlverse/hal9001}}
     }
 ```
 

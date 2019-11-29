@@ -1,6 +1,4 @@
-library(hal)
 context("Unit test for the HAL estimation procedure.")
-
 set.seed(45791)
 
 # easily compute MSE
@@ -24,8 +22,10 @@ test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(
 )
 
 # original implementation
-classic_hal_fit <- hal::hal(Y = y, X = x, verbose = FALSE)
-classic_hal_fit$times
+if ("hal" %in% installed.packages()) {
+  classic_hal_fit <- hal::hal(Y = y, X = x, verbose = FALSE)
+  classic_hal_fit$times
+}
 
 # hal9001 implementation
 hal_fit <- fit_hal(X = x, Y = y, yolo = FALSE)

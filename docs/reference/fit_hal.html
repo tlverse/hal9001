@@ -8,10 +8,12 @@
 
 <title>HAL: The Highly Adaptive Lasso — fit_hal • hal9001</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
@@ -22,8 +24,9 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -31,10 +34,11 @@
 
 
 
-<meta property="og:title" content="HAL: The Highly Adaptive Lasso — fit_hal" />
 
-<meta property="og:description" content="Estimation procedure for HAL, the Highly Adaptive LASSO" />
+<meta property="og:title" content="HAL: The Highly Adaptive Lasso — fit_hal" />
+<meta property="og:description" content="Estimation procedure for HAL, the Highly Adaptive Lasso" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -58,6 +62,7 @@
   gtag('config', 'UA-115145808-1');
 </script>
 
+
   </head>
 
   <body>
@@ -74,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
       </span>
     </div>
 
@@ -93,7 +98,6 @@
   <a href="../reference/index.html">Reference</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/tlverse/hal9001">
@@ -108,6 +112,7 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -119,73 +124,80 @@
     </div>
 
     <div class="ref-description">
-    
-    <p>Estimation procedure for HAL, the Highly Adaptive LASSO</p>
-    
+    <p>Estimation procedure for HAL, the Highly Adaptive Lasso</p>
     </div>
 
-<<<<<<< HEAD
-    <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>),
-  <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>reduce_basis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>), <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>return_x_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>id</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cv_select</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>screen_basis</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>screen_lambda</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
-=======
-    <pre class="usage"><span class='fu'>fit_hal</span>(<span class='no'>X</span>, <span class='no'>Y</span>, <span class='kw'>X_unpenalized</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>degrees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>), <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>reduce_basis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>),
-  <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>return_x_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cv_select</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
->>>>>>> c94eb49259d9ea98b2546e0bdede1ecc78ab6641
-    
+    <pre class="usage"><span class='fu'>fit_hal</span>(
+  <span class='no'>X</span>,
+  <span class='no'>Y</span>,
+  <span class='kw'>X_unpenalized</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>max_degree</span> <span class='kw'>=</span> <span class='fl'>3</span>,
+  <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span>),
+  <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>use_min</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>reduce_basis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>family</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>, <span class='st'>"cox"</span>),
+  <span class='kw'>return_lasso</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>return_x_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>basis_list</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>id</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cv_select</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>screen_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>screen_lambda</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>X</th>
-      <td><p>An input <code>matrix</code> containing observations and covariates
-following standard conventions in problems of statistical learning.</p></td>
+      <td><p>An input <code>matrix</code> containing observations and covariates.</p></td>
     </tr>
     <tr>
       <th>Y</th>
-      <td><p>A <code>numeric</code> vector of obervations of the outcome variable of
-interest, following standard conventions in problems of statistical learning.</p></td>
+      <td><p>A <code>numeric</code> vector of obervations of the outcome variable.</p></td>
     </tr>
     <tr>
-<<<<<<< HEAD
-      <th>max_degree</th>
-=======
       <th>X_unpenalized</th>
       <td><p>An input <code>matrix</code> with the same format as X, that
-directly get appended into the design matrix (no basis expansion) and no L-1
-penalization is placed on these covariates</p></td>
+directly get appended into the design matrix (no basis expansion). No L-1
+penalization is performed on these covariates.</p></td>
     </tr>
     <tr>
-      <th>degrees</th>
->>>>>>> c94eb49259d9ea98b2546e0bdede1ecc78ab6641
+      <th>max_degree</th>
       <td><p>The highest order of interaction terms for which the basis
 functions ought to be generated. The default (<code>NULL</code>) corresponds to
 generating basis functions for the full dimensionality of the input matrix.</p></td>
     </tr>
     <tr>
       <th>fit_type</th>
-      <td><p>The specific routine to be called when fitting the LASSO
+      <td><p>The specific routine to be called when fitting the Lasso
 regression in a cross-validated manner. Choosing the <code>glmnet</code> option
-will result in a call to <code>cv.glmnet</code> while <code>lassi</code> will produce
-a (faster) call to a custom LASSO routine using the <code>origami</code> package.</p></td>
+will result in a call to <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code> while <code>lassi</code>
+will produce a (faster) call to a custom Lasso routine.</p></td>
     </tr>
     <tr>
       <th>n_folds</th>
       <td><p>Integer for the number of folds to be used when splitting the
-data for cross-validation. This defaults to 10 as this is the convention for
-v-fold cross-validation.</p></td>
+data for V-fold cross-validation. This defaults to 10.</p></td>
+    </tr>
+    <tr>
+      <th>foldid</th>
+      <td><p>An optional vector of values between 1 and <code>n_folds</code>
+identifying what fold each observation is in. If supplied, <code>n_folds</code>
+can be missing. When supplied, this is passed to
+<code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>.</p></td>
     </tr>
     <tr>
       <th>use_min</th>
-      <td><p>Determines which lambda is selected from <code>cv.glmnet</code>.
-<code>TRUE</code> corresponds to <code>"lambda.min"</code> and <code>FALSE</code> corresponds
-to <code>"lambda.1se"</code>.</p></td>
+      <td><p>Determines which lambda is selected from
+<code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>. <code>TRUE</code> corresponds to
+<code>"lambda.min"</code> and <code>FALSE</code> corresponds to <code>"lambda.1se"</code>.</p></td>
     </tr>
     <tr>
       <th>reduce_basis</th>
@@ -200,7 +212,11 @@ basis functions are used in the lasso-fitting stage of the HAL algorithm.</p></t
       <th>family</th>
       <td><p>A <code>character</code> corresponding to the error family for a
 generalized linear model. Options are limited to "gaussian" for fitting a
-standard general linear model and "binomial" for logistic regression.</p></td>
+standard general linear model, "binomial" for penalized logistic regression,
+"cox" for a penalized proportional hazards model. Note that in the case of
+"binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
+documentation of the glmnet package should be consulted for any errors
+resulting from the Lasso fitting step in these cases.</p></td>
     </tr>
     <tr>
       <th>return_lasso</th>
@@ -222,41 +238,43 @@ and d is the number of columns in X.</p></td>
     <tr>
       <th>lambda</th>
       <td><p>A user-specified array of values of the lambda tuning parameter
-of the Lasso L1 regression. If <code>NULL</code>, <code>cv.glmnet</code> will be used to
-automatically select a CV-optimal value of this regularization parameter. If
-specified, the Lasso L1 regression model will be fit via <code>glmnet</code>,
-returning regularized coefficient values for each value in the input array.</p></td>
+of the Lasso L1 regression. If <code>NULL</code>, <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>
+will be used to automatically select a CV-optimal value of this
+regularization parameter. If specified, the Lasso L1 regression model will
+be fit via <code>glmnet</code>, returning regularized coefficient values for each
+value in the input array.</p></td>
     </tr>
     <tr>
       <th>id</th>
-      <td><p>a vector of id values, used to generate cross-validation folds for cv.lambda</p></td>
+      <td><p>a vector of ID values, used to generate cross-validation folds for
+cross-validated selection of the regularization parameter lambda.</p></td>
     </tr>
     <tr>
       <th>offset</th>
-      <td><p>a vector of offset values, used in fitting</p></td>
+      <td><p>a vector of offset values, used in fitting.</p></td>
     </tr>
     <tr>
       <th>cv_select</th>
       <td><p>A <code>logical</code> specifying whether the array of values
-specified should be passed to <code>cv.glmnet</code> in order to pick the optimal
-value (based on cross-validation) (when set to <code>TRUE</code>) or to simply
-fit along the sequence of values (or single value) using <code>glmnet</code> (when
-set to <code>FALSE</code>).</p></td>
+specified should be passed to <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code> in order to
+pick the optimal value (based on cross-validation) (when set to <code>TRUE</code>)
+or to simply fit along the sequence of values (or single value) using
+<code><a href='https://rdrr.io/pkg/glmnet/man/glmnet.html'>glmnet</a></code> (when set to <code>FALSE</code>).</p></td>
     </tr>
     <tr>
       <th>screen_basis</th>
       <td><p>If TRUE, use a screening procedure to reduce the number
-of basis functions fitted</p></td>
+of basis functions fitted.</p></td>
     </tr>
     <tr>
       <th>screen_lambda</th>
-      <td><p>If TURE, use a screening procedure to reduce the number of
-lambda values evaluated</p></td>
+      <td><p>If TURE, use a screening procedure to reduce the number
+of lambda values evaluated.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Other arguments passed to <code>cv.glmnet</code>. Please consult the
-documentation for <code>glmnet</code> for a full list of options.</p></td>
+      <td><p>Other arguments passed to <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>. Please
+consult its documentation for a full list of options.</p></td>
     </tr>
     <tr>
       <th>yolo</th>
@@ -265,36 +283,33 @@ selection of quotes from the HAL9000 computer, from the critically acclaimed
 epic science-fiction film "2001: A Space Odyssey" (1968).</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Object of class <code>hal9001</code>, containing a list of basis functions,
  a copy map, coefficients estimated for basis functions, and timing results
  (for assessing computational efficiency).</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The procedure uses a custom C++ implementation to generate a design
  matrix consisting of basis functions corresponding to covariates and
  interactions of covariates and to remove duplicate columns of indicators.
- The LASSO regression is fit to this (usually) very wide matrix using either
+ The Lasso regression is fit to this (usually) very wide matrix using either
  a custom implementation (based on the <code>origami</code> package) or by a call
  to <code>cv.glmnet</code> from the <code>glmnet</code> package.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#details">Details</a></li>
-          </ul>
+    </ul>
 
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -302,13 +317,16 @@ epic science-fiction film "2001: A Space Odyssey" (1968).</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

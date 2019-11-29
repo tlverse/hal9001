@@ -1,34 +1,35 @@
 #' HAL: The Highly Adaptive Lasso
 #'
-#' Estimation procedure for HAL, the Highly Adaptive LASSO
+#' Estimation procedure for HAL, the Highly Adaptive Lasso
 #'
 #' @details The procedure uses a custom C++ implementation to generate a design
 #'  matrix consisting of basis functions corresponding to covariates and
 #'  interactions of covariates and to remove duplicate columns of indicators.
-#'  The LASSO regression is fit to this (usually) very wide matrix using either
+#'  The Lasso regression is fit to this (usually) very wide matrix using either
 #'  a custom implementation (based on the \code{origami} package) or by a call
 #'  to \code{cv.glmnet} from the \code{glmnet} package.
 #'
-#' @param X An input \code{matrix} containing observations and covariates
-#'  following standard conventions in problems of statistical learning.
+#' @param X An input \code{matrix} containing observations and covariates.
 #' @param X_unpenalized An input \code{matrix} with the same format as X, that
-#'  directly get appended into the design matrix (no basis expansion) and no L-1
-#'  penalization is placed on these covariates
-#' @param Y A \code{numeric} vector of obervations of the outcome variable of
-#'  interest, following standard conventions in problems of statistical learning.
+#'  directly get appended into the design matrix (no basis expansion). No L-1
+#'  penalization is performed on these covariates.
+#' @param Y A \code{numeric} vector of obervations of the outcome variable.
 #' @param max_degree The highest order of interaction terms for which the basis
 #'  functions ought to be generated. The default (\code{NULL}) corresponds to
 #'  generating basis functions for the full dimensionality of the input matrix.
-#' @param fit_type The specific routine to be called when fitting the LASSO
+#' @param fit_type The specific routine to be called when fitting the Lasso
 #'  regression in a cross-validated manner. Choosing the \code{glmnet} option
-#'  will result in a call to \code{cv.glmnet} while \code{lassi} will produce
-#'  a (faster) call to a custom LASSO routine using the \code{origami} package.
+#'  will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
+#'  will produce a (faster) call to a custom Lasso routine.
 #' @param n_folds Integer for the number of folds to be used when splitting the
-#'  data for cross-validation. This defaults to 10 as this is the convention for
-#'  v-fold cross-validation.
-#' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
-#'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
-#'  to \code{"lambda.1se"}.
+#'  data for V-fold cross-validation. This defaults to 10.
+#' @param foldid An optional vector of values between 1 and \code{n_folds}
+#'  identifying what fold each observation is in. If supplied, \code{n_folds}
+#'  can be missing. When supplied, this is passed to
+#'  \code{\link[glmnet]{cv.glmnet}}.
+#' @param use_min Determines which lambda is selected from
+#'  \code{\link[glmnet]{cv.glmnet}}. \code{TRUE} corresponds to
+#'  \code{"lambda.min"} and \code{FALSE} corresponds to \code{"lambda.1se"}.
 #' @param reduce_basis A \code{numeric} value bounded in the open interval (0,1)
 #'  indicating the minimum proportion of 1's in a basis function column needed
 #'  for the basis function to be included in the procedure to fit the Lasso. Any
@@ -37,7 +38,11 @@
 #'  basis functions are used in the lasso-fitting stage of the HAL algorithm.
 #' @param family A \code{character} corresponding to the error family for a
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
-#'  standard general linear model and "binomial" for logistic regression.
+#'  standard general linear model, "binomial" for penalized logistic regression,
+#'  "cox" for a penalized proportional hazards model. Note that in the case of
+#'  "binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
+#'  documentation of the glmnet package should be consulted for any errors
+#'  resulting from the Lasso fitting step in these cases.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{glmnet} fit of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -47,23 +52,25 @@
 #'  structure is dim = (n * 2^(d - 1)), where n is the number of observations
 #'  and d is the number of columns in X.
 #' @param lambda A user-specified array of values of the lambda tuning parameter
-#'  of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
-#'  automatically select a CV-optimal value of this regularization parameter. If
-#'  specified, the Lasso L1 regression model will be fit via \code{glmnet},
-#'  returning regularized coefficient values for each value in the input array.
+#'  of the Lasso L1 regression. If \code{NULL}, \code{\link[glmnet]{cv.glmnet}}
+#'  will be used to automatically select a CV-optimal value of this
+#'  regularization parameter. If specified, the Lasso L1 regression model will
+#'  be fit via \code{glmnet}, returning regularized coefficient values for each
+#'  value in the input array.
 #' @param cv_select A \code{logical} specifying whether the array of values
-#'  specified should be passed to \code{cv.glmnet} in order to pick the optimal
-#'  value (based on cross-validation) (when set to \code{TRUE}) or to simply
-#'  fit along the sequence of values (or single value) using \code{glmnet} (when
-#'  set to \code{FALSE}).
-#' @param id a vector of id values, used to generate cross-validation folds for cv.lambda
-#' @param offset a vector of offset values, used in fitting
+#'  specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
+#'  pick the optimal value (based on cross-validation) (when set to \code{TRUE})
+#'  or to simply fit along the sequence of values (or single value) using
+#'  \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).
+#' @param id a vector of ID values, used to generate cross-validation folds for
+#'  cross-validated selection of the regularization parameter lambda.
+#' @param offset a vector of offset values, used in fitting.
 #' @param screen_basis If TRUE, use a screening procedure to reduce the number
-#'  of basis functions fitted
-#' @param screen_lambda If TURE, use a screening procedure to reduce the number of
-#'  lambda values evaluated
-#' @param ... Other arguments passed to \code{cv.glmnet}. Please consult the
-#'  documentation for \code{glmnet} for a full list of options.
+#'  of basis functions fitted.
+#' @param screen_lambda If TURE, use a screening procedure to reduce the number
+#'  of lambda values evaluated.
+#' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
+#'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically acclaimed
 #'  epic science-fiction film "2001: A Space Odyssey" (1968).
@@ -84,9 +91,10 @@ fit_hal <- function(X,
                     max_degree = 3,
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
+                    foldid = NULL,
                     use_min = TRUE,
                     reduce_basis = NULL,
-                    family = c("gaussian", "binomial"),
+                    family = c("gaussian", "binomial", "cox"),
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     basis_list = NULL,
@@ -98,6 +106,7 @@ fit_hal <- function(X,
                     screen_lambda = FALSE,
                     ...,
                     yolo = TRUE) {
+
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
@@ -106,6 +115,9 @@ fit_hal <- function(X,
   # NOTE: NOT supporting binomial outcomes with lassi method currently
   if (fit_type == "lassi" && family == "binomial") {
     stop("For binary outcomes, please set argument 'fit_type' to 'glmnet'.")
+  }
+  if (fit_type == "lassi" && family == "cox") {
+    stop("For Cox models, please set argument 'fit_type' to 'glmnet'.")
   }
 
   # cast X to matrix -- and don't start the timer until after
@@ -117,23 +129,23 @@ fit_hal <- function(X,
   if (yolo) hal9000()
 
   # Generate fold_ids that respect id
-  n <- length(Y)
-  if (is.null(id)) {
-    foldid <- sample(seq_len(n_folds), n, replace = T)
-  } else {
-    unique_ids <- unique(id)
-    id_foldid <- sample(seq_len(n_folds), length(unique_ids), replace = T)
-    foldid <- id_foldid[match(id, unique_ids)]
+  if (is.null(foldid)) {
+    if (is.null(id)) {
+      foldid <- sample(seq_len(n_folds), length(Y), replace = TRUE)
+    } else {
+      unique_ids <- unique(id)
+      id_foldid <- sample(seq_len(n_folds), length(unique_ids), replace = TRUE)
+      foldid <- id_foldid[match(id, unique_ids)]
+    }
   }
 
   # bookkeeping: get start time of duplicate removal procedure
   time_start <- proc.time()
 
-
-
   # make design matrix for HAL
   if (is.null(basis_list)) {
     if (screen_basis) {
+      # NOTE: foldid is never missing since created above if not supplied
       good_basis <- hal_screen_basis(
         x = X,
         y = Y,
@@ -142,7 +154,7 @@ fit_hal <- function(X,
         foldid = foldid,
         max_degree = max_degree
       )
-      basis_lists <- lapply(good_basis, basis_list_cols,X)
+      basis_lists <- lapply(good_basis, basis_list_cols, X)
       basis_list <- unlist(basis_lists, recursive = FALSE)
     } else {
       basis_list <- enumerate_basis(X, max_degree)
@@ -173,8 +185,8 @@ fit_hal <- function(X,
     test = is.null(X_unpenalized),
     yes = 0,
     no = {
-      assert_that(is.matrix(X_unpenalized))
-      assert_that(nrow(X_unpenalized) == nrow(x_basis))
+      assertthat::assert_that(is.matrix(X_unpenalized))
+      assertthat::assert_that(nrow(X_unpenalized) == nrow(x_basis))
       ncol(X_unpenalized)
     }
   )
@@ -195,11 +207,19 @@ fit_hal <- function(X,
   # bookkeeping: get end time of basis reduction procedure
   time_reduce_basis <- proc.time()
 
-  # fit LASSO regression
-  if (fit_type == "lassi") {
-    warning("lassi is experimental. We recommend using fit_type='glmnet' for almost all cases")
+  # NOTE: dumb workaround for "Cox model not implemented for sparse x in glmnet"
+  if (family == "cox") {
+    x_basis <- as.matrix(x_basis)
+  }
 
-    # custom LASSO implementation using the origami package
+  # fit Lasso regression
+  if (fit_type == "lassi") {
+    message(paste(
+      "'lassi' is experimental:",
+      "fit_type='glmnet' is recommended in nearly all cases."
+    ))
+
+    # custom Lasso implementation using the origami package
     hal_lasso <- cv_lasso(x_basis = x_basis, y = Y, n_folds = n_folds)
 
     if (use_min) {
@@ -233,7 +253,8 @@ fit_hal <- function(X,
       coefs <- stats::coef(hal_lasso)
     } else {
       hal_lasso <- glmnet::cv.glmnet(
-        x = x_basis, y = Y,
+        x = x_basis,
+        y = Y,
         nfolds = n_folds,
         family = family,
         lambda = lambda,
@@ -252,7 +273,7 @@ fit_hal <- function(X,
     }
   }
 
-  # bookkeeping: get time for computation of the LASSO regression
+  # bookkeeping: get time for computation of the Lasso regression
   time_lasso <- proc.time()
 
   # bookkeeping: get time for the whole procedure
@@ -283,7 +304,7 @@ fit_hal <- function(X,
     basis_list = basis_list,
     col_lists = col_lists,
     copy_map = copy_map,
-    coefs = coefs,
+    coefs = as.matrix(coefs),
     times = times,
     lambda_star = lambda_star,
     reduce_basis = reduce_basis,
@@ -295,14 +316,13 @@ fit_hal <- function(X,
         NULL
       },
     glmnet_lasso =
-      # record only the best glmnet object
-    if (!cv_select & return_lasso) {
-      hal_lasso
-    } else if (cv_select & return_lasso) {
-      hal_lasso$glmnet.fit
-    } else {
-      NULL
-    },
+      if (!cv_select & return_lasso) {
+        hal_lasso
+      } else if (cv_select & return_lasso) {
+        hal_lasso$glmnet.fit
+      } else {
+        NULL
+      },
     unpenalized_covariates = unpenalized_covariates
   )
   class(fit) <- "hal9001"

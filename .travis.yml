@@ -16,7 +16,6 @@ r_build_args: '--no-manual'
 r_check_args: '--no-build-vignettes --no-manual'
 
 r:
-  - oldrel
   - release
   - devel
 
@@ -30,7 +29,6 @@ r_packages:
 r_github_packages:
   - r-lib/covr
   - r-lib/sessioninfo
-  - benkeser/halplus
 
 # coverage
 after_success:

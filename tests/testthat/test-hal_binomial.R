@@ -1,5 +1,4 @@
-context("Unit test for HAL with binary outcomes (logistic regression).")
-library(hal)
+context("HAL with binary outcomes: regularized logistic regression.")
 set.seed(45791)
 
 # easily compute MSE

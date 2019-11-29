@@ -44,21 +44,25 @@ hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offse
 
   null_risk <- NA
   col_results <- list()
-  thresh=1/n
+  thresh <- 1 / n
   for (i in seq_along(col_lists)) {
     col_list <- col_lists[[i]]
     basis_list <- basis_list_cols(col_list, x)
-    
+
     # TODO: subsample param
     # subsample_size <- min(max(100, n * 0.1), length(basis_list))
     # basis_subsample <- sort(sample(seq_along(basis_list), subsample_size, replace = FALSE))
     basis_subsample <- seq_along(basis_list)
     x_basis <- make_design_matrix(x, basis_list[basis_subsample])
-   
-    screen_glmnet <- try({cv.glmnet(x = x_basis, y = y, family = family, intercept = FALSE, offset = offset, maxit = 10, thresh = thresh, foldid = foldid, nlambda = 20)
-    }, silent=TRUE)
-    
-    if(inherits(screen_glmnet,"try-error")){
+
+    screen_glmnet <- try(
+      {
+        cv.glmnet(x = x_basis, y = y, family = family, intercept = FALSE, offset = offset, maxit = 10, thresh = thresh, foldid = foldid, nlambda = 20)
+      },
+      silent = TRUE
+    )
+
+    if (inherits(screen_glmnet, "try-error")) {
       reduction <- 0
       lambda_min <- NA
       lambda_1se <- NA
@@ -67,15 +71,15 @@ hal_screen_cols <- function(x, y, family, col_lists = NULL, foldid = NULL, offse
         null_risk <- screen_glmnet$cvm[1]
         old_risk <- null_risk
       }
-  
-      
+
+
       old_risk <- screen_glmnet$cvm[1]
       new_risk <- min(screen_glmnet$cvm)
-      reduction <- (old_risk -new_risk) / null_risk
+      reduction <- (old_risk - new_risk) / null_risk
       lambda_min <- screen_glmnet$lambda.min
       lambda_1se <- screen_glmnet$lambda.1se
     }
-  
+
 
     if (verbose) {
       print(sprintf(
