@@ -1,0 +1,23 @@
+inst/lib
+.Rproj.user
+src/*.o
+src/*.so
+src/*.dll
+src/symbols.rds
+.Rhistory
+.RData
+.Ruserdata
+Rplots.pdf
+README.html
+sandbox/*.html
+vignettes/*.html
+.ipynb_checkpoints
+
+## macOS
+.DS_Store
+
+## QtCreator
+Rcpp.pro
+Rcpp.pro.user
+*.autosave
+.#*

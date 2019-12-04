@@ -1,0 +1,22 @@
+# Rproj and version control.
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.gitignore$
+
+# Related to using README Rmd.
+^README\.Rmd$
+^README\.html$
+^README-.*\.png$
+^README-refs\.bib$
+# Automated testing files.
+^\.travis\.yml$
+^appveyor\.yml$
+^codecov\.yml$
+# Extra miscellaneous support files/directories.
+^cran-comments\.md$
+^CONTRIBUTING\.md$
+^Makefile$
+^LICENSE$
+^sandbox$
+^docs$
+^_pkgdown\.yml$

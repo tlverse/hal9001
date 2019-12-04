@@ -1,0 +1,20 @@
+title: hal9001
+url: https://tlverse.org/hal9001
+template:
+  params:
+    bootswatch: flatly
+    ganalytics: UA-115145808-1
+navbar:
+  title: ""
+  left:
+    - text: "tlverse"
+      href: https://tlverse.org
+    - text: "Overview"
+      href: "articles/intro_hal9001.html"
+    - text: "Articles"
+      href: "articles/index.html"
+    - text: "Reference"
+      href: "reference/index.html"
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/tlverse/hal9001

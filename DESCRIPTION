@@ -1,0 +1,63 @@
+Package: hal9001
+Title: The Scalable Highly Adaptive Lasso
+Version: 0.2.5
+Authors@R: c(
+  person("Jeremy", "Coyle", email = "tlverse@gmail.com",
+         role = c("aut", "cre"),
+         comment = c(ORCID = "0000-0002-9874-6649")),
+  person("Nima", "Hejazi", email = "nh@nimahejazi.org",
+         role = "aut",
+         comment = c(ORCID = "0000-0002-7127-2789")),
+  person("David", "Benkeser", email = "benkeser@emory.edu",
+         role = "ctb",
+         comment = c(ORCID = "0000-0002-1019-8343")),
+  person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com",
+         role = "ctb"),
+  person("Weixin", "Cai", email = "wcai@berkeley.edu",
+         role = "ctb",
+         comment = c(ORCID = "0000-0003-2680-3066")),
+  person("Mark", "van der Laan", email = "laan@berkeley.edu",
+         role = c("aut", "cph", "ths"),
+         comment = c(ORCID = "0000-0003-1432-5511"))
+  )
+Description: A scalable implementation of the highly adaptive lasso algorithm,
+  including routines for constructing sparse matrices of basis functions of the
+  observed data, as well as a custom implementation of Lasso regression tailored
+  to enhance efficiency when the matrix of predictors is composed exclusively of
+  indicator functions. For ease of use and increased flexibility, the Lasso
+  fitting routines may invoke code from the glmnet package optionally.
+Depends:
+  R (>= 3.1.0),
+  Rcpp
+License: GPL-3
+URL: https://github.com/tlverse/hal9001
+BugReports: https://github.com/tlverse/hal9001/issues
+Encoding: UTF-8
+LazyData: true
+Imports:
+  Matrix,
+  stats,
+  utils,
+  methods,
+  assertthat,
+  origami (>= 0.8.1),
+  glmnet
+Suggests:
+  testthat,
+  knitr,
+  rmarkdown,
+  microbenchmark,
+  future,
+  ggplot2,
+  dplyr,
+  tidyr,
+  stringr,
+  survival,
+  bit,
+  data.table,
+  SuperLearner
+LinkingTo:
+  Rcpp,
+  RcppEigen
+VignetteBuilder: knitr
+RoxygenNote: 7.0.1
