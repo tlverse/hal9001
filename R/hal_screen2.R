@@ -10,55 +10,50 @@
 hal_screen_rank<-function(x, y, family, k = NULL, foldid = NULL, offset = NULL){
   n <- length(y)# length of y
   p <- ncol(x)# column number of x
-
+  
   if (is.null(foldid)) {
     foldid <- sample(1:5, n, replace = TRUE)
   }
-
+  
   if (is.null(offset)) {
     offset <- rep(mean(y), n)
   }
-
+  
   rank_basis <- cv.glmnet(x, y, family = family, foldid = foldid, offset = offset)
-  rank_col <- list()
+  
   if (!is.null(k)){
-    for (i in 1:length(rank_basis$lambda)) {
-      lambda <- as.matrix(rank_basis$lambda)# decreasing lambda
-      lam <- lambda[i]
-      coef <- as.list(coef(rank_basis, lam))# coef with lambda[i]
-      coef <- coef[-1]# remove the first row(intercept)
-      keep <- list(which(coef!=0, arr.ind = TRUE))# return the row which coef!=0
-      rank_col <- c(rank_col, keep)
-      rank_col <- rank_col[!duplicated(rank_col)]#remove duplicated rows
-    }
-    rank_col <- rank_col[-1] #remove the last interger(0) row
-    rank_col <- rank_col[[k]]
-    rank_col <- lapply(rank_col, function(x) x=x)
+    coef_mat <- coef(rank_basis, rank_basis$lambda)
+    coef_mat <- coef_mat[-1,]
+    first_nz_lambda <- apply(coef_mat!=0,1,function(x)which(x)[1])
+    rank_col <- order(first_nz_lambda)
+    select_col <- rank_col[1:k]
+  } else {
+    select_coefs <- coef(rank_basis, rank_basis$lambda.min)
+    select_coefs <- select_coefs[-1]
+    select_col <- which(select_coefs!=0)
   }
-  else {
-    coef <- as.list(coef(rank_basis, rank_basis$lambda.min))
-    coef <- coef[-1]
-    rank_col <- as.list(which(coef!=0, arr.ind = TRUE))
-  }
+  
+  return(select_col)
+  
 }
 
 
 hal_screen_goodbasis<-function(x, y, actual_max_degree, k = NULL, family, col_lists = NULL, foldid = NULL, offset = NULL, verbose = FALSE){
   n <- length(y)
   p <- ncol(x)
-
+  
   if (is.null(col_lists)) {
     col_lists <- as.list(seq_len(p))# seq_len=(1,2,...,p)
   }
-
+  
   if (is.null(foldid)) {
     foldid <- sample(1:5, n, replace = TRUE)
   }
-
+  
   if (is.null(offset)) {
     offset <- rep(mean(y), n)
   }
-
+  
   good_cols <- unlist(col_lists)
   interaction_col_lists <- list()
   x_interaction_basis <- x
@@ -104,51 +99,52 @@ hal_screen_goodbasis<-function(x, y, actual_max_degree, k = NULL, family, col_li
                                          family = family,
                                          foldid = foldid,
                                          offset = offset)
-        screened_col <- lapply(screened_rank, function(x) col_lists[[x]])
-        }
+  screened_col <- lapply(screened_rank, function(x) col_lists[[x]])
+  }
   return(screened_col)
 }# find the K basis function
 
 hal_screen_output<-function(x, y, family, col_lists, foldid = NULL, offset = NULL){#generate K*n basis function and do regular lasso
   n <- length(y)# length of y
   p <- ncol(x)# column number of x
-
+  
   if (is.null(foldid)) {
     foldid <- sample(1:5, n, replace = TRUE)
   }
-
+  
   if (is.null(offset)) {
     offset <- rep(mean(y), n)
   }
-
+  
   col_results <- list()
-  x_basis<-matrix(nrow = n, ncol = 1)
-
+  
+  basis_list <- c()
+  
   for (i in seq_along(col_lists)) {# i from 1 to p
     col_list <- col_lists[[i]]
-    basis_list <- basis_list_cols(col_list, x) #one by one generate basis_list
-    x_basis <- cbind(x_basis, make_design_matrix(x, basis_list))#generate k*n basis functions
+    basis_list <- c(basis_list,basis_list_cols(col_list, x)) #one by one generate basis_list
+    
   }
-  x_basis<-as.matrix(x_basis[,-1])
+  x_basis <- make_design_matrix(x, basis_list)#generate k*n basis functions
   screen_goodcols <- cv.glmnet(x_basis, y, family = family, offset = offset, foldid = foldid)# do regular lasso for k*n basis functions
-
-
-    lambda_min <- screen_goodcols$lambda.min
-    lambda_1se <- screen_goodcols$lambda.1se
-    coef <- coef.cv.glmnet(screen_goodcols, s = 'lambda.1se')
-    coef_list <- list(which(!coef[-1] == 0))#find non-zero column lists
-
-    pred <- predict.cv.glmnet(screen_goodcols, newx = x_basis, s = lambda_1se, newoffset = offset)
-    mse <- mean((pred - y)^2)
-
-    col_result <- list(
-      coef_list = list(coef_list),
-      lambda_min = lambda_min,
-      lambda_1se = lambda_1se,
-      fit_performance = mse,
-      time = proc.time()
-        #TODO: calculate running time
-    )
-    return(col_result)
+  
+  
+  lambda_min <- screen_goodcols$lambda.min
+  lambda_1se <- screen_goodcols$lambda.1se
+  coef <- coef.cv.glmnet(screen_goodcols, s = 'lambda.1se')
+  coef_list <- list(which(!coef[-1] == 0))#find non-zero column lists
+  
+  pred <- predict.cv.glmnet(screen_goodcols, newx = x_basis, s = lambda_1se, newoffset = offset)
+  mse <- mean((pred - y)^2)
+  
+  col_result <- list(
+    coef_list = list(coef_list),
+    lambda_min = lambda_min,
+    lambda_1se = lambda_1se,
+    fit_performance = mse,
+    time = proc.time()
+    #TODO: calculate running time
+  )
+  return(col_result)
 }
 
