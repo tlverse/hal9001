@@ -145,11 +145,11 @@ fit_hal <- function(X,
   # make design matrix for HAL
   if (is.null(basis_list)) {
     if (screen_basis) {
-      selected_cols <- hal_screen_goodbasis(x, y, actual_max_degree = max_degree, k = NULL, family = 'gaussian')
+      selected_cols <- hal_screen_goodbasis(X, Y, actual_max_degree = max_degree, k = NULL, family = 'gaussian')
       basis_list <- c()
       for (i in seq_along(selected_cols)) {
         col_list <- selected_cols[[i]]
-        basis_list <- c(basis_list,basis_list_cols(col_list, x))
+        basis_list <- c(basis_list,basis_list_cols(col_list, X))
 
       }
     } else {

@@ -7,13 +7,13 @@ library(glmnet)
 set.seed(749125)
 
 n <- 100
-p <- 3
+p <- 5
 x <- xmat <- matrix(rnorm(n * p), n, p)
-y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
+y <- 10*x[, 1]+ 5*x[,2]+ 6*x[,1]*x[,2] + rnorm(n, mean = 0, sd = 0.2)
 
 testn <- 10000
 testx <- xmat <- matrix(rnorm(testn * p), testn, p)
-testy <- sin(x[, 1]) * sin(x[, 2]) + rnorm(testn, mean = 0, sd = 0.2)
+testy <- 10*testx[, 1]+ 5*testx[,2]+ 6*testx[,1]*testx[,2] + rnorm(n, mean = 0, sd = 0.2)
 
 select_list <- 2
 select_rank1 <- hal_screen_rank(x, y, k=1, family = 'gaussian')
