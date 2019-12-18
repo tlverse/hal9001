@@ -20,3 +20,4 @@
 ^sandbox$
 ^docs$
 ^_pkgdown\.yml$
+^CRAN-RELEASE$
