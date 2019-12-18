@@ -145,17 +145,13 @@ fit_hal <- function(X,
   # make design matrix for HAL
   if (is.null(basis_list)) {
     if (screen_basis) {
-      # NOTE: foldid is never missing since created above if not supplied
-      good_basis <- hal_screen_basis(
-        x = X,
-        y = Y,
-        family = family,
-        offset = offset,
-        foldid = foldid,
-        max_degree = max_degree
-      )
-      basis_lists <- lapply(good_basis, basis_list_cols, X)
-      basis_list <- unlist(basis_lists, recursive = FALSE)
+      selected_cols <- hal_screen_goodbasis(X, Y, actual_max_degree = max_degree, k = NULL, family = 'gaussian')
+      basis_list <- c()
+      for (i in seq_along(selected_cols)) {
+        col_list <- selected_cols[[i]]
+        basis_list <- c(basis_list,basis_list_cols(col_list, X))
+
+      }
     } else {
       basis_list <- enumerate_basis(X, max_degree)
     }
