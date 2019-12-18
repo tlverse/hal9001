@@ -1,6 +1,6 @@
 Package: hal9001
 Title: The Scalable Highly Adaptive Lasso
-Version: 0.2.5
+Version: 0.2.6
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
          role = c("aut", "cre"),
@@ -60,4 +60,4 @@ LinkingTo:
   Rcpp,
   RcppEigen
 VignetteBuilder: knitr
-RoxygenNote: 7.0.1
+RoxygenNote: 7.0.2
