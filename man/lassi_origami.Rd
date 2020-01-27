@@ -7,12 +7,12 @@
 lassi_origami(fold, data, lambdas, center = FALSE)
 }
 \arguments{
-\item{fold}{A \code{fold} object produced by a call to \code{make_folds} from
-the \code{origami} package.}
+\item{fold}{A \code{fold} object produced by a call to \code{make_folds}
+from the \pkg{origami}.}
 
 \item{data}{A \code{dgCMatrix} object containing the outcome values (Y) in
 its first column and vectors corresponding to the basis functions of HAL in
-all other columns. Consult the description of the HAL algorithm for details.}
+all other columns. Consult the description of HAL regression for details.}
 
 \item{lambdas}{A \code{numeric} vector corresponding to a sequence of lambda
 values obtained by fitting the Lasso on the full data.}
@@ -21,8 +21,8 @@ values obtained by fitting the Lasso on the full data.}
 slower, but matches the \code{glmnet} implementation. Default \code{FALSE}.}
 }
 \description{
-Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using \code{cross_validate} from the
-\code{origami} package, which is done through \code{cv_lasso}. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.
+Fits Lasso regression over a single fold of a cross-validated data set. This
+is meant to be called using \code{\link[origami]{cross_validate}}, which is
+done through \code{\link{cv_lasso}}. Note that this procedure is NOT meant
+to be invoked by itself. INTERNAL USE ONLY.
 }

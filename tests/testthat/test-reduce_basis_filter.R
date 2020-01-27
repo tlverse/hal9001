@@ -4,7 +4,7 @@ library(origami)
 
 # generate simple test data
 n <- 100
-p <- 10
+p <- 5
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 

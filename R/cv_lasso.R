@@ -1,22 +1,21 @@
 #' Single Lasso estimation for cross-validation with Origami
 #'
-#' Fits the Lasso regression over a single fold of a cross-validated data set.
-#' This is meant to be called using \code{cross_validate} from the
-#' \code{origami} package, which is done through \code{cv_lasso}. Note that this
-#' procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.
+#' Fits Lasso regression over a single fold of a cross-validated data set. This
+#' is meant to be called using \code{\link[origami]{cross_validate}}, which is
+#' done through \code{\link{cv_lasso}}. Note that this procedure is NOT meant
+#' to be invoked by itself. INTERNAL USE ONLY.
 #'
-#' @param fold A \code{fold} object produced by a call to \code{make_folds} from
-#'  the \code{origami} package.
+#' @param fold A \code{fold} object produced by a call to \code{make_folds}
+#'  from the \pkg{origami}.
 #' @param data A \code{dgCMatrix} object containing the outcome values (Y) in
 #'  its first column and vectors corresponding to the basis functions of HAL in
-#'  all other columns. Consult the description of the HAL algorithm for details.
+#'  all other columns. Consult the description of HAL regression for details.
 #' @param lambdas A \code{numeric} vector corresponding to a sequence of lambda
 #'  values obtained by fitting the Lasso on the full data.
 #' @param center binary. If \code{TRUE}, covariates are centered. This is much
 #'  slower, but matches the \code{glmnet} implementation. Default \code{FALSE}.
 #'
 #' @importFrom origami training validation fold_index
-#
 lassi_origami <- function(fold, data, lambdas, center = FALSE) {
   # make sure data is an (augmented) sparse matrix of basis functions
   stopifnot(class(data) == "dgCMatrix")
@@ -53,16 +52,16 @@ lassi_origami <- function(fold, data, lambdas, center = FALSE) {
 
 #' Cross-validated Lasso on Indicator Bases
 #'
-#' Fits the Lasso regression using a customized procedure, with cross-validation
-#' based on origami
+#' Fits Lasso regression using a customized procedure, with cross-validation
+#' based on \pkg{origami}
 #'
 #' @param x_basis A \code{dgCMatrix} object corresponding to a sparse matrix of
 #'  the basis functions generated for the HAL algorithm.
 #' @param y A \code{numeric} vector of the observed outcome variable values.
 #' @param n_lambda A \code{numeric} scalar indicating the number of values of
 #'  the L1 regularization parameter (lambda) to be obtained from fitting the
-#'  Lasso to the full data. Cross-validation is used to select an optimal lambda
-#'  (that minimizes the risk) from among these.
+#'  Lasso to the full data. Cross-validation is used to select an optimal
+#'  lambda (that minimizes the risk) from among these.
 #' @param n_folds A \code{numeric} scalar for the number of folds to be used in
 #'  the cross-validation procedure to select an optimal value of lambda.
 #' @param center binary. If \code{TRUE}, covariates are centered. This is much
@@ -70,8 +69,8 @@ lassi_origami <- function(fold, data, lambdas, center = FALSE) {
 #'
 #' @importFrom origami make_folds cross_validate
 #' @importFrom stats sd
-#
-cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10, center = FALSE) {
+cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10,
+                     center = FALSE) {
   # first, need to run lasso on the full data to get a sequence of lambdas
   lasso_init <- lassi(y = y, x = x_basis, nlambda = n_lambda)
   lambdas_init <- lasso_init$lambdas
@@ -101,7 +100,8 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10, center = FALSE) {
 
   # find the maximum lambda among those 1 standard error above the minimum
   lambda_min_1se <- (lambdas_cvmse + lambdas_cvsd)[lambda_optim_index - 1]
-  lambda_1se <- max(lambdas_init[lambdas_cvmse <= lambda_min_1se], na.rm = TRUE)
+  lambda_1se <- max(lambdas_init[lambdas_cvmse <= lambda_min_1se],
+                    na.rm = TRUE)
   lambda_1se_index <- which.min(abs(lambdas_init - lambda_1se))
 
   # create output object

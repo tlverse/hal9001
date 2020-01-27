@@ -1,23 +1,20 @@
-################################################################################
-
 #' Cross-validated LASSO on Indicator Bases
 #'
-#' Fits the LASSO regression using a customized procedure, with cross-validation
-#' based on origami
+#' Fits the LASSO regression using a customized procedure with cross-validation
+#' based on \pkg{origami}
 #'
 #' @param x_basis A \code{dgCMatrix} object corresponding to a sparse matrix of
 #'  the basis functions generated for the HAL algorithm.
 #' @param y A \code{numeric} vector of the observed outcome variable values.
 #' @param n_lambda A \code{numeric} scalar indicating the number of values of
 #'  the L1 regularization parameter (lambda) to be obtained from fitting the
-#'  LASSO to the full data. Cross-validation is used to select an optimal lambda
-#'  (that minimizes the risk) from among these.
+#'  LASSO to the full data. Cross-validation is used to select an optimal
+#'  lambda (that minimizes the risk) from among these.
 #' @param n_folds A \code{numeric} scalar for the number of folds to be used in
 #'  the cross-validation procedure to select an optimal value of lambda.
 #'
 #' @importFrom origami make_folds cross_validate
 #' @importFrom stats sd
-#
 cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
   # first, need to run lasso on the full data to get a sequence of lambdas
   lasso_init <- lassi(y = y, x = x_basis, nlambda = n_lambda, center = FALSE)
@@ -60,7 +57,8 @@ cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
       xscale, xcenter, intercept,
       FALSE
     ))
-    preds <- with(fold_data, as.vector(x_valid %*% (beta / xscale)) + intercept)
+    preds <- with(fold_data, as.vector(x_valid %*% (beta / xscale)) +
+                  intercept)
     mse <- with(fold_data, mean((preds - y_valid)^2))
     return(list(fold_data = fold_data, mse = mse))
   }
