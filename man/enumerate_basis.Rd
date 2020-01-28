@@ -14,7 +14,11 @@ following standard conventions in problems of statistical learning.}
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 }
+\value{
+A \code{list} of basis functions generated for all covariates and
+ interaction thereof up to a pre-specified degree.
+}
 \description{
-Generate basis functions for all covariates and interaction terms thereof, up
+Generate basis functions for all covariates and interaction terms thereof up
 to a specified order/degree
 }

@@ -65,10 +65,10 @@
 #' @param id a vector of ID values, used to generate cross-validation folds for
 #'  cross-validated selection of the regularization parameter lambda.
 #' @param offset a vector of offset values, used in fitting.
-#' @param screen_basis If TRUE, use a screening procedure to reduce the number
-#'  of basis functions fitted.
-#' @param screen_lambda If TURE, use a screening procedure to reduce the number
-#'  of lambda values evaluated.
+#' @param screen_basis If \code{TRUE}, use a screening procedure to reduce the
+#'  number of basis functions fitted.
+#' @param screen_lambda If \code{TRUE}, use a screening procedure to reduce the
+#'  number of lambda values evaluated.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -82,6 +82,17 @@
 #' @return Object of class \code{hal9001}, containing a list of basis
 #'  functions, a copy map, coefficients estimated for basis functions, and
 #'  timing results (for assessing computational efficiency).
+#'
+#' @examples
+#' \donttest{
+#' n <- 100
+#' p <- 3
+#' x <- xmat <- matrix(rnorm(n * p), n, p)
+#' y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
+#' y <- rbinom(n = n, size = 1, prob = y_prob)
+#' ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
+#' preds <- predict(ml_hal_fit, new_data = x)
+#' }
 #'
 #' @export
 fit_hal <- function(X,

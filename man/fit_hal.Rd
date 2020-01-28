@@ -102,11 +102,11 @@ pick the optimal value (based on cross-validation) (when set to
 \code{TRUE}) or to simply fit along the sequence of values (or single
 value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
 
-\item{screen_basis}{If TRUE, use a screening procedure to reduce the number
-of basis functions fitted.}
+\item{screen_basis}{If \code{TRUE}, use a screening procedure to reduce the
+number of basis functions fitted.}
 
-\item{screen_lambda}{If TURE, use a screening procedure to reduce the number
-of lambda values evaluated.}
+\item{screen_lambda}{If \code{TRUE}, use a screening procedure to reduce the
+number of lambda values evaluated.}
 
 \item{...}{Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 consult its documentation for a full list of options.}
@@ -130,4 +130,16 @@ The procedure uses a custom C++ implementation to generate a design
  The Lasso regression is fit to this (usually) very wide matrix using either
  a custom implementation (based on \pkg{origami}) or by a call to
  \code{\link[glmnet]{cv.glmnet}}.
+}
+\examples{
+\donttest{
+n <- 100
+p <- 3
+x <- xmat <- matrix(rnorm(n * p), n, p)
+y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
+y <- rbinom(n = n, size = 1, prob = y_prob)
+ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
+preds <- predict(ml_hal_fit, new_data = x)
+}
+
 }

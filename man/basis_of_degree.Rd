@@ -14,6 +14,10 @@ following standard conventions in problems of statistical learning.}
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 }
+\value{
+A \code{list} containing  basis functions and cutoffs generated from
+ a set of input columns up to a particular pre-specified degree.
+}
 \description{
 Find the full list of basis functions up to a particular degree
 }

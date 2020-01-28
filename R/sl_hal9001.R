@@ -7,30 +7,30 @@
 #' @param newX A matrix of new observations on which to obtain predictions. The
 #'  default of \code{NULL} computes predictions on training inputs \code{X}.
 #' @param max_degree The highest order of interaction terms for which the basis
-#'  functions ought to be generated. \code{NULL} corresponds to generating basis
-#'  functions for the full dimensionality of the input matrix.
+#'  functions ought to be generated. \code{NULL} corresponds to generating
+#'  basis functions for the full dimensionality of the input matrix.
 #' @param fit_type The specific routine to be called when fitting the Lasso
-#'  regression via cross-validation. Choosing \code{cv.glmnet} option results in
-#'  option results in a call to \code{\link[glmnet]{cv.glmnet}} while
+#'  regression via cross-validation. Choosing \code{cv.glmnet} option results
+#'  in option results in a call to \code{\link[glmnet]{cv.glmnet}} while
 #'  \code{lassi} produces a (faster) call to a custom routine based on a custom
 #'  routine for fitting the Lasso.
 #' @param n_folds Integer for the number of folds to be used when splitting the
-#'  data for cross-validation. This defaults to 10 as this is the convention for
-#'  V-fold cross-validation.
+#'  data for cross-validation. This defaults to 10 as this is the convention
+#'  for V-fold cross-validation.
 #' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
 #'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
 #'  to \code{"lambda.1se"}.
 #' @param family Not used by the function directly, but meant to ensure
 #'  compatibility with \code{SuperLearner}.
 #' @param obsWeights Not used by the function directly, but meant to ensure
-#'  compatibility with \code{SuperLearner}. These are passed to \code{cv.glmnet}
-#'  or \code{glmnet} through the \code{...} argument of \code{fit_hal}.
+#'  compatibility with \code{SuperLearner}. These are passed to
+#'  \code{\link[glmnet]{cv.glmnet}} through the \code{...} argument of
+#'  \code{\link{fit_hal}}.
 #' @param ... Placeholder.
 #'
 #' @importFrom stats predict gaussian
 #'
 #' @export
-#
 SL.hal9001 <- function(Y,
                        X,
                        newX = NULL,
@@ -98,7 +98,6 @@ SL.hal9001 <- function(Y,
 #' @importFrom stats predict
 #'
 #' @export
-#
 predict.SL.hal9001 <- function(object, newdata, ...) {
   # coerce newdata to matrix if not already so
   if (!is.matrix(newdata)) {

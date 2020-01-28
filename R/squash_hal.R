@@ -8,9 +8,8 @@
 #' @export
 #'
 #' @return Object of class \code{hal9001}, similar to the input object but
-#'  reduced such that coefficients belonging to bases with coefficients equal to
-#'  zero removed.
-#
+#'  reduced such that coefficients belonging to bases with coefficients equal
+#'  to zero removed.
 squash_hal_fit <- function(object) {
   stopifnot(class(object) == "hal9001")
 

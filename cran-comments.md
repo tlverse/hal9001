@@ -1,10 +1,10 @@
 ## Test environments
-* local Ubuntu 18.04: R 3.6.1 (stable)
+* local Ubuntu 18.04: R 3.6.2 (stable)
 * remote Ubuntu 16.04 on travis-ci:
-  * R 3.6.1 (stable)
+  * R 3.6.2 (stable)
   * R 4.0.0 (under development)
-* local macOS install: R 3.6.1
-* Windows (on appveyor and winbuilder): R 3.6.1
+* local macOS install: R 3.6.2
+* Windows (on appveyor and winbuilder): R 3.6.2
 
 ## R CMD check results
 * There were no ERRORs
@@ -13,4 +13,13 @@
 
 ## Downstream dependencies
 * There are no known downstream dependencies.
-* This is a new CRAN submission.
+* This is a new CRAN submission, revised to address comments from CRAN:
+  * Check time: we have reduced the sample size of datasets used in the unit
+    tests so as to significantly reduce the time taken by checking.
+  * Citations: we have added the first two papers (with DOIs) describing the
+     implemented methodology to the appropriate field in the file DESCRIPTION.
+  * Stylization: glmnet -> 'glmnet' in the file DESCRIPTION.
+  * Examples: we have added an example to the only user-facing function
+    (`fit_hal`; wrapped in \donttest{} as suggested) to serve as an example.
+    Other functions are exported for developer convenience and thus examples for
+    these are left out since they would not benefit a general audience.
