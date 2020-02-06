@@ -14,7 +14,30 @@ following standard conventions in problems of statistical learning.}
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 }
+\value{
+A \code{list} of basis functions generated for all covariates and
+ interaction thereof up to a pre-specified degree.
+}
 \description{
-Generate basis functions for all covariates and interaction terms thereof, up
+Generate basis functions for all covariates and interaction terms thereof up
 to a specified order/degree
+}
+\examples{
+\donttest{
+gendata <- function(n, g0, Q0) {
+  W1 <- runif(n, -3, 3)
+  W2 <- rnorm(n)
+  W3 <- runif(n)
+  W4 <- rnorm(n)
+  A <- rbinom(n, 1, g0(W1, W2, W3, W4))
+  Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
+  data.frame(A, W1, W2, W3, W4, Y)
+}
+set.seed(1234)
+data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
+covars <- setdiff(names(data), "Y")
+X <- as.matrix(data[, covars, drop = FALSE])
+basis_list <- enumerate_basis(X)
+}
+
 }

@@ -1,7 +1,7 @@
 context("Unit test for removing duplicate columns of indicator functions.")
 
 # generate design matrix for HAL
-n <- 1000
+n <- 100
 p <- 3
 x <- matrix(rnorm(n * p), n, p)
 basis_list <- enumerate_basis(x)

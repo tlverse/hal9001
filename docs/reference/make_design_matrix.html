@@ -145,11 +145,27 @@ basis functions in argument blist</p>
     </table>
 
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='no'>gendata</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>n</span>, <span class='no'>g0</span>, <span class='no'>Q0</span>) {
+  <span class='no'>W1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='no'>n</span>, -<span class='fl'>3</span>, <span class='fl'>3</span>)
+  <span class='no'>W2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>)
+  <span class='no'>W3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='no'>n</span>)
+  <span class='no'>W4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>)
+  <span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n</span>, <span class='fl'>1</span>, <span class='fu'>g0</span>(<span class='no'>W1</span>, <span class='no'>W2</span>, <span class='no'>W3</span>, <span class='no'>W4</span>))
+  <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n</span>, <span class='fl'>1</span>, <span class='fu'>Q0</span>(<span class='no'>A</span>, <span class='no'>W1</span>, <span class='no'>W2</span>, <span class='no'>W3</span>, <span class='no'>W4</span>))
+  <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='no'>A</span>, <span class='no'>W1</span>, <span class='no'>W2</span>, <span class='no'>W3</span>, <span class='no'>W4</span>, <span class='no'>Y</span>)
+}
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1234</span>)
+<span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fu'>gendata</span>(<span class='fl'>100</span>, <span class='kw'>g0</span> <span class='kw'>=</span> <span class='no'>g0_linear</span>, <span class='kw'>Q0</span> <span class='kw'>=</span> <span class='no'>Q0_trig1</span>)</div><div class='output co'>#&gt; <span class='error'>Error in rbinom(n, 1, g0(W1, W2, W3, W4)): object 'g0_linear' not found</span></div><div class='input'><span class='no'>covars</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sets.html'>setdiff</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>data</span>), <span class='st'>"Y"</span>)
+<span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>data</span>[, <span class='no'>covars</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>])</div><div class='output co'>#&gt; <span class='error'>Error in data[, covars, drop = FALSE]: object of type 'closure' is not subsettable</span></div><div class='input'><span class='no'>basis_list</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='enumerate_basis.html'>enumerate_basis</a></span>(<span class='no'>X</span>)</div><div class='output co'>#&gt; <span class='error'>Error in ncol(x): object 'X' not found</span></div><div class='input'><span class='no'>x_basis</span> <span class='kw'>&lt;-</span> <span class='fu'>make_design_matrix</span>(<span class='no'>X</span>, <span class='no'>basis_list</span>)</div><div class='output co'>#&gt; <span class='error'>Error in make_design_matrix(X, basis_list): object 'X' not found</span></div><div class='input'># }
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

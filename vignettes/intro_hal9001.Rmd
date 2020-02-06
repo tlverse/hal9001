@@ -31,17 +31,10 @@ descriptions of the highly adaptive Lasso and its various optimality properties.
 
 ## Preliminaries
 
-```{r setup, echo=FALSE}
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(microbenchmark)
-```
-
 ```{r sim-data}
 # simulation constants
 set.seed(467392)
-n_obs <- 1000
+n_obs <- 200
 n_covars <- 3
 
 # make some training data
@@ -112,9 +105,9 @@ The second of these two options may be invoked by specifying the `reduce_basis`
 argument to the `fit_hal` function:
 
 ```{r fit-hal-reduced}
-hal_fit2 <- fit_hal(X = x, Y = y, fit_type = "lassi",
-                    reduce_basis = 1/sqrt(length(y)))
-hal_fit2$times
+hal_fit_reduced <- fit_hal(X = x, Y = y, fit_type = "lassi",
+                           reduce_basis = 1/sqrt(length(y)))
+hal_fit_reduced$times
 ```
 
 In the above, all basis functions with fewer than `r 1/sqrt(length(y)) * 100`%
@@ -122,7 +115,7 @@ of observations meeting the criterion imposed are automatically removed prior to
 the Lasso step of fitting the HAL regression. The results appear below
 
 ```{r results-hal-reduced}
-hal_fit2
+hal_fit_reduced
 ```
 
 ### Obtaining model predictions

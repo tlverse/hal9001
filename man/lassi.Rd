@@ -30,3 +30,4 @@ lassi(
 \description{
 Custom Lasso implementation for matrices of indicator functions
 }
+\keyword{internal}

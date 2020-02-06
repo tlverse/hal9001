@@ -6,14 +6,13 @@ mse <- function(preds, y) {
   mean((preds - y)^2)
 }
 
-
 # generate simple test data
 n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
-test_n <- 10000
+test_n <- 100
 test_x <- matrix(rnorm(test_n * p), test_n, p)
 test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(
   test_n,

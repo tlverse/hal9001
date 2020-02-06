@@ -25,7 +25,10 @@ Description: A scalable implementation of the highly adaptive lasso algorithm,
   observed data, as well as a custom implementation of Lasso regression tailored
   to enhance efficiency when the matrix of predictors is composed exclusively of
   indicator functions. For ease of use and increased flexibility, the Lasso
-  fitting routines may invoke code from the glmnet package optionally.
+  fitting routines invoke code from the 'glmnet' package by default. The highly
+  adaptive lasso was first formulated and described by MJ van der Laan (2017)
+  <doi:10.1515/ijb-2015-0097>, with practical demonstrations of its performance
+  given by Benkeser and van der Laan (2016) <doi:10.1109/DSAA.2016.93>.
 Depends:
   R (>= 3.1.0),
   Rcpp
@@ -60,4 +63,4 @@ LinkingTo:
   Rcpp,
   RcppEigen
 VignetteBuilder: knitr
-RoxygenNote: 7.0.1
+RoxygenNote: 7.0.2

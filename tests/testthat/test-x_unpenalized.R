@@ -1,6 +1,6 @@
 context("train and predict with X_unpenalized argument will not error.")
 set.seed(1234)
-n <- 1e3
+n <- 100
 x <- rnorm(n)
 a <- rnorm(n)
 y <- 2 * x + 5 * a + rnorm(n)

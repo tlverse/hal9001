@@ -16,8 +16,7 @@ loadModule("lassi_module", TRUE)
 #'
 #' @importFrom methods new
 #'
-#' @export
-#
+#' @keywords internal
 lassi <- function(x, y, lambdas = NULL, nlambda = 100,
                   lambda_min_ratio = 0.01, center = FALSE) {
   if (!is.null(lambdas)) {
@@ -73,7 +72,7 @@ lassi <- function(x, y, lambdas = NULL, nlambda = 100,
 #' @param new_x_basis ...
 #' @param lambdas ...
 #'
-#
+#' @keywords internal
 predict.lassi <- function(fit, new_x_basis, lambdas = NULL) {
   if (is.null(lambdas)) {
     lambdas <- fit$lambdas

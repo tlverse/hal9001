@@ -1,7 +1,5 @@
 context("Verify Statistical Performance")
-library(hal9001)
 
-#########################################
 # generate training and test data
 # adapted from https://github.com/tlverse/hal9001/issues/9
 g0_linear <- function(W1, W2, W3, W4) {
@@ -34,11 +32,11 @@ gendata <- function(n, g0, Q0) {
 }
 
 set.seed(1234)
-data <- gendata(200, g0 = g0_linear, Q0 = Q0_trig1)
+data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
 covars <- setdiff(names(data), "Y")
 X <- data[, covars, drop = FALSE]
 Y <- data$Y
-testdata <- gendata(10000, g0 = g0_linear, Q0 = Q0_trig1)
+testdata <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
 testY <- Y # testdata$Y
 testX <- X # testdata[, covars, drop = F]
 

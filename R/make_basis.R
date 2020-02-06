@@ -8,7 +8,9 @@
 #'  computed automatically.
 #' @param x A \code{matrix} containing observations in the rows and covariates
 #'  in the columns. Basis functions are computed for these covariates.
-#
+#'
+#' @return A \code{list} containing the basis functions generated from a set of
+#'  input columns.
 basis_list_cols <- function(cols, x) {
   # first, subset only to columns of interest
   x_sub <- x[, cols, drop = FALSE]
@@ -31,7 +33,9 @@ basis_list_cols <- function(cols, x) {
 #'  generating basis functions for the full dimensionality of the input matrix.
 #'
 #' @importFrom utils combn
-#
+#'
+#' @return A \code{list} containing  basis functions and cutoffs generated from
+#'  a set of input columns up to a particular pre-specified degree.
 basis_of_degree <- function(x, degree) {
   # get dimensionality of input matrix
   p <- ncol(x)
@@ -52,7 +56,7 @@ basis_of_degree <- function(x, degree) {
 
 #' Enumerate Basis Functions
 #'
-#' Generate basis functions for all covariates and interaction terms thereof, up
+#' Generate basis functions for all covariates and interaction terms thereof up
 #' to a specified order/degree
 #'
 #' @param x An input \code{matrix} containing observations and covariates
@@ -62,7 +66,27 @@ basis_of_degree <- function(x, degree) {
 #'  generating basis functions for the full dimensionality of the input matrix.
 #'
 #' @export
-#
+#'
+#' @examples
+#' \donttest{
+#' gendata <- function(n, g0, Q0) {
+#'   W1 <- runif(n, -3, 3)
+#'   W2 <- rnorm(n)
+#'   W3 <- runif(n)
+#'   W4 <- rnorm(n)
+#'   A <- rbinom(n, 1, g0(W1, W2, W3, W4))
+#'   Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
+#'   data.frame(A, W1, W2, W3, W4, Y)
+#' }
+#' set.seed(1234)
+#' data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
+#' covars <- setdiff(names(data), "Y")
+#' X <- as.matrix(data[, covars, drop = FALSE])
+#' basis_list <- enumerate_basis(X)
+#' }
+#'
+#' @return A \code{list} of basis functions generated for all covariates and
+#'  interaction thereof up to a pre-specified degree.
 enumerate_basis <- function(x, max_degree = NULL) {
   # if degree is not specified, set it as the full dimensionality of input x
   if (is.null(max_degree)) {
@@ -70,7 +94,6 @@ enumerate_basis <- function(x, max_degree = NULL) {
   }
 
   max_degree <- min(ncol(x), max_degree)
-
   degrees <- seq_len(max_degree)
 
   # generate all basis functions up to the specified degree

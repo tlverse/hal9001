@@ -10,6 +10,7 @@
 hal_screen_cols(
   x,
   y,
+  V = 5,
   family,
   col_lists = NULL,
   foldid = NULL,
@@ -38,38 +39,43 @@ hal_screen_lambda(
 )
 }
 \arguments{
-\item{x}{An input \code{matrix} containing observations and covariates
-following standard conventions in problems of statistical learning.}
+\item{x}{An input \code{matrix} containing observations of covariates.}
 
-\item{y}{A \code{numeric} vector of obervations of the outcome variable of
-interest, following standard conventions in problems of statistical learning.}
+\item{y}{A \code{numeric} vector of obervations of the outcome variable.}
+
+\item{V}{A \code{numeric} of the number of folds to use in cross-validation.
+Defaults to five. If \code{foldid} is not specified, this is used.}
 
 \item{family}{A \code{character} corresponding to the error family for a
 generalized linear model. Options are limited to "gaussian" for fitting a
 standard general linear model and "binomial" for logistic regression.}
 
-\item{col_lists}{a list of lists of column number, indicating which basis to screen}
+\item{col_lists}{A list of lists of column number, indicating which basis
+columns to screen.}
 
-\item{foldid}{a foldid vector,as in cv.glmnet}
+\item{foldid}{A vector of fold IDs, as in \code{\link[glmnet]{cv.glmnet}}.}
 
-\item{offset}{a vector of offset values, used in fitting}
+\item{offset}{A vector of offset values, used in fitting.}
 
-\item{verbose}{if TRUE, print details of screening steps}
+\item{verbose}{If \code{TRUE}, print details of screening steps.}
 
 \item{max_degree}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
-\item{main_terms}{if TRUE, only screen interactions for siginficant main terms}
+\item{main_terms}{If \code{TRUE}, only screen interactions for siginficant
+main terms}
 
-\item{x_basis}{an x_basis sparse matrix}
+\item{x_basis}{An \code{x_basis} sparse matrix.}
 
-\item{lambda}{A user-specified array of values of the lambda tuning parameter
-of the Lasso L1 regression. If \code{NULL}, \code{cv.glmnet} will be used to
-automatically select a CV-optimal value of this regularization parameter. If
-specified, the Lasso L1 regression model will be fit via \code{glmnet},
-returning regularized coefficient values for each value in the input array.}
+\item{lambda}{A user-specified array of values of the lambda tuning
+parameter of the Lasso L1 regression. \code{\link[glmnet]{cv.glmnet}} will
+be used when set to \code{NULL}, automatically selecting an optimal value
+based on a cross-validated fit criterion (e.g., MSE). If specified, Lasso
+L1 regression model will be fit via \code{\link[glmnet]{glmnet}}, returning
+regularized coefficient values for each value in the input array.}
 }
 \description{
 Smart Screening Stuff. TODO: Document fully
 }
+\keyword{internal}

@@ -130,6 +130,7 @@
     <pre class="usage"><span class='fu'>hal_screen_cols</span>(
   <span class='no'>x</span>,
   <span class='no'>y</span>,
+  <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>5</span>,
   <span class='no'>family</span>,
   <span class='kw'>col_lists</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>foldid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -162,13 +163,16 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>An input <code>matrix</code> containing observations and covariates
-following standard conventions in problems of statistical learning.</p></td>
+      <td><p>An input <code>matrix</code> containing observations of covariates.</p></td>
     </tr>
     <tr>
       <th>y</th>
-      <td><p>A <code>numeric</code> vector of obervations of the outcome variable of
-interest, following standard conventions in problems of statistical learning.</p></td>
+      <td><p>A <code>numeric</code> vector of obervations of the outcome variable.</p></td>
+    </tr>
+    <tr>
+      <th>V</th>
+      <td><p>A <code>numeric</code> of the number of folds to use in cross-validation.
+Defaults to five. If <code>foldid</code> is not specified, this is used.</p></td>
     </tr>
     <tr>
       <th>family</th>
@@ -178,19 +182,20 @@ standard general linear model and "binomial" for logistic regression.</p></td>
     </tr>
     <tr>
       <th>col_lists</th>
-      <td><p>a list of lists of column number, indicating which basis to screen</p></td>
+      <td><p>A list of lists of column number, indicating which basis
+columns to screen.</p></td>
     </tr>
     <tr>
       <th>foldid</th>
-      <td><p>a foldid vector,as in cv.glmnet</p></td>
+      <td><p>A vector of fold IDs, as in <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>.</p></td>
     </tr>
     <tr>
       <th>offset</th>
-      <td><p>a vector of offset values, used in fitting</p></td>
+      <td><p>A vector of offset values, used in fitting.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>if TRUE, print details of screening steps</p></td>
+      <td><p>If <code>TRUE</code>, print details of screening steps.</p></td>
     </tr>
     <tr>
       <th>max_degree</th>
@@ -200,19 +205,21 @@ generating basis functions for the full dimensionality of the input matrix.</p><
     </tr>
     <tr>
       <th>main_terms</th>
-      <td><p>if TRUE, only screen interactions for siginficant main terms</p></td>
+      <td><p>If <code>TRUE</code>, only screen interactions for siginficant
+main terms</p></td>
     </tr>
     <tr>
       <th>x_basis</th>
-      <td><p>an x_basis sparse matrix</p></td>
+      <td><p>An <code>x_basis</code> sparse matrix.</p></td>
     </tr>
     <tr>
       <th>lambda</th>
-      <td><p>A user-specified array of values of the lambda tuning parameter
-of the Lasso L1 regression. If <code>NULL</code>, <code>cv.glmnet</code> will be used to
-automatically select a CV-optimal value of this regularization parameter. If
-specified, the Lasso L1 regression model will be fit via <code>glmnet</code>,
-returning regularized coefficient values for each value in the input array.</p></td>
+      <td><p>A user-specified array of values of the lambda tuning
+parameter of the Lasso L1 regression. <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code> will
+be used when set to <code>NULL</code>, automatically selecting an optimal value
+based on a cross-validated fit criterion (e.g., MSE). If specified, Lasso
+L1 regression model will be fit via <code><a href='https://rdrr.io/pkg/glmnet/man/glmnet.html'>glmnet</a></code>, returning
+regularized coefficient values for each value in the input array.</p></td>
     </tr>
     </table>
 

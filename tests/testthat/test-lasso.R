@@ -4,12 +4,12 @@ library(methods)
 set.seed(749125)
 
 # generate simple test data
-n <- 1e3
+n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, 0, 0.2)
 
-test_n <- 1e4
+test_n <- 100
 test_x <- matrix(rnorm(test_n * p), test_n, p)
 test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(test_n, 0, 0.2)
 
