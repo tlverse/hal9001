@@ -58,7 +58,7 @@ cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
       FALSE
     ))
     preds <- with(fold_data, as.vector(x_valid %*% (beta / xscale)) +
-                  intercept)
+      intercept)
     mse <- with(fold_data, mean((preds - y_valid)^2))
     return(list(fold_data = fold_data, mse = mse))
   }

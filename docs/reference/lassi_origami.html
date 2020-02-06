@@ -36,10 +36,10 @@
 
 
 <meta property="og:title" content="Single Lasso estimation for cross-validation with Origami — lassi_origami" />
-<meta property="og:description" content="Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using cross_validate from the
-origami package, which is done through cv_lasso. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
+<meta property="og:description" content="Fits Lasso regression over a single fold of a cross-validated data set. This
+is meant to be called using cross_validate, which is
+done through cv_lasso. Note that this procedure is NOT meant
+to be invoked by itself. INTERNAL USE ONLY." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -127,10 +127,10 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY." />
     </div>
 
     <div class="ref-description">
-    <p>Fits the Lasso regression over a single fold of a cross-validated data set.
-This is meant to be called using <code>cross_validate</code> from the
-<code>origami</code> package, which is done through <code>cv_lasso</code>. Note that this
-procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.</p>
+    <p>Fits Lasso regression over a single fold of a cross-validated data set. This
+is meant to be called using <code><a href='http://tlverse.org/origami/reference/cross_validate.html'>cross_validate</a></code>, which is
+done through <code><a href='cv_lasso.html'>cv_lasso</a></code>. Note that this procedure is NOT meant
+to be invoked by itself. INTERNAL USE ONLY.</p>
     </div>
 
     <pre class="usage"><span class='fu'>lassi_origami</span>(<span class='no'>fold</span>, <span class='no'>data</span>, <span class='no'>lambdas</span>, <span class='kw'>center</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
@@ -140,14 +140,14 @@ procedure is NOT meant to be invoked by itself. INTERNAL USE ONLY.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>fold</th>
-      <td><p>A <code>fold</code> object produced by a call to <code>make_folds</code> from
-the <code>origami</code> package.</p></td>
+      <td><p>A <code>fold</code> object produced by a call to <code>make_folds</code>
+from the <span class="pkg">origami</span>.</p></td>
     </tr>
     <tr>
       <th>data</th>
       <td><p>A <code>dgCMatrix</code> object containing the outcome values (Y) in
 its first column and vectors corresponding to the basis functions of HAL in
-all other columns. Consult the description of the HAL algorithm for details.</p></td>
+all other columns. Consult the description of HAL regression for details.</p></td>
     </tr>
     <tr>
       <th>lambdas</th>

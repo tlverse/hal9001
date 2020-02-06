@@ -44,15 +44,15 @@ test_that("HAL and SuperLearner-HAL produce results of same shape", {
 
 # test of MSEs being close: SL-HAL and SL dominated by HAL should be very close
 # (hence the rather low tolerance, esp. given an additive scale)
-#test_that("HAL dominates other algorithms when used in SuperLearner", {
-  #expect_equal(mse(pred_sl_test, test_y),
-    #expected = mse(pred_hal_sl_test, test_y),
-    #scale = mse(pred_hal_sl_test, test_y),
-    #tolerance = 0.05
-  #)
-#})
+# test_that("HAL dominates other algorithms when used in SuperLearner", {
+# expect_equal(mse(pred_sl_test, test_y),
+# expected = mse(pred_hal_sl_test, test_y),
+# scale = mse(pred_hal_sl_test, test_y),
+# tolerance = 0.05
+# )
+# })
 
 # test of SL-HAL risk: HAL has lowest CV-risk in the learner library
-#test_that("HAL has the lowest CV-risk amongst algorithms in Super Learner", {
-  #expect_equivalent(names(which.min(sl$cvRisk)), "SL.hal9001_All")
-#})
+# test_that("HAL has the lowest CV-risk amongst algorithms in Super Learner", {
+# expect_equivalent(names(which.min(sl$cvRisk)), "SL.hal9001_All")
+# })

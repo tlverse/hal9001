@@ -101,7 +101,8 @@ cv_lasso <- function(x_basis, y, n_lambda = 100, n_folds = 10,
   # find the maximum lambda among those 1 standard error above the minimum
   lambda_min_1se <- (lambdas_cvmse + lambdas_cvsd)[lambda_optim_index - 1]
   lambda_1se <- max(lambdas_init[lambdas_cvmse <= lambda_min_1se],
-                    na.rm = TRUE)
+    na.rm = TRUE
+  )
   lambda_1se_index <- which.min(abs(lambdas_init - lambda_1se))
 
   # create output object

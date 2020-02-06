@@ -5,13 +5,29 @@
 #' @param object An object of class \code{hal9001}, containing the results of
 #'  fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.
 #'
+#' @importFrom methods is
+#' @importFrom assertthat assert_that
+#'
 #' @export
+#'
+#' @examples
+#' \donttest{
+#' # generate simple test data
+#' n <- 100
+#' p <- 3
+#' x <- matrix(rnorm(n * p), n, p)
+#' y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
+#'
+#' # fit HAL model and squash resulting object to reduce footprint
+#' hal_fit <- fit_hal(X = x, Y = y, yolo = FALSE)
+#' squashed <- squash_hal_fit(hal_fit)
+#' }
 #'
 #' @return Object of class \code{hal9001}, similar to the input object but
 #'  reduced such that coefficients belonging to bases with coefficients equal
 #'  to zero removed.
 squash_hal_fit <- function(object) {
-  stopifnot(class(object) == "hal9001")
+  assertthat::assert_that(is(object, "hal9001"))
 
   # find indices for basis functions with non-zero coefficients
   nz_coefs <- which(as.vector(object$coefs)[-1] != 0)

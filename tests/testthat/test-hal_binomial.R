@@ -12,13 +12,11 @@ n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
-stopifnot(max(y_prob) <= 1 && min(y_prob) >= 0)
 y <- rbinom(n = n, size = 1, prob = y_prob)
 
 test_n <- 100
 test_x <- matrix(rnorm(test_n * p), test_n, p)
 test_y_prob <- plogis(3 * sin(test_x[, 1]) + sin(test_x[, 2]))
-stopifnot(max(test_y_prob) <= 1 && min(test_y_prob) >= 0)
 test_y <- rbinom(n = test_n, size = 1, prob = y_prob)
 
 # ml implementation
