@@ -101,12 +101,12 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.002     0.00   0.002          0         0
-#> design_matrix         0.001     0.00   0.001          0         0
-#> remove_duplicates     0.005     0.00   0.005          0         0
-#> reduce_basis          0.000     0.00   0.000          0         0
-#> lasso                 0.262     0.02   0.283          0         0
-#> total                 0.270     0.02   0.291          0         0
+#> enumerate_basis       0.002    0.001   0.001          0         0
+#> design_matrix         0.001    0.000   0.001          0         0
+#> remove_duplicates     0.005    0.000   0.005          0         0
+#> reduce_basis          0.000    0.000   0.000          0         0
+#> lasso                 0.261    0.011   0.273          0         0
+#> total                 0.269    0.012   0.280          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -146,7 +146,7 @@ After using the `hal9001` R package, please cite the following:
 
 ## License
 
-© 2017-2019 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
+© 2017-2020 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
 Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license.
