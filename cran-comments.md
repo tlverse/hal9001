@@ -19,7 +19,5 @@
   * Citations: we have added the first two papers (with DOIs) describing the
      implemented methodology to the appropriate field in the file DESCRIPTION.
   * Stylization: glmnet -> 'glmnet' in the file DESCRIPTION.
-  * Examples: we have added an example to the only user-facing function
-    (`fit_hal`; wrapped in \donttest{} as suggested) to serve as an example.
-    Other functions are exported for developer convenience and thus examples for
-    these are left out since they would not benefit a general audience.
+  * Examples: we have added simple examples based on our unit tests to the
+    remaining exported functions.
