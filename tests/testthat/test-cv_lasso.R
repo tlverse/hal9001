@@ -8,7 +8,7 @@ set.seed(749125)
 ################################################################################
 
 # number of CV folds
-n_folds <- 10
+n_folds <- 3
 
 # generate simple test data
 n <- 100

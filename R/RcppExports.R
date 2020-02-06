@@ -21,6 +21,26 @@ index_first_copy <- function(X) {
 #'
 #' @export
 #'
+#' @examples
+#' \donttest{
+#' gendata <- function(n, g0, Q0) {
+#'   W1 <- runif(n, -3, 3)
+#'   W2 <- rnorm(n)
+#'   W3 <- runif(n)
+#'   W4 <- rnorm(n)
+#'   A <- rbinom(n, 1, g0(W1, W2, W3, W4))
+#'   Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
+#'   data.frame(A, W1, W2, W3, W4, Y)
+#' }
+#' set.seed(1234)
+#' data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
+#' covars <- setdiff(names(data), "Y")
+#' X <- as.matrix(data[, covars, drop = FALSE])
+#' basis_list <- enumerate_basis(X)
+#' x_basis <- make_design_matrix(X, basis_list)
+#' copy_map <- make_copy_map(x_basis)
+#' pred_x_basis_uniq <- apply_copy_map(pred_x_basis, copy_map)
+#' }
 apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
@@ -39,7 +59,6 @@ lassi_predict <- function(X, beta, intercept) {
 #'
 #' @param X_sub A subset of the columns of X, the original design matrix.
 #' @param cols An index of the columns that were reduced to by sub-setting.
-#' @export
 make_basis_list <- function(X_sub, cols) {
     .Call('_hal9001_make_basis_list', PACKAGE = 'hal9001', X_sub, cols)
 }
@@ -81,6 +100,24 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'
 #' @export
 #'
+#' @examples
+#' \donttest{
+#' gendata <- function(n, g0, Q0) {
+#'   W1 <- runif(n, -3, 3)
+#'   W2 <- rnorm(n)
+#'   W3 <- runif(n)
+#'   W4 <- rnorm(n)
+#'   A <- rbinom(n, 1, g0(W1, W2, W3, W4))
+#'   Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
+#'   data.frame(A, W1, W2, W3, W4, Y)
+#' }
+#' set.seed(1234)
+#' data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
+#' covars <- setdiff(names(data), "Y")
+#' X <- as.matrix(data[, covars, drop = FALSE])
+#' basis_list <- enumerate_basis(X)
+#' x_basis <- make_design_matrix(X, basis_list)
+#' }
 make_design_matrix <- function(X, blist) {
     .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist)
 }

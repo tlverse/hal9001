@@ -12,9 +12,23 @@ fitting the Highly Adaptive LASSO, as produced by a call to \code{fit_hal}.}
 }
 \value{
 Object of class \code{hal9001}, similar to the input object but
- reduced such that coefficients belonging to bases with coefficients equal to
- zero removed.
+ reduced such that coefficients belonging to bases with coefficients equal
+ to zero removed.
 }
 \description{
 Reduce footprint by dropping basis functions with coefficients of zero
+}
+\examples{
+\donttest{
+# generate simple test data
+n <- 100
+p <- 3
+x <- matrix(rnorm(n * p), n, p)
+y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
+
+# fit HAL model and squash resulting object to reduce footprint
+hal_fit <- fit_hal(X = x, Y = y, yolo = FALSE)
+squashed <- squash_hal_fit(hal_fit)
+}
+
 }

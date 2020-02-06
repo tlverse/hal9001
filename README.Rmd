@@ -136,7 +136,7 @@ After using the `hal9001` R package, please cite the following:
 
 ## License
 
-&copy; 2017-2019 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
+&copy; 2017-2020 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
 Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license. See

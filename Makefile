@@ -15,7 +15,7 @@ test:
 	Rscript -e "devtools::test()"
 
 doc:
-	Rscript -e "devtools::document()"
+	Rscript -e "devtools::document(); Rcpp::compileAttributes(); devtools::document()"
 
 build:
 	Rscript -e "devtools::build()"

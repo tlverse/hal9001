@@ -142,15 +142,28 @@ fitting the Highly Adaptive LASSO, as produced by a call to <code>fit_hal</code>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Object of class <code>hal9001</code>, similar to the input object but
- reduced such that coefficients belonging to bases with coefficients equal to
- zero removed.</p>
+ reduced such that coefficients belonging to bases with coefficients equal
+ to zero removed.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='co'># generate simple test data</span>
+<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
+<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>p</span>), <span class='no'>n</span>, <span class='no'>p</span>)
+<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='no'>x</span>[, <span class='fl'>1</span>]) * <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='no'>x</span>[, <span class='fl'>2</span>]) + <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)
+
+<span class='co'># fit HAL model and squash resulting object to reduce footprint</span>
+<span class='no'>hal_fit</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fit_hal.html'>fit_hal</a></span>(<span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='no'>squashed</span> <span class='kw'>&lt;-</span> <span class='fu'>squash_hal_fit</span>(<span class='no'>hal_fit</span>)
+<span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

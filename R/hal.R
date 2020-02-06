@@ -6,8 +6,8 @@
 #'  matrix consisting of basis functions corresponding to covariates and
 #'  interactions of covariates and to remove duplicate columns of indicators.
 #'  The Lasso regression is fit to this (usually) very wide matrix using either
-#'  a custom implementation (based on the \code{origami} package) or by a call
-#'  to \code{cv.glmnet} from the \code{glmnet} package.
+#'  a custom implementation (based on \pkg{origami}) or by a call to
+#'  \code{\link[glmnet]{cv.glmnet}}.
 #'
 #' @param X An input \code{matrix} containing observations and covariates.
 #' @param X_unpenalized An input \code{matrix} with the same format as X, that
@@ -30,15 +30,15 @@
 #' @param use_min Determines which lambda is selected from
 #'  \code{\link[glmnet]{cv.glmnet}}. \code{TRUE} corresponds to
 #'  \code{"lambda.min"} and \code{FALSE} corresponds to \code{"lambda.1se"}.
-#' @param reduce_basis A \code{numeric} value bounded in the open interval (0,1)
-#'  indicating the minimum proportion of 1's in a basis function column needed
-#'  for the basis function to be included in the procedure to fit the Lasso. Any
-#'  basis functions with a lower proportion of 1's than the specified cutoff
+#' @param reduce_basis A \code{numeric} value bounded in the open interval
+#'  (0,1) indicating the minimum proportion of 1's in a basis function column
+#'  needed for the basis function to be included in the procedure to fit the
+#'  Lasso. Any basis functions with a lower proportion of 1's than the cutoff
 #'  will be removed. This argument defaults to \code{NULL}, in which case all
 #'  basis functions are used in the lasso-fitting stage of the HAL algorithm.
 #' @param family A \code{character} corresponding to the error family for a
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
-#'  standard general linear model, "binomial" for penalized logistic regression,
+#'  standard linear model, "binomial" for penalized logistic regression,
 #'  "cox" for a penalized proportional hazards model. Note that in the case of
 #'  "binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
 #'  documentation of the glmnet package should be consulted for any errors
@@ -51,7 +51,7 @@
 #'  data X (via a call to \code{enumerate_basis}). The dimensionality of this
 #'  structure is dim = (n * 2^(d - 1)), where n is the number of observations
 #'  and d is the number of columns in X.
-#' @param lambda A user-specified array of values of the lambda tuning parameter
+#' @param lambda User-specified array of values of the lambda tuning parameter
 #'  of the Lasso L1 regression. If \code{NULL}, \code{\link[glmnet]{cv.glmnet}}
 #'  will be used to automatically select a CV-optimal value of this
 #'  regularization parameter. If specified, the Lasso L1 regression model will
@@ -59,32 +59,42 @@
 #'  value in the input array.
 #' @param cv_select A \code{logical} specifying whether the array of values
 #'  specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
-#'  pick the optimal value (based on cross-validation) (when set to \code{TRUE})
-#'  or to simply fit along the sequence of values (or single value) using
-#'  \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).
+#'  pick the optimal value (based on cross-validation) (when set to
+#'  \code{TRUE}) or to simply fit along the sequence of values (or single
+#'  value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).
 #' @param id a vector of ID values, used to generate cross-validation folds for
 #'  cross-validated selection of the regularization parameter lambda.
 #' @param offset a vector of offset values, used in fitting.
-#' @param screen_basis If TRUE, use a screening procedure to reduce the number
-#'  of basis functions fitted.
-#' @param screen_lambda If TURE, use a screening procedure to reduce the number
-#'  of lambda values evaluated.
+#' @param screen_basis If \code{TRUE}, use a screening procedure to reduce the
+#'  number of basis functions fitted.
+#' @param screen_lambda If \code{TRUE}, use a screening procedure to reduce the
+#'  number of lambda values evaluated.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
-#'  selection of quotes from the HAL9000 computer, from the critically acclaimed
-#'  epic science-fiction film "2001: A Space Odyssey" (1968).
+#'  selection of quotes from the HAL9000 computer, from the critically
+#'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
 #'
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
 #' @importFrom assertthat assert_that
 #'
-#' @return Object of class \code{hal9001}, containing a list of basis functions,
-#'  a copy map, coefficients estimated for basis functions, and timing results
-#'  (for assessing computational efficiency).
+#' @return Object of class \code{hal9001}, containing a list of basis
+#'  functions, a copy map, coefficients estimated for basis functions, and
+#'  timing results (for assessing computational efficiency).
+#'
+#' @examples
+#' \donttest{
+#' n <- 100
+#' p <- 3
+#' x <- xmat <- matrix(rnorm(n * p), n, p)
+#' y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
+#' y <- rbinom(n = n, size = 1, prob = y_prob)
+#' ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
+#' preds <- predict(ml_hal_fit, new_data = x)
+#' }
 #'
 #' @export
-#
 fit_hal <- function(X,
                     Y,
                     X_unpenalized = NULL,
@@ -203,7 +213,7 @@ fit_hal <- function(X,
   # bookkeeping: get end time of basis reduction procedure
   time_reduce_basis <- proc.time()
 
-  # NOTE: dumb workaround for "Cox model not implemented for sparse x in glmnet"
+  # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
   if (family == "cox") {
     x_basis <- as.matrix(x_basis)
   }

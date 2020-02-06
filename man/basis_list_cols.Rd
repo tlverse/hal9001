@@ -15,6 +15,10 @@ computed automatically.}
 \item{x}{A \code{matrix} containing observations in the rows and covariates
 in the columns. Basis functions are computed for these covariates.}
 }
+\value{
+A \code{list} containing the basis functions generated from a set of
+ input columns.
+}
 \description{
 Build a list of basis functions from a set of columns
 }

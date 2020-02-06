@@ -15,3 +15,22 @@ make_design_matrix(X, blist)
 Make a HAL design matrix based on original design matrix X and a list of
 basis functions in argument blist
 }
+\examples{
+\donttest{
+gendata <- function(n, g0, Q0) {
+  W1 <- runif(n, -3, 3)
+  W2 <- rnorm(n)
+  W3 <- runif(n)
+  W4 <- rnorm(n)
+  A <- rbinom(n, 1, g0(W1, W2, W3, W4))
+  Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
+  data.frame(A, W1, W2, W3, W4, Y)
+}
+set.seed(1234)
+data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
+covars <- setdiff(names(data), "Y")
+X <- as.matrix(data[, covars, drop = FALSE])
+basis_list <- enumerate_basis(X)
+x_basis <- make_design_matrix(X, basis_list)
+}
+}

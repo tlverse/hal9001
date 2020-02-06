@@ -14,13 +14,13 @@ the basis functions generated for the HAL algorithm.}
 
 \item{n_lambda}{A \code{numeric} scalar indicating the number of values of
 the L1 regularization parameter (lambda) to be obtained from fitting the
-LASSO to the full data. Cross-validation is used to select an optimal lambda
-(that minimizes the risk) from among these.}
+LASSO to the full data. Cross-validation is used to select an optimal
+lambda (that minimizes the risk) from among these.}
 
 \item{n_folds}{A \code{numeric} scalar for the number of folds to be used in
 the cross-validation procedure to select an optimal value of lambda.}
 }
 \description{
-Fits the LASSO regression using a customized procedure, with cross-validation
-based on origami
+Fits the LASSO regression using a customized procedure with cross-validation
+based on \pkg{origami}
 }

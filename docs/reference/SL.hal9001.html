@@ -159,22 +159,22 @@ default of <code>NULL</code> computes predictions on training inputs <code>X</co
     <tr>
       <th>max_degree</th>
       <td><p>The highest order of interaction terms for which the basis
-functions ought to be generated. <code>NULL</code> corresponds to generating basis
-functions for the full dimensionality of the input matrix.</p></td>
+functions ought to be generated. <code>NULL</code> corresponds to generating
+basis functions for the full dimensionality of the input matrix.</p></td>
     </tr>
     <tr>
       <th>fit_type</th>
       <td><p>The specific routine to be called when fitting the Lasso
-regression via cross-validation. Choosing <code>cv.glmnet</code> option results in
-option results in a call to <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code> while
+regression via cross-validation. Choosing <code>cv.glmnet</code> option results
+in option results in a call to <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code> while
 <code>lassi</code> produces a (faster) call to a custom routine based on a custom
 routine for fitting the Lasso.</p></td>
     </tr>
     <tr>
       <th>n_folds</th>
       <td><p>Integer for the number of folds to be used when splitting the
-data for cross-validation. This defaults to 10 as this is the convention for
-V-fold cross-validation.</p></td>
+data for cross-validation. This defaults to 10 as this is the convention
+for V-fold cross-validation.</p></td>
     </tr>
     <tr>
       <th>use_min</th>
@@ -190,8 +190,9 @@ compatibility with <code>SuperLearner</code>.</p></td>
     <tr>
       <th>obsWeights</th>
       <td><p>Not used by the function directly, but meant to ensure
-compatibility with <code>SuperLearner</code>. These are passed to <code>cv.glmnet</code>
-or <code>glmnet</code> through the <code>...</code> argument of <code>fit_hal</code>.</p></td>
+compatibility with <code>SuperLearner</code>. These are passed to
+<code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code> through the <code>...</code> argument of
+<code><a href='fit_hal.html'>fit_hal</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>

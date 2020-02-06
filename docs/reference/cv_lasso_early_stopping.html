@@ -36,7 +36,7 @@
 
 
 <meta property="og:title" content="Cross-validated LASSO on Indicator Bases — cv_lasso_early_stopping" />
-<meta property="og:description" content="Fits the LASSO regression using a customized procedure, with cross-validation
+<meta property="og:description" content="Fits the LASSO regression using a customized procedure with cross-validation
 based on origami" />
 <meta name="twitter:card" content="summary" />
 
@@ -125,8 +125,8 @@ based on origami" />
     </div>
 
     <div class="ref-description">
-    <p>Fits the LASSO regression using a customized procedure, with cross-validation
-based on origami</p>
+    <p>Fits the LASSO regression using a customized procedure with cross-validation
+based on <span class="pkg">origami</span></p>
     </div>
 
     <pre class="usage"><span class='fu'>cv_lasso_early_stopping</span>(<span class='no'>x_basis</span>, <span class='no'>y</span>, <span class='kw'>n_lambda</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>n_folds</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
@@ -147,8 +147,8 @@ the basis functions generated for the HAL algorithm.</p></td>
       <th>n_lambda</th>
       <td><p>A <code>numeric</code> scalar indicating the number of values of
 the L1 regularization parameter (lambda) to be obtained from fitting the
-LASSO to the full data. Cross-validation is used to select an optimal lambda
-(that minimizes the risk) from among these.</p></td>
+LASSO to the full data. Cross-validation is used to select an optimal
+lambda (that minimizes the risk) from among these.</p></td>
     </tr>
     <tr>
       <th>n_folds</th>
