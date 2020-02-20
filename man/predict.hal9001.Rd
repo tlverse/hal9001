@@ -20,7 +20,8 @@ fitting the Highly Adaptive Lasso, as produced by a call to \code{fit_hal}.}
 \item{offset}{A vector of offsets. Must be provided if provided at training}
 
 \item{lambda}{A single lambda value or a vector of lambdas to use for
-prediction. If \code{NULL}, use lambda from \code{\link[glmnet]{cv.glmnet}}.}
+prediction. If \code{NULL}, a value of lambda will be selected based on
+cross-validation, using \code{\link[glmnet]{cv.glmnet}}.}
 
 \item{...}{Additional arguments passed to \code{predict} as necessary.}
 
@@ -32,6 +33,10 @@ compute predicted values.}
 \item{new_X_unpenalized}{If the user supplied \code{X_unpenalized} during
 training, the user should also supply this matrix with the same number of
 observations as \code{new_data}. Optional.}
+}
+\value{
+A \code{numeric} vector of predictions from a fitted \code{hal9001}
+ object.
 }
 \description{
 Prediction from HAL fits

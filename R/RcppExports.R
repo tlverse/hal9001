@@ -23,24 +23,30 @@ index_first_copy <- function(X) {
 #'
 #' @examples
 #' \donttest{
-#' gendata <- function(n, g0, Q0) {
+#' gendata <- function(n) {
 #'   W1 <- runif(n, -3, 3)
 #'   W2 <- rnorm(n)
 #'   W3 <- runif(n)
 #'   W4 <- rnorm(n)
-#'   A <- rbinom(n, 1, g0(W1, W2, W3, W4))
-#'   Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
+#'   g0 <- plogis(0.5 * (-0.8 * W1 + 0.39 * W2 + 0.08 * W3 - 0.12 * W4))
+#'   A <- rbinom(n, 1, g0)
+#'   Q0 <- plogis(0.15 * (2 * A + 2 * A * W1 + 6 * A * W3 * W4 - 3))
+#'   Y <- rbinom(n, 1, Q0)
 #'   data.frame(A, W1, W2, W3, W4, Y)
 #' }
 #' set.seed(1234)
-#' data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
+#' data <- gendata(100)
 #' covars <- setdiff(names(data), "Y")
 #' X <- as.matrix(data[, covars, drop = FALSE])
 #' basis_list <- enumerate_basis(X)
 #' x_basis <- make_design_matrix(X, basis_list)
 #' copy_map <- make_copy_map(x_basis)
-#' pred_x_basis_uniq <- apply_copy_map(pred_x_basis, copy_map)
+#' x_basis_uniq <- apply_copy_map(x_basis, copy_map)
 #' }
+#'
+#' @return A \code{dgCMatrix} sparse matrix corresponding to the design matrix
+#'  for a zero-th order highly adaptive lasso, but with all duplicated columns
+#'  (basis functions) removed.
 apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
@@ -102,22 +108,27 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'
 #' @examples
 #' \donttest{
-#' gendata <- function(n, g0, Q0) {
+#' gendata <- function(n) {
 #'   W1 <- runif(n, -3, 3)
 #'   W2 <- rnorm(n)
 #'   W3 <- runif(n)
 #'   W4 <- rnorm(n)
-#'   A <- rbinom(n, 1, g0(W1, W2, W3, W4))
+#'   g0 <- plogis(0.5 * (-0.8 * W1 + 0.39 * W2 + 0.08 * W3 - 0.12 * W4))
+#'   A <- rbinom(n, 1, g0)
+#'   Q0 <- plogis(0.15 * (2 * A + 2 * A * W1 + 6 * A * W3 * W4 - 3))
 #'   Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
 #'   data.frame(A, W1, W2, W3, W4, Y)
 #' }
 #' set.seed(1234)
-#' data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
+#' data <- gendata(100)
 #' covars <- setdiff(names(data), "Y")
 #' X <- as.matrix(data[, covars, drop = FALSE])
 #' basis_list <- enumerate_basis(X)
 #' x_basis <- make_design_matrix(X, basis_list)
 #' }
+#'
+#' @return A \code{dgCMatrix} sparse matrix of indicator basis functions
+#'  corresponding to the design matrix in a zero-order highly adaptive lasso.
 make_design_matrix <- function(X, blist) {
     .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist)
 }

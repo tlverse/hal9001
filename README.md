@@ -9,10 +9,10 @@ Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis
 Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
+<!--
 [![CRAN](http://www.r-pkg.org/badges/version/hal9001)](http://www.r-pkg.org/pkg/hal9001)
-[![CRAN
-downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
-[![Project Status: Active – The project has reached a stable, usable
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
+--> [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: GPL
@@ -101,12 +101,12 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.002    0.001   0.001          0         0
-#> design_matrix         0.001    0.000   0.001          0         0
-#> remove_duplicates     0.005    0.000   0.005          0         0
+#> enumerate_basis       0.001    0.000   0.002          0         0
+#> design_matrix         0.002    0.000   0.001          0         0
+#> remove_duplicates     0.005    0.000   0.082          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
-#> lasso                 0.261    0.011   0.273          0         0
-#> total                 0.269    0.012   0.280          0         0
+#> lasso                 0.262    0.015   0.278          0         0
+#> total                 0.270    0.015   0.363          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
