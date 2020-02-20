@@ -152,7 +152,8 @@ fitting the Highly Adaptive Lasso, as produced by a call to <code>fit_hal</code>
     <tr>
       <th>lambda</th>
       <td><p>A single lambda value or a vector of lambdas to use for
-prediction. If <code>NULL</code>, use lambda from <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>.</p></td>
+prediction. If <code>NULL</code>, a value of lambda will be selected based on
+cross-validation, using <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -173,6 +174,10 @@ observations as <code>new_data</code>. Optional.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A <code>numeric</code> vector of predictions from a fitted <code>hal9001</code>
+ object.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Method for computing and extracting predictions from fits of the
@@ -184,6 +189,7 @@ observations as <code>new_data</code>. Optional.</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
       <li><a href="#details">Details</a></li>
     </ul>
 

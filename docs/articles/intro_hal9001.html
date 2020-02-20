@@ -82,7 +82,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>
 </h4>
             
-            <h4 class="date">2020-02-05</h4>
+            <h4 class="date">2020-02-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -152,12 +152,12 @@
 <pre><code>## [1] "Without your space helmet, Dave. You're going to find that rather difficult."</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">hal_fit<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.005    0.001   0.005          0         0
+## enumerate_basis       0.005    0.000   0.005          0         0
 ## design_matrix         0.017    0.000   0.018          0         0
-## remove_duplicates     0.011    0.000   0.011          0         0
+## remove_duplicates     0.010    0.000   0.010          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 0.679    0.012   0.690          0         0
-## total                 0.712    0.013   0.724          0         0</code></pre>
+## lasso                 0.690    0.008   0.698          0         0
+## total                 0.722    0.008   0.731          0         0</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">hal_fit</a></code></pre></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "glmnet")
@@ -16416,12 +16416,12 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.005    0.001   0.005          0         0
+## enumerate_basis       0.005    0.000   0.005          0         0
 ## design_matrix         0.017    0.000   0.018          0         0
-## remove_duplicates     0.011    0.000   0.011          0         0
+## remove_duplicates     0.010    0.000   0.010          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 0.679    0.012   0.690          0         0
-## total                 0.712    0.013   0.724          0         0
+## lasso                 0.690    0.008   0.698          0         0
+## total                 0.722    0.008   0.731          0         0
 ## 
 ## $lambda_star
 ## [1] 0.01537728
@@ -16565,12 +16565,12 @@
 <pre><code>## 'lassi' is experimental: fit_type='glmnet' is recommended in nearly all cases.</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">hal_fit_reduced<span class="op">$</span>times</a></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.004        0   0.003          0         0
-## design_matrix         0.015        0   0.015          0         0
-## remove_duplicates     0.006        0   0.006          0         0
-## reduce_basis          0.004        0   0.005          0         0
-## lasso                 1.863        0   1.864          0         0
-## total                 1.888        0   1.888          0         0</code></pre>
+## enumerate_basis       0.004        0   0.004          0         0
+## design_matrix         0.016        0   0.017          0         0
+## remove_duplicates     0.007        0   0.006          0         0
+## reduce_basis          0.005        0   0.005          0         0
+## lasso                 1.996        0   1.996          0         0
+## total                 2.023        0   2.023          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 7.0710678% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">hal_fit_reduced</a></code></pre></div>
 <pre><code>## $call
@@ -32663,12 +32663,12 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.004        0   0.003          0         0
-## design_matrix         0.015        0   0.015          0         0
-## remove_duplicates     0.006        0   0.006          0         0
-## reduce_basis          0.004        0   0.005          0         0
-## lasso                 1.863        0   1.864          0         0
-## total                 1.888        0   1.888          0         0
+## enumerate_basis       0.004        0   0.004          0         0
+## design_matrix         0.016        0   0.017          0         0
+## remove_duplicates     0.007        0   0.006          0         0
+## reduce_basis          0.005        0   0.005          0         0
+## lasso                 1.996        0   1.996          0         0
+## total                 2.023        0   2.023          0         0
 ## 
 ## $lambda_star
 ## [1] 0.01073374

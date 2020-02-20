@@ -116,7 +116,7 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'   g0 <- plogis(0.5 * (-0.8 * W1 + 0.39 * W2 + 0.08 * W3 - 0.12 * W4))
 #'   A <- rbinom(n, 1, g0)
 #'   Q0 <- plogis(0.15 * (2 * A + 2 * A * W1 + 6 * A * W3 * W4 - 3))
-#'   Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
+#'   Y <- rbinom(n, 1, Q0)
 #'   data.frame(A, W1, W2, W3, W4, Y)
 #' }
 #' set.seed(1234)
