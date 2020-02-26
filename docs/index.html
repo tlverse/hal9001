@@ -113,7 +113,7 @@ install.packages("hal9001")
 ```
 -->
 <p>To contribute, install the <em>development version</em> of <code>hal9001</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"tlverse/hal9001"</span>, <span class="dt">build_vignettes =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"tlverse/hal9001"</span>, <span class="dt">build_vignettes =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
@@ -143,12 +143,12 @@ install.packages("hal9001")
 <a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span></a>
 <a class="sourceLine" id="cb2-16" data-line-number="16">hal_fit<span class="op">$</span>times</a>
 <a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; enumerate_basis       0.001        0   0.002          0         0</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; design_matrix         0.002        0   0.002          0         0</span></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; remove_duplicates     0.006        0   0.006          0         0</span></a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; reduce_basis          0.000        0   0.000          0         0</span></a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt; lasso                 0.303        0   0.303          0         0</span></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt; total                 0.312        0   0.313          0         0</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; enumerate_basis       0.002     0.00   0.001          0         0</span></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; design_matrix         0.001     0.00   0.002          0         0</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; remove_duplicates     0.005     0.00   0.004          0         0</span></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; reduce_basis          0.000     0.00   0.000          0         0</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt; lasso                 0.226     0.02   0.247          0         0</span></a>
+<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt; total                 0.234     0.02   0.254          0         0</span></a>
 <a class="sourceLine" id="cb2-24" data-line-number="24"></a>
 <a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co"># training sample prediction</span></a>
 <a class="sourceLine" id="cb2-26" data-line-number="26">preds &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(hal_fit, <span class="dt">new_data =</span> x)</a>

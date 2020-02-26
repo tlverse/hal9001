@@ -56,7 +56,6 @@ Suggests:
   tidyr,
   stringr,
   survival,
-  bit,
   data.table,
   SuperLearner
 LinkingTo:
