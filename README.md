@@ -9,12 +9,15 @@ Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis
 Status](https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/jeremyrcoyle/hal9001)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
+[![CRAN](http://www.r-pkg.org/badges/version/hal9001)](http://www.r-pkg.org/pkg/hal9001)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3558314.svg)](https://doi.org/10.5281/zenodo.3558314)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3558313.svg)](https://doi.org/10.5281/zenodo.3558313)
 
 > The *Scalable* Highly Adaptive Lasso
 
@@ -47,21 +50,18 @@ consider consulting Benkeser and van der Laan (2016), van der Laan
 
 ## Installation
 
-<!--
 For standard use, we recommend installing the package from
-[CRAN](https://cran.r-project.org/) via
+[CRAN](https://CRAN.R-project.org/package=hal9001) via
 
-
-```r
+``` r
 install.packages("hal9001")
 ```
--->
 
 To contribute, install the *development version* of `hal9001` from
 GitHub via [`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ``` r
-remotes::install_github("tlverse/hal9001", build_vignettes = FALSE)
+remotes::install_github("tlverse/hal9001")
 ```
 
 -----
@@ -81,13 +81,13 @@ estimator, the interested reader is referred to Benkeser and van der
 Laan (2016) and van der Laan (2017a).
 
 ``` r
-# load the hal9001 package
+# load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
 #> hal9001 v0.2.5: The Scalable Highly Adaptive Lasso
+set.seed(385971)
 
 # simulate data
-set.seed(385971)
 n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
@@ -98,12 +98,12 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.002     0.00   0.001          0         0
-#> design_matrix         0.001     0.00   0.002          0         0
-#> remove_duplicates     0.005     0.00   0.004          0         0
-#> reduce_basis          0.000     0.00   0.000          0         0
-#> lasso                 0.226     0.02   0.247          0         0
-#> total                 0.234     0.02   0.254          0         0
+#> enumerate_basis       0.005    0.000   0.006          0         0
+#> design_matrix         0.005    0.000   0.005          0         0
+#> remove_duplicates     0.017    0.000   0.017          0         0
+#> reduce_basis          0.000    0.000   0.000          0         0
+#> lasso                 0.261    0.005   0.270          0         0
+#> total                 0.288    0.005   0.298          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -134,8 +134,8 @@ After using the `hal9001` R package, please cite the following:
       year  = {2019},
       howpublished = {\url{https://github.com/tlverse/hal9001}},
       note = {{R} package version 0.2.5},
-      url = {https://doi.org/10.5281/zenodo.3558314},
-      doi = {10.5281/zenodo.3558314}
+      url = {https://doi.org/10.5281/zenodo.3558313},
+      doi = {10.5281/zenodo.3558313}
     }
 ```
 

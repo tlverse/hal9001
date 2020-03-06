@@ -12,5 +12,5 @@ bibentry(bibtype = "Manual",
                     person("Mark", "van der Laan", "J")),
          year = year,
          note = note,
-         doi = "10.5281/zenodo.3558314",
+         doi = "10.5281/zenodo.3558313",
          url = "https://github.com/tlverse/hal9001")
