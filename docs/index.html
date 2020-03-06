@@ -103,17 +103,10 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<!--
-For standard use, we recommend installing the package from
-[CRAN](https://cran.r-project.org/) via
-
-
-```r
-install.packages("hal9001")
-```
--->
+<p>For standard use, we recommend installing the package from <a href="https://CRAN.R-project.org/package=hal9001">CRAN</a> via</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"hal9001"</span>)</a></code></pre></div>
 <p>To contribute, install the <em>development version</em> of <code>hal9001</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"tlverse/hal9001"</span>, <span class="dt">build_vignettes =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"tlverse/hal9001"</span>)</a></code></pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
@@ -126,34 +119,34 @@ install.packages("hal9001")
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>This minimal example shows how to use <code>hal9001</code> to obtain predictions based on the Highly Adaptive Lasso. For details on the properties of the estimator, the interested reader is referred to Benkeser and van der Laan (2016) and van der Laan (2017a).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># load the hal9001 package</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(hal9001)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">#&gt; Loading required package: Rcpp</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co">#&gt; hal9001 v0.2.5: The Scalable Highly Adaptive Lasso</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># simulate data</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">385971</span>)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">p &lt;-<span class="st"> </span><span class="dv">3</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">x &lt;-<span class="st"> </span>xmat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n <span class="op">*</span><span class="st"> </span>p), n, p)</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">y &lt;-<span class="st"> </span>x[, <span class="dv">1</span>] <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="fl">0.2</span>)</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># fit the HAL regression</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">hal_fit &lt;-<span class="st"> </span><span class="kw"><a href="reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y)</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">hal_fit<span class="op">$</span>times</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; enumerate_basis       0.002    0.001   0.001          0         0</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; design_matrix         0.001    0.000   0.001          0         0</span></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt; remove_duplicates     0.005    0.000   0.005          0         0</span></a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span></a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt; lasso                 0.261    0.011   0.273          0         0</span></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt; total                 0.269    0.012   0.280          0         0</span></a>
-<a class="sourceLine" id="cb2-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co"># training sample prediction</span></a>
-<a class="sourceLine" id="cb2-26" data-line-number="26">preds &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(hal_fit, <span class="dt">new_data =</span> x)</a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(hal_mse &lt;-<span class="st"> </span>(preds <span class="op">-</span><span class="st"> </span>y)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb2-28" data-line-number="28"><span class="co">#&gt; [1] 0.006991539</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># load the package and set a seed</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(hal9001)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; Loading required package: Rcpp</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; hal9001 v0.2.5: The Scalable Highly Adaptive Lasso</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">385971</span>)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># simulate data</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">p &lt;-<span class="st"> </span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">x &lt;-<span class="st"> </span>xmat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n <span class="op">*</span><span class="st"> </span>p), n, p)</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">y &lt;-<span class="st"> </span>x[, <span class="dv">1</span>] <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="fl">0.2</span>)</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co"># fit the HAL regression</span></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">hal_fit &lt;-<span class="st"> </span><span class="kw"><a href="reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y)</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span></a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">hal_fit<span class="op">$</span>times</a>
+<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="co">#&gt; enumerate_basis       0.005    0.000   0.006          0         0</span></a>
+<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="co">#&gt; design_matrix         0.005    0.000   0.005          0         0</span></a>
+<a class="sourceLine" id="cb3-20" data-line-number="20"><span class="co">#&gt; remove_duplicates     0.017    0.000   0.017          0         0</span></a>
+<a class="sourceLine" id="cb3-21" data-line-number="21"><span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span></a>
+<a class="sourceLine" id="cb3-22" data-line-number="22"><span class="co">#&gt; lasso                 0.261    0.005   0.270          0         0</span></a>
+<a class="sourceLine" id="cb3-23" data-line-number="23"><span class="co">#&gt; total                 0.288    0.005   0.298          0         0</span></a>
+<a class="sourceLine" id="cb3-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb3-25" data-line-number="25"><span class="co"># training sample prediction</span></a>
+<a class="sourceLine" id="cb3-26" data-line-number="26">preds &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(hal_fit, <span class="dt">new_data =</span> x)</a>
+<a class="sourceLine" id="cb3-27" data-line-number="27"><span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(hal_mse &lt;-<span class="st"> </span>(preds <span class="op">-</span><span class="st"> </span>y)<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb3-28" data-line-number="28"><span class="co">#&gt; [1] 0.006991539</span></a></code></pre></div>
 <hr>
 </div>
 <div id="contributions" class="section level2">
@@ -173,8 +166,8 @@ install.packages("hal9001")
       year  = {2019},
       howpublished = {\url{https://github.com/tlverse/hal9001}},
       note = {{R} package version 0.2.5},
-      url = {https://doi.org/10.5281/zenodo.3558314},
-      doi = {10.5281/zenodo.3558314}
+      url = {https://doi.org/10.5281/zenodo.3558313},
+      doi = {10.5281/zenodo.3558313}
     }</code></pre>
 <hr>
 </div>
@@ -226,6 +219,8 @@ E-Prints*.
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=hal9001">https://​cloud.r-project.org/​package=hal9001</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/tlverse/hal9001">https://​github.com/​tlverse/​hal9001</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/tlverse/hal9001/issues">https://​github.com/​tlverse/​hal9001/​issues</a>
@@ -270,7 +265,7 @@ E-Prints*.
 <li><a href="https://CRAN.R-project.org/package=hal9001"><img src="https://cranlogs.r-pkg.org/badges/hal9001" alt="CRAN downloads"></a></li>
 <li><a href="http://www.repostatus.org/#active"><img src="http://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed."></a></li>
 <li><a href="http://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License: GPL v3"></a></li>
-<li><a href="https://doi.org/10.5281/zenodo.3558314"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3558314.svg" alt="DOI"></a></li>
+<li><a href="https://doi.org/10.5281/zenodo.3558313"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3558313.svg" alt="DOI"></a></li>
 </ul>
 </div>
 </div>

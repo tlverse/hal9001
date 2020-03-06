@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3558314.svg)](https://doi.org/10.5281/zenodo.3558314)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3558313.svg)](https://doi.org/10.5281/zenodo.3558313)
 
 > The _Scalable_ Highly Adaptive Lasso
 
@@ -55,20 +55,18 @@ recent works.
 
 ## Installation
 
-<!--
 For standard use, we recommend installing the package from
-[CRAN](https://cran.r-project.org/) via
+[CRAN](https://CRAN.R-project.org/package=hal9001) via
 
 ```{r cran-installation, eval = FALSE}
 install.packages("hal9001")
 ```
--->
 
 To contribute, install the _development version_ of `hal9001` from GitHub via
 [`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ```{r gh-master-installation, eval = FALSE}
-remotes::install_github("tlverse/hal9001", build_vignettes = FALSE)
+remotes::install_github("tlverse/hal9001")
 ```
 
 ---
@@ -87,11 +85,11 @@ the Highly Adaptive Lasso. For details on the properties of the estimator, the
 interested reader is referred to @benkeser2016hal and @vdl2017generally.
 
 ```{r example}
-# load the hal9001 package
+# load the package and set a seed
 library(hal9001)
+set.seed(385971)
 
 # simulate data
-set.seed(385971)
 n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
@@ -128,8 +126,8 @@ After using the `hal9001` R package, please cite the following:
           year  = {2019},
           howpublished = {\url{https://github.com/tlverse/hal9001}},
           note = {{R} package version 0.2.5},
-          url = {https://doi.org/10.5281/zenodo.3558314},
-          doi = {10.5281/zenodo.3558314}
+          url = {https://doi.org/10.5281/zenodo.3558313},
+          doi = {10.5281/zenodo.3558313}
         }
 
 ---

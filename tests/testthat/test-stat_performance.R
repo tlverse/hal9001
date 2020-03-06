@@ -65,7 +65,7 @@ if ("hal" %in% installed.packages()) {
 #########################################
 # hal9001 with default arguments
 # fold_id <- sample(1:10,length(Y),replace=T)
-set.seed(1234) # attempt to control randomness in cv.glmnet fold generation
+# attempt to control randomness in cv.glmnet fold generation
 X <- as.matrix(X)
 # test <- hal_screen_basis(X, Y,family="gaussian", verbose=TRUE, main_terms = FALSE)
 halres9001 <- fit_hal(

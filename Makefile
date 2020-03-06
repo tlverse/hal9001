@@ -6,7 +6,7 @@ site:
 	Rscript -e "pkgdown::build_site()"
 
 check:
-	Rscript -e "devtools::check()"
+	Rscript -e "devtools::check(run_dont_test = TRUE)"
 
 checkfast:
 	Rscript -e "devtools::check(build_args = '--no-build-vignettes')"

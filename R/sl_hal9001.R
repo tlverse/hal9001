@@ -26,11 +26,14 @@
 #'  compatibility with \code{SuperLearner}. These are passed to
 #'  \code{\link[glmnet]{cv.glmnet}} through the \code{...} argument of
 #'  \code{\link{fit_hal}}.
-#' @param ... Placeholder.
+#' @param ... Placeholder (ignored).
 #'
 #' @importFrom stats predict gaussian
 #'
 #' @export
+#'
+#' @return An object of class \code{SL.hal9001} with a fitted \code{hal9001}
+#'  object and corresponding predictions based on the input data.
 SL.hal9001 <- function(Y,
                        X,
                        newX = NULL,
@@ -93,11 +96,14 @@ SL.hal9001 <- function(Y,
 #'
 #' @param object A fitted object of class \code{hal9001}.
 #' @param newdata A matrix of new observations on which to obtain predictions.
-#' @param ... Placeholder.
+#' @param ... Placeholder (ignored).
 #'
 #' @importFrom stats predict
 #'
 #' @export
+#'
+#' @return A \code{numeric} vector of predictions from a \code{SL.hal9001}
+#'  object based on the provide \code{newdata}.
 predict.SL.hal9001 <- function(object, newdata, ...) {
   # coerce newdata to matrix if not already so
   if (!is.matrix(newdata)) {

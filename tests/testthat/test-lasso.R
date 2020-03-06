@@ -40,7 +40,6 @@ system.time({
 #################################################
 # test scaling and centering
 lassi_fit <- methods::new(hal9001:::Lassi, x_basis, y, 100, 0.01, TRUE)
-
 xcenter <- lassi_fit$xcenter
 xscale <- lassi_fit$xscale
 
@@ -51,11 +50,12 @@ xcentered <- sweep(x_basis, 2, xcenter, "-")
 xcenter_scaled <- sweep(xcentered, 2, xscale, "/")
 
 cs_means <- colMeans(as.matrix(xcenter_scaled))
-cs_sd <- apply(xcenter_scaled, 2, sd) * sqrt((n - 1) / n) # bessel correction
+# bessel correction
+cs_sd <- apply(xcenter_scaled, 2, sd) * sqrt((n - 1) / n)
 
 test_that("centering and scaling x works", {
   expect_lt(max(abs(cs_means)), 1e-8)
-  expect_lt(max(abs(cs_sd[cs_sd != 0 ] - 1)), 1e-8)
+  expect_lt(max(abs(cs_sd[cs_sd != 0] - 1)), 1e-8)
 })
 
 
@@ -84,9 +84,10 @@ test_that(
 #################################################
 # test a single coordinate descent update
 lassi_fit <- new(hal9001:::Lassi, x_basis, y, 100, 0.01, FALSE)
-
 n <- length(y)
-i <- 1 # which beta to update (1 - indexed)
+
+# which beta to update (1 - indexed)
+i <- 1
 xvar <- lassi_fit$X[, i]
 xscale_i <- lassi_fit$xscale[i]
 resid <- lassi_fit$resids

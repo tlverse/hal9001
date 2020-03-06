@@ -134,22 +134,27 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
 //'
 //' @examples
 //' \donttest{
-//' gendata <- function(n, g0, Q0) {
+//' gendata <- function(n) {
 //'   W1 <- runif(n, -3, 3)
 //'   W2 <- rnorm(n)
 //'   W3 <- runif(n)
 //'   W4 <- rnorm(n)
-//'   A <- rbinom(n, 1, g0(W1, W2, W3, W4))
-//'   Y <- rbinom(n, 1, Q0(A, W1, W2, W3, W4))
+//'   g0 <- plogis(0.5 * (-0.8 * W1 + 0.39 * W2 + 0.08 * W3 - 0.12 * W4))
+//'   A <- rbinom(n, 1, g0)
+//'   Q0 <- plogis(0.15 * (2 * A + 2 * A * W1 + 6 * A * W3 * W4 - 3))
+//'   Y <- rbinom(n, 1, Q0)
 //'   data.frame(A, W1, W2, W3, W4, Y)
 //' }
 //' set.seed(1234)
-//' data <- gendata(100, g0 = g0_linear, Q0 = Q0_trig1)
+//' data <- gendata(100)
 //' covars <- setdiff(names(data), "Y")
 //' X <- as.matrix(data[, covars, drop = FALSE])
 //' basis_list <- enumerate_basis(X)
 //' x_basis <- make_design_matrix(X, basis_list)
 //' }
+//'
+//' @return A \code{dgCMatrix} sparse matrix of indicator basis functions
+//'  corresponding to the design matrix in a zero-order highly adaptive lasso.
 // [[Rcpp::export]]
 SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
   //now generate an indicator vector for each
@@ -173,4 +178,3 @@ SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
   x_basis.makeCompressed();
   return(x_basis);
 }
-
