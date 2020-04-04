@@ -4,7 +4,9 @@
 \name{hal_quotes}
 \alias{hal_quotes}
 \title{HAL9000 Quotes from "2001: A Space Odyssey"}
-\format{A vector of quotes.}
+\format{
+A vector of quotes.
+}
 \usage{
 hal_quotes
 }

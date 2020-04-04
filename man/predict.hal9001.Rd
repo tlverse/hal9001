@@ -15,13 +15,17 @@
 }
 \arguments{
 \item{object}{An object of class \code{hal9001}, containing the results of
-fitting the Highly Adaptive Lasso, as produced by a call to \code{fit_hal}.}
+fitting the Highly Adaptive Lasso, as produced by \code{\link{fit_hal}}.}
 
 \item{offset}{A vector of offsets. Must be provided if provided at training}
 
 \item{lambda}{A single lambda value or a vector of lambdas to use for
 prediction. If \code{NULL}, a value of lambda will be selected based on
-cross-validation, using \code{\link[glmnet]{cv.glmnet}}.}
+cross-validation, using \code{\link[glmnet]{cv.glmnet}}. NOTE that this
+does NOT provide similar functionality to the equivalent argument in the
+\pkg{glmnet} method of \code{\link[stats]{predict}}; rather, this argument
+is used internally to screen lambdas (see \code{screen_lambda} argument of
+\code{\link{fit_hal}} for details).}
 
 \item{...}{Additional arguments passed to \code{predict} as necessary.}
 
@@ -45,4 +49,13 @@ Prediction from HAL fits
 Method for computing and extracting predictions from fits of the
  Highly Adaptive Lasso estimator, returned as a single S3 objects of class
  \code{hal9001}.
+}
+\note{
+This prediction method does not function similarly to the equivalent
+ method from \pkg{glmnet}. In particular, specifying argument \code{lambda}
+ will not return a subset of the lambdas originally specified in the call to
+ \code{\link{fit_hal}} nor result in re-fitting. This prediction method will
+ return predictions for all lambdas specified in \code{\link{fit_hal}} when
+ \code{cv_select = FALSE}. When \code{cv_select = TRUE}, predictions will
+ only be returned for the value of lambda selected by cross-validation.
 }

@@ -116,11 +116,20 @@ fit_hal <- function(X,
                     screen_lambda = FALSE,
                     ...,
                     yolo = TRUE) {
-
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
   family <- match.arg(family)
+
+  # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
+  dot_args <- list(...)
+  if ("lambda.min.ratio" %in% names(dot_args) & family == "binomial") {
+    msg <- paste(
+      "`glmnet` silently ignores `lambda.min.ratio` when",
+      "`family = 'binomial'`."
+    )
+    stop(msg)
+  }
 
   # NOTE: NOT supporting binomial outcomes with lassi method currently
   if (fit_type == "lassi" && family == "binomial") {
@@ -155,12 +164,13 @@ fit_hal <- function(X,
   # make design matrix for HAL
   if (is.null(basis_list)) {
     if (screen_basis) {
-      selected_cols <- hal_screen_goodbasis(X, Y, actual_max_degree = max_degree, k = NULL, family = 'gaussian')
+      selected_cols <- hal_screen_goodbasis(X, Y,
+                                            actual_max_degree = max_degree,
+                                            k = NULL, family = "gaussian")
       basis_list <- c()
       for (i in seq_along(selected_cols)) {
         col_list <- selected_cols[[i]]
-        basis_list <- c(basis_list,basis_list_cols(col_list, X))
-
+        basis_list <- c(basis_list, basis_list_cols(col_list, X))
       }
     } else {
       basis_list <- enumerate_basis(X, max_degree)
