@@ -60,7 +60,8 @@ hal_screen_cols <- function(x, y, V = 5, family, col_lists = NULL,
 
     # TODO: subsample param
     # subsample_size <- min(max(100, n * 0.1), length(basis_list))
-    # basis_subsample <- sort(sample(seq_along(basis_list), subsample_size, replace = FALSE))
+    # basis_subsample <- sort(sample(seq_along(basis_list), subsample_size,
+    # replace = FALSE))
     basis_subsample <- seq_along(basis_list)
     x_basis <- make_design_matrix(x, basis_list[basis_subsample])
 

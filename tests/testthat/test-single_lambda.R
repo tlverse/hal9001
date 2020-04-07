@@ -1,9 +1,8 @@
 context("feed single lambda into hal9001 (glmnet version) will not error.")
-
 set.seed(1234)
 n <- 100
 x <- rnorm(n)
-y <- as.numeric(plogis(2 * x + rnorm(n)) > .5)
+y <- as.numeric(plogis(2 * x + rnorm(n)) > 0.5)
 wgt <- rep(1, n)
 
 # fit via call to glmnet::glmnet for a single value of lambda

@@ -71,10 +71,10 @@ X <- as.matrix(X)
 # test <- hal_screen_basis(X, Y,family="gaussian", verbose=TRUE, main_terms = FALSE)
 halres9001 <- fit_hal(
   Y = Y, X = X,
-  yolo = FALSE,
-  screen_basis = TRUE
+  yolo = FALSE
   # NOTE: hal_screen_goodbasis is broken
-  #screen_lambda = TRUE
+  # screen_basis = TRUE
+  # screen_lambda = TRUE
 )
 pred9001 <- predict(halres9001, new_data = testX)
 

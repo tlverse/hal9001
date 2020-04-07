@@ -19,8 +19,10 @@ hal_screen_rank <- function(x, y, family, k = NULL, foldid = NULL,
   if (is.null(offset)) {
     offset <- rep(mean(y), n)
   }
-  rank_basis <- cv.glmnet(x, y, family = family, foldid = foldid,
-                          offset = offset)
+  rank_basis <- cv.glmnet(x, y,
+    family = family, foldid = foldid,
+    offset = offset
+  )
 
   if (!is.null(k)) {
     coef_mat <- coef(rank_basis, rank_basis$lambda)
@@ -75,7 +77,7 @@ hal_screen_goodbasis <- function(x, y, actual_max_degree, k = NULL, family,
       }
     } # get matrix[x1,x2,..,x1*x2,..,x1*x2*x3,..]
     x_basis_lists <- as.list(matrix(0, ncol = length(col_lists) +
-                                    length(interaction_col_lists)))
+      length(interaction_col_lists)))
     for (i in 1:length(x_basis_lists)) {
       if (i <= length(col_lists)) {
         x_basis_lists[[i]] <- col_lists[[i]]
@@ -144,16 +146,20 @@ hal_screen_output <- function(x, y, family, col_lists, foldid = NULL,
   # generate k*n basis functions
   x_basis <- make_design_matrix(x, basis_list)
   # do regular lasso for k*n basis functions
-  screen_goodcols <- cv.glmnet(x_basis, y, family = family, offset = offset,
-                               foldid = foldid)
+  screen_goodcols <- cv.glmnet(x_basis, y,
+    family = family, offset = offset,
+    foldid = foldid
+  )
 
   lambda_min <- screen_goodcols$lambda.min
   lambda_1se <- screen_goodcols$lambda.1se
-  coef <- coef.cv.glmnet(screen_goodcols, s = "lambda.1se")
+  coef <- stats::coef(screen_goodcols, s = "lambda.1se")
   coef_list <- list(which(!coef[-1] == 0)) # find non-zero column lists
 
-  pred <- predict(screen_goodcols, newx = x_basis, s = lambda_1se,
-                  newoffset = offset)
+  pred <- predict(screen_goodcols,
+    newx = x_basis, s = lambda_1se,
+    newoffset = offset
+  )
   mse <- mean((pred - y)^2)
 
   col_result <- list(

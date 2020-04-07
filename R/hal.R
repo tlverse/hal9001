@@ -123,20 +123,35 @@ fit_hal <- function(X,
 
   # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
   dot_args <- list(...)
-  if ("lambda.min.ratio" %in% names(dot_args) & family == "binomial") {
-    msg <- paste(
-      "`glmnet` silently ignores `lambda.min.ratio` when",
-      "`family = 'binomial'`."
-    )
-    stop(msg)
-  }
+  assertthat::assert_that(!("lambda.min.ratio" %in% names(dot_args) &
+    family == "binomial"),
+  msg = paste(
+    "`glmnet` silently ignores",
+    "`lambda.min.ratio` when",
+    "`family = 'binomial'`."
+  )
+  )
 
   # NOTE: NOT supporting binomial outcomes with lassi method currently
-  if (fit_type == "lassi" && family == "binomial") {
-    stop("For binary outcomes, please set argument 'fit_type' to 'glmnet'.")
+  assertthat::assert_that(!(fit_type == "lassi" && family == "binomial"),
+    msg = paste(
+      "For binary outcomes, please set",
+      "argument 'fit_type' to 'glmnet'."
+    )
+  )
+  assertthat::assert_that(!(fit_type == "lassi" && family == "cox"),
+    msg = paste(
+      "For Cox models, please set argument",
+      "'fit_type' to 'glmnet'."
+    )
+  )
+
+  # warn about screening functionality
+  if (screen_basis) {
+    warning("Basis screening functionality is currently experimental.")
   }
-  if (fit_type == "lassi" && family == "cox") {
-    stop("For Cox models, please set argument 'fit_type' to 'glmnet'.")
+  if (screen_lambda) {
+    warning("Lambda screening functionality is currently experimental.")
   }
 
   # cast X to matrix -- and don't start the timer until after
@@ -165,8 +180,9 @@ fit_hal <- function(X,
   if (is.null(basis_list)) {
     if (screen_basis) {
       selected_cols <- hal_screen_goodbasis(X, Y,
-                                            actual_max_degree = max_degree,
-                                            k = NULL, family = "gaussian")
+        actual_max_degree = max_degree,
+        k = NULL, family = "gaussian"
+      )
       basis_list <- c()
       for (i in seq_along(selected_cols)) {
         col_list <- selected_cols[[i]]

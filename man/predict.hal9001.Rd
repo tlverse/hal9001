@@ -4,28 +4,13 @@
 \alias{predict.hal9001}
 \title{Prediction from HAL fits}
 \usage{
-\method{predict}{hal9001}(
-  object,
-  offset = NULL,
-  lambda = NULL,
-  ...,
-  new_data,
-  new_X_unpenalized = NULL
-)
+\method{predict}{hal9001}(object, offset = NULL, ..., new_data, new_X_unpenalized = NULL)
 }
 \arguments{
 \item{object}{An object of class \code{hal9001}, containing the results of
 fitting the Highly Adaptive Lasso, as produced by \code{\link{fit_hal}}.}
 
 \item{offset}{A vector of offsets. Must be provided if provided at training}
-
-\item{lambda}{A single lambda value or a vector of lambdas to use for
-prediction. If \code{NULL}, a value of lambda will be selected based on
-cross-validation, using \code{\link[glmnet]{cv.glmnet}}. NOTE that this
-does NOT provide similar functionality to the equivalent argument in the
-\pkg{glmnet} method of \code{\link[stats]{predict}}; rather, this argument
-is used internally to screen lambdas (see \code{screen_lambda} argument of
-\code{\link{fit_hal}} for details).}
 
 \item{...}{Additional arguments passed to \code{predict} as necessary.}
 
@@ -39,8 +24,7 @@ training, the user should also supply this matrix with the same number of
 observations as \code{new_data}. Optional.}
 }
 \value{
-A \code{numeric} vector of predictions from a fitted \code{hal9001}
- object.
+A \code{numeric} vector of predictions from a \code{hal9001} object.
 }
 \description{
 Prediction from HAL fits
@@ -52,10 +36,11 @@ Method for computing and extracting predictions from fits of the
 }
 \note{
 This prediction method does not function similarly to the equivalent
- method from \pkg{glmnet}. In particular, specifying argument \code{lambda}
- will not return a subset of the lambdas originally specified in the call to
- \code{\link{fit_hal}} nor result in re-fitting. This prediction method will
- return predictions for all lambdas specified in \code{\link{fit_hal}} when
- \code{cv_select = FALSE}. When \code{cv_select = TRUE}, predictions will
- only be returned for the value of lambda selected by cross-validation.
+ method from \pkg{glmnet}. In particular, this procedure will NOT return a
+ subset of lambdas originally specified in callingo \code{\link{fit_hal}}
+ nor result in re-fitting. Instead, it will return predictions for all of
+ the lambdas specified in the call to \code{\link{fit_hal}} that constructs
+ \code{object}, when \code{cv_select = FALSE}. When \code{cv_select = TRUE},
+ predictions will only be returned for the value of lambda selected by
+ cross-validation.
 }
