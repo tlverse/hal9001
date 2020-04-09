@@ -43,7 +43,7 @@ Imports:
   utils,
   methods,
   assertthat,
-  origami (>= 0.8.1),
+  origami (>= 1.0.3),
   glmnet
 Suggests:
   testthat,
