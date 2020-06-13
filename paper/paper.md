@@ -1,5 +1,5 @@
 ---
-title: "`hal9001`: Scalable estimation with the highly adaptive lasso in `R`"
+title: "`hal9001`: Scalable highly adaptive lasso regression in `R`"
 tags:
   - machine learning
   - targeted learning
@@ -24,70 +24,54 @@ affiliations:
     index: 3
   - name: Center for Computational Biology, University of California, Berkeley
     index: 4
-date: 20 July 2020
+date: 22 June 2020
 bibliography: refs.bib
 ---
 
 # Summary
 
+The `hal9001` `R` package provides access to the _highly adaptive lasso_,
+a highly flexible nonparametric regression and machine learning algorithm with
+many desirable theoretical properties. `hal9001` provides the canonical
+implementation of this algorithm, pairing the core statistical learning
+methodology with an array of practical variable selection tools and sensible
+defaults in order to improve the scalability of the procedure. By building off
+of existing `R` packages for lasso regression and leveraging C++ in key internal
+functions, the `hal9001` `R` attempts to provides relatively optimized highly
+adaptive lasso functionality, suitable for use both in data analysis tasks and
+modern (computationally intensive) statistics research.
+
+# Background
+
 A central problem in statistical learning theory and machine learning is the
-development of robust prediction functions, both in terms of learning complex
-functional forms and in the efficient estimation of low-dimensional
-function(al)s of possibly complex data-generating processes.
+development of efficient and robust prediction functions, which often require
+the learning of complex functional forms or the construction of efficient
+estimators of low-dimensional functionals of complex data-generating processes.
+For example, one may be interested in a nonparametric regression function that
+is unconstrained enough to (smoothly) estimate functions within a relatively
+rich class, or to estimate causal parameters like the average treatment effect,
+which require the consistent estimation of a limited set of nuisance functions.
+Most often, strong assumptions are made about the functional forms of relevant
+parts of the data-generating process, either out of convenience or due to
+limited computational resources.
 
 
-Causal inference has traditionally focused on the effects of static
-interventions, under which the magnitude of the treatment is set to a fixed,
-prespecified value for each unit. The evaluation of such interventions faces
-a host of issues, among them non-identification, violations of the assumption of
-positivity, and inefficiency. Stochastic interventions provide a promising
-solution to these fundamental issues by allowing for the target parameter to be
-defined as the mean counterfactual outcome under a hypothetically shifted
-version of the observed exposure distribution [@diaz2012population].
-Modified treatment policies, a particular class of such interventions, may be
-interpreted as shifting the natural exposure level at the level of a given
-observational unit [@haneuse2013estimation;@diaz2018stochastic].
-
-Despite the promise of such advances in causal inference, real data analyses are
-often further complicated by economic constraints, such as when the primary
-variable of interest is far more expensive to collect than auxiliary covariates.
-Two-phase sampling schemes are often used to bypass such limitations --
-unfortunately, their use produces side effects that require further adjustment
-when formal statistical inference is the principal goal of a study. Among the
-rich literature on two-phase designs, @rose2011targeted2sd stand out for
-providing a study of nonparametric efficiency theory under such designs. Their
-work can be used to construct efficient estimators of causal effects under
-general two-phase sampling designs.
-
-Building on these prior works, @hejazi2020efficient outlined a novel approach
-for use in such settings: augmented targeted minimum loss (TML) and one-step
-estimators for the causal effects of stochastic interventions, with guarantees
-of consistency, efficiency, and multiple robustness even in the presence of
-two-phase sampling. These authors further outlined a technique that summarizes
-the effect of shifting an exposure variable on the outcome of interest via
-a nonparametric working marginal structural model, analogous to a dose-response
-analysis. The `txshift` software package, for the `R` language and environment
-for statistical computing [@R], implements this methodology.
-
-
-`hal9001` is a scalable implementation of the highly adaptive lasso, built on
+is a scalable implementation of the highly adaptive lasso, built on
 top of the extremely popular `glmnet` `R` package [@friedman2009glmnet]. The
 `hal9001` `R` package includes tools
 
-for deploying these efficient estimators under two-phase
-sampling designs, with two types of corrections: (1) a reweighting procedure
-that introduces inverse probability of censoring weights directly into an
-appropriate loss function, as discussed in @rose2011targeted2sd; as
-well as (2) a correction based on the efficient influence function, studied more
-thoroughly by @hejazi2020efficient. `txshift`
-integrates with the [`sl3` package](https://github.com/tlverse/sl3)
-[@coyle2020sl3] to allow for ensemble machine learning to be leveraged in the
-estimation of nuisance parameters. What's more, the `txshift` package draws on
-both the `hal9001` and `haldensify` `R` packages [@coyle2019hal9001;
-@hejazi2020haldensify] to allow each of the estimators to be constructed in
-a manner consistent with the theoretical results of @hejazi2020efficient. The
-`txshift` package has been made publicly available via GitHub and will be
-submitted to the Comprehensive `R` Archive Network in the near future.
+
+# `hal9001`'s Scope
+
+[TO FILL IN]
+
+# `hal9001`'s Functionality
+
+[TO FILL IN]
+
+# Future Work
+
+Spline HAL
 
 # Acknowledgments
 
