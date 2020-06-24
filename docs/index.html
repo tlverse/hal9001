@@ -6,10 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Scalable Highly Adaptive Lasso • hal9001</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
+<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="The Scalable Highly Adaptive Lasso">
 <meta property="og:description" content="A scalable implementation of the highly adaptive lasso algorithm,
   including routines for constructing sparse matrices of basis functions of the
@@ -20,7 +21,6 @@
   adaptive lasso was first formulated and described by MJ van der Laan (2017)
   &lt;doi:10.1515/ijb-2015-0097&gt;, with practical demonstrations of its performance
   given by Benkeser and van der Laan (2016) &lt;doi:10.1109/DSAA.2016.93&gt;.">
-<meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -32,7 +32,7 @@
   gtag('config', 'UA-115145808-1');
 </script>
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -96,7 +96,7 @@
 <div id="whats-hal9001" class="section level2">
 <h2 class="hasAnchor">
 <a href="#whats-hal9001" class="anchor"></a>What’s <code>hal9001</code>?</h2>
-<p><code>hal9001</code> is an R package providing an implementation of the scalable <em>highly adaptive lasso</em> (HAL), a nonparametric regression estimator that applies L1-regularized regression (i.e., the lasso) to a design matrix composed of indicator functions corresponding to a set of covariates and interactions thereof. Recent theoretical results show that HAL is endowed with several important optimality properties, making it well-suited for the estimation of highly complex functional forms while attaining fast convergence rates ((n^(1/4)) and better) when used in the estimation of nuisance functions. HAL has been quite successfully used in the construction of estimators at the intersection of semiparametric theory and nonparametric causal inference (e.g., the construction of efficient one-step or targeted minimum loss estimators).</p>
+<p><code>hal9001</code> is an R package providing an implementation of the scalable <em>highly adaptive lasso</em> (HAL), a nonparametric regression estimator that applies L1-regularized regression (i.e., the lasso) to a design matrix composed of indicator functions corresponding to a set of covariates and interactions thereof. Recent theoretical results show that HAL is endowed with several important optimality properties, making it well-suited for the estimation of highly complex functional forms while attaining fast convergence rates (<span class="math inline"><em>n</em><sup>(</sup>1/4)</span> and better) when used in the estimation of nuisance functions. HAL has been quite successfully used in the construction of estimators at the intersection of semiparametric theory and nonparametric causal inference (e.g., the construction of efficient one-step or targeted minimum loss estimators).</p>
 <p>For detailed discussions of the highly adaptive lasso estimator, consider consulting Benkeser and van der Laan (2016), van der Laan (2017a), and van der Laan (2017b), among other recent works.</p>
 <hr>
 </div>
@@ -104,9 +104,9 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>For standard use, we recommend installing the package from <a href="https://CRAN.R-project.org/package=hal9001">CRAN</a> via</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"hal9001"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"hal9001"</span>)</pre></div>
 <p>To contribute, install the <em>development version</em> of <code>hal9001</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"tlverse/hal9001"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"tlverse/hal9001"</span>)</pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
@@ -119,34 +119,34 @@
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>This minimal example shows how to use <code>hal9001</code> to obtain predictions based on the Highly Adaptive Lasso. For details on the properties of the estimator, the interested reader is referred to Benkeser and van der Laan (2016) and van der Laan (2017a).</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># load the package and set a seed</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(hal9001)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; Loading required package: Rcpp</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; hal9001 v0.2.5: The Scalable Highly Adaptive Lasso</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">385971</span>)</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># simulate data</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">p &lt;-<span class="st"> </span><span class="dv">3</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10">x &lt;-<span class="st"> </span>xmat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n <span class="op">*</span><span class="st"> </span>p), n, p)</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11">y &lt;-<span class="st"> </span>x[, <span class="dv">1</span>] <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="fl">0.2</span>)</a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co"># fit the HAL regression</span></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14">hal_fit &lt;-<span class="st"> </span><span class="kw"><a href="reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y)</a>
-<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span></a>
-<a class="sourceLine" id="cb3-16" data-line-number="16">hal_fit<span class="op">$</span>times</a>
-<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span></a>
-<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="co">#&gt; enumerate_basis       0.005    0.000   0.006          0         0</span></a>
-<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="co">#&gt; design_matrix         0.005    0.000   0.005          0         0</span></a>
-<a class="sourceLine" id="cb3-20" data-line-number="20"><span class="co">#&gt; remove_duplicates     0.017    0.000   0.017          0         0</span></a>
-<a class="sourceLine" id="cb3-21" data-line-number="21"><span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span></a>
-<a class="sourceLine" id="cb3-22" data-line-number="22"><span class="co">#&gt; lasso                 0.261    0.005   0.270          0         0</span></a>
-<a class="sourceLine" id="cb3-23" data-line-number="23"><span class="co">#&gt; total                 0.288    0.005   0.298          0         0</span></a>
-<a class="sourceLine" id="cb3-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb3-25" data-line-number="25"><span class="co"># training sample prediction</span></a>
-<a class="sourceLine" id="cb3-26" data-line-number="26">preds &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(hal_fit, <span class="dt">new_data =</span> x)</a>
-<a class="sourceLine" id="cb3-27" data-line-number="27"><span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(hal_mse &lt;-<span class="st"> </span>(preds <span class="op">-</span><span class="st"> </span>y)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb3-28" data-line-number="28"><span class="co">#&gt; [1] 0.006991539</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="r"><span class="co"># load the package and set a seed</span>
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">hal9001</span>)
+<span class="co">#&gt; Loading required package: Rcpp</span>
+<span class="co">#&gt; hal9001 v0.2.6: The Scalable Highly Adaptive Lasso</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">385971</span>)
+
+<span class="co"># simulate data</span>
+<span class="no">n</span> <span class="kw">&lt;-</span> <span class="fl">100</span>
+<span class="no">p</span> <span class="kw">&lt;-</span> <span class="fl">3</span>
+<span class="no">x</span> <span class="kw">&lt;-</span> <span class="no">xmat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n</span> * <span class="no">p</span>), <span class="no">n</span>, <span class="no">p</span>)
+<span class="no">y</span> <span class="kw">&lt;-</span> <span class="no">x</span>[, <span class="fl">1</span>] * <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(<span class="no">x</span>[, <span class="fl">2</span>]) + <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n</span>, <span class="kw">mean</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="fl">0.2</span>)
+
+<span class="co"># fit the HAL regression</span>
+<span class="no">hal_fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/fit_hal.html">fit_hal</a></span>(<span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">Y</span> <span class="kw">=</span> <span class="no">y</span>)
+<span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
+<span class="no">hal_fit</span>$<span class="no">times</span>
+<span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
+<span class="co">#&gt; enumerate_basis       0.002    0.000   0.002          0         0</span>
+<span class="co">#&gt; design_matrix         0.001    0.000   0.001          0         0</span>
+<span class="co">#&gt; remove_duplicates     0.005    0.000   0.005          0         0</span>
+<span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
+<span class="co">#&gt; lasso                 0.294    0.012   0.305          0         0</span>
+<span class="co">#&gt; total                 0.302    0.012   0.313          0         0</span>
+
+<span class="co"># training sample prediction</span>
+<span class="no">preds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">hal_fit</span>, <span class="kw">new_data</span> <span class="kw">=</span> <span class="no">x</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>(<span class="no">hal_mse</span> <span class="kw">&lt;-</span> (<span class="no">preds</span> - <span class="no">y</span>)^<span class="fl">2</span>)
+<span class="co">#&gt; [1] 0.006991539</span></pre></div>
 <hr>
 </div>
 <div id="contributions" class="section level2">
@@ -182,46 +182,27 @@
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
-
 <div id="ref-benkeser2016hal">
-
-Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive
-Lasso Estimator.” In *2016 IEEE International Conference on Data Science
-and Advanced Analytics (DSAA)*. IEEE.
-<https:>.
-
-</https:>
+<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93" class="uri">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
 </div>
-
 <div id="ref-vdl2017generally">
-
-van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum
-Loss Based Estimator Based on the Highly Adaptive Lasso.” *The
-International Journal of Biostatistics*. De Gruyter.
-<https:>.
-
-</https:>
+<p>van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum Loss Based Estimator Based on the Highly Adaptive Lasso.” <em>The International Journal of Biostatistics</em>. De Gruyter. <a href="https://doi.org/10.1515/ijb-2015-0097" class="uri">https://doi.org/10.1515/ijb-2015-0097</a>.</p>
 </div>
-
 <div id="ref-vdl2017finite">
-
-———. 2017b. “Finite Sample Inference for Targeted Learning.” *ArXiv
-E-Prints*.
-
+<p>———. 2017b. “Finite Sample Inference for Targeted Learning.” <em>ArXiv E-Prints</em>.</p>
 </div>
-
 </div>
 </div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=hal9001">https://​cloud.r-project.org/​package=hal9001</a>
 </li>
-<li>Browse source code at <br><a href="https://github.com/tlverse/hal9001">https://​github.com/​tlverse/​hal9001</a>
+<li>Browse source code at <br><a href="https://github.com/tlverse/hal9001/">https://​github.com/​tlverse/​hal9001/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/tlverse/hal9001/issues">https://​github.com/​tlverse/​hal9001/​issues</a>
 </li>
@@ -248,9 +229,9 @@ E-Prints*.
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Jeremy Coyle <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-9874-6649" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
-<li>Nima Hejazi <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7127-2789" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
-<li>Mark van der Laan <br><small class="roles"> Author, copyright holder, thesis advisor </small> <a href="https://orcid.org/0000-0003-1432-5511" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
+<li>Jeremy Coyle <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-9874-6649" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Nima Hejazi <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7127-2789" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Mark van der Laan <br><small class="roles"> Author, copyright holder, thesis advisor </small> <a href="https://orcid.org/0000-0003-1432-5511" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
@@ -277,7 +258,7 @@ E-Prints*.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
