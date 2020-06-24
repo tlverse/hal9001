@@ -31,20 +31,21 @@ Laan](https://vanderlaan-lab.org/)
 
 `hal9001` is an R package providing an implementation of the scalable
 *highly adaptive lasso* (HAL), a nonparametric regression estimator that
-applies L1-regularized regression (i.e., the lasso) to a design matrix
-composed of indicator functions corresponding to a set of covariates and
-interactions thereof. Recent theoretical results show that HAL is
-endowed with several important optimality properties, making it
-well-suited for the estimation of highly complex functional forms while
-attaining fast convergence rates (\(n^(1/4)\) and better) when used in
-the estimation of nuisance functions. HAL has been quite successfully
-used in the construction of estimators at the intersection of
-semiparametric theory and nonparametric causal inference (e.g., the
-construction of efficient one-step or targeted minimum loss estimators).
-
-For detailed discussions of the highly adaptive lasso estimator,
-consider consulting Benkeser and van der Laan (2016), van der Laan
-(2017a), and van der Laan (2017b), among other recent works.
+applies L1-regularized lasso regression to a design matrix composed of
+indicator functions corresponding to the support of the functional over
+a set of covariates and interactions thereof. HAL regression allows for
+arbitrarily complex functional forms to be estimated at fast
+(near-parametric) convergence rates under only global smoothness
+assumptions (van der Laan 2017a; Bibaut and van der Laan 2019). For
+detailed theoretical discussions of the highly adaptive lasso estimator,
+consider consulting, for example, van der Laan (2017a), van der Laan
+(2017b), and van der Laan and Bibaut (2017). For a computational
+demonstration of the versatility of HAL regression, see Benkeser and van
+der Laan (2016). Recent theoretical works have demonstrated success in
+building efficient estimators of complex parameters when particular
+variations of HAL regression are used to estimate nuisance parameters
+(e.g., van der Laan, Benkeser, and Cai 2019; Ertefaie, Hejazi, and van
+der Laan 2020).
 
 -----
 
@@ -75,22 +76,20 @@ If you encounter any bugs or have any specific feature requests, please
 
 ## Example
 
-This minimal example shows how to use `hal9001` to obtain predictions
-based on the Highly Adaptive Lasso. For details on the properties of the
-estimator, the interested reader is referred to Benkeser and van der
-Laan (2016) and van der Laan (2017a).
+Consider the following minimal example in using `hal9001` to generate
+predictions via Highly Adaptive Lasso regression:
 
 ``` r
 # load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
-#> hal9001 v0.2.5: The Scalable Highly Adaptive Lasso
+#> hal9001 v0.2.6: The Scalable Highly Adaptive Lasso
 set.seed(385971)
 
 # simulate data
 n <- 100
 p <- 3
-x <- xmat <- matrix(rnorm(n * p), n, p)
+x <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
 # fit the HAL regression
@@ -98,12 +97,12 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.005    0.000   0.006          0         0
-#> design_matrix         0.005    0.000   0.005          0         0
-#> remove_duplicates     0.017    0.000   0.017          0         0
+#> enumerate_basis       0.001    0.001   0.001          0         0
+#> design_matrix         0.001    0.000   0.002          0         0
+#> remove_duplicates     0.005    0.000   0.004          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
-#> lasso                 0.261    0.005   0.270          0         0
-#> total                 0.288    0.005   0.298          0         0
+#> lasso                 0.257    0.004   0.261          0         0
+#> total                 0.264    0.005   0.268          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -127,13 +126,13 @@ prior to submitting a pull request.
 After using the `hal9001` R package, please cite the following:
 
 ``` 
-    @manual{coyle2019hal9001,
+    @manual{coyle2020hal9001,
       author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
         J},
       title = {{hal9001}: The scalable highly adaptive lasso},
-      year  = {2019},
+      year  = {2020},
       howpublished = {\url{https://github.com/tlverse/hal9001}},
-      note = {{R} package version 0.2.5},
+      note = {{R} package version 0.2.6},
       url = {https://doi.org/10.5281/zenodo.3558313},
       doi = {10.5281/zenodo.3558313}
     }
@@ -164,6 +163,22 @@ and Advanced Analytics (DSAA)*. IEEE.
 
 </div>
 
+<div id="ref-bibaut2019fast">
+
+Bibaut, Aurélien F, and Mark J van der Laan. 2019. “Fast Rates for
+Empirical Risk Minimization over Càdlàg Functions with Bounded Sectional
+Variation Norm.” *arXiv Preprint arXiv:1907.09244*.
+
+</div>
+
+<div id="ref-ertefaie2020nonparametric">
+
+Ertefaie, Ashkan, Nima S Hejazi, and Mark J van der Laan. 2020.
+“Nonparametric Inverse Probability Weighted Estimators Based on the
+Highly Adaptive Lasso.” <http://arxiv.org/abs/2005.11303>.
+
+</div>
+
 <div id="ref-vdl2017generally">
 
 van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum
@@ -177,6 +192,22 @@ International Journal of Biostatistics*. De Gruyter.
 
 ———. 2017b. “Finite Sample Inference for Targeted Learning.” *ArXiv
 E-Prints*.
+
+</div>
+
+<div id="ref-vdl2019efficient">
+
+van der Laan, Mark J, David Benkeser, and Weixin Cai. 2019. “Efficient
+Estimation of Pathwise Differentiable Target Parameters with the
+Undersmoothed Highly Adaptive Lasso.” *arXiv Preprint arXiv:1908.05607*.
+
+</div>
+
+<div id="ref-vdl2017uniform">
+
+van der Laan, Mark J, and Aurélien F Bibaut. 2017. “Uniform Consistency
+of the Highly Adaptive Lasso Estimator of Infinite-Dimensional
+Parameters.” *arXiv Preprint arXiv:1709.06256*.
 
 </div>
 

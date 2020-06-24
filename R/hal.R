@@ -65,10 +65,6 @@
 #' @param id a vector of ID values, used to generate cross-validation folds for
 #'  cross-validated selection of the regularization parameter lambda.
 #' @param offset a vector of offset values, used in fitting.
-#' @param screen_basis If \code{TRUE}, use a screening procedure to reduce the
-#'  number of basis functions fitted.
-#' @param screen_lambda If \code{TRUE}, use a screening procedure to reduce the
-#'  number of lambda values evaluated.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -112,23 +108,37 @@ fit_hal <- function(X,
                     id = NULL,
                     offset = NULL,
                     cv_select = TRUE,
-                    screen_basis = FALSE,
-                    screen_lambda = FALSE,
                     ...,
                     yolo = TRUE) {
-
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
   family <- match.arg(family)
 
+  # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
+  dot_args <- list(...)
+  assertthat::assert_that(!("lambda.min.ratio" %in% names(dot_args) &
+    family == "binomial"),
+  msg = paste(
+    "`glmnet` silently ignores",
+    "`lambda.min.ratio` when",
+    "`family = 'binomial'`."
+  )
+  )
+
   # NOTE: NOT supporting binomial outcomes with lassi method currently
-  if (fit_type == "lassi" && family == "binomial") {
-    stop("For binary outcomes, please set argument 'fit_type' to 'glmnet'.")
-  }
-  if (fit_type == "lassi" && family == "cox") {
-    stop("For Cox models, please set argument 'fit_type' to 'glmnet'.")
-  }
+  assertthat::assert_that(!(fit_type == "lassi" && family == "binomial"),
+    msg = paste(
+      "For binary outcomes, please set",
+      "argument 'fit_type' to 'glmnet'."
+    )
+  )
+  assertthat::assert_that(!(fit_type == "lassi" && family == "cox"),
+    msg = paste(
+      "For Cox models, please set argument",
+      "'fit_type' to 'glmnet'."
+    )
+  )
 
   # cast X to matrix -- and don't start the timer until after
   if (!is.matrix(X)) {
@@ -154,21 +164,7 @@ fit_hal <- function(X,
 
   # make design matrix for HAL
   if (is.null(basis_list)) {
-    if (screen_basis) {
-      # NOTE: foldid is never missing since created above if not supplied
-      good_basis <- hal_screen_basis(
-        x = X,
-        y = Y,
-        family = family,
-        offset = offset,
-        foldid = foldid,
-        max_degree = max_degree
-      )
-      basis_lists <- lapply(good_basis, basis_list_cols, X)
-      basis_list <- unlist(basis_lists, recursive = FALSE)
-    } else {
-      basis_list <- enumerate_basis(X, max_degree)
-    }
+    basis_list <- enumerate_basis(X, max_degree)
   }
 
   # generate a vector of col lists corresponding to the bases generated
@@ -240,15 +236,6 @@ fit_hal <- function(X,
       coefs <- hal_lasso$betas_mat[, "lambda_1se"]
     }
   } else if (fit_type == "glmnet") {
-    if ((screen_lambda) && (length(lambda) != 1)) {
-      # reduce the set of lambdas to fit
-      lambda <- hal_screen_lambda(x_basis, Y,
-        family = family,
-        lambda = lambda,
-        foldid = foldid,
-        offset = offset
-      )
-    }
     # just use the standard implementation available in glmnet
     if (!cv_select) {
       hal_lasso <- glmnet::glmnet(
