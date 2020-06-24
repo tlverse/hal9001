@@ -22,8 +22,6 @@ fit_hal(
   id = NULL,
   offset = NULL,
   cv_select = TRUE,
-  screen_basis = FALSE,
-  screen_lambda = FALSE,
   ...,
   yolo = TRUE
 )
@@ -101,12 +99,6 @@ specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
 pick the optimal value (based on cross-validation) (when set to
 \code{TRUE}) or to simply fit along the sequence of values (or single
 value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
-
-\item{screen_basis}{If \code{TRUE}, use a screening procedure to reduce the
-number of basis functions fitted.}
-
-\item{screen_lambda}{If \code{TRUE}, use a screening procedure to reduce the
-number of lambda values evaluated.}
 
 \item{...}{Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 consult its documentation for a full list of options.}

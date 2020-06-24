@@ -18,6 +18,7 @@
 ^Makefile$
 ^LICENSE$
 ^sandbox$
+^paper$
 ^docs$
 ^_pkgdown\.yml$
 ^CRAN-RELEASE$

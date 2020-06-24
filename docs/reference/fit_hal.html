@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -148,8 +148,6 @@
   <span class='kw'>id</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>cv_select</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>screen_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>screen_lambda</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='no'>...</span>,
   <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
@@ -263,16 +261,6 @@ specified should be passed to <code><a href='https://rdrr.io/pkg/glmnet/man/cv.g
 pick the optimal value (based on cross-validation) (when set to
 <code>TRUE</code>) or to simply fit along the sequence of values (or single
 value) using <code><a href='https://rdrr.io/pkg/glmnet/man/glmnet.html'>glmnet</a></code> (when set to <code>FALSE</code>).</p></td>
-    </tr>
-    <tr>
-      <th>screen_basis</th>
-      <td><p>If <code>TRUE</code>, use a screening procedure to reduce the
-number of basis functions fitted.</p></td>
-    </tr>
-    <tr>
-      <th>screen_lambda</th>
-      <td><p>If <code>TRUE</code>, use a screening procedure to reduce the
-number of lambda values evaluated.</p></td>
     </tr>
     <tr>
       <th>...</th>

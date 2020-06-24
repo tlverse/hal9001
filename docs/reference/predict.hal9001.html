@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -131,14 +131,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for hal9001</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(
-  <span class='no'>object</span>,
-  <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>lambda</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>...</span>,
-  <span class='no'>new_data</span>,
-  <span class='kw'>new_X_unpenalized</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>object</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='no'>new_data</span>, <span class='kw'>new_X_unpenalized</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,17 +139,11 @@
     <tr>
       <th>object</th>
       <td><p>An object of class <code>hal9001</code>, containing the results of
-fitting the Highly Adaptive Lasso, as produced by a call to <code>fit_hal</code>.</p></td>
+fitting the Highly Adaptive Lasso, as produced by <code><a href='fit_hal.html'>fit_hal</a></code>.</p></td>
     </tr>
     <tr>
       <th>offset</th>
       <td><p>A vector of offsets. Must be provided if provided at training</p></td>
-    </tr>
-    <tr>
-      <th>lambda</th>
-      <td><p>A single lambda value or a vector of lambdas to use for
-prediction. If <code>NULL</code>, a value of lambda will be selected based on
-cross-validation, using <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -179,13 +166,22 @@ observations as <code>new_data</code>. Optional.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <code>numeric</code> vector of predictions from a fitted <code>hal9001</code>
- object.</p>
+    <p>A <code>numeric</code> vector of predictions from a <code>hal9001</code> object.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Method for computing and extracting predictions from fits of the
  Highly Adaptive Lasso estimator, returned as a single S3 objects of class
  <code>hal9001</code>.</p>
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
+
+    <p>This prediction method does not function similarly to the equivalent
+ method from <span class="pkg">glmnet</span>. In particular, this procedure will NOT return a
+ subset of lambdas originally specified in callingo <code><a href='fit_hal.html'>fit_hal</a></code>
+ nor result in re-fitting. Instead, it will return predictions for all of
+ the lambdas specified in the call to <code><a href='fit_hal.html'>fit_hal</a></code> that constructs
+ <code>object</code>, when <code>cv_select = FALSE</code>. When <code>cv_select = TRUE</code>,
+ predictions will only be returned for the value of lambda selected by
+ cross-validation.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -45,7 +45,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -96,8 +96,7 @@
 <div id="whats-hal9001" class="section level2">
 <h2 class="hasAnchor">
 <a href="#whats-hal9001" class="anchor"></a>What’s <code>hal9001</code>?</h2>
-<p><code>hal9001</code> is an R package providing an implementation of the scalable <em>highly adaptive lasso</em> (HAL), a nonparametric regression estimator that applies L1-regularized regression (i.e., the lasso) to a design matrix composed of indicator functions corresponding to a set of covariates and interactions thereof. Recent theoretical results show that HAL is endowed with several important optimality properties, making it well-suited for the estimation of highly complex functional forms while attaining fast convergence rates (<span class="math inline"><em>n</em><sup>(</sup>1/4)</span> and better) when used in the estimation of nuisance functions. HAL has been quite successfully used in the construction of estimators at the intersection of semiparametric theory and nonparametric causal inference (e.g., the construction of efficient one-step or targeted minimum loss estimators).</p>
-<p>For detailed discussions of the highly adaptive lasso estimator, consider consulting Benkeser and van der Laan (2016), van der Laan (2017a), and van der Laan (2017b), among other recent works.</p>
+<p><code>hal9001</code> is an R package providing an implementation of the scalable <em>highly adaptive lasso</em> (HAL), a nonparametric regression estimator that applies L1-regularized lasso regression to a design matrix composed of indicator functions corresponding to the support of the functional over a set of covariates and interactions thereof. HAL regression allows for arbitrarily complex functional forms to be estimated at fast (near-parametric) convergence rates under only global smoothness assumptions (van der Laan 2017a; Bibaut and van der Laan 2019). For detailed theoretical discussions of the highly adaptive lasso estimator, consider consulting, for example, van der Laan (2017a), van der Laan (2017b), and van der Laan and Bibaut (2017). For a computational demonstration of the versatility of HAL regression, see Benkeser and van der Laan (2016). Recent theoretical works have demonstrated success in building efficient estimators of complex parameters when particular variations of HAL regression are used to estimate nuisance parameters (e.g., van der Laan, Benkeser, and Cai 2019; Ertefaie, Hejazi, and van der Laan 2020).</p>
 <hr>
 </div>
 <div id="installation" class="section level2">
@@ -118,7 +117,7 @@
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
-<p>This minimal example shows how to use <code>hal9001</code> to obtain predictions based on the Highly Adaptive Lasso. For details on the properties of the estimator, the interested reader is referred to Benkeser and van der Laan (2016) and van der Laan (2017a).</p>
+<p>Consider the following minimal example in using <code>hal9001</code> to generate predictions via Highly Adaptive Lasso regression:</p>
 <div class="sourceCode" id="cb3"><pre class="r"><span class="co"># load the package and set a seed</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">hal9001</span>)
 <span class="co">#&gt; Loading required package: Rcpp</span>
@@ -128,7 +127,7 @@
 <span class="co"># simulate data</span>
 <span class="no">n</span> <span class="kw">&lt;-</span> <span class="fl">100</span>
 <span class="no">p</span> <span class="kw">&lt;-</span> <span class="fl">3</span>
-<span class="no">x</span> <span class="kw">&lt;-</span> <span class="no">xmat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n</span> * <span class="no">p</span>), <span class="no">n</span>, <span class="no">p</span>)
+<span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n</span> * <span class="no">p</span>), <span class="no">n</span>, <span class="no">p</span>)
 <span class="no">y</span> <span class="kw">&lt;-</span> <span class="no">x</span>[, <span class="fl">1</span>] * <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(<span class="no">x</span>[, <span class="fl">2</span>]) + <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n</span>, <span class="kw">mean</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="fl">0.2</span>)
 
 <span class="co"># fit the HAL regression</span>
@@ -136,12 +135,12 @@
 <span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
 <span class="no">hal_fit</span>$<span class="no">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">#&gt; enumerate_basis       0.002    0.000   0.002          0         0</span>
-<span class="co">#&gt; design_matrix         0.001    0.000   0.001          0         0</span>
-<span class="co">#&gt; remove_duplicates     0.005    0.000   0.005          0         0</span>
+<span class="co">#&gt; enumerate_basis       0.001    0.000   0.001          0         0</span>
+<span class="co">#&gt; design_matrix         0.002    0.000   0.002          0         0</span>
+<span class="co">#&gt; remove_duplicates     0.004    0.000   0.004          0         0</span>
 <span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
-<span class="co">#&gt; lasso                 0.294    0.012   0.305          0         0</span>
-<span class="co">#&gt; total                 0.302    0.012   0.313          0         0</span>
+<span class="co">#&gt; lasso                 0.325    0.005   0.330          0         0</span>
+<span class="co">#&gt; total                 0.332    0.005   0.337          0         0</span>
 
 <span class="co"># training sample prediction</span>
 <span class="no">preds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">hal_fit</span>, <span class="kw">new_data</span> <span class="kw">=</span> <span class="no">x</span>)
@@ -159,13 +158,13 @@
 <h2 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h2>
 <p>After using the <code>hal9001</code> R package, please cite the following:</p>
-<pre><code>    @manual{coyle2019hal9001,
+<pre><code>    @manual{coyle2020hal9001,
       author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
         J},
       title = {{hal9001}: The scalable highly adaptive lasso},
-      year  = {2019},
+      year  = {2020},
       howpublished = {\url{https://github.com/tlverse/hal9001}},
-      note = {{R} package version 0.2.5},
+      note = {{R} package version 0.2.6},
       url = {https://doi.org/10.5281/zenodo.3558313},
       doi = {10.5281/zenodo.3558313}
     }</code></pre>
@@ -185,11 +184,23 @@
 <div id="ref-benkeser2016hal">
 <p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93" class="uri">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
 </div>
+<div id="ref-bibaut2019fast">
+<p>Bibaut, Aurélien F, and Mark J van der Laan. 2019. “Fast Rates for Empirical Risk Minimization over Càdlàg Functions with Bounded Sectional Variation Norm.” <em>arXiv Preprint arXiv:1907.09244</em>.</p>
+</div>
+<div id="ref-ertefaie2020nonparametric">
+<p>Ertefaie, Ashkan, Nima S Hejazi, and Mark J van der Laan. 2020. “Nonparametric Inverse Probability Weighted Estimators Based on the Highly Adaptive Lasso.” <a href="http://arxiv.org/abs/2005.11303" class="uri">http://arxiv.org/abs/2005.11303</a>.</p>
+</div>
 <div id="ref-vdl2017generally">
 <p>van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum Loss Based Estimator Based on the Highly Adaptive Lasso.” <em>The International Journal of Biostatistics</em>. De Gruyter. <a href="https://doi.org/10.1515/ijb-2015-0097" class="uri">https://doi.org/10.1515/ijb-2015-0097</a>.</p>
 </div>
 <div id="ref-vdl2017finite">
 <p>———. 2017b. “Finite Sample Inference for Targeted Learning.” <em>ArXiv E-Prints</em>.</p>
+</div>
+<div id="ref-vdl2019efficient">
+<p>van der Laan, Mark J, David Benkeser, and Weixin Cai. 2019. “Efficient Estimation of Pathwise Differentiable Target Parameters with the Undersmoothed Highly Adaptive Lasso.” <em>arXiv Preprint arXiv:1908.05607</em>.</p>
+</div>
+<div id="ref-vdl2017uniform">
+<p>van der Laan, Mark J, and Aurélien F Bibaut. 2017. “Uniform Consistency of the Highly Adaptive Lasso Estimator of Infinite-Dimensional Parameters.” <em>arXiv Preprint arXiv:1709.06256</em>.</p>
 </div>
 </div>
 </div>
