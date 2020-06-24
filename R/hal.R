@@ -65,6 +65,10 @@
 #' @param id a vector of ID values, used to generate cross-validation folds for
 #'  cross-validated selection of the regularization parameter lambda.
 #' @param offset a vector of offset values, used in fitting.
+#' @param screen_basis If \code{TRUE}, use a screening procedure to reduce the
+#'  number of basis functions fitted.
+#' @param screen_lambda If \code{TRUE}, use a screening procedure to reduce the
+#'  number of lambda values evaluated.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -108,6 +112,8 @@ fit_hal <- function(X,
                     id = NULL,
                     offset = NULL,
                     cv_select = TRUE,
+                    screen_basis = FALSE,
+                    screen_lambda = FALSE,
                     ...,
                     yolo = TRUE) {
   # check arguments and catch function call
@@ -140,6 +146,14 @@ fit_hal <- function(X,
     )
   )
 
+  # warn about screening functionality
+  if (screen_basis) {
+    warning("Basis screening functionality is currently experimental.")
+  }
+  if (screen_lambda) {
+    warning("Lambda screening functionality is currently experimental.")
+  }
+
   # cast X to matrix -- and don't start the timer until after
   if (!is.matrix(X)) {
     X <- as.matrix(X)
@@ -164,7 +178,19 @@ fit_hal <- function(X,
 
   # make design matrix for HAL
   if (is.null(basis_list)) {
-    basis_list <- enumerate_basis(X, max_degree)
+    if (screen_basis) {
+      selected_cols <- hal_screen_goodbasis(X, Y,
+        actual_max_degree = max_degree,
+        k = NULL, family = "gaussian"
+      )
+      basis_list <- c()
+      for (i in seq_along(selected_cols)) {
+        col_list <- selected_cols[[i]]
+        basis_list <- c(basis_list, basis_list_cols(col_list, X))
+      }
+    } else {
+      basis_list <- enumerate_basis(X, max_degree)
+    }
   }
 
   # generate a vector of col lists corresponding to the bases generated
@@ -236,6 +262,15 @@ fit_hal <- function(X,
       coefs <- hal_lasso$betas_mat[, "lambda_1se"]
     }
   } else if (fit_type == "glmnet") {
+    if ((screen_lambda) && (length(lambda) != 1)) {
+      # reduce the set of lambdas to fit
+      lambda <- hal_screen_lambda(x_basis, Y,
+        family = family,
+        lambda = lambda,
+        foldid = foldid,
+        offset = offset
+      )
+    }
     # just use the standard implementation available in glmnet
     if (!cv_select) {
       hal_lasso <- glmnet::glmnet(
