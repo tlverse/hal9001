@@ -76,9 +76,9 @@ regression on the large, sparse design matrix of indicator bases. The selected
 HAL regression model approximates the sectional variation norm of the target
 functional as the absolute sum of the estimated coefficients of indicator basis
 functions. The $L_1$ penalization parameter $\lambda$ can be data adaptively
-selected based on a cross-validation selector [@vdl2003unified; @vdv2006oracle];
+chosen via a cross-validation selector [@vdl2003unified; @vdv2006oracle];
 however, alternative selection criteria may be more appropriate when the
-estimand functional is itself a nuisance component of the target parameter
+estimand functional is not the target parameter but instead a nuisance function
 [e.g., @vdl2019efficient; @ertefaie2020nonparametric].
 
 # `hal9001`'s core functionality
