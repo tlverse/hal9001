@@ -148,8 +148,6 @@
   <span class='kw'>id</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>cv_select</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>screen_basis</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>screen_lambda</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='no'>...</span>,
   <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
@@ -265,16 +263,6 @@ pick the optimal value (based on cross-validation) (when set to
 value) using <code><a href='https://rdrr.io/pkg/glmnet/man/glmnet.html'>glmnet</a></code> (when set to <code>FALSE</code>).</p></td>
     </tr>
     <tr>
-      <th>screen_basis</th>
-      <td><p>If <code>TRUE</code>, use a screening procedure to reduce the
-number of basis functions fitted.</p></td>
-    </tr>
-    <tr>
-      <th>screen_lambda</th>
-      <td><p>If <code>TRUE</code>, use a screening procedure to reduce the
-number of lambda values evaluated.</p></td>
-    </tr>
-    <tr>
       <th>...</th>
       <td><p>Other arguments passed to <code><a href='https://rdrr.io/pkg/glmnet/man/cv.glmnet.html'>cv.glmnet</a></code>. Please
 consult its documentation for a full list of options.</p></td>
@@ -326,7 +314,7 @@ acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
