@@ -105,14 +105,15 @@ Over several years of development and use, it was found that the performance of
 HAL regression can suffer in high-dimensional settings. To alleviate
 computational aspects of this issue, several screening and filtering approaches
 were investigated and implemented. These include screening of variables prior to
-creating the design matrix and filtering of indicator basis functions (arguments
-`screen_basis` and `reduce_basis`), as well as either filtering of penalization
-parameters (argument `screen_lambda`) or early stopping when fitting the
-sequence of HAL models in $\lambda$. Future software development efforts will
-continue to improve upon the computational aspects and performance of the HAL
-regression options supported by `hal9001`. Currently, stable releases of the
-`hal9001` package are made available on the Comprehensive `R` Archive Network at
-https://CRAN.R-project.org/package=hal9001.
+creating the design matrix and filtering of indicator basis functions (argument
+`reduce_basis`) as well as early stopping when fitting the sequence of HAL
+models in $\lambda$. Future software development efforts will continue to
+improve upon the computational aspects and performance of the HAL regression
+options supported by `hal9001`. Currently, stable releases of the `hal9001`
+package are made available on the Comprehensive `R` Archive Network at
+https://CRAN.R-project.org/package=hal9001, while both stable (branch `master`)
+and development (branch `devel`) versions of the package are hosted at
+https://github.com/tlverse/hal9001.
 
 # References
 
