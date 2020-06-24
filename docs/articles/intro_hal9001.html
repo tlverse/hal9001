@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fitting the Highly Adaptive Lasso with `hal9001` • hal9001</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Fitting the Highly Adaptive Lasso with `hal9001`">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="hal9001">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -24,7 +24,7 @@
   gtag('config', 'UA-115145808-1');
 </script>
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -76,13 +76,13 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Fitting the Highly Adaptive Lasso with <code>hal9001</code>
+      <h1 data-toc-skip>Fitting the Highly Adaptive Lasso with <code>hal9001</code>
 </h1>
                         <h4 class="author">
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>
 </h4>
             
-            <h4 class="date">2020-03-05</h4>
+            <h4 class="date">2020-04-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -100,20 +100,20 @@
 <div id="preliminaries" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preliminaries" class="anchor"></a>Preliminaries</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># simulation constants</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">467392</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">n_obs &lt;-<span class="st"> </span><span class="dv">200</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">n_covars &lt;-<span class="st"> </span><span class="dv">3</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co"># make some training data</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span>(n_covars, <span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n_obs))</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">y &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(x[, <span class="dv">1</span>]) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n_obs, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="fl">0.2</span>)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co"># make some testing data</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">test_x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span>(n_covars, <span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n_obs))</a>
-<a class="sourceLine" id="cb1-12" data-line-number="12">test_y &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(x[, <span class="dv">1</span>]) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(x[, <span class="dv">2</span>]) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(n_obs, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="fl">0.2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="co"># simulation constants</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">467392</span>)
+<span class="no">n_obs</span> <span class="kw">&lt;-</span> <span class="fl">200</span>
+<span class="no">n_covars</span> <span class="kw">&lt;-</span> <span class="fl">3</span>
+
+<span class="co"># make some training data</span>
+<span class="no">x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span>(<span class="no">n_covars</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n_obs</span>))
+<span class="no">y</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(<span class="no">x</span>[, <span class="fl">1</span>]) + <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(<span class="no">x</span>[, <span class="fl">2</span>]) + <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n_obs</span>, <span class="kw">mean</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="fl">0.2</span>)
+
+<span class="co"># make some testing data</span>
+<span class="no">test_x</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span>(<span class="no">n_covars</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n_obs</span>))
+<span class="no">test_y</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(<span class="no">x</span>[, <span class="fl">1</span>]) + <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span>(<span class="no">x</span>[, <span class="fl">2</span>]) + <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="no">n_obs</span>, <span class="kw">mean</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">sd</span> <span class="kw">=</span> <span class="fl">0.2</span>)</pre></body></html></div>
 <p>Look at simulated data…</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(x)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">x</span>)</pre></body></html></div>
 <pre><code>##             [,1]       [,2]       [,3]
 ## [1,]  2.44102981 -0.6441252 -0.4632021
 ## [2,] -1.21932335 -0.9481608  2.6358511
@@ -121,16 +121,16 @@
 ## [4,] -1.09760477 -1.5845711 -1.0496038
 ## [5,]  0.23710498  0.1261754  1.4717507
 ## [6,]  0.06810091 -0.2623992 -0.7534596</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(y)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">y</span>)</pre></body></html></div>
 <pre><code>## [1]  0.31596199 -1.74749349 -0.08198272 -2.13963686  0.42902938 -0.12824651</code></pre>
 <hr>
 </div>
 <div id="using-the-highly-adaptive-lasso" class="section level2">
 <h2 class="hasAnchor">
 <a href="#using-the-highly-adaptive-lasso" class="anchor"></a>Using the Highly Adaptive Lasso</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(hal9001)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">hal9001</span>)</pre></body></html></div>
 <pre><code>## Loading required package: Rcpp</code></pre>
-<pre><code>## hal9001 v0.2.5: The Scalable Highly Adaptive Lasso</code></pre>
+<pre><code>## hal9001 v0.2.6: The Scalable Highly Adaptive Lasso</code></pre>
 <!-- ### Fitting the HAL model: "lassi" -->
 <!-- Our custom implementation of the Lasso has been dubbed _lassi_. For the purposes -->
 <!-- of HAL, it is faster than using the standard `glmnet` approach, but it is not -->
@@ -148,17 +148,17 @@
 <a href="#fitting-the-model-glmnet" class="anchor"></a>Fitting the model: <code>glmnet</code>
 </h3>
 <p>HAL uses the popular <code>glmnet</code> R package for the lasso step:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">hal_fit &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y, <span class="dt">fit_type =</span> <span class="st">"glmnet"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">hal_fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">Y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"glmnet"</span>)</pre></body></html></div>
 <pre><code>## [1] "Without your space helmet, Dave. You're going to find that rather difficult."</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">hal_fit<span class="op">$</span>times</a></code></pre></div>
+<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">hal_fit</span>$<span class="no">times</span></pre></body></html></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.016    0.000   0.016          0         0
-## design_matrix         0.033    0.000   0.033          0         0
-## remove_duplicates     0.010    0.000   0.010          0         0
+## enumerate_basis       0.005    0.000   0.005          0         0
+## design_matrix         0.021    0.000   0.022          0         0
+## remove_duplicates     0.014    0.000   0.014          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 0.619    0.016   0.635          0         0
-## total                 0.678    0.016   0.694          0         0</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">hal_fit</a></code></pre></div>
+## lasso                 0.783    0.005   0.788          0         0
+## total                 0.823    0.005   0.829          0         0</code></pre>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">hal_fit</span></pre></body></html></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "glmnet")
 ## 
@@ -16416,12 +16416,12 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.016    0.000   0.016          0         0
-## design_matrix         0.033    0.000   0.033          0         0
-## remove_duplicates     0.010    0.000   0.010          0         0
+## enumerate_basis       0.005    0.000   0.005          0         0
+## design_matrix         0.021    0.000   0.022          0         0
+## remove_duplicates     0.014    0.000   0.014          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## lasso                 0.619    0.016   0.635          0         0
-## total                 0.678    0.016   0.694          0         0
+## lasso                 0.783    0.005   0.788          0         0
+## total                 0.823    0.005   0.829          0         0
 ## 
 ## $lambda_star
 ## [1] 0.01537728
@@ -16559,20 +16559,20 @@
 <a href="#reducing-basis-functions" class="anchor"></a>Reducing basis functions</h3>
 <p>As described in <span class="citation">Benkeser and van der Laan (2016)</span>, the HAL algorithm operates by first constructing a set of basis functions and subsequently fitting a Lasso model with this set of basis functions as the design matrix. Several approaches are considered for reducing this set of basis functions: 1. Removing duplicated basis functions (done by default in the <code>fit_hal</code> function), 2. Removing basis functions that correspond to only a small set of observations; a good rule of thumb is to scale with <span class="math inline">\(\frac{1}{\sqrt{n}}\)</span>.</p>
 <p>The second of these two options may be invoked by specifying the <code>reduce_basis</code> argument to the <code>fit_hal</code> function:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">hal_fit_reduced &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="dt">X =</span> x, <span class="dt">Y =</span> y, <span class="dt">fit_type =</span> <span class="st">"lassi"</span>,</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">                           <span class="dt">reduce_basis =</span> <span class="dv">1</span><span class="op">/</span><span class="kw"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/length.html">length</a></span>(y)))</a></code></pre></div>
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">hal_fit_reduced</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span>(<span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">Y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"lassi"</span>,
+                           <span class="kw">reduce_basis</span> <span class="kw">=</span> <span class="fl">1</span>/<span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">y</span>)))</pre></body></html></div>
 <pre><code>## [1] "Dave, although you took very thorough precautions in the pod against my hearing you, I could see your lips move."</code></pre>
 <pre><code>## 'lassi' is experimental: fit_type='glmnet' is recommended in nearly all cases.</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">hal_fit_reduced<span class="op">$</span>times</a></code></pre></div>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">hal_fit_reduced</span>$<span class="no">times</span></pre></body></html></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.005        0   0.005          0         0
-## design_matrix         0.020        0   0.020          0         0
-## remove_duplicates     0.009        0   0.009          0         0
+## enumerate_basis       0.005        0   0.006          0         0
+## design_matrix         0.025        0   0.025          0         0
+## remove_duplicates     0.010        0   0.010          0         0
 ## reduce_basis          0.007        0   0.007          0         0
-## lasso                 1.975        0   1.977          0         0
-## total                 2.009        0   2.011          0         0</code></pre>
+## lasso                 2.207        0   2.223          0         0
+## total                 2.247        0   2.264          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 7.0710678% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">hal_fit_reduced</a></code></pre></div>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">hal_fit_reduced</span></pre></body></html></div>
 <pre><code>## $call
 ## fit_hal(X = x, Y = y, fit_type = "lassi", reduce_basis = 1/sqrt(length(y)))
 ## 
@@ -32663,12 +32663,12 @@
 ## 
 ## $times
 ##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.005        0   0.005          0         0
-## design_matrix         0.020        0   0.020          0         0
-## remove_duplicates     0.009        0   0.009          0         0
+## enumerate_basis       0.005        0   0.006          0         0
+## design_matrix         0.025        0   0.025          0         0
+## remove_duplicates     0.010        0   0.010          0         0
 ## reduce_basis          0.007        0   0.007          0         0
-## lasso                 1.975        0   1.977          0         0
-## total                 2.009        0   2.011          0         0
+## lasso                 2.207        0   2.223          0         0
+## total                 2.247        0   2.264          0         0
 ## 
 ## $lambda_star
 ## [1] 0.01073374
@@ -33815,18 +33815,18 @@
 <div id="obtaining-model-predictions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#obtaining-model-predictions" class="anchor"></a>Obtaining model predictions</h3>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="co"># training sample prediction for HAL vs HAL9000</span></a>
-<a class="sourceLine" id="cb22-2" data-line-number="2">mse &lt;-<span class="st"> </span><span class="cf">function</span>(preds, y) {</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">    <span class="kw"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>((preds <span class="op">-</span><span class="st"> </span>y)<span class="op">^</span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb22-4" data-line-number="4">}</a>
-<a class="sourceLine" id="cb22-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb22-6" data-line-number="6">preds_hal &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="dt">object =</span> hal_fit, <span class="dt">new_data =</span> x)</a>
-<a class="sourceLine" id="cb22-7" data-line-number="7">mse_hal &lt;-<span class="st"> </span><span class="kw">mse</span>(<span class="dt">preds =</span> preds_hal, <span class="dt">y =</span> y)</a>
-<a class="sourceLine" id="cb22-8" data-line-number="8">mse_hal</a></code></pre></div>
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="co"># training sample prediction for HAL vs HAL9000</span>
+<span class="no">mse</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">preds</span>, <span class="no">y</span>) {
+    <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span>((<span class="no">preds</span> - <span class="no">y</span>)^<span class="fl">2</span>)
+}
+
+<span class="no">preds_hal</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">object</span> <span class="kw">=</span> <span class="no">hal_fit</span>, <span class="kw">new_data</span> <span class="kw">=</span> <span class="no">x</span>)
+<span class="no">mse_hal</span> <span class="kw">&lt;-</span> <span class="fu">mse</span>(<span class="kw">preds</span> <span class="kw">=</span> <span class="no">preds_hal</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">y</span>)
+<span class="no">mse_hal</span></pre></body></html></div>
 <pre><code>## [1] 0.02493478</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">oob_hal &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="dt">object =</span> hal_fit, <span class="dt">new_data =</span> test_x)</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">oob_hal_mse &lt;-<span class="st"> </span><span class="kw">mse</span>(<span class="dt">preds =</span> oob_hal, <span class="dt">y =</span> test_y)</a>
-<a class="sourceLine" id="cb24-3" data-line-number="3">oob_hal_mse</a></code></pre></div>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="no">oob_hal</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="kw">object</span> <span class="kw">=</span> <span class="no">hal_fit</span>, <span class="kw">new_data</span> <span class="kw">=</span> <span class="no">test_x</span>)
+<span class="no">oob_hal_mse</span> <span class="kw">&lt;-</span> <span class="fu">mse</span>(<span class="kw">preds</span> <span class="kw">=</span> <span class="no">oob_hal</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">test_y</span>)
+<span class="no">oob_hal_mse</span></pre></body></html></div>
 <pre><code>## [1] 1.543119</code></pre>
 <hr>
 </div>
@@ -33845,19 +33845,11 @@
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#introduction">Introduction</a></li>
-      <li><a href="#preliminaries">Preliminaries</a></li>
-      <li><a href="#using-the-highly-adaptive-lasso">Using the Highly Adaptive Lasso</a></li>
-      <li><a href="#references">References</a></li>
-      </ul>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
@@ -33868,7 +33860,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
 </div>
 
       </footer>

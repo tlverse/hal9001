@@ -43,7 +43,7 @@ Imports:
   utils,
   methods,
   assertthat,
-  origami (>= 0.8.1),
+  origami (>= 1.0.3),
   glmnet
 Suggests:
   testthat,
@@ -62,4 +62,4 @@ LinkingTo:
   Rcpp,
   RcppEigen
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0

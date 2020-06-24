@@ -92,7 +92,7 @@ set.seed(385971)
 # simulate data
 n <- 100
 p <- 3
-x <- xmat <- matrix(rnorm(n * p), n, p)
+x <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
 # fit the HAL regression

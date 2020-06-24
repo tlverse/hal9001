@@ -1,4 +1,5 @@
 context("Verify Statistical Performance")
+library(glmnet)
 
 # generate training and test data
 # adapted from https://github.com/tlverse/hal9001/issues/9
@@ -70,8 +71,10 @@ X <- as.matrix(X)
 # test <- hal_screen_basis(X, Y,family="gaussian", verbose=TRUE, main_terms = FALSE)
 halres9001 <- fit_hal(
   Y = Y, X = X,
-  yolo = FALSE, screen_basis = TRUE,
-  screen_lambda = TRUE
+  yolo = FALSE
+  # NOTE: hal_screen_goodbasis is broken
+  # screen_basis = TRUE
+  # screen_lambda = TRUE
 )
 pred9001 <- predict(halres9001, new_data = testX)
 
@@ -92,13 +95,11 @@ x_basis <- hal9001:::make_design_matrix(X, basis_list)
 copy_map <- hal9001:::make_copy_map(x_basis)
 unique_columns <- as.numeric(names(copy_map))
 x_basis <- x_basis[, unique_columns]
-
 nbasis9001 <- ncol(x_basis)
 
 set.seed(1234)
 # attempt to control randomness in cv.glmnet fold generation
 # try to match hal param
-library(glmnet)
 hal_lasso <- glmnet::cv.glmnet(
   x = x_basis, y = Y, nlambda = 100,
   lambda.min.ratio = 0.001, nfolds = 10,
