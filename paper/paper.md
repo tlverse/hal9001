@@ -24,7 +24,7 @@ affiliations:
     index: 3
   - name: Center for Computational Biology, University of California, Berkeley
     index: 4
-date: 22 June 2020
+date: 24 June 2020
 bibliography: refs.bib
 ---
 
@@ -37,7 +37,7 @@ pairs an implementation of this estimator with an array of practical variable
 selection tools and sensible defaults in order to improve the scalability of the
 algorithm. By building on existing `R` packages for lasso regression and
 leveraging compiled code in key internal functions, the `hal9001` `R` package
-provides a family of highly adaptive lasso estimators suitable for use both for
+provides a family of highly adaptive lasso estimators suitable for use in both
 modern data analysis tasks and computationally intensive statistics and machine
 learning research.
 
@@ -46,49 +46,39 @@ learning research.
 The highly adaptive lasso (HAL) is a nonparametric regression function capable
 of estimating complex (e.g., possibly infinite-dimensional) functional
 parameters at a near-parametric $n^{-1/3}$ rate under only relatively mild
-conditions [@vdl2017generally; @vdl2017uniform; @bibaut2019fast]. The `hal9001`
-package implements a zeroth-order HAL estimator, which constructs and selects
-(by lasso penalization) a linear combination of indicator basis functions to
-minimize the expected value of a loss function under the constraint that the
-$L_1$-norm of the vector of coefficients is bounded by a finite constant.
+conditions [@vdl2017generally; @vdl2017uniform; @bibaut2019fast]. HAL requires
+that the space of the functional parameter be a subset of the set of càdlàg
+(right-hand continuous with left-hand limits) functions with sectional
+sectional variation norm bounded by a constant. In contrast to the wealth of
+data adaptive regression techniques that make strong local smoothness
+assumptions on the true form of the target functional, HAL regression's
+assumption of a finite sectional variation norm constitutes only a _global_
+smoothness assumption, making it a powerful and versatile approach. The
+`hal9001` package implements a zeroth-order HAL estimator, which constructs and
+selects (by lasso penalization) a linear combination of indicator basis
+functions to minimize the loss-specific empirical risk under the constraint that
+the $L_1$-norm of the vector of coefficients be bounded by a finite constant.
 Importantly, the estimator is formulated such that this finite constant is the
-sectional variation norm of the target function's HAL representation.
+sectional variation norm of the target functional.
 
-To formalize, consider the space of $d$-variate real-valued càdlàg functions
-(right-hand continuous with left-hand limits) on a cube $[0,\tau] \in
-\mathbb{R}^d$, letting $\mathbb{D}[0,\tau]$ denote this Banach space. For an
-arbitrary functional $f \in \mathbb{D}[0,\tau]$, let the supremum norm be
-$\lVert f \rVert_{\infty} := \sup_{x \in [0, \tau]} \lvert f(x) \rvert$;
-morever, for any subset $s \subset \{0, \ldots, d\}$, partition the cube $[0,
-\tau]$ into $\{0\} \{\cup_s (0_s, \tau_s]\}$. The sectional variation norm of
-$f$ is defined
-\begin{equation*}
-  \lVert f \rVert^{\star}_\nu = \lvert f(0) \rvert + \sum_{s
-  \subset\{1, \ldots, d\}} \int_{0_s}^{\tau_s} \lvert df_s(u_s) \rvert,
-\end{equation*}
-with the sum being over all subsets of $\{0, \ldots, d\}$. Define $u_s = (u_j
-: j \in s)$ and $u_{-s}$ as the complement of $u_s$, for a given subset $s
-\subset \{0, \ldots, d\}$. Then, let $f_s(u_s) = f(u_s, 0_{-s})$, which yields
-$f_s: [0_s, \tau_s] \rightarrow \mathbb{R}$. $f_s(u_s)$ is simply a section of
-$f$ that sets the components in the complement of the subset $s$ to zero, i.e,
-allowing $f_s$ to vary only along components in $u_s$. Interestingly, this
-definition of variation norm corresponds closely with the notion of Hardy-Krause
-variation [@qiu2020universal; @owen2005multidimensional].
-
-For the purpose of estimation, the integral over the domain $[0_s, \tau_s]$ may
-be approximated by applying a discrete measure that places mass on observations
-$X_{s,i}$, for which coefficients $\beta_{s,i}$ are generated. Define the
-indicator $\phi_{s,i}(c_s)= \mathbb{I}(x_{s,i} \leq c_s)$, where $x_{s,i}$ are
-support points of the functional. Then, we may express the approximation as
-$\lVert \hat{f} \rVert^{\star}_\nu \approx \lvert \beta_0 \rvert + \sum_{s
-\subset\{1,\ldots,d\}} \sum_{i=1}^{n} \lvert \beta_{s,i} \rvert$, which
-approximates the sectional variation norm of the target functional. A loss-based
-HAL estimator is based on a choice of the penalization parameter $\lambda$ that
-minimizes the empirical risk under an appropriately chosen loss function. A data
-adaptively selected choice of $\lambda$, typically denoted $\lambda_n$, may be
-made by a cross-validation selector [@vdl2003unified; @vdv2006oracle], though
-alternative selection criteria may be more appropriate when the estimand
-functional is itself a nuisance component of the target parameter of interest
+Intuitively, construction of a HAL estimator proceeds in two steps. First,
+a design matrix composed of basis functions is generated based on the available
+set of covariates. The zeroth-order HAL makes use of indicator basis functions,
+resulting in a large, sparse matrix with binary entries; higher-order HAL
+estimators, which replace the use of indicator basis functions with splines,
+have been formulated but remain unimplemented. This representation of the target
+functional $f$ in terms of indicator basis functions partitions the support of
+$f$ into knot points, with indicator basis functions placed over subsets of the
+sections of $f$. Generally, very many basis functions are created, with an
+appropriate set of indicator bases then selected through lasso penalization.
+Thus, the second step of fitting a HAL model is performing $L_1$-penalized
+regression on the large, sparse design matrix of indicator bases. The selected
+HAL regression model approximates the sectional variation norm of the target
+functional as the absolute sum of the estimated coefficients of indicator basis
+functions. The $L_1$ penalization parameter $\lambda$ can be data adaptively
+selected based on a cross-validation selector [@vdl2003unified; @vdv2006oracle];
+however, alternative selection criteria may be more appropriate when the
+estimand functional is itself a nuisance component of the target parameter
 [e.g., @vdl2019efficient; @ertefaie2020nonparametric].
 
 # `hal9001`'s core functionality
