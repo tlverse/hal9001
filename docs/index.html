@@ -135,12 +135,12 @@
 <span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
 <span class="no">hal_fit</span>$<span class="no">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">#&gt; enumerate_basis       0.001    0.000   0.001          0         0</span>
-<span class="co">#&gt; design_matrix         0.002    0.000   0.002          0         0</span>
-<span class="co">#&gt; remove_duplicates     0.004    0.000   0.004          0         0</span>
-<span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
-<span class="co">#&gt; lasso                 0.325    0.005   0.330          0         0</span>
-<span class="co">#&gt; total                 0.332    0.005   0.337          0         0</span>
+<span class="co">#&gt; enumerate_basis       0.001     0.00   0.001          0         0</span>
+<span class="co">#&gt; design_matrix         0.001     0.00   0.002          0         0</span>
+<span class="co">#&gt; remove_duplicates     0.005     0.00   0.004          0         0</span>
+<span class="co">#&gt; reduce_basis          0.000     0.00   0.000          0         0</span>
+<span class="co">#&gt; lasso                 0.313     0.02   0.333          0         0</span>
+<span class="co">#&gt; total                 0.320     0.02   0.340          0         0</span>
 
 <span class="co"># training sample prediction</span>
 <span class="no">preds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">hal_fit</span>, <span class="kw">new_data</span> <span class="kw">=</span> <span class="no">x</span>)
@@ -251,7 +251,7 @@
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://travis-ci.org/tlverse/hal9001"><img src="https://travis-ci.org/tlverse/hal9001.svg?branch=master" alt="Travis-CI Build Status"></a></li>
-<li><a href="https://ci.appveyor.com/project/jeremyrcoyle/hal9001"><img src="https://ci.appveyor.com/api/projects/status/github/jeremyrcoyle/hal9001?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
+<li><a href="https://ci.appveyor.com/project/tlverse/hal9001"><img src="https://ci.appveyor.com/api/projects/status/github/tlverse/hal9001?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
 <li><a href="https://codecov.io/github/tlverse/hal9001?branch=master"><img src="https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg" alt="Coverage Status"></a></li>
 <li><a href="http://www.r-pkg.org/pkg/hal9001"><img src="http://www.r-pkg.org/badges/version/hal9001" alt="CRAN"></a></li>
 <li><a href="https://CRAN.R-project.org/package=hal9001"><img src="https://cranlogs.r-pkg.org/badges/hal9001" alt="CRAN downloads"></a></li>
