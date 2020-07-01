@@ -159,14 +159,34 @@ fit_hal <- function(X,
     }
   }
 
-  # bookkeeping: get start time of duplicate removal procedure
+  # bookkeeping: get start time of enumerate basis procedure
   time_start <- proc.time()
 
   # make design matrix for HAL
   if (is.null(basis_list)) {
     basis_list <- enumerate_basis(X, max_degree)
-    names(basis_list) <- 1:(length(basis_list))
   }
+  # bookkeeping: get end time of enumerate basis procedure
+  time_enumerate_basis <- proc.time()
+
+  x_basis <- make_design_matrix(X, basis_list)
+  # bookkeeping: get end time of design matrix procedure
+  time_design_matrix <- proc.time()
+
+  # NOTE: keep only basis functions with some (or higher) proportion of 1's
+  if (!is.null(reduce_basis) && is.numeric(reduce_basis)) {
+    reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
+    x_basis <- x_basis[, reduced_basis_map]
+    basis_list <- basis_list[reduced_basis_map]
+  }
+  time_reduce_basis <- proc.time()
+
+  # catalog and eliminate duplicates
+  copy_map <- make_copy_map(x_basis)
+  unique_columns <- as.numeric(names(copy_map))
+  x_basis <- x_basis[, unique_columns]
+  # bookkeeping: get end time of duplicate removal procedure
+  time_rm_duplicates <- proc.time()
 
   # generate a vector of col lists corresponding to the bases generated
   col_lists <- unique(lapply(basis_list, `[[`, "cols"))
@@ -175,33 +195,6 @@ fit_hal <- function(X,
     col_lists <- lapply(col_lists, function(col_list) col_names[col_list])
   }
   col_lists <- sapply(col_lists, paste, collapse = ",")
-
-  time_enumerate_basis <- proc.time()
-
-  x_basis <- make_design_matrix(X, basis_list)
-  colnames(x_basis) <- 1:(ncol(x_basis))
-  time_design_matrix <- proc.time()
-
-  # catalog and eliminate duplicates
-  copy_map <- make_copy_map(x_basis)
-  unique_columns <- as.numeric(names(copy_map))
-  x_basis <- x_basis[, unique_columns]
-  basis_list <- basis_list[unique_columns]
-
-  # bookkeeping: get end time of duplicate removal procedure
-  time_rm_duplicates <- proc.time()
-
-  # NOTE: keep only basis functions with some (or higher) proportion of 1's
-  if (!is.null(reduce_basis) && is.numeric(reduce_basis)) {
-    reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
-    x_basis <- x_basis[, reduced_basis_map]
-    basis_list <- basis_list[reduced_basis_map]
-    reduced_idx <- which(colnames(x_basis) %in% names(copy_map))
-    copy_map <- copy_map[which(names(copy_map) %in% colnames(x_basis))]
-  }
-
-  # bookkeeping: get end time of basis reduction procedure
-  time_reduce_basis <- proc.time()
 
   # the HAL basis are subject to L1 penalty
   penalty_factor <- rep(1, ncol(x_basis))
@@ -223,6 +216,9 @@ fit_hal <- function(X,
   if (family == "cox") {
     x_basis <- as.matrix(x_basis)
   }
+
+  # bookkeeping: get start time of lasso
+  time_start_lasso <- proc.time()
 
   # fit Lasso regression
   if (fit_type == "lassi") {
@@ -286,9 +282,9 @@ fit_hal <- function(X,
   times <- rbind(
     enumerate_basis = time_enumerate_basis - time_start,
     design_matrix = time_design_matrix - time_enumerate_basis,
-    remove_duplicates = time_rm_duplicates - time_design_matrix,
-    reduce_basis = time_reduce_basis - time_rm_duplicates,
-    lasso = time_lasso - time_rm_duplicates,
+    reduce_basis = time_reduce_basis - time_design_matrix,
+    remove_duplicates = time_rm_duplicates - time_reduce_basis,
+    lasso = time_lasso - time_start_lasso,
     total = time_final - time_start
   )
 
