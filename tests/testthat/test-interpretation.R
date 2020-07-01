@@ -43,7 +43,7 @@ coefs_summary <- do.call(rbind, coefs_summary_list)
 test_that("Copy map successfully paired basis list with coefficients", {
   expect_equal(length(unique(coefs_summary$coef_idx)), 
                length(coefs_no_intercept))
-  expect_equal(length(unique(coefs_summary$coef_idx)), 
+  expect_equal(length(unique(coefs_summary$coef)), 
                length(unique(coefs_no_intercept)))
   expect_equal(length(unique(coefs_summary$basis_list_idx)), 
                length(basis_list))
@@ -90,11 +90,11 @@ coefs_summary_list <- lapply(seq_along(nonzero_copy_map), function(map_idx){
 nonzero_coefs_summary <- do.call(rbind, coefs_summary_list)
 
 test_that("Copy map successfully paired reduced basis list with nonzero coefficients", {
-  expect_equal(length(unique(coefs_summary$coef_idx)), 
+  expect_equal(length(unique(nonzero_coefs_summary$coef_idx)), 
                length(nonzero_coef_idxs))
-  expect_equal(length(unique(coefs_summary$coef_idx)), 
+  expect_equal(length(unique(nonzero_coefs_summary$coef)), 
                length(unique(coefs_no_intercept[nonzero_coef_idxs])))
-  expect_equal(length(unique(coefs_summary$basis_list_idx)), 
-               length(basis_list))
+  expect_equal(length(unique(nonzero_coefs_summary$basis_list_idx)), 
+               length(unlist(nonzero_copy_map)))
   expect_equal(sum(nonzero_coefs_summary$coef == 0), 0)
 })
