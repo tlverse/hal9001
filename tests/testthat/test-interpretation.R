@@ -154,6 +154,7 @@ coef_tbl <- stats::aggregate(term ~ coef_idx,
   data = desc_summary,
   paste, collapse = "  OR  "
 )
+coef_tbl$coef <- round(coef_tbl$coef, 3)
 
 # alternative could summarize by creating new term column for each duplicate
 list_coef_tbl <- lapply(unique(desc_summary$coef_idx), function(coef_idx) {
@@ -162,11 +163,11 @@ list_coef_tbl <- lapply(unique(desc_summary$coef_idx), function(coef_idx) {
   for (i in 1:nrow(coef_terms)) {
     terms[, i] <- coef_terms[i, ]$term
   }
-  coef_tbl <- data.table(coef = unique(coef_terms$coef), data.table(terms))
+  coef_tbl <- data.table(coef = round(unique(coef_terms$coef), 3), data.table(terms))
   return(coef_tbl)
 })
 coef_tbl <- rbindlist(list_coef_tbl, fill = TRUE)
 colnames(coef_tbl) <- c(
   "coef", "term",
-  paste0("term_duplicate_1", seq(1:(ncol(coef_tbl) - 2)))
+  paste0("term_duplicate_", seq(1:(ncol(coef_tbl) - 2)))
 )
