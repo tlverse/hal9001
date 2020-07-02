@@ -63,7 +63,7 @@ predict.hal9001 <- function(object,
   # column rank of X_unpenalized should be consistent between the prediction
   # and training phases
   assertthat::assert_that(object$unpenalized_covariates ==
-                            new_unpenalized_covariates)
+    new_unpenalized_covariates)
   if (new_unpenalized_covariates > 0) {
     pred_x_basis <- cbind(pred_x_basis, new_X_unpenalized)
   }

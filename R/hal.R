@@ -327,4 +327,3 @@ fit_hal <- function(X,
   class(fit) <- "hal9001"
   return(fit)
 }
-

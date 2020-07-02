@@ -158,5 +158,5 @@ test_that("Predictions are not too different when reducing basis functions", {
 })
 
 # ensure hal fit with reduce_basis works with new data for prediction
-newx <-  matrix(rnorm(n * p), n, p)
+newx <- matrix(rnorm(n * p), n, p)
 hal_pred_reduced_newx <- predict(hal_fit_reduced, new_data = newx)
