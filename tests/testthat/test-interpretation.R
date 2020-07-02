@@ -68,7 +68,7 @@ coefs_summary <- rbind(intercept, coefs_basis_summary)
 # similar check for a reduced basis list + show  how to interpret only nonzero
 ################################################################################
 
-hal_fit_reduced <- fit_hal(X = x, Y = y, reduce_basis = 1 / sqrt(n), yolo = F)
+hal_fit_reduced <- fit_hal(X = x, Y = y, reduce_basis = 1 / sqrt(n))
 basis_list <- hal_fit_reduced$basis_list
 
 coefs <- as.vector(coef(hal_fit_reduced$hal_lasso))
