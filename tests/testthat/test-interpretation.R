@@ -137,33 +137,25 @@ init_desc_summary$term <- paste0(
   "I(", init_desc_summary$col_names, " >= ",
   round(init_desc_summary$col_cutoff, 3), ")"
 )
-term_tbl <- stats::aggregate(term ~ basis_list_idx,
+term_tbl <- aggregate(term ~ basis_list_idx,
   data = init_desc_summary,
   paste, collapse = " * "
 )
 redundant <- c("term", "col_cutoff", "col_names", "col_idx")
-init_desc_summary <- set(init_desc_summary, , redundant, NULL)
-init_desc_summary <- unique(init_desc_summary)
+init_desc_summary <- unique(set(init_desc_summary, , redundant, NULL))
 desc_summary <- merge(term_tbl, init_desc_summary,
   by = "basis_list_idx",
   all.x = TRUE, all.y = FALSE
 )
 
-# could summarize by adding the duplicated terms in a single column
-coef_tbl <- stats::aggregate(term ~ coef_idx,
-  data = desc_summary,
-  paste, collapse = "  OR  "
-)
-coef_tbl$coef <- round(coef_tbl$coef, 3)
-
-# alternative could summarize by creating new term column for each duplicate
+# option1: could summarize by creating new term column for each duplicate
 list_coef_tbl <- lapply(unique(desc_summary$coef_idx), function(coef_idx) {
   coef_terms <- desc_summary[desc_summary$coef_idx == coef_idx, ]
   terms <- matrix(nrow = 1, ncol = nrow(coef_terms))
   for (i in 1:nrow(coef_terms)) {
     terms[, i] <- coef_terms[i, ]$term
   }
-  coef_tbl <- data.table(coef = round(unique(coef_terms$coef), 3), data.table(terms))
+  coef_tbl <- data.table(coef = unique(coef_terms$coef), data.table(terms))
   return(coef_tbl)
 })
 coef_tbl <- rbindlist(list_coef_tbl, fill = TRUE)
@@ -171,3 +163,23 @@ colnames(coef_tbl) <- c(
   "coef", "term",
   paste0("term_duplicate_", seq(1:(ncol(coef_tbl) - 2)))
 )
+coef_tbl <- setorder(coef_tbl, -coef)
+intercept <- list(data.table(coef = coefs[1], term = "Intercept"))
+coef_tbl_final <- rbindlist(c(intercept, list(coef_tbl)), fill = TRUE)
+coef_tbl_final$coef <- round(coef_tbl_final$coef, 4)
+
+# option2: could summarize by adding the duplicated terms in a single column
+coef_tbl_alt <- aggregate(term ~ coef_idx,
+  data = desc_summary,
+  paste, collapse = "  OR  "
+)
+redundant <- c("term", "basis_list_idx")
+desc_summary_unique_coefs <- unique(set(desc_summary, , redundant, NULL))
+coef_tbl_alt <- merge(desc_summary_unique_coefs, coef_tbl_alt,
+  by = "coef_idx",
+  all = TRUE
+)
+coef_tbl_alt <- set(coef_tbl_alt, , "coef_idx", NULL)
+coef_tbl_alt <- setorder(coef_tbl_alt, -coef)
+coef_tbl_alt_final <- rbindlist(c(intercept, list(coef_tbl_alt)), fill = TRUE)
+coef_tbl_alt_final$coef <- round(coef_tbl_alt_final$coef, 4)
