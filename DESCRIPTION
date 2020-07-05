@@ -13,6 +13,9 @@ Authors@R: c(
          comment = c(ORCID = "0000-0002-1019-8343")),
   person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com",
          role = "ctb"),
+  person("Rachael", "Phillips", email = "rachaelvphillips@berkeley.edu",
+         role = "ctb",
+         comment = c(ORCID = "0000-0002-8474-591X")),
   person("Weixin", "Cai", email = "wcai@berkeley.edu",
          role = "ctb",
          comment = c(ORCID = "0000-0003-2680-3066")),
@@ -62,4 +65,4 @@ LinkingTo:
   Rcpp,
   RcppEigen
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
