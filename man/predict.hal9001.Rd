@@ -37,7 +37,7 @@ Method for computing and extracting predictions from fits of the
 \note{
 This prediction method does not function similarly to the equivalent
  method from \pkg{glmnet}. In particular, this procedure will NOT return a
- subset of lambdas originally specified in callingo \code{\link{fit_hal}}
+ subset of lambdas originally specified in calling \code{\link{fit_hal}}
  nor result in re-fitting. Instead, it will return predictions for all of
  the lambdas specified in the call to \code{\link{fit_hal}} that constructs
  \code{object}, when \code{cv_select = FALSE}. When \code{cv_select = TRUE},
