@@ -28,4 +28,3 @@ A helper function that finds which basis functions to keep (and equivalently
 which to discard) based on the proportion of 1's (observations, i.e.,
 "mass") included in a given basis function.
 }
-\keyword{internal}
