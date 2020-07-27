@@ -47,7 +47,8 @@ Imports:
   methods,
   assertthat,
   origami (>= 1.0.3),
-  glmnet
+  glmnet,
+  data.table
 Suggests:
   testthat,
   knitr,
@@ -59,7 +60,6 @@ Suggests:
   tidyr,
   stringr,
   survival,
-  data.table,
   SuperLearner
 LinkingTo:
   Rcpp,
