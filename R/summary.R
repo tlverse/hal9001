@@ -57,7 +57,7 @@ summary.hal9001 <- function(object,
           stop("Coefficients for the specified lambda do not exist.")
         } else {
           lambda_idx <- which(object$glmnet_lasso$lambda == lambda)
-          coefs <- object$coefs[, lambda_idx]
+          coefs <- object$glmnet_lasso$beta[, lambda_idx]
         }
       }
     } else {
