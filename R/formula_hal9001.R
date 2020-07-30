@@ -36,8 +36,8 @@
 #' For example, if "y ~ h(x,w) + ." should the "." be interpreted as: add all one-way basis functions
 #' for the variables remaining in \code{data} not yet specified in the formula (i.e. excluding x,w),
 #' or: add all one-way basis functions for all variables in the model (including x,w).
-#' As an example. if \code{exclusive_dot} is true then "y ~h(x) + .^2" and "y ~ .^2" specify the same formula, i.e. generate all basis functions up to degree 2.
-#' However, if \code{exclusive_dot} is false, then "y ~ h(x) + .^2"  encodes a different formula than "y ~ .^2".
+#' As an example. if \code{exclusive_dot} is false then "y ~h(x) + .^2" and "y ~ .^2" specify the same formula, i.e. generate all basis functions up to degree 2.
+#' However, if \code{exclusive_dot} is true, then "y ~ h(x) + .^2"  encodes a different formula than "y ~ .^2".
 #' Specifically, it means to generate one way basis functions for 'x' and then all basis functions
 #' up to degree 2 for other variables excluding 'x' in \code{data}. As a result, no interactions will be added for the variable 'x'.
 #'
