@@ -1,4 +1,5 @@
 
+
 #' HAL formula: Formula for specifying functional form of HAL
 #' @details The function allows users to specify the functional form/model of
 #' hal9001 similar to in \code{\link[glm]{glm}}. The user can specify which interactions to include,
@@ -25,7 +26,19 @@
 #' The letters h, i, d specify functional restrictions of each term:
 #' h specifies no constraints on the term,
 #' i specifies that the term should be enforced to be monotonely increasing,
-#' d specifies that the term should be enforced to be monotonely decreasing.,
+#' d specifies that the term should be enforced to be monotonely decreasing.
+#' Familar operations such as the ":, `*` , -" are also supported:
+#'  ":" is a concatnation operator which maps h(x):h(w) -> h(x,w) or h(x):h(w):h(z) -> h(x,w,z)
+#'  `*` concatenates and then generates all lower order terms/interactions. For example, h(x)*h(w) -> h(x) + h(w) + h(x,w)
+#'  or h(x)`*`h(w)`*`h(z) -> h(x) + h(w) + h(z) + h(x,w) + h(x,z) + h(z,w) + h(x,w,z).
+#'  "-" subtracts/removes the term from the formula. For example, h(x) + h(w) - h(w) -> h(x).
+#'  Note that the above operations are sensitive to the constraint prefix "h, i, d".
+#'  For ambigiuous operations such as i(x):h(w), the left most prefix will be used. So i(x):h(w) -> i(x,w) and i(x):h(w):h(z) -> i(x,w,z).
+#'  The above logic will be applied recursively to `*` so that i(x)`*`h(w)`*`d(z) -> i(x) + h(w) + d(z) + i(x,w) + i(x,z) + h(w,z) + i(x,w,z).
+#'  Another useful operation is the wild-card "." operation which when used in a specified term will generate
+#'  all valid terms where the value of "." is iterated over the data matrix. For example,
+#'  h(x,.) -> h(x,w) + h(x,z) and h(.,.) -> h(x,w) + h(x,z) + h(w,z) and h(x,w,.) -> h(x,w,z) (assuming the covariates are only (x,w,z)).
+#'  All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.
 #' @param data A data.frame or named matrix containing the outcome and covariates specified in the formula.
 #' @param smoothness_orders Same as \code{smoothness_orders} in function \code{fit_hal}.
 #' Note it should be of length 1 or length ncol(data)-1. Vector recycling will be employed otherwise.
@@ -328,6 +341,7 @@ formula_hal9001 <-
     ### Expand formula
     # Sort indices by length
     total_terms = c(interactions_index,dot_argument_combos)
+
     total_type = c(monotone_type, rep("h", length(dot_argument_combos)))
     lens = sapply(total_terms, length)
     sort_by_len = order(lens)
@@ -344,7 +358,13 @@ formula_hal9001 <-
       return(paste0(type, "(", cols, ")"))
     }
     # Get expanded formula
-    formula_expanded = paste0(outcome, " ~ ", paste0(sapply(1:length(total_terms), expand_term), collapse = " + "))
+    if(length(total_terms) !=0){
+      formula_expanded = paste0(outcome, " ~ ", paste0(sapply(1:length(total_terms), expand_term), collapse = " + "))
+
+    }
+    else{
+      formula_expanded = paste0(outcome, " ~ 1")
+    }
 
     lower.limits = c()
     upper.limits = c()
