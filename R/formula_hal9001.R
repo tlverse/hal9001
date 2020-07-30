@@ -71,14 +71,14 @@ formula_hal9001 <-
     X = data[,-which(colnames(data) == outcome), drop = F]
     X_orig = X
     X = quantizer(X, bins)
-    y = data[, outcome]
+   Y= data[, outcome]
     names = colnames(X)
 
     interactions = stringr::str_match_all(form, "[ihd]\\(([^\\s()]+)\\)")[[1]]
     interactions = interactions[, 2]
 
-    typeMonotone = stringr::str_match_all(form, "([[a-z]])\\([^\\s()]+\\)")[[1]]
-    typeMonotone = typeMonotone[, 2]
+    monotone_type = stringr::str_match_all(form, "([[a-z]])\\([^\\s()]+\\)")[[1]]
+    monotone_type = monotone_type[, 2]
 
     if (stringr::str_detect(form, "[~+]\\.")) {
 
@@ -120,16 +120,17 @@ formula_hal9001 <-
 
 
     interactions_index = interactions_index[not_dupes_index]
-    typeMonotone = typeMonotone[not_dupes_index]
+    monotone_type = monotone_type[not_dupes_index]
 
-    #
+
     if(exclusive_dot){
       variables_specified = unlist(unique(interactions_index))
     }
     else{
       variables_specified = c()
     }
-    getCombos = function(deg) {
+
+    get_combos = function(deg) {
       set_inds = setdiff(1:length(names),variables_specified)
       print(set_inds)
       if(length(set_inds) == 0){
@@ -141,21 +142,21 @@ formula_hal9001 <-
 
       x = combn(set_inds, deg)
 
-      allCombos = lapply(seq_len(ncol(x)), function(i)
+      all_combinations = lapply(seq_len(ncol(x)), function(i)
         x[, i])
 
     }
 
     if (is.null(degree_rest)) {
-      allCombos = list()
+      all_combinations = list()
     }
     else{
-      allCombos = unlist(lapply(1:degree_rest, getCombos), recursive  = F)
+      all_combinations = unlist(lapply(1:degree_rest, get_combos), recursive  = F)
 
     }
 
 
-    allCombosLeft = setdiff(allCombos, interactions_index)
+    dot_argument_combos = setdiff(all_combinations, interactions_index)
 
     lower.limits = c()
     upper.limits = c()
@@ -165,11 +166,11 @@ formula_hal9001 <-
       if (length(interactions_index) == 0)
         break
       new_basis = basis_list_cols(interactions_index[[i]], X, order_map, include_zero_order)
-      if (typeMonotone[i] == "i") {
+      if (monotone_type[i] == "i") {
         lower.limits = c(lower.limits, rep(0, length(new_basis)))
         upper.limits = c(upper.limits, rep(Inf, length(new_basis)))
       }
-      else if (typeMonotone[i] == "d") {
+      else if (monotone_type[i] == "d") {
         lower.limits = c(lower.limits, rep(-Inf, length(new_basis)))
         upper.limits = c(upper.limits, rep(0, length(new_basis)))
       }
@@ -182,7 +183,7 @@ formula_hal9001 <-
 
     basis_listrest = unlist(
       lapply(
-        allCombosLeft,
+        dot_argument_combos,
         basis_list_cols,
         X,
         order_map,
@@ -202,7 +203,7 @@ formula_hal9001 <-
     form_obj$lower.limits = lower.limits
     form_obj$smoothness_orders = smoothness_orders
     form_obj$X = as.matrix(X_orig)
-    form_obj$Y = (as.vector(y))
+    form_obj$Y = as.vector(Y)
     form_obj$bins = bins
     form_obj$include_zero_order = include_zero_order
     class(form_obj) <- "formula_hal9001"
@@ -213,8 +214,8 @@ print.formula_hal9001 <- function(formula){
   cat(paste0("Functional specification for hal9001 fit: \n Formula: ", formula$formula,
              " \n Number of basis functions: ", length(formula$basis_list),
              "\n Max smoothness order: ", max(formula$smoothness_orders),
-             "\n Number of monotone-increasing basis functions:", sum(formula$lower.limits ==0),
-             "\n Number of monotone-decreasing basis functions:", sum(formula$upper.limits ==0),
+             "\n Number of monotone-increasing basis functions: ", sum(formula$lower.limits ==0),
+             "\n Number of monotone-decreasing basis functions: ", sum(formula$upper.limits ==0),
               "\n"))
   return(invisible(NULL))
 }
