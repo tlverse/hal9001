@@ -313,6 +313,19 @@ formula_hal9001 <-
 
     }
 
+    total_terms = c(interactions_index,dot_argument_combos)
+    total_type = c(monotone_type, rep("h", length(dot_argument_combos)))
+
+    expand_term = function(i){
+      cols = total_terms[[i]]
+      cols = sapply(cols, function(ind){names[[ind]]})
+      cols = paste0(cols, collapse = ",")
+      type = total_type[i]
+
+      return(paste0(type, "(", cols, ")"))
+    }
+    formula_expanded = paste0(outcome, " ~ ", paste0(sapply(1:length(total_terms), expand_term), collapse = " + "))
+
     lower.limits = c()
     upper.limits = c()
     basis_list = list()
@@ -356,6 +369,8 @@ formula_hal9001 <-
     names(smoothness_orders) = colnames(X_orig)
     form_obj = list()
     form_obj$formula = form
+    form_obj$formula_expanded = formula_expanded
+    form_obj$call = formula
     form_obj$basis_list = basis_list
     form_obj$upper.limits = upper.limits
     form_obj$lower.limits = lower.limits
@@ -369,7 +384,7 @@ formula_hal9001 <-
   }
 #' @export
 print.formula_hal9001 <- function(formula){
-  cat(paste0("Functional specification for hal9001 fit: \n Formula: ", formula$formula,
+  cat(paste0("Functional specification for hal9001 fit: \n Call: ", formula$call,"\n Formula: ", formula$formula, "\n Expanded Formula: ", formula$formula_expanded,
              " \n Number of basis functions: ", length(formula$basis_list),
              "\n Max smoothness order: ", max(formula$smoothness_orders),
              "\n Number of monotone-increasing basis functions: ", sum(formula$lower.limits ==0),
