@@ -71,6 +71,7 @@ formula_hal9001 <-
     term_star = stringr::str_match_all(form, "([ihd]\\([^)]+\\)[*][ihd]\\([^+]+\\))")[[1]]
     term_star = term_star[,-1]
 
+    # Handle/expand the '*' operation if present. Similar to formula in glm.
     process_star = function(term){
       pieces = str_split(term, "[*]")[[1]]
 
@@ -110,6 +111,7 @@ formula_hal9001 <-
    Y= data[, outcome]
     names = colnames(X)
 
+    # Process the variables specified in each term and the monotonicity constraints for each term
     interactions = stringr::str_match_all(form, "[^-][ihd]\\(([^\\s()]+)\\)")[[1]]
     interactions = interactions[, 2]
 
@@ -135,7 +137,8 @@ formula_hal9001 <-
 
     monotone_type
 
-
+    # If dots are included in formula term (e.g. h(.,.) or h(x,.)) then treat this as wild card and generate
+    # all possible versions of this term. Note this leaves "+ ." and " .^max_degree" alone.
     sub_dots = function(interactions, monotone_type) {
 
       monotone_type_new = c()
@@ -194,7 +197,7 @@ formula_hal9001 <-
 
 
 
-
+    # Convert each term to a column index vector (i.e. cols)
     get_index = function(term) {
       cols = unlist(stringr::str_extract_all(term, "[^,]+"))
 
@@ -227,6 +230,7 @@ formula_hal9001 <-
 
 
 
+    #Generate all lower degree combinations for each term if specified
     if(generate_lower_degrees & (length(interactions)!=0)){
 
 
@@ -262,6 +266,7 @@ formula_hal9001 <-
       variables_specified = c()
     }
 
+    # Get all combinations of variables (possibly restricted to those not included in model formula already)
     get_combos = function(deg) {
       set_inds = setdiff(1:length(names),variables_specified)
 
@@ -287,10 +292,11 @@ formula_hal9001 <-
 
     }
 
-
+    # Get remaining combiniations as specified by the .^max_degree term.
     dot_argument_combos = setdiff(all_combinations, interactions_index)
     dot_argument_combos = setdiff(dot_argument_combos , interactions_index_minus[which(monotone_type_minus == "h")])
 
+    # Remove any basis functions/combinations as specified by " - ..." terms.
     index_to_remove = match(interactions_index_minus,interactions_index)
 
     if(length(index_to_remove)!=0){
@@ -313,9 +319,16 @@ formula_hal9001 <-
 
     }
 
+    ### Expand formula
+    # Sort indices by length
     total_terms = c(interactions_index,dot_argument_combos)
     total_type = c(monotone_type, rep("h", length(dot_argument_combos)))
+    lens = sapply(total_terms, length)
+    sort_by_len = order(lens)
+    total_terms = total_terms[sort_by_len]
+    total_type = total_type[sort_by_len]
 
+    # Function to expand a single interaction index/col vector to formula term
     expand_term = function(i){
       cols = total_terms[[i]]
       cols = sapply(cols, function(ind){names[[ind]]})
@@ -324,12 +337,14 @@ formula_hal9001 <-
 
       return(paste0(type, "(", cols, ")"))
     }
+    # Get expanded formula
     formula_expanded = paste0(outcome, " ~ ", paste0(sapply(1:length(total_terms), expand_term), collapse = " + "))
 
     lower.limits = c()
     upper.limits = c()
     basis_list = list()
 
+    # Generate basis functions
     for (i in 1:length(interactions_index)) {
       if (length(interactions_index) == 0)
         break
