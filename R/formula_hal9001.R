@@ -67,10 +67,10 @@ formula_hal9001 <-
     }
     order_map = smoothness_orders
     form = stringr::str_replace_all(form, " ", "")
+    form = stringr::str_replace_all(form, "\\)[:][ihd]\\(", ",")
 
     term_star = stringr::str_match_all(form, "([ihd]\\([^)]+\\)[*][ihd]\\([^+]+\\))")[[1]]
     term_star = term_star[,-1]
-
     # Handle/expand the '*' operation if present. Similar to formula in glm.
     process_star = function(term){
       pieces = str_split(term, "[*]")[[1]]
@@ -92,12 +92,12 @@ formula_hal9001 <-
       form = paste0(form, "+", paste0(term_star, collapse = "+"))
     }
 
+    form = stringr::str_replace_all(form, "\\)[:*][ihd]\\(", ",")
 
 
-    form = stringr::str_replace_all(form, "\\)[*:][ihd]\\(", ",")
 
 
-    reg = "([^\\s])~([idh]\\(([^\\s()+]+)\\)|\\.(\\^[0-9])?)(?:[+-][ihd]\\(([^\\s()]+)\\))*(\\+\\.(\\^[0-9])?)?$"
+    reg = "([^\\s])~([idh]\\(([^\\s()+]+)\\)|\\.(\\^[0-9])?)(?:[+-][ihd]\\(([^\\s()]+)\\)|[+]\\.(\\^[0-9])?)*(\\+\\.(\\^[0-9])?)?$"
     assertthat::assert_that(stringr::str_detect(form, reg), msg = "Incorrect format for formula.")
     outcome = stringr::str_match(form, "([^\\s]+)~")
 
@@ -126,9 +126,15 @@ formula_hal9001 <-
 
     if (stringr::str_detect(form, "[~+]\\.")) {
 
-      degree_rest = as.numeric(stringr::str_match(form, "[~+]\\.\\^([0-9]+)")[, 2])
-      if (is.na(degree_rest))
+      degree_rest = (stringr::str_match_all(form, "[~+]\\.\\^([0-9]+)")[[1]])
+      degree_rest = as.numeric(degree_rest[, -1])
+      if (length(degree_rest)==0){
         degree_rest = 1
+      }
+      else{
+        degree_rest = max(degree_rest)
+        print(degree_rest)
+      }
     }
     else{
       degree_rest = NULL
@@ -364,6 +370,7 @@ formula_hal9001 <-
       basis_list = c(basis_list, new_basis)
     }
 
+    # add the . and .^max_degree basis functions
     basis_listrest = unlist(
       lapply(
         dot_argument_combos,
@@ -374,6 +381,7 @@ formula_hal9001 <-
       ),
       recursive = F
     )
+    # Prepare formula_hal9001 object to return
     form = stringr::str_replace_all(form, "[+]", " + ")
     form = stringr::str_replace_all(form, "[~]", " ~ ")
     form = stringr::str_replace_all(form, "[-]", " - ")
