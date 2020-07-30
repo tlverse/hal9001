@@ -4,7 +4,7 @@
 \alias{basis_of_degree}
 \title{Compute Degree of Basis Functions}
 \usage{
-basis_of_degree(x, degree)
+basis_of_degree(x, degree, order_map, include_zero_order)
 }
 \arguments{
 \item{x}{An input \code{matrix} containing observations and covariates

@@ -44,20 +44,21 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_basis_list
-List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols);
-RcppExport SEXP _hal9001_make_basis_list(SEXP X_subSEXP, SEXP colsSEXP) {
+List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, const IntegerVector& order_map);
+RcppExport SEXP _hal9001_make_basis_list(SEXP X_subSEXP, SEXP colsSEXP, SEXP order_mapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type X_sub(X_subSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type cols(colsSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_basis_list(X_sub, cols));
+    Rcpp::traits::input_parameter< const IntegerVector& >::type order_map(order_mapSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_basis_list(X_sub, cols, order_map));
     return rcpp_result_gen;
 END_RCPP
 }
 // meets_basis
-bool meets_basis(const NumericMatrix& X, const int row_num, const IntegerVector& cols, const NumericVector& cutoffs);
-RcppExport SEXP _hal9001_meets_basis(SEXP XSEXP, SEXP row_numSEXP, SEXP colsSEXP, SEXP cutoffsSEXP) {
+double meets_basis(const NumericMatrix& X, const int row_num, const IntegerVector& cols, const NumericVector& cutoffs, const IntegerVector& orders);
+RcppExport SEXP _hal9001_meets_basis(SEXP XSEXP, SEXP row_numSEXP, SEXP colsSEXP, SEXP cutoffsSEXP, SEXP ordersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -65,7 +66,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type row_num(row_numSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type cols(colsSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type cutoffs(cutoffsSEXP);
-    rcpp_result_gen = Rcpp::wrap(meets_basis(X, row_num, cols, cutoffs));
+    Rcpp::traits::input_parameter< const IntegerVector& >::type orders(ordersSEXP);
+    rcpp_result_gen = Rcpp::wrap(meets_basis(X, row_num, cols, cutoffs, orders));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -181,8 +183,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_index_first_copy", (DL_FUNC) &_hal9001_index_first_copy, 1},
     {"_hal9001_apply_copy_map", (DL_FUNC) &_hal9001_apply_copy_map, 2},
     {"_hal9001_lassi_predict", (DL_FUNC) &_hal9001_lassi_predict, 3},
-    {"_hal9001_make_basis_list", (DL_FUNC) &_hal9001_make_basis_list, 2},
-    {"_hal9001_meets_basis", (DL_FUNC) &_hal9001_meets_basis, 4},
+    {"_hal9001_make_basis_list", (DL_FUNC) &_hal9001_make_basis_list, 3},
+    {"_hal9001_meets_basis", (DL_FUNC) &_hal9001_meets_basis, 5},
     {"_hal9001_evaluate_basis", (DL_FUNC) &_hal9001_evaluate_basis, 4},
     {"_hal9001_make_design_matrix", (DL_FUNC) &_hal9001_make_design_matrix, 2},
     {"_hal9001_as_dgCMatrix", (DL_FUNC) &_hal9001_as_dgCMatrix, 1},
