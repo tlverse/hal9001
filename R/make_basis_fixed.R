@@ -90,7 +90,7 @@ basis_of_degree  <- function(x, degree, order_map, include_zero_order, include_l
 
   # compute combinations of columns and generate a list of basis functions
   all_cols <- utils::combn(p, degree)
-  all_basis_lists <- apply(all_cols, 2, basis_list_cols_order, x = x, order_map = order_map, include_zero_order = include_zero_order, include_lower_order=include_lower_order)
+  all_basis_lists <- apply(all_cols, 2, basis_list_cols, x = x, order_map = order_map, include_zero_order = include_zero_order, include_lower_order=include_lower_order)
   basis_list <- unlist(all_basis_lists, recursive = FALSE)
 
   # output
@@ -149,7 +149,14 @@ enumerate_basis <- function(x, max_degree = NULL, order_map = rep(0, ncol(x)), i
 
   # generate all basis functions up to the specified degree
   all_bases <- lapply(degrees, function(degree) basis_of_degree(x, degree, order_map, include_zero_order, include_lower_order))
-  basis_list <- unlist(all_bases, recursive = FALSE)
+  all_bases <- unlist(all_bases, recursive = FALSE)
+  if(max_degree >1){
+    edge_basis <- lapply(2:max_degree, function(degree) basis_of_degree(matrix(apply(x,2,min),nrow=1), degree, order_map, include_zero_order, include_lower_order = T))
+    edge_basis <-  unlist(edge_basis, recursive = FALSE)
+    all_bases <- c(edge_basis,all_bases)
+  }
+
+  basis_list <- all_bases
 
 
 
