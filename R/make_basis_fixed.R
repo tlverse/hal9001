@@ -11,26 +11,56 @@
 #'
 #' @return A \code{list} containing the basis functions generated from a set of
 #'  input columns.
-basis_list_cols <- function(cols, x, order_map, include_zero_order) {
+basis_list_cols_order <- function(cols, x, order_map, include_zero_order, include_lower_order) {
+
+
+  basis_list <- basis_list_cols(cols, x, order_map, include_zero_order, include_lower_order)
+  # Generate edge basis (including all lower order basis functions)
+  # Do not enforce that knot points are observed, as this is unlikely for edge points.
+  # Edge basis functions are important so just generate all of them from min of each column.
+  x_edge <- matrix(apply(x,2,min), nrow = 1)
+  basis_list_edge <- basis_list_cols(cols, x_edge, order_map, F, T)
+  basis_list <- c(basis_list, basis_list_edge)
+
+
+  # output
+  return(basis_list)
+}
+
+basis_list_cols <- function(cols, x, order_map, include_zero_order, include_lower_order = F) {
   # first, subset only to columns of interest
   x_sub <- x[, cols, drop = FALSE]
   # call Rcpp routine to produce the list of basis functions
 
   basis_list <- make_basis_list(x_sub, cols, order_map)
-  #Also recursively generate lower order smooth basis functions (not)
-  if(include_zero_order){
-    k_deg = 0
+
+
+  #Generate lower order basis functions if needed
+  #Primarily to generate lower order edge basis functions.
+  #Inefficient: duplicate basis functions
+  if(include_lower_order){
+    if(include_zero_order){
+      k_deg <- 0
+    }
+    else{
+      k_deg <- 1
+    }
+    higher_order_cols <- cols[order_map[cols] > k_deg]
+    if(length(higher_order_cols) > 0){
+      more_basis_list = lapply(higher_order_cols, function(col){
+
+        new_order_map = order_map
+        new_order_map[col] = new_order_map[col] -1
+
+        return(basis_list_cols(cols, x, new_order_map, include_zero_order,include_lower_order=T))
+      })
+
+      basis_list = union(basis_list,unlist(more_basis_list, recursive = F))
+    }
+
+
   }
-  else{
-    k_deg = 1
-  }
-  higher_order_index = intersect(cols, which(order_map > k_deg))
-  if(length(higher_order_index) > 0){
-    first_index = higher_order_index[[1]]
-    new_order_map = order_map
-    new_order_map[first_index] = new_order_map[first_index] - 1
-    basis_list <- c(basis_list, basis_list_cols(cols, x, new_order_map, include_zero_order))
-  }
+
   # output
   return(basis_list)
 }
@@ -51,7 +81,7 @@ basis_list_cols <- function(cols, x, order_map, include_zero_order) {
 #'
 #' @return A \code{list} containing  basis functions and cutoffs generated from
 #'  a set of input columns up to a particular pre-specified degree.
-basis_of_degree  <- function(x, degree, order_map, include_zero_order) {
+basis_of_degree  <- function(x, degree, order_map, include_zero_order, include_lower_order) {
   # get dimensionality of input matrix
   p <- ncol(x)
 
@@ -60,7 +90,7 @@ basis_of_degree  <- function(x, degree, order_map, include_zero_order) {
 
   # compute combinations of columns and generate a list of basis functions
   all_cols <- utils::combn(p, degree)
-  all_basis_lists <- apply(all_cols, 2, basis_list_cols, x = x, order_map = order_map, include_zero_order = include_zero_order)
+  all_basis_lists <- apply(all_cols, 2, basis_list_cols, x = x, order_map = order_map, include_zero_order = include_zero_order, include_lower_order=include_lower_order)
   basis_list <- unlist(all_basis_lists, recursive = FALSE)
 
   # output
@@ -104,7 +134,7 @@ basis_of_degree  <- function(x, degree, order_map, include_zero_order) {
 #'
 #' @return A \code{list} of basis functions generated for all covariates and
 #'  interaction thereof up to a pre-specified degree.
-enumerate_basis <- function(x, max_degree = NULL, order_map = rep(0, ncol(x)), include_zero_order = F){
+enumerate_basis <- function(x, max_degree = NULL, order_map = rep(0, ncol(x)), include_zero_order = F, include_lower_order = F){
   #Make sure order map consists of integers in [0,10]
   order_map = round(order_map)
   order_map[order_map<0] = 0
@@ -118,8 +148,15 @@ enumerate_basis <- function(x, max_degree = NULL, order_map = rep(0, ncol(x)), i
   degrees <- seq_len(max_degree)
 
   # generate all basis functions up to the specified degree
-  all_bases <- lapply(degrees, function(degree) basis_of_degree(x, degree, order_map, include_zero_order))
-  basis_list <- unlist(all_bases, recursive = FALSE)
+  all_bases <- lapply(degrees, function(degree) basis_of_degree(x, degree, order_map, include_zero_order, include_lower_order))
+  all_bases <- unlist(all_bases, recursive = FALSE)
+  if(max_degree >1){
+    edge_basis <- lapply(2:max_degree, function(degree) basis_of_degree(matrix(apply(x,2,min),nrow=1), degree, order_map, include_zero_order, include_lower_order = T))
+    edge_basis <-  unlist(edge_basis, recursive = FALSE)
+    all_bases <- c(edge_basis,all_bases)
+  }
+
+  basis_list <- all_bases
 
 
 

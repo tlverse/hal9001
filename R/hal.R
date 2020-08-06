@@ -14,11 +14,33 @@
 #'  directly get appended into the design matrix (no basis expansion). No L-1
 #'  penalization is performed on these covariates.
 #' @param Y A \code{numeric} vector of obervations of the outcome variable.
+#' @param formula A formula_hal9001 object as returned by \code{formula_hal9001}
+#' specifying a model structure for hal9001.
+#' \code{formula_hal9001} allows one to specify which main terms and interactions are included,
+#' whether certain variables/interactions should be monotonely increasing or decreasing,
+#' and the smoothness order for each variable.
 #' @param max_degree The highest order of interaction terms for which the basis
 #'  functions ought to be generated. The default (\code{NULL}) corresponds to
 #'  generating basis functions for the full dimensionality of the input matrix.
-#' @param fit_type The specific routine to be called when fitting the Lasso
-#'  regression in a cross-validated manner. Choosing the \code{glmnet} option
+
+#' @param smoothness_orders A single value or vector of length ncol(X)
+#' taking integer values in 0,1,2,... specifying the degree of smoothness for each variable.
+#' The default is order 0 where no smoothness is applied and
+#' piece-wise constant basis functions are used. A value of 1 is one degree of smoothness,
+#' a value of 2 is two degrees of smoothness and so on.
+#' This parameter will be recycled until it is of length ncol(X).
+#' Note if a smoothness of order k is specified for a variable,
+#' then all basis functions of order 1, ..., k will be included in model.
+#' To include 0 order basis functions, see paramter \code{include_order_zero}.
+#'
+#' @param include_order_zero A boolean indicator for whether to include the 0 order (non-differentiable) basis functions
+#' for variables whose smoothness order specifiation is >=1.
+#' This allows hal9001 to data adaptively select the level of smoothness for each variable.
+#' @param num_bins Constructs basis functions from the discretized data matrix X
+#' where each variable is discretized into num_bins bins. This reduces the number of basis functions generated.
+#' By default, the data is not discretized and all observed values are used to generate basis functions.
+#'
+#'   @param fit_type The specific routine to be called when fitting the Lasso regression in a cross-validated manner. Choosing the \code{glmnet} option
 #'  will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
 #'  will produce a (faster) call to a custom Lasso routine.
 #' @param n_folds Integer for the number of folds to be used when splitting the
@@ -36,6 +58,16 @@
 #'  Lasso. Any basis functions with a lower proportion of 1's than the cutoff
 #'  will be removed. This argument defaults to \code{NULL}, in which case all
 #'  basis functions are used in the lasso-fitting stage of the HAL algorithm.
+#' @param screen_basis_main_terms Boolean indicator whether to screen the main term/one-way basis functions using one-way hal9001
+#' and then to build interactions from the reduced/screened one-way basis variables.
+#' Note screening looks at outcome so for honest performance the screening should be included
+#' in the cross validation.
+#' @param screen_basis_interactions Boolean indicator whether to iteratively screen each set of interactions.
+#' For example, if true and the \code{max_degree} is 3, then the two-way basis functions will be screened via two-way hal
+#' and the reduced basis_set will be used to create the basis functions for three-way interactions.
+#'  If max_degree is 4, then these three-way basis functions will be screened as well via three-way hal,
+#'  and then four-way basis functions will be constructed from the reduced set, and so on.
+#'  Note one-way basis functions will only be screened if \code{screen_basis_main_terms} is true.
 #' @param family A \code{character} corresponding to the error family for a
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
 #'  standard linear model, "binomial" for penalized logistic regression,
@@ -62,6 +94,8 @@
 #'  pick the optimal value (based on cross-validation) (when set to
 #'  \code{TRUE}) or to simply fit along the sequence of values (or single
 #'  value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).
+#'
+#'
 #' @param id a vector of ID values, used to generate cross-validation folds for
 #'  cross-validated selection of the regularization parameter lambda.
 #' @param offset a vector of offset values, used in fitting.
@@ -91,15 +125,21 @@
 #' }
 #'
 #' @export
-fit_hal <- function(X,
-                    Y,
+fit_hal <- function(X = NULL,
+                    Y = NULL,
                     X_unpenalized = NULL,
+                    formula = NULL,
                     max_degree = 3,
+                    smoothness_orders = NULL,
+                    include_order_zero = F,
+                    num_bins = 500,
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     foldid = NULL,
                     use_min = TRUE,
                     reduce_basis = NULL,
+                    screen_basis_main_terms = F,
+                    screen_basis_interactions = F,
                     family = c("gaussian", "binomial", "cox"),
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
@@ -108,6 +148,8 @@ fit_hal <- function(X,
                     id = NULL,
                     offset = NULL,
                     cv_select = TRUE,
+
+
                     ...,
                     yolo = TRUE) {
   # check arguments and catch function call
@@ -140,6 +182,23 @@ fit_hal <- function(X,
     )
   )
 
+  if(!is.null(formula)){
+    if(class(formula)=="formula_hal9001"){
+      if(is.null(X)){
+        X = formula$X
+      }
+      if(is.null(Y)){
+        Y = formula$Y
+      }
+      basis_list = formula$basis_list
+      upper.limits = formula$upper.limits
+      lower.limits = formula$lower.limits
+    }
+
+  } else{
+    upper.limits = Inf
+    lower.limits = -Inf
+  }
   # cast X to matrix -- and don't start the timer until after
   if (!is.matrix(X)) {
     X <- as.matrix(X)
@@ -160,13 +219,53 @@ fit_hal <- function(X,
   }
 
   # bookkeeping: get start time of enumerate basis procedure
+  #Set smoothness levels for each covariate.
+  if(is.null(smoothness_orders)| !is.numeric(smoothness_orders)){
+    smoothness_orders = round(rep(0,ncol(X)))
+  }
+  else{
+    #recycle vector if needed.
+    smoothness_orders = suppressWarnings(round(smoothness_orders) + rep(0,ncol(X)))
+  }
+  # bookkeeping: get start time of duplicate removal procedure
+
   time_start <- proc.time()
 
   # make design matrix for HAL
+  old_basis_list = NULL
   if (is.null(basis_list)) {
-    basis_list <- enumerate_basis(X, max_degree)
+    X_quant = quantizer(X, num_bins)
+    if(screen_basis_main_terms | screen_basis_interactions){
+      if(screen_basis_main_terms){
+        basis_list <- enumerate_basis(X_quant, 1, smoothness_orders, include_order_zero)
+        old_basis_list <- basis_list
+        basis_list_one_way <- screen_basis(basis_list,X_quant,Y, index_to_keep = NULL, return_index = F, lower.limits = -Inf, upper.limits = Inf, screen_at_which_lambda = NULL, family = family )
+
+      }
+      else{
+        basis_list_one_way <- enumerate_basis(X_quant, 1, smoothness_orders, include_order_zero)
+
+      }
+
+      basis_list <- get_higher_basis(basis_list_one_way, max_degree, X_quant, y,screen_each_level = screen_basis_interactions)
+    }
+    else{
+      basis_list <- enumerate_basis(X_quant, max_degree, smoothness_orders, include_order_zero)
+
+    }
+
   }
   # bookkeeping: get end time of enumerate basis procedure
+
+
+  # generate a vector of col lists corresponding to the bases generated
+  col_lists <- unique(lapply(basis_list, `[[`, "cols"))
+  col_names <- colnames(X)
+  if (!is.null(colnames(X))) {
+    col_lists <- lapply(col_lists, function(col_list) col_names[col_list])
+  }
+  col_lists <- sapply(col_lists, paste, collapse = ",")
+
   time_enumerate_basis <- proc.time()
 
   x_basis <- make_design_matrix(X, basis_list)
@@ -195,6 +294,17 @@ fit_hal <- function(X,
     col_lists <- lapply(col_lists, function(col_list) col_names[col_list])
   }
   col_lists <- sapply(col_lists, paste, collapse = ",")
+
+  # Weird behavior for non binary
+  if(is.null(smoothness_orders) | all(smoothness_orders==0)){
+    copy_map <- make_copy_map(x_basis)
+    unique_columns <- as.numeric(names(copy_map))
+    x_basis <- x_basis[, unique_columns]
+  }
+  else{
+    copy_map = NULL
+  }
+
 
   # the HAL basis are subject to L1 penalty
   penalty_factor <- rep(1, ncol(x_basis))
@@ -246,6 +356,8 @@ fit_hal <- function(X,
         family = family,
         lambda = lambda,
         penalty.factor = penalty_factor,
+        upper.limits = upper.limits,
+        lower.limits = lower.limits,
         ...
       )
       lambda_star <- hal_lasso$lambda
@@ -259,6 +371,8 @@ fit_hal <- function(X,
         lambda = lambda,
         foldid = foldid,
         penalty.factor = penalty_factor,
+        upper.limits = upper.limits,
+        lower.limits = lower.limits,
         ...
       )
       if (use_min) {
@@ -322,7 +436,10 @@ fit_hal <- function(X,
       } else {
         NULL
       },
-    unpenalized_covariates = unpenalized_covariates
+    unpenalized_covariates = unpenalized_covariates,
+    old_basis_list=old_basis_list,
+    formula = formula
+
   )
   class(fit) <- "hal9001"
   return(fit)

@@ -4,7 +4,7 @@
 \alias{basis_list_cols}
 \title{List Basis Functions}
 \usage{
-basis_list_cols(cols, x)
+basis_list_cols(cols, x, order_map, include_zero_order)
 }
 \arguments{
 \item{cols}{Index or indices (as \code{numeric}) of covariates (columns) of
