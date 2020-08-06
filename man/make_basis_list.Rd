@@ -4,7 +4,7 @@
 \alias{make_basis_list}
 \title{Sort Basis Functions}
 \usage{
-make_basis_list(X_sub, cols, order_map)
+make_basis_list(X_sub, cols)
 }
 \arguments{
 \item{X_sub}{A subset of the columns of X, the original design matrix.}

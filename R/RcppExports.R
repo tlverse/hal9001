@@ -65,8 +65,8 @@ lassi_predict <- function(X, beta, intercept) {
 #'
 #' @param X_sub A subset of the columns of X, the original design matrix.
 #' @param cols An index of the columns that were reduced to by sub-setting.
-make_basis_list <- function(X_sub, cols, order_map) {
-    .Call('_hal9001_make_basis_list', PACKAGE = 'hal9001', X_sub, cols, order_map)
+make_basis_list <- function(X_sub, cols) {
+    .Call('_hal9001_make_basis_list', PACKAGE = 'hal9001', X_sub, cols)
 }
 
 #' Compute Values of Basis Functions
@@ -79,8 +79,8 @@ make_basis_list <- function(X_sub, cols, order_map) {
 #' @param cols Numeric for the column indices of the basis function.
 #' @param cutoffs Numeric providing thresholds.
 #'
-meets_basis <- function(X, row_num, cols, cutoffs, orders) {
-    .Call('_hal9001_meets_basis', PACKAGE = 'hal9001', X, row_num, cols, cutoffs, orders)
+meets_basis <- function(X, row_num, cols, cutoffs) {
+    .Call('_hal9001_meets_basis', PACKAGE = 'hal9001', X, row_num, cols, cutoffs)
 }
 
 #' Generate Basis Functions

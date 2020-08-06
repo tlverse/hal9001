@@ -40,7 +40,7 @@ BasisMap enumerate_basis(const NumericMatrix& X_sub,
 //' @param X_sub A subset of the columns of X, the original design matrix.
 //' @param cols An index of the columns that were reduced to by sub-setting.
 // [[Rcpp::export]]
-List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, const IntegerVector& order_map){
+List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols){
 
   BasisMap bmap = enumerate_basis(X_sub, cols);
   List basis_list(bmap.size());
@@ -53,17 +53,10 @@ List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, cons
     // List basis();
     // basis["cols"]=it->second;
     // basis["cutoffs"]=it->first;
-    NumericVector subCols = it->second;
-
-    IntegerVector order (subCols.length());
-    for(int i=0; i < subCols.length(); i++){
-      order[i] = order_map[subCols[i]-1];
-    }
 
     List basis = List::create(
       Rcpp::Named("cols") = it->second,
-      Rcpp::Named("cutoffs") = it->first,
-      Rcpp::Named("orders") = order
+      Rcpp::Named("cutoffs") = it->first
     );
     basis_list[index++] = basis;
   }
@@ -83,28 +76,18 @@ List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, cons
 //' @param cutoffs Numeric providing thresholds.
 //'
 // [[Rcpp::export]]
-double meets_basis(const NumericMatrix& X, const int row_num,
-                   const IntegerVector& cols, const NumericVector& cutoffs,  const IntegerVector& orders) {
+bool meets_basis(const NumericMatrix& X, const int row_num,
+                 const IntegerVector& cols, const NumericVector& cutoffs) {
   int p = cols.length();
-  double value = 1;
-
 
   for (int i = 0; i<p; i++) {
     double obs = X(row_num,cols[i] - 1); // using 1-indexing for basis columns
-    int order =  orders[i];
-    double cutoff = cutoffs[i];
-    if(!(obs > cutoff)) {
-      return(0);
+    if(!(obs > cutoffs[i])) {
+      return(false);
     }
-    if(order!=0){
-      value = value * pow((obs - cutoff),order);
-    }
-
   }
-
-  return(value);
+  return(true);
 }
-
 
 
 //------------------------------------------------------------------------------
@@ -122,23 +105,18 @@ double meets_basis(const NumericMatrix& X, const int row_num,
 void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
                     int basis_col) {
   int n = X.rows();
-
-
   //split basis into x[1] x[-1]
   //find sub-bases
   //intersect
+
   IntegerVector cols = as<IntegerVector>(basis["cols"]);
   NumericVector cutoffs = as<NumericVector>(basis["cutoffs"]);
-  IntegerVector orders =  as<IntegerVector>(basis["orders"]);
   for (int row_num = 0; row_num < n; row_num++) {
-    double value = meets_basis(X, row_num, cols, cutoffs,  orders);
-    if (value!=0) {
-      //Add value
-      x_basis.insert(row_num, basis_col) = value;
+
+    if (meets_basis(X, row_num, cols, cutoffs)) {
+      //we can add a positive indicator for this row, basis
+      x_basis.insert(row_num, basis_col) = 1;
     }
-
-
-
   }
 }
 
@@ -200,4 +178,3 @@ SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
   x_basis.makeCompressed();
   return(x_basis);
 }
-

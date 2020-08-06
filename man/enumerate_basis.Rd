@@ -4,12 +4,7 @@
 \alias{enumerate_basis}
 \title{Enumerate Basis Functions}
 \usage{
-enumerate_basis(
-  x,
-  max_degree = NULL,
-  order_map = rep(0, ncol(x)),
-  include_zero_order = F
-)
+enumerate_basis(x, max_degree = NULL)
 }
 \arguments{
 \item{x}{An input \code{matrix} containing observations and covariates

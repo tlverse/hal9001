@@ -5,21 +5,15 @@
 \title{HAL: The Highly Adaptive Lasso}
 \usage{
 fit_hal(
-  X = NULL,
-  Y = NULL,
+  X,
+  Y,
   X_unpenalized = NULL,
-  formula = NULL,
   max_degree = 3,
-  smoothness_orders = NULL,
-  include_order_zero = F,
-  num_bins = 500,
   fit_type = c("glmnet", "lassi"),
   n_folds = 10,
   foldid = NULL,
   use_min = TRUE,
   reduce_basis = NULL,
-  screen_basis_main_terms = F,
-  screen_basis_interactions = F,
   family = c("gaussian", "binomial", "cox"),
   return_lasso = TRUE,
   return_x_basis = FALSE,
@@ -41,37 +35,14 @@ fit_hal(
 directly get appended into the design matrix (no basis expansion). No L-1
 penalization is performed on these covariates.}
 
-\item{formula}{A formula_hal9001 object as returned by \code{formula_hal9001}
-specifying a model structure for hal9001.
-\code{formula_hal9001} allows one to specify which main terms and interactions are included,
-whether certain variables/interactions should be monotonely increasing or decreasing,
-and the smoothness order for each variable.}
-
 \item{max_degree}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
-\item{smoothness_orders}{A single value or vector of length ncol(X)
-taking integer values in 0,1,2,... specifying the degree of smoothness for each variable.
-The default is order 0 where no smoothness is applied and
-piece-wise constant basis functions are used. A value of 1 is one degree of smoothness,
-a value of 2 is two degrees of smoothness and so on.
-This parameter will be recycled until it is of length ncol(X).
-Note if a smoothness of order k is specified for a variable,
-then all basis functions of order 1, ..., k will be included in model.
-To include 0 order basis functions, see paramter \code{include_order_zero}.}
-
-\item{include_order_zero}{A boolean indicator for whether to include the 0 order (non-differentiable) basis functions
-for variables whose smoothness order specifiation is >=1.
-This allows hal9001 to data adaptively select the level of smoothness for each variable.}
-
-\item{num_bins}{Constructs basis functions from the discretized data matrix X
-where each variable is discretized into num_bins bins. This reduces the number of basis functions generated.
-By default, the data is not discretized and all observed values are used to generate basis functions.
-
-  @param fit_type The specific routine to be called when fitting the Lasso regression in a cross-validated manner. Choosing the \code{glmnet} option
- will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
- will produce a (faster) call to a custom Lasso routine.}
+\item{fit_type}{The specific routine to be called when fitting the Lasso
+regression in a cross-validated manner. Choosing the \code{glmnet} option
+will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
+will produce a (faster) call to a custom Lasso routine.}
 
 \item{n_folds}{Integer for the number of folds to be used when splitting the
 data for V-fold cross-validation. This defaults to 10.}
@@ -91,18 +62,6 @@ needed for the basis function to be included in the procedure to fit the
 Lasso. Any basis functions with a lower proportion of 1's than the cutoff
 will be removed. This argument defaults to \code{NULL}, in which case all
 basis functions are used in the lasso-fitting stage of the HAL algorithm.}
-
-\item{screen_basis_main_terms}{Boolean indicator whether to screen the main term/one-way basis functions using one-way hal9001
-and then to build interactions from the reduced/screened one-way basis variables.
-Note screening looks at outcome so for honest performance the screening should be included
-in the cross validation.}
-
-\item{screen_basis_interactions}{Boolean indicator whether to iteratively screen each set of interactions.
-For example, if true and the \code{max_degree} is 3, then the two-way basis functions will be screened via two-way hal
-and the reduced basis_set will be used to create the basis functions for three-way interactions.
- If max_degree is 4, then these three-way basis functions will be screened as well via three-way hal,
- and then four-way basis functions will be constructed from the reduced set, and so on.
- Note one-way basis functions will only be screened if \code{screen_basis_main_terms} is true.}
 
 \item{family}{A \code{character} corresponding to the error family for a
 generalized linear model. Options are limited to "gaussian" for fitting a

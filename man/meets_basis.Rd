@@ -4,7 +4,7 @@
 \alias{meets_basis}
 \title{Compute Values of Basis Functions}
 \usage{
-meets_basis(X, row_num, cols, cutoffs, orders)
+meets_basis(X, row_num, cols, cutoffs)
 }
 \arguments{
 \item{X}{The design matrix, containing the original data.}
