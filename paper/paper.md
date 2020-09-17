@@ -173,7 +173,9 @@ successful examples:
   efficient inference in settings with complex data structures. The authors
   make their methodology available in the `txshift` R package
   [@hejazi2020txshift-rpkg; @hejazi2020txshift-joss], which relies upon
-  `hal9001`.
+  `hal9001`. These authors additionally provide examples in simulation
+  experiments and a re-analysis of a recent HIV-1 vaccine efficacy trial using
+  their proposed statistical approach.
 * @ertefaie2020nonparametric provide a considered study of the construction of
   inverse probability weighted (IPW) estimators that rely upon HAL regression in
   the estimation of the exposure mechanism. While IPW estimators classically

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cross-validated Lasso on Indicator Bases — cv_lasso • hal9001</title>
+<title>Summary of HAL fits — summary.hal9001 • hal9001</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Cross-validated Lasso on Indicator Bases — cv_lasso" />
-<meta property="og:description" content="Fits Lasso regression using a customized procedure, with cross-validation
-based on origami" />
+<meta property="og:title" content="Summary of HAL fits — summary.hal9001" />
+<meta property="og:description" content="Summary of HAL fits" />
 
 
 
@@ -122,49 +121,78 @@ based on origami" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Cross-validated Lasso on Indicator Bases</h1>
-    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/cv_lasso.R'><code>R/cv_lasso.R</code></a></small>
-    <div class="hidden name"><code>cv_lasso.Rd</code></div>
+    <h1>Summary of HAL fits</h1>
+    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/summary.R'><code>R/summary.R</code></a></small>
+    <div class="hidden name"><code>summary.hal9001.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Fits Lasso regression using a customized procedure, with cross-validation
-based on <span class="pkg">origami</span></p>
+    <p>Summary of HAL fits</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cv_lasso</span>(<span class='kw'>x_basis</span>, <span class='kw'>y</span>, n_lambda = <span class='fl'>100</span>, n_folds = <span class='fl'>10</span>, center = <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for hal9001</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(
+  <span class='kw'>object</span>,
+  lambda = <span class='kw'>NULL</span>,
+  only_nonzero_coefs = <span class='fl'>TRUE</span>,
+  remove_redundant_duplicates = <span class='fl'>TRUE</span>,
+  round_cutoffs = <span class='fl'>4</span>,
+  <span class='kw'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x_basis</th>
-      <td><p>A <code>dgCMatrix</code> object corresponding to a sparse matrix of
-the basis functions generated for the HAL algorithm.</p></td>
+      <th>object</th>
+      <td><p>An object of class <code>hal9001</code>, containing the results of
+fitting the Highly Adaptive Lasso, as produced by <code><a href='fit_hal.html'>fit_hal</a></code>.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>A <code>numeric</code> vector of the observed outcome variable values.</p></td>
+      <th>lambda</th>
+      <td><p>Optional <code>numeric</code> value of the lambda tuning
+parameter, for which corresponding coefficient values to be summarized.
+Defaults to CV-optimal value <code>lambda_star</code>, or the minimum value of
+<code>lambda_star</code>.</p></td>
     </tr>
     <tr>
-      <th>n_lambda</th>
-      <td><p>A <code>numeric</code> scalar indicating the number of values of
-the L1 regularization parameter (lambda) to be obtained from fitting the
-Lasso to the full data. Cross-validation is used to select an optimal
-lambda (that minimizes the risk) from among these.</p></td>
+      <th>only_nonzero_coefs</th>
+      <td><p>A <code>logical</code> specifying whether the summary
+should include only non-zero coefficients.</p></td>
     </tr>
     <tr>
-      <th>n_folds</th>
-      <td><p>A <code>numeric</code> scalar for the number of folds to be used in
-the cross-validation procedure to select an optimal value of lambda.</p></td>
+      <th>remove_redundant_duplicates</th>
+      <td><p>A <code>logical</code> specifying whether the
+summary should remove redundant indicator basis function duplicates. If
+basis functions are duplicated, then one coefficient will correspond to all
+of the duplicates. If <code>remove_redundant_duplicates</code> is <code>TRUE</code>,
+then the shorter basis function is retained. For example, the same
+coefficient may correspond to terms "I(age &gt;= 50)*I(bmi &gt;= 18)",
+"I(age &gt;= 50)", and "I(education &gt;= 16)", which means these basis functions
+all yield the same result. When <code>remove_redundant_duplicates</code> is
+<code>TRUE</code>, the second basis function is omitted due to the duplicated
+term "I(age &gt;= 50)".</p></td>
     </tr>
     <tr>
-      <th>center</th>
-      <td><p>binary. If <code>TRUE</code>, covariates are centered. This is much
-slower, but matches the <code>glmnet</code> implementation. Default <code>FALSE</code>.</p></td>
+      <th>round_cutoffs</th>
+      <td><p>An <code>integer</code> indicating the number of decimal
+places to be used for rounding term cutoff values.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments passed to <code>summary</code> as necessary.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list summarizing a <code>hal9001</code> object's coefficients.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Method for summarizing the coefficients of the Highly Adaptive
+ Lasso estimator in terms of the basis functions corresponding to covariates
+ and interactions of covariates, returned as a single S3 object of class
+ <code>hal9001</code>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
