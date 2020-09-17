@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -131,7 +131,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for hal9001</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>object</span>, <span class='kw'>offset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='no'>new_data</span>, <span class='kw'>new_X_unpenalized</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='kw'>object</span>, offset = <span class='kw'>NULL</span>, <span class='kw'>...</span>, <span class='kw'>new_data</span>, new_X_unpenalized = <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,7 +176,7 @@ observations as <code>new_data</code>. Optional.</p></td>
 
     <p>This prediction method does not function similarly to the equivalent
  method from <span class="pkg">glmnet</span>. In particular, this procedure will NOT return a
- subset of lambdas originally specified in callingo <code><a href='fit_hal.html'>fit_hal</a></code>
+ subset of lambdas originally specified in calling <code><a href='fit_hal.html'>fit_hal</a></code>
  nor result in re-fitting. Instead, it will return predictions for all of
  the lambdas specified in the call to <code><a href='fit_hal.html'>fit_hal</a></code> that constructs
  <code>object</code>, when <code>cv_select = FALSE</code>. When <code>cv_select = TRUE</code>,
@@ -198,7 +198,7 @@ observations as <code>new_data</code>. Optional.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -24,7 +24,7 @@
 #'
 #' @note This prediction method does not function similarly to the equivalent
 #'  method from \pkg{glmnet}. In particular, this procedure will NOT return a
-#'  subset of lambdas originally specified in callingo \code{\link{fit_hal}}
+#'  subset of lambdas originally specified in calling \code{\link{fit_hal}}
 #'  nor result in re-fitting. Instead, it will return predictions for all of
 #'  the lambdas specified in the call to \code{\link{fit_hal}} that constructs
 #'  \code{object}, when \code{cv_select = FALSE}. When \code{cv_select = TRUE},
@@ -48,15 +48,6 @@ predict.hal9001 <- function(object,
 
   # reduce matrix of basis functions
   pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
-
-  # NOTE: keep only basis functions with some (or higher) proportion of 1's
-  if (!is.null(object$reduce_basis) && is.numeric(object$reduce_basis)) {
-    reduced_basis_map <- make_reduced_basis_map(
-      pred_x_basis,
-      object$reduce_basis
-    )
-    pred_x_basis <- pred_x_basis[, reduced_basis_map]
-  }
 
   # add unpenalized covariates
   new_unpenalized_covariates <- ifelse(

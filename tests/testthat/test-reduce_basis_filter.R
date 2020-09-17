@@ -156,3 +156,7 @@ test_that("Basis reduction passes fewer beta estimates to the lasso model", {
 test_that("Predictions are not too different when reducing basis functions", {
   expect_lt(mean((hal_pred_full - hal_pred_reduced)^2), 0.01)
 })
+
+# ensure hal fit with reduce_basis works with new data for prediction
+newx <- matrix(rnorm(n * p), n, p)
+hal_pred_reduced_newx <- predict(hal_fit_reduced, new_data = newx)

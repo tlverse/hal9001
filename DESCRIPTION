@@ -1,6 +1,6 @@
 Package: hal9001
 Title: The Scalable Highly Adaptive Lasso
-Version: 0.2.6
+Version: 0.2.7
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
          role = c("aut", "cre"),
@@ -13,6 +13,9 @@ Authors@R: c(
          comment = c(ORCID = "0000-0002-1019-8343")),
   person("Oleg", "Sofrygin", email = "oleg.sofrygin@gmail.com",
          role = "ctb"),
+  person("Rachael", "Phillips", email = "rachaelvphillips@berkeley.edu",
+         role = "ctb",
+         comment = c(ORCID = "0000-0002-8474-591X")),
   person("Weixin", "Cai", email = "wcai@berkeley.edu",
          role = "ctb",
          comment = c(ORCID = "0000-0003-2680-3066")),
@@ -44,7 +47,8 @@ Imports:
   methods,
   assertthat,
   origami (>= 1.0.3),
-  glmnet
+  glmnet,
+  data.table
 Suggests:
   testthat,
   knitr,
@@ -56,10 +60,9 @@ Suggests:
   tidyr,
   stringr,
   survival,
-  data.table,
   SuperLearner
 LinkingTo:
   Rcpp,
   RcppEigen
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

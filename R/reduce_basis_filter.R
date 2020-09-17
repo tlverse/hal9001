@@ -20,7 +20,7 @@
 #'
 #' @importFrom assertthat assert_that
 #'
-#' @keywords internal
+#' @export
 make_reduced_basis_map <- function(x_basis, reduce_basis_crit) {
   # check that the provided option is a proportion
   assertthat::assert_that(reduce_basis_crit < 1 && reduce_basis_crit > 0)
