@@ -24,7 +24,7 @@ affiliations:
     index: 3
   - name: Center for Computational Biology, University of California, Berkeley
     index: 4
-date: 22 August 2020
+date: 16 September 2020
 bibliography: refs.bib
 ---
 
@@ -119,6 +119,82 @@ stable releases of the `hal9001` package are made available on the Comprehensive
 stable (branch `master`) and development (branch `devel`) versions of the
 package are hosted at https://github.com/tlverse/hal9001. Releases of the
 package leverage both GitHub and Zenodo (stable DOI: 10.5281/zenodo.3558313).
+
+# Applications
+
+As `hal9001` is the canonical implementation of the highly adaptive lasso, the
+package has been relied upon in a variety of statistical applications. Speaking
+generally, HAL regression is often used in order to develop efficient estimation
+strategies in challenging settings; thus, we interpret _statistical
+applications_ chiefly as examples of novel theoretical developments that have
+been thoroughly investigated in simulation experiments and with illustrative
+data analysis examples. In the sequel, we briefly point out a few recently
+successful examples:
+
+* @ju2020robust formulate a procedure based on HAL regression that allows the
+  construction of asymptotically normal and efficient estimators of causal
+  effects that are robust to the presence of instrumental variables, which can
+  often lead to severe issues for estimation and inference [@hernan2020causal].
+  While a variety of procedures have been proposed to overcome the issues posed
+  by instrumental variables, a particularly successful idea was given by
+  @shortreed2017outcome, who propose standard lasso regression to select
+  covariates for the exposure model based on the estimated outcome model. The
+  work of @ju2020robust replaces the standard lasso with HAL regression,
+  effectively screening for _infinitesimal instrumental basis functions_ rather
+  than instrumental variables, providing a much greater flexibility. Here, the
+  authors demonstrate how HAL regression provides exceptionally fine-grained
+  control over screening problematic covariates while simultaneously
+  facilitating the construction of causal effect estimators with desirable
+  asymptotic properties.
+* @diaz2020causal introduce novel mediation effects based on joint stochastic
+  interventions on exposure and mediator variable. To complement the new causal
+  effects outlined in their work, these authors introduce efficient estimators
+  that rely upon a near-parametric rate of convergence of nuisance parameter
+  estimators to their true counterparts. As the authors note, HAL is currently
+  the only machine learning algorithm for which such a fast rate of convergence
+  can rigorously be proven under minimal assumptions. By relying upon HAL
+  regression for the construction of their proposed estimators, @diaz2020causal
+  advance not only the state-of-the-art in causal mediation analysis but also
+  provide evidence, in both simulation experiments and an illustrative data
+  analysis, of how HAL regression can be brought to bear on challenging causal
+  inference problems to deploy flexible, robust estimation strategies.
+* @hejazi2020efficient develop novel theoretical insights for building efficient
+  estimators of causal effects under two-phase sampling designs, relying upon
+  the flexibility and near-parametric convergence of HAL regression in their
+  theoretical contributions. Corrections for two-phase sampling, concerned with
+  developing efficient estimators of population-level effects in spite of the
+  censoring process introduced by this sampling procedure, have received much
+  attention, though developments applicable to large, unrestricted statistical
+  models have been limited. These authors provide a formulation and theory for
+  utilizing causal effect estimators, based on data subject to two-phase
+  sampling, that attain asymptotic efficiency by way of the near-parametric
+  convergence rate of HAL regression. In effect, this works demonstrates that
+  HAL regression has properties suitable for both flexible estimation and
+  efficient inference in settings with complex data structures. The authors
+  make their methodology available in the `txshift` R package
+  [@hejazi2020txshift-rpkg; @hejazi2020txshift-joss], which relies upon
+  `hal9001`.
+* @ertefaie2020nonparametric provide a considered study of the construction of
+  inverse probability weighted (IPW) estimators that rely upon HAL regression in
+  the estimation of the exposure mechanism. While IPW estimators classically
+  require the use of parametric models of the exposure mechanism, these authors
+  propose and investigate novel variants of these estimators that instead rely
+  upon the near-parametric convergence rate of HAL regression for the required
+  nuisance parameter functional. In particular, @ertefaie2020nonparametric show
+  through theoretical advances, several simulation experiments, and an
+  illustrative data analysis of data from the well-documented NHEFS study that
+  IPW estimators based on HAL regression can be made asymptotically consistent
+  and efficient under a particular debiasing procedure (undersmoothing). In so
+  doing, the authors simultaneously advance the literatures on HAL regression
+  and on IPW estimation, establishing the interface between the two as an area
+  of viable future research. Notably, in demonstrating their proposed IPW
+  estimators with the NHEFS data, the authors show that IPW estimators based on
+  HAL regression can yield meaningful substantive conclusions without the
+  typically restrictive parametric assumptions required for IPW estimation.
+
+As further theoretical advances continue to be made with HAL regression, and the
+resultant statistical methodology explored, we expect both the number and
+variety of such examples to steadily increase.
 
 # References
 
