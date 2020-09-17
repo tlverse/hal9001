@@ -26,14 +26,15 @@ Defaults to CV-optimal value \code{lambda_star}, or the minimum value of
 should include only non-zero coefficients.}
 
 \item{remove_redundant_duplicates}{A \code{logical} specifying whether the
-summary should remove redundant indicator basis function duplicates. If basis
-functions are duplicated, then one coefficient will correspond to all of the
-duplicates. If remove_redundant_duplicates is TRUE then the shorter basis
-function is retained. For example, the same coefficient may correspond to
-terms "I(age >= 50)", "I(age >= 50)*I(bmi >= 18)", and "I(education >= 16)",
-which means these basis functions all yield the same result. When
-remove_redundant_duplicates is TRUE, the second basis function is omitted
-due to the duplicated term "I(age >= 50)".}
+summary should remove redundant indicator basis function duplicates. If
+basis functions are duplicated, then one coefficient will correspond to all
+of the duplicates. If \code{remove_redundant_duplicates} is \code{TRUE},
+then the shorter basis function is retained. For example, the same
+coefficient may correspond to terms "I(age >= 50)*I(bmi >= 18)",
+"I(age >= 50)", and "I(education >= 16)", which means these basis functions
+all yield the same result. When \code{remove_redundant_duplicates} is
+\code{TRUE}, the second basis function is omitted due to the duplicated
+term "I(age >= 50)".}
 
 \item{round_cutoffs}{An \code{integer} indicating the number of decimal
 places to be used for rounding term cutoff values.}
@@ -48,7 +49,7 @@ Summary of HAL fits
 }
 \details{
 Method for summarizing the coefficients of the Highly Adaptive
-Lasso estimator in terms of the basis functions corresponding to covariates
-and interactions of covariates, returned as a single S3 object of class
-\code{hal9001}.
+ Lasso estimator in terms of the basis functions corresponding to covariates
+ and interactions of covariates, returned as a single S3 object of class
+ \code{hal9001}.
 }

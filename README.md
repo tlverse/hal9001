@@ -97,12 +97,12 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.001    0.000   0.002          0         0
-#> design_matrix         0.001    0.000   0.001          0         0
-#> remove_duplicates     0.005    0.000   0.005          0         0
-#> reduce_basis          0.000    0.000   0.000          0         0
-#> lasso                 0.274    0.004   0.277          0         0
-#> total                 0.281    0.004   0.285          0         0
+#> enumerate_basis       0.001        0   0.002          0         0
+#> design_matrix         0.002        0   0.001          0         0
+#> remove_duplicates     0.004        0   0.005          0         0
+#> reduce_basis          0.000        0   0.000          0         0
+#> lasso                 0.268        0   0.268          0         0
+#> total                 0.275        0   0.276          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -183,7 +183,7 @@ Highly Adaptive Lasso.” <http://arxiv.org/abs/2005.11303>.
 
 van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum
 Loss Based Estimator Based on the Highly Adaptive Lasso.” *The
-International Journal of Biostatistics*. De Gruyter.
+International Journal of Biostatistics*.
 <https://doi.org/10.1515/ijb-2015-0097>.
 
 </div>
@@ -191,7 +191,7 @@ International Journal of Biostatistics*. De Gruyter.
 <div id="ref-vdl2017finite">
 
 ———. 2017b. “Finite Sample Inference for Targeted Learning.” *ArXiv
-E-Prints*.
+E-Prints*. <http://arxiv.org/abs/1708.09502>.
 
 </div>
 

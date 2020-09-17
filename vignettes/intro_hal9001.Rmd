@@ -46,7 +46,7 @@ test_x <- replicate(n_covars, rnorm(n_obs))
 test_y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n_obs, mean = 0, sd = 0.2)
 ```
 
-Look at simulated data...
+Let's look at simulated data:
 
 ```{r sim-view}
 head(x)
@@ -86,8 +86,12 @@ hal_fit <- fit_hal(X = x, Y = y, fit_type = "glmnet")
 hal_fit$times
 ```
 
+While the raw output object may be examined, it has (usually large) slots that
+make quick examination challenging. Instead, we recommend the `summary` method,
+which provides an interpretable table of basis functions with non-zero
+coefficients.
 ```{r results-hal-glmnet}
-hal_fit
+summary(hal_fit)$table
 ```
 
 ### Reducing basis functions
@@ -105,17 +109,17 @@ The second of these two options may be invoked by specifying the `reduce_basis`
 argument to the `fit_hal` function:
 
 ```{r fit-hal-reduced}
-hal_fit_reduced <- fit_hal(X = x, Y = y, fit_type = "lassi",
-                           reduce_basis = 1/sqrt(length(y)))
+hal_fit_reduced <- fit_hal(X = x, Y = y, fit_type = "glmnet",
+                           reduce_basis = 1 / sqrt(length(y)))
 hal_fit_reduced$times
 ```
 
 In the above, all basis functions with fewer than `r 1/sqrt(length(y)) * 100`%
-of observations meeting the criterion imposed are automatically removed prior to
-the Lasso step of fitting the HAL regression. The results appear below
+of observations meeting the criterion imposed are automatically removed prior
+to the Lasso step of fitting the HAL regression. The results appear below
 
 ```{r results-hal-reduced}
-hal_fit_reduced
+summary(hal_fit_reduced)$table
 ```
 
 ### Obtaining model predictions

@@ -130,7 +130,7 @@
     <p>Reduce footprint by dropping basis functions with coefficients of zero</p>
     </div>
 
-    <pre class="usage"><span class='fu'>squash_hal_fit</span>(<span class='no'>object</span>)</pre>
+    <pre class="usage"><span class='fu'>squash_hal_fit</span>(<span class='kw'>object</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,15 +151,17 @@ fitting the Highly Adaptive LASSO, as produced by a call to <code>fit_hal</code>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='co'># generate simple test data</span>
-<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>p</span>), <span class='no'>n</span>, <span class='no'>p</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='no'>x</span>[, <span class='fl'>1</span>]) * <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='no'>x</span>[, <span class='fl'>2</span>]) + <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)
+<span class='kw'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
+<span class='kw'>p</span> <span class='op'>&lt;-</span> <span class='fl'>3</span>
+<span class='kw'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span> <span class='op'>*</span> <span class='kw'>p</span>), <span class='kw'>n</span>, <span class='kw'>p</span>)
+<span class='kw'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='kw'>x</span>[, <span class='fl'>1</span>]) <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='kw'>x</span>[, <span class='fl'>2</span>]) <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span>, mean = <span class='fl'>0</span>, sd = <span class='fl'>0.2</span>)
 
 <span class='co'># fit HAL model and squash resulting object to reduce footprint</span>
-<span class='no'>hal_fit</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fit_hal.html'>fit_hal</a></span>(<span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>yolo</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
-<span class='no'>squashed</span> <span class='kw'>&lt;-</span> <span class='fu'>squash_hal_fit</span>(<span class='no'>hal_fit</span>)
-<span class='co'># }</span></div></pre>
+<span class='kw'>hal_fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fit_hal.html'>fit_hal</a></span>(X = <span class='kw'>x</span>, Y = <span class='kw'>y</span>, yolo = <span class='fl'>FALSE</span>)
+<span class='kw'>squashed</span> <span class='op'>&lt;-</span> <span class='fu'>squash_hal_fit</span>(<span class='kw'>hal_fit</span>)
+<span class='co'># }</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -175,7 +177,7 @@ fitting the Highly Adaptive LASSO, as produced by a call to <code>fit_hal</code>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

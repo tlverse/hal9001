@@ -5,8 +5,8 @@
   publisher = {{IEEE}},
   author = {Benkeser, David and {van der Laan}, Mark J},
   title = {The Highly Adaptive Lasso Estimator},
-  booktitle = {2016 {IEEE} International Conference on Data Science and Advanced
-    Analytics ({DSAA})}
+  booktitle = {2016 {IEEE} International Conference on Data Science and
+    Advanced Analytics ({DSAA})}
 }
 
 @article{vdl2015generally,
@@ -55,7 +55,9 @@
   Title = {Doubly robust estimation in missing data and causal inference
     models},
   Volume = {61},
-  Year = {2005}
+  Year = {2005},
+  doi = {10.1111/j.1541-0420.2005.00377.x},
+  url = {https://doi.org/10.1111/j.1541-0420.2005.00377.x}
 }
 
 @article{vdl2019efficient,
@@ -72,20 +74,6 @@
   Title = {Uniform Consistency of the Highly Adaptive Lasso Estimator of
     Infinite-Dimensional Parameters},
   Year = {2017}
-}
-
-@article{ertefaie2020nonparametric,
-  doi = {},
-  url = {http://arxiv.org/abs/2005.11303},
-  year = {2020},
-  publisher = {},
-  journal = {},
-  volume = {},
-  number = {},
-  pages = {},
-  author = {Ertefaie, Ashkan and Hejazi, Nima S and {van der Laan}, Mark J},
-  title = {Nonparametric inverse probability weighted estimators based on the
-    highly adaptive lasso}
 }
 
 @manual{R,
@@ -125,25 +113,27 @@
 }
 
 @techreport{vdl2003unified,
-author = {{van der Laan}, Mark J and Dudoit, Sandrine},
-institution = {Division of Biostatistics, University of California, Berkeley},
-keywords = {Superlearner},
-number = {130},
-title = {{Unified cross-validation methodology for selection among estimators
-  and a general cross-validated adaptive epsilon-net estimator: finite sample
-  oracle inequalities and examples}},
-year = {2003}
+  author = {{van der Laan}, Mark J and Dudoit, Sandrine},
+  institution = {Division of Biostatistics, University of California,
+    Berkeley},
+  number = {130},
+  title = {{Unified cross-validation methodology for selection among estimators
+    and a general cross-validated adaptive epsilon-net estimator: finite sample
+    oracle inequalities and examples}},
+  year = {2003}
 }
 
 @article{vdv2006oracle,
-author = {{van der Vaart}, Aad W and Dudoit, Sandrine and {van der Laan}, Mark
-  J},
-title = {{Oracle inequalities for multi-fold cross validation}},
-journal = {Statistics \& Decisions},
-year = {2006},
-volume = {24},
-number = {3},
-pages = {351--371}
+  author = {{van der Vaart}, Aad W and Dudoit, Sandrine and {van der Laan},
+    Mark J},
+  title = {{Oracle inequalities for multi-fold cross validation}},
+  journal = {Statistics \& Decisions},
+  year = {2006},
+  volume = {24},
+  number = {3},
+  pages = {351--371},
+  doi = {10.1524/stnd.2006.24.3.351},
+  url = {https://doi.org/10.1524/stnd.2006.24.3.351}
 }
 
 @article{ertefaie2020nonparametric,
@@ -169,7 +159,7 @@ pages = {351--371}
 }
 
 @article{eddelbuettel2011rcpp,
-  title={Rcpp: Seamless R and C++ integration},
+  title={{Rcpp}: Seamless {R} and {C++} integration},
   author={Eddelbuettel, Dirk and Fran{\c{c}}ois, Romain and Allaire, J and
     Ushey, Kevin and Kou, Qiang and Russel, N and Chambers, John and Bates, D},
   journal={Journal of Statistical Software},
@@ -180,8 +170,105 @@ pages = {351--371}
 }
 
 @book{eddelbuettel2013seamless,
-  title={Seamless R and C++ integration with Rcpp},
+  title={Seamless {R} and {C++} integration with {Rcpp}},
   author={Eddelbuettel, Dirk},
   year={2013},
   publisher={Springer}
+}
+
+@article{wong2020computational,
+  title={Computational Causal Inference},
+  author={Wong, Jeffrey C},
+  journal={arXiv preprint arXiv:2007.10979},
+  year={2020}
+}
+
+@article{ju2020robust,
+  title={Robust inference on the average treatment effect using the outcome
+    highly adaptive lasso},
+  author={Ju, Cheng and Benkeser, David and {van der Laan}, Mark J},
+  journal={Biometrics},
+  volume={76},
+  number={1},
+  pages={109--118},
+  year={2020},
+  publisher={Wiley Online Library}
+}
+
+@article{benkeser2020nonparametric,
+  title={A nonparametric super-efficient estimator of the average treatment
+    effect},
+  author={Benkeser, David and Cai, Weixin and {van der Laan}, Mark J},
+  journal={Statistical Science},
+  volume={35},
+  number={3},
+  pages={484--495},
+  year={2020},
+  publisher={Institute of Mathematical Statistics}
+}
+
+@article{diaz2020causal,
+  title={Causal mediation analysis for stochastic interventions},
+  author={D{\'\i}az, Iv{\'a}n and Hejazi, Nima S},
+  year={2020},
+  url = {https://doi.org/10.1111/rssb.12362},
+  doi = {10.1111/rssb.12362},
+  journal={Journal of the Royal Statistical Society: Series B (Statistical
+    Methodology)},
+  volume = {82},
+  number = {3},
+  pages = {661-683},
+  publisher={Wiley Online Library}
+}
+
+@article{hejazi2020efficient,
+  title = {Efficient nonparametric inference on the effects of stochastic
+    interventions under two-phase sampling, with applications to vaccine
+    efficacy trials},
+  author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly E and
+    Gilbert, Peter B and Benkeser, David C},
+  year={2020},
+  url = {http://arxiv.org/abs/2003.13771},
+  doi = {},
+  journal = {Biometrics (Methodology)},
+  volume={},
+  number={},
+  pages={},
+  publisher = {Wiley Online Library}
+}
+
+@article{shortreed2017outcome,
+  title={Outcome-adaptive lasso: Variable selection for causal inference},
+  author={Shortreed, Susan M and Ertefaie, Ashkan},
+  journal={Biometrics},
+  volume={73},
+  number={4},
+  pages={1111--1122},
+  year={2017},
+  publisher={Wiley Online Library}
+}
+
+@article{hernan2020causal,
+  title={Causal inference: what if},
+  author={Hern{\'a}n, Miguel A and Robins, James M},
+  journal={Boca Raton: Chapman \& Hill/CRC},
+  year={2020}
+}
+
+@article{hejazi2020txshift-joss,
+  author = {Hejazi, Nima S and Benkeser, David C},
+  title = {{txshift}: Efficient estimation of the causal effects of
+    stochastic interventions in {R}},
+  year  = {2020},
+  journal = {under review at Journal of Open Source Software},
+  publisher = {The Open Journal}
+}
+
+@software{hejazi2020txshift-rpkg,
+  author = {Hejazi, Nima S and Benkeser, David C},
+  title = {{txshift}: Efficient Estimation of the Causal Effects of
+    Stochastic Interventions},
+  year  = {2020},
+  url = {https://github.com/nhejazi/txshift},
+  note = {R package version 0.3.4}
 }
