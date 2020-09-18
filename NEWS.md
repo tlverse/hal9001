@@ -1,3 +1,11 @@
+# hal9001 0.2.7
+
+As of September 2020:
+* adds a `summary` method for interpreting HAL regressions
+  (https://github.com/tlverse/hal9001/pull/64)
+* adds a software paper for publication in the _Journal of Open Source
+  Software_ (https://github.com/tlverse/hal9001/pull/71)
+
 # hal9001 0.2.6
 
 As of June 2020:
