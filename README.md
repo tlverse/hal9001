@@ -98,12 +98,12 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.001        0   0.001          0         0
-#> design_matrix         0.001        0   0.002          0         0
-#> reduce_basis          0.000        0   0.000          0         0
-#> remove_duplicates     0.005        0   0.005          0         0
-#> lasso                 0.258        0   0.259          0         0
-#> total                 0.266        0   0.267          0         0
+#> enumerate_basis       0.001    0.000   0.001          0         0
+#> design_matrix         0.000    0.000   0.001          0         0
+#> reduce_basis          0.000    0.000   0.001          0         0
+#> remove_duplicates     0.005    0.000   0.004          0         0
+#> lasso                 0.255    0.004   0.259          0         0
+#> total                 0.261    0.004   0.266          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -143,7 +143,7 @@ After using the `hal9001` R package, please cite both of the following:
       title = {{hal9001}: Scalable highly adaptive lasso regression in
         {R}},
       year  = {2020},
-      url = {https://doi.org/10.21105/joss.025260},
+      url = {https://doi.org/10.21105/joss.02526},
       doi = {10.21105/joss.02526},
       journal = {Journal of Open Source Software},
       publisher = {The Open Journal}
