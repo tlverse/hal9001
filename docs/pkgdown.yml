@@ -3,7 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   intro_hal9001: intro_hal9001.html
-last_built: 2020-09-18T22:35Z
+last_built: 2020-09-26T20:38Z
 urls:
   reference: https://tlverse.org/hal9001/reference
   article: https://tlverse.org/hal9001/articles

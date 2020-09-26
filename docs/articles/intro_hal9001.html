@@ -82,7 +82,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>
 </h4>
             
-            <h4 class="date">2020-09-18</h4>
+            <h4 class="date">2020-09-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -164,12 +164,12 @@
 <span class="kw">hal_fit</span><span class="op">$</span><span class="kw">times</span>
 </pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.004    0.000   0.004          0         0
+## enumerate_basis       0.005    0.001   0.005          0         0
 ## design_matrix         0.018    0.000   0.018          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## remove_duplicates     0.011    0.001   0.011          0         0
-## lasso                 0.794    0.004   0.801          0         0
-## total                 0.828    0.005   0.835          0         0</code></pre>
+## remove_duplicates     0.009    0.000   0.009          0         0
+## lasso                 0.696    0.011   0.709          0         0
+## total                 0.729    0.012   0.742          0         0</code></pre>
 <p>While the raw output object may be examined, it has (usually large) slots that make quick examination challenging. Instead, we recommend the <code>summary</code> method, which provides an interpretable table of basis functions with non-zero coefficients.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="kw">hal_fit</span>)<span class="op">$</span><span class="kw">table</span>
@@ -349,12 +349,12 @@
 <span class="kw">hal_fit_reduced</span><span class="op">$</span><span class="kw">times</span>
 </pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.004    0.000   0.004          0         0
-## design_matrix         0.017    0.000   0.017          0         0
-## reduce_basis          0.005    0.000   0.005          0         0
-## remove_duplicates     0.006    0.000   0.005          0         0
-## lasso                 0.731    0.005   0.736          0         0
-## total                 0.763    0.005   0.768          0         0</code></pre>
+## enumerate_basis       0.002    0.001   0.003          0         0
+## design_matrix         0.016    0.000   0.015          0         0
+## reduce_basis          0.004    0.000   0.004          0         0
+## remove_duplicates     0.005    0.000   0.006          0         0
+## lasso                 0.634    0.003   0.639          0         0
+## total                 0.662    0.004   0.667          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 7.0710678% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb19"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="kw">hal_fit_reduced</span>)<span class="op">$</span><span class="kw">table</span>

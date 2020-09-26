@@ -18,6 +18,7 @@ developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repo
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3558313.svg)](https://doi.org/10.5281/zenodo.3558313)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.02526/status.svg)](https://doi.org/10.21105/joss.02526)
 
 > The *Scalable* Highly Adaptive Lasso
 
@@ -83,7 +84,7 @@ predictions via Highly Adaptive Lasso regression:
 # load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
-#> hal9001 v0.2.6: The Scalable Highly Adaptive Lasso
+#> hal9001 v0.2.7: The Scalable Highly Adaptive Lasso
 set.seed(385971)
 
 # simulate data
@@ -97,12 +98,12 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.002    0.000   0.002          0         0
-#> design_matrix         0.002    0.000   0.002          0         0
-#> remove_duplicates     0.011    0.000   0.010          0         0
-#> reduce_basis          0.000    0.000   0.000          0         0
-#> lasso                 0.320    0.012   0.333          0         0
-#> total                 0.335    0.012   0.347          0         0
+#> enumerate_basis       0.001        0   0.001          0         0
+#> design_matrix         0.001        0   0.002          0         0
+#> reduce_basis          0.000        0   0.000          0         0
+#> remove_duplicates     0.005        0   0.005          0         0
+#> lasso                 0.258        0   0.259          0         0
+#> total                 0.266        0   0.267          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -123,18 +124,29 @@ prior to submitting a pull request.
 
 ## Citation
 
-After using the `hal9001` R package, please cite the following:
+After using the `hal9001` R package, please cite both of the following:
 
 ``` 
-    @manual{coyle2020hal9001,
+    @software{coyle2020hal9001-rpkg,
       author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
         J},
       title = {{hal9001}: The scalable highly adaptive lasso},
       year  = {2020},
-      howpublished = {\url{https://github.com/tlverse/hal9001}},
-      note = {{R} package version 0.2.6},
       url = {https://doi.org/10.5281/zenodo.3558313},
       doi = {10.5281/zenodo.3558313}
+      note = {{R} package version 0.2.7}
+    }
+
+    @article{hejazi2020hal9001-joss,
+      author = {Hejazi, Nima S and Coyle, Jeremy R and {van der Laan}, Mark
+        J},
+      title = {{hal9001}: Scalable highly adaptive lasso regression in
+        {R}},
+      year  = {2020},
+      url = {https://doi.org/10.21105/joss.025260},
+      doi = {10.21105/joss.02526},
+      journal = {Journal of Open Source Software},
+      publisher = {The Open Journal}
     }
 ```
 
