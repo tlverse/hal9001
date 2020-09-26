@@ -134,7 +134,7 @@ After using the `hal9001` R package, please cite both of the following:
           title = {{hal9001}: Scalable highly adaptive lasso regression in
             {R}},
           year  = {2020},
-          url = {https://doi.org/10.21105/joss.025260},
+          url = {https://doi.org/10.21105/joss.02526},
           doi = {10.21105/joss.02526},
           journal = {Journal of Open Source Software},
           publisher = {The Open Journal}
