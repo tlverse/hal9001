@@ -26,4 +26,3 @@ test_that("Output object is `glmnet`.", {
 test_that("Output object is not `cv.glmnet`.", {
   expect_false("cv.glmnet" %in% class(hal_fit$lasso_fit))
 })
-
