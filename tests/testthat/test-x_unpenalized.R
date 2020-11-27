@@ -1,4 +1,4 @@
-context("train and predict with X_unpenalized argument will not error.")
+context("Train and predict with X_unpenalized argument will not error.")
 set.seed(1234)
 n <- 100
 x <- rnorm(n)
@@ -18,13 +18,13 @@ hal_fit <- fit_hal(
   return_lasso = TRUE
 )
 beta_hat <- hal_fit$coefs[, 1]
-test_that("[train] The coefficient is not penalized heavily", {
-  expect(
+test_that("Training: The coefficient is not penalized heavily.", {
+  expect_true(
     all.equal(tail(beta_hat, 1), 5, tolerance = 0.1, check.attributes = FALSE)
   )
 })
 
-test_that("[train] not matrix; throw error", {
+test_that("Training: input is not a matrix.", {
   expect_error(fit_hal(
     X = x,
     Y = y,
@@ -38,7 +38,7 @@ test_that("[train] not matrix; throw error", {
     return_lasso = TRUE
   ))
 })
-test_that("[train] number of rows not match; error", {
+test_that("Training: Number of rows do not match.", {
   expect_error(fit_hal(
     X = x,
     Y = y,
@@ -54,17 +54,17 @@ test_that("[train] number of rows not match; error", {
 })
 
 yhat <- predict(hal_fit, new_data = x, new_X_unpenalized = as.matrix(a))
-test_that("[predict] not matrix; throw error", {
+test_that("Predict: input not a matrix.", {
   expect_error(predict(hal_fit, new_data = x, new_X_unpenalized = a))
 })
-test_that("[predict] do not supply new_X_unpenalized when trained with X_unpenalized", {
+test_that("Predict: new_X_unpenalized not supplied when used in training.", {
   expect_error(predict(hal_fit, new_data = x, new_X_unpenalized = NULL))
 })
-test_that("[predict] number of rows not match; error", {
+test_that("Predict: Number of rows not match.", {
   expect_error(
     predict(hal_fit, new_data = x, new_X_unpenalized = as.matrix(a[-1]))
   )
 })
-test_that("[predict] column number not match between train and predict; error", {
+test_that("Predict: Number of columns do not match those from training.", {
   expect_error(predict(hal_fit, new_data = x, new_X_unpenalized = cbind(a, a)))
 })

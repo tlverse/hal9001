@@ -50,7 +50,7 @@ system.time({
     new_i <- which.max(se)
     print(sprintf("%f, %f", old_mse, mse))
     continue <- mse < 1.1 * old_mse
-    if (mse < 1 * old_mse) {
+    if (mse < old_mse) {
       good_i <- unique(c(good_i, new_i))
       offset <- preds
       old_mse <- mse
@@ -148,13 +148,13 @@ mse_hal_reduced <- mean((y - hal_pred_reduced)^2)
 
 # TEST: reduced HAL object contains fewer lasso coefficients than full object
 test_that("Basis reduction passes fewer beta estimates to the lasso model", {
-  coef_hal_reduced <- dim(hal_fit_reduced$hal_lasso$betas_mat)[1]
-  coef_hal_full <- dim(hal_fit_full$hal_lasso$betas_mat)[1]
+  coef_hal_reduced <- dim(hal_fit_reduced$lasso_fit$betas_mat)[1]
+  coef_hal_full <- dim(hal_fit_full$lasso_fit$betas_mat)[1]
   expect_lt(coef_hal_reduced, coef_hal_full)
 })
 
 test_that("Predictions are not too different when reducing basis functions", {
-  expect_lt(mean((hal_pred_full - hal_pred_reduced)^2), 0.01)
+  expect_lt(mean((hal_pred_full - hal_pred_reduced)^2), 0.02)
 })
 
 # ensure hal fit with reduce_basis works with new data for prediction
