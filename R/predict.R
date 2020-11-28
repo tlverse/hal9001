@@ -38,9 +38,7 @@ predict.hal9001 <- function(object,
                             new_data,
                             new_X_unpenalized = NULL) {
   # cast new data to matrix if not so already
-  if (!is.matrix(new_data)) {
-    new_data <- as.matrix(new_data)
-  }
+  if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
   # generate design matrix
   pred_x_basis <- make_design_matrix(new_data, object$basis_list)
@@ -54,8 +52,8 @@ predict.hal9001 <- function(object,
     test = is.null(new_X_unpenalized),
     yes = 0,
     no = {
-      assert_that(is.matrix(new_X_unpenalized))
-      assert_that(nrow(new_X_unpenalized) == nrow(new_data))
+      assertthat::assert_that(is.matrix(new_X_unpenalized))
+      assertthat::assert_that(nrow(new_X_unpenalized) == nrow(new_data))
       ncol(new_X_unpenalized)
     }
   )
@@ -107,10 +105,10 @@ predict.hal9001 <- function(object,
     preds <- preds + offset
   }
 
-  # apply logit transformation for logistic regression predictions
+  # apply inverse family (link function) transformations
   if (object$family == "binomial") {
     preds <- stats::plogis(preds)
-  } else if (object$family == "cox") {
+  } else if (object$family %in% c("poisson", "cox")) {
     preds <- exp(preds)
   }
 

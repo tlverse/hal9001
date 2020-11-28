@@ -14,7 +14,7 @@ fit_hal(
   foldid = NULL,
   use_min = TRUE,
   reduce_basis = NULL,
-  family = c("gaussian", "binomial", "cox"),
+  family = c("gaussian", "binomial", "poisson", "cox"),
   return_lasso = TRUE,
   return_x_basis = FALSE,
   basis_list = NULL,
@@ -32,7 +32,7 @@ fit_hal(
 \item{Y}{A \code{numeric} vector of obervations of the outcome variable.}
 
 \item{X_unpenalized}{An input \code{matrix} with the same format as X, that
-directly get appended into the design matrix (no basis expansion). No L-1
+directly get appended into the design matrix (no basis expansion). No L1
 penalization is performed on these covariates.}
 
 \item{max_degree}{The highest order of interaction terms for which the basis
@@ -47,14 +47,13 @@ will produce a (faster) call to a custom Lasso routine.}
 \item{n_folds}{Integer for the number of folds to be used when splitting the
 data for V-fold cross-validation. This defaults to 10.}
 
-\item{foldid}{An optional vector of values between 1 and \code{n_folds}
-identifying what fold each observation is in. If supplied, \code{n_folds}
-can be missing. When supplied, this is passed to
-\code{\link[glmnet]{cv.glmnet}}.}
+\item{foldid}{An optional \code{numeric} containing values between 1 and
+\code{n_folds}, identifying the fold to which each observation is assigned.
+If supplied, \code{n_folds} can be missing. In such a case, this vector is
+passed directly to \code{\link[glmnet]{cv.glmnet}}.}
 
-\item{use_min}{Determines which lambda is selected from
-\code{\link[glmnet]{cv.glmnet}}. \code{TRUE} corresponds to
-\code{"lambda.min"} and \code{FALSE} corresponds to \code{"lambda.1se"}.}
+\item{use_min}{Specify lambda selected by \code{\link[glmnet]{cv.glmnet}}.
+\code{TRUE}, \code{"lambda.min"} is used; otherwise, \code{"lambda.1se"}.}
 
 \item{reduce_basis}{A \code{numeric} value bounded in the open interval
 (0,1) indicating the minimum proportion of 1's in a basis function column
@@ -66,10 +65,12 @@ basis functions are used in the lasso-fitting stage of the HAL algorithm.}
 \item{family}{A \code{character} corresponding to the error family for a
 generalized linear model. Options are limited to "gaussian" for fitting a
 standard linear model, "binomial" for penalized logistic regression,
-"cox" for a penalized proportional hazards model. Note that in the case of
-"binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
-documentation of the glmnet package should be consulted for any errors
-resulting from the Lasso fitting step in these cases.}
+"poisson" for penalized Poisson regression, and "cox" for a penalized
+proportional hazards model. Note that in all cases where family is not set
+to "gaussian", \code{fit_type} is limited to "glmnet". In future, aribtrary
+outcome types may be supported by passed in a \code{\link[stats]{family}}
+objects (e.g., \code{\link[stats]{quasibinomial}}), which could be passed
+through to \code{\link[glmnet]{glmnet}} or \code{\link[glmnet]{cv.glmnet}}.}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
 the \code{glmnet} fit of the lasso model.}

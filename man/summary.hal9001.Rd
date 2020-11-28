@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{summary.hal9001}
 \alias{summary.hal9001}
-\title{Summary of HAL fits}
+\title{Summary Method for HAL fit objects}
 \usage{
 \method{summary}{hal9001}(
   object,
@@ -45,7 +45,7 @@ places to be used for rounding term cutoff values.}
 A list summarizing a \code{hal9001} object's coefficients.
 }
 \description{
-Summary of HAL fits
+Summary Method for HAL fit objects
 }
 \details{
 Method for summarizing the coefficients of the Highly Adaptive

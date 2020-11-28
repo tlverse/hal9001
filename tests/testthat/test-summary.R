@@ -1,4 +1,4 @@
-context("Unit test for summary method.")
+context("Summary method.")
 set.seed(45791)
 
 n <- 50
@@ -21,7 +21,7 @@ test_that("Basic summary works", {
 
 test_that("Basic summary works when lambda is provided", {
   summary(hal_fit, lambda = hal_fit$lambda_star)
-  summary(hal_fit, lambda = hal_fit$glmnet_lasso$lambda[7])
+  summary(hal_fit, lambda = hal_fit$lasso_fit$lambda[7])
 })
 
 test_that("Summary with all coefficients works", {
@@ -53,7 +53,7 @@ test_that("Print works", {
 test_that("Errors work", {
   expect_error(
     summary(hal_fit, lambda = c(1, 2)),
-    "Cannot summarize over multiple lambda."
+    "Cannot summarize over multiple values of lambda."
   )
   expect_error(
     summary(hal_fit, lambda = 1),

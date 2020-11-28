@@ -1,9 +1,22 @@
+# hal9001 0.2.8
+
+As of November 2020:
+* Allow support for Poisson family to `glmnet()`.
+* Begins consideration of supporting arbitrary `stats::family()` objects to be
+  passed through to calls to `glmnet()`.
+* Simplifies output of `fit_hal()` by unifying the redundant `hal_lasso` and
+  `glmnet_lasso` slots into the new `lasso_fit` slot.
+* Cleans up of methods throughout and improves documentation, reducing a few
+  redundancies for cleaner/simpler code in `summary.hal9001`.
+* Adds link to DOI of the published _Journal of Open Source Software_ paper in
+  `DESCRIPTION`.
+
 # hal9001 0.2.7
 
 As of September 2020:
-* adds a `summary` method for interpreting HAL regressions
+* Adds a `summary` method for interpreting HAL regressions
   (https://github.com/tlverse/hal9001/pull/64)
-* adds a software paper for publication in the _Journal of Open Source
+* Adds a software paper for publication in the _Journal of Open Source
   Software_ (https://github.com/tlverse/hal9001/pull/71)
 
 # hal9001 0.2.6

@@ -11,7 +11,7 @@
 #'
 #' @param X An input \code{matrix} containing observations and covariates.
 #' @param X_unpenalized An input \code{matrix} with the same format as X, that
-#'  directly get appended into the design matrix (no basis expansion). No L-1
+#'  directly get appended into the design matrix (no basis expansion). No L1
 #'  penalization is performed on these covariates.
 #' @param Y A \code{numeric} vector of obervations of the outcome variable.
 #' @param max_degree The highest order of interaction terms for which the basis
@@ -23,13 +23,12 @@
 #'  will produce a (faster) call to a custom Lasso routine.
 #' @param n_folds Integer for the number of folds to be used when splitting the
 #'  data for V-fold cross-validation. This defaults to 10.
-#' @param foldid An optional vector of values between 1 and \code{n_folds}
-#'  identifying what fold each observation is in. If supplied, \code{n_folds}
-#'  can be missing. When supplied, this is passed to
-#'  \code{\link[glmnet]{cv.glmnet}}.
-#' @param use_min Determines which lambda is selected from
-#'  \code{\link[glmnet]{cv.glmnet}}. \code{TRUE} corresponds to
-#'  \code{"lambda.min"} and \code{FALSE} corresponds to \code{"lambda.1se"}.
+#' @param foldid An optional \code{numeric} containing values between 1 and
+#'  \code{n_folds}, identifying the fold to which each observation is assigned.
+#'  If supplied, \code{n_folds} can be missing. In such a case, this vector is
+#'  passed directly to \code{\link[glmnet]{cv.glmnet}}.
+#' @param use_min Specify lambda selected by \code{\link[glmnet]{cv.glmnet}}.
+#'  \code{TRUE}, \code{"lambda.min"} is used; otherwise, \code{"lambda.1se"}.
 #' @param reduce_basis A \code{numeric} value bounded in the open interval
 #'  (0,1) indicating the minimum proportion of 1's in a basis function column
 #'  needed for the basis function to be included in the procedure to fit the
@@ -39,10 +38,12 @@
 #' @param family A \code{character} corresponding to the error family for a
 #'  generalized linear model. Options are limited to "gaussian" for fitting a
 #'  standard linear model, "binomial" for penalized logistic regression,
-#'  "cox" for a penalized proportional hazards model. Note that in the case of
-#'  "binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
-#'  documentation of the glmnet package should be consulted for any errors
-#'  resulting from the Lasso fitting step in these cases.
+#'  "poisson" for penalized Poisson regression, and "cox" for a penalized
+#'  proportional hazards model. Note that in all cases where family is not set
+#'  to "gaussian", \code{fit_type} is limited to "glmnet". In future, aribtrary
+#'  outcome types may be supported by passed in a \code{\link[stats]{family}}
+#'  objects (e.g., \code{\link[stats]{quasibinomial}}), which could be passed
+#'  through to \code{\link[glmnet]{glmnet}} or \code{\link[glmnet]{cv.glmnet}}.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{glmnet} fit of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -100,7 +101,7 @@ fit_hal <- function(X,
                     foldid = NULL,
                     use_min = TRUE,
                     reduce_basis = NULL,
-                    family = c("gaussian", "binomial", "cox"),
+                    family = c("gaussian", "binomial", "poisson", "cox"),
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     basis_list = NULL,
@@ -117,33 +118,21 @@ fit_hal <- function(X,
 
   # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
   dot_args <- list(...)
-  assertthat::assert_that(!("lambda.min.ratio" %in% names(dot_args) &
-    family == "binomial"),
-  msg = paste(
-    "`glmnet` silently ignores",
-    "`lambda.min.ratio` when",
-    "`family = 'binomial'`."
-  )
+
+  # check that lambda.min.ratio is not passed to glmnet for binary outcomes
+  assertthat::assert_that(
+    !("lambda.min.ratio" %in% names(dot_args) & family == "binomial"),
+    msg = "`glmnet` ignores `lambda.min.ratio` when `family = 'binomial'`."
   )
 
-  # NOTE: NOT supporting binomial outcomes with lassi method currently
-  assertthat::assert_that(!(fit_type == "lassi" && family == "binomial"),
-    msg = paste(
-      "For binary outcomes, please set",
-      "argument 'fit_type' to 'glmnet'."
-    )
-  )
-  assertthat::assert_that(!(fit_type == "lassi" && family == "cox"),
-    msg = paste(
-      "For Cox models, please set argument",
-      "'fit_type' to 'glmnet'."
-    )
+  # NOTE: NOT supporting non-gaussian outcomes with lassi method currently
+  assertthat::assert_that(
+    !(fit_type == "lassi" && family != "gaussian"),
+    msg = "Outcome is non-gaussian, set `fit_type = 'glmnet'`."
   )
 
   # cast X to matrix -- and don't start the timer until after
-  if (!is.matrix(X)) {
-    X <- as.matrix(X)
-  }
+  if (!is.matrix(X)) X <- as.matrix(X)
 
   # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
   if (yolo) hal9000()
@@ -162,14 +151,17 @@ fit_hal <- function(X,
   # bookkeeping: get start time of enumerate basis procedure
   time_start <- proc.time()
 
-  # make design matrix for HAL
+  # enumerate basis functions for making HAL design matrix
   if (is.null(basis_list)) {
     basis_list <- enumerate_basis(X, max_degree)
   }
+
   # bookkeeping: get end time of enumerate basis procedure
   time_enumerate_basis <- proc.time()
 
+  # make design matrix for HAL from basis functions
   x_basis <- make_design_matrix(X, basis_list)
+
   # bookkeeping: get end time of design matrix procedure
   time_design_matrix <- proc.time()
 
@@ -185,6 +177,7 @@ fit_hal <- function(X,
   copy_map <- make_copy_map(x_basis)
   unique_columns <- as.numeric(names(copy_map))
   x_basis <- x_basis[, unique_columns]
+
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
 
@@ -213,6 +206,7 @@ fit_hal <- function(X,
   }
 
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
+  #       casting to a regular (dense) matrix has a large memory cost :(
   if (family == "cox") {
     x_basis <- as.matrix(x_basis)
   }
@@ -289,9 +283,6 @@ fit_hal <- function(X,
   )
 
   # construct output object via lazy S3 list
-  # NOTE: hal_lasso and glmnet_lasso slots seem to contain the same information
-  #       This should be cleaned up in a future release but is retained at this
-  #       time (10 June 2019) to preserve code that depends on hal9001
   fit <- list(
     call = call,
     x_basis =
@@ -308,17 +299,9 @@ fit_hal <- function(X,
     lambda_star = lambda_star,
     reduce_basis = reduce_basis,
     family = family,
-    hal_lasso =
-      if (cv_select & return_lasso) {
+    lasso_fit =
+      if (return_lasso) {
         hal_lasso
-      } else {
-        NULL
-      },
-    glmnet_lasso =
-      if (!cv_select & return_lasso) {
-        hal_lasso
-      } else if (cv_select & return_lasso) {
-        hal_lasso$glmnet.fit
       } else {
         NULL
       },
