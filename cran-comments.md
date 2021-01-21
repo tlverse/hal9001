@@ -15,5 +15,27 @@
          libs   5.3Mb
 
 ## Downstream dependencies
-* This is an updated to an existing CRAN package.
+* This is an updated to an existing CRAN package, re-submitted after fixing:
+        Found the following (possibly) invalid URLs:
+           URL: http://arxiv.org/abs/1708.09502 (moved to
+          https://arxiv.org/abs/1708.09502)
+             From: inst/doc/intro_hal9001.html
+                   README.md
+             Status: 200
+             Message: OK
+           URL: http://arxiv.org/abs/2005.11303 (moved to
+          https://arxiv.org/abs/2005.11303)
+             From: README.md
+             Status: 200
+             Message: OK
+           URL: http://www.r-pkg.org/pkg/hal9001 (moved to
+          https://www.r-pkg.org:443/pkg/hal9001)
+             From: README.md
+             Status: 200
+             Message: OK
+           URL: http://www.repostatus.org/#active (moved to
+          https://www.repostatus.org/)
+             From: README.md
+             Status: 200
+             Message: OK
 * There are two downstream dependencies on CRAN: `haldensify`, `txshift`.
