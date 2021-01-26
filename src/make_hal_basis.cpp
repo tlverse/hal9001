@@ -39,6 +39,7 @@ BasisMap enumerate_basis(const NumericMatrix& X_sub,
 //'
 //' @param X_sub A subset of the columns of X, the original design matrix.
 //' @param cols An index of the columns that were reduced to by sub-setting.
+//' @param order_map A vector with length the original unsubsetted matrix X which specifies the smoothness of the function in each covariate.
 // [[Rcpp::export]]
 List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, const IntegerVector& order_map){
 

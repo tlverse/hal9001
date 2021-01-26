@@ -232,7 +232,7 @@ enumerate_edge_basis <- function(x, max_degree = 3, order_map = rep(0, ncol(x)),
 
 
 
-
+# A helper which discretizes the variables into number "bins" unique values.
 quantizer = function(X, bins) {
   if (is.null(bins)) {
     return(X)
