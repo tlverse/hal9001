@@ -4,7 +4,13 @@
 \alias{basis_of_degree}
 \title{Compute Degree of Basis Functions}
 \usage{
-basis_of_degree(x, degree, order_map, include_zero_order, include_lower_order)
+basis_of_degree(
+  x,
+  degree,
+  smoothness_orders,
+  include_zero_order,
+  include_lower_order
+)
 }
 \arguments{
 \item{x}{An input \code{matrix} containing observations and covariates
@@ -14,16 +20,16 @@ following standard conventions in problems of statistical learning.}
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
-\item{order_map}{An integer vector of length ncol(x) specifying the desired smoothness of the function in each covariate.
+\item{smoothness_orders}{An integer vector of length ncol(x) specifying the desired smoothness of the function in each covariate.
  k = 0 is no smoothness (indicator basis), k = 1 is first order smoothness, and so on.
-For an additive model, the component function for each covariate will have the degree of smoothness as specified by order_map.
+For an additive model, the component function for each covariate will have the degree of smoothness as specified by smoothness_orders.
 For non-additive components (tensor products of single variate basis functions),
-the univariate basis functions in each tensor product have smoothness degree as specified by order_map.}
+the univariate basis functions in each tensor product have smoothness degree as specified by smoothness_orders.}
 
-\item{include_zero_order}{A boolean variable. If true the zero order basis functions are included for each covariate, in addition to the smooth basis functions specified by order_map.
+\item{include_zero_order}{A boolean variable. If true the zero order basis functions are included for each covariate, in addition to the smooth basis functions specified by smoothness_orders.
 This allows the algorithm to data-adaptively choose the smoothness.}
 
-\item{include_lower_order}{A boolean variable. Similar to include_zero_order, except inclues all basis functions of lower smoothness degrees than specified via order_map.}
+\item{include_lower_order}{A boolean variable. Similar to include_zero_order, except inclues all basis functions of lower smoothness degrees than specified via smoothness_orders.}
 }
 \value{
 A \code{list} containing  basis functions and cutoffs generated from

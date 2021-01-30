@@ -8,12 +8,12 @@ formula_hal(
   formula,
   data,
   smoothness_orders = NULL,
-  include_zero_order = F,
-  bins = NULL,
+  num_knots = NULL,
   generate_lower_degrees = F,
   exclusive_dot = F,
   custom_group = NULL,
   remove = NULL,
+  adaptive_smoothing = F,
   ...
 )
 }
@@ -59,17 +59,6 @@ Familar operations such as the ":", `*` ,"-" are also supported:
  All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.}
 
 \item{data}{A data.frame or named matrix containing the outcome and covariates specified in the formula.}
-
-\item{smoothness_orders}{Same as \code{smoothness_orders} in function \code{fit_hal}.
-Note it should be of length 1 or length ncol(data)-1. Vector recycling will be employed otherwise.}
-
-\item{include_zero_order}{Same as \code{include_zero_order} in function \code{fit_hal}}
-
-\item{bins}{Same as \code{bins} in function \code{fit_hal}}
-
-\item{generate_lower_degrees}{Boolean indicator for whether all lower interaction/main term basis functions should be generated for each
-specified term. If true then "y~h(x,w)" behaves similar to "y~x*w" in \code{formula},
-and if false then it behaves similar to "y~x:y" in \code{formula}.}
 
 \item{exclusive_dot}{Boolean indicator for whether the "." and ".^max_degree" arguments in the formula
 should be treated as exclusive or inclusive the variables already specified in the formula.

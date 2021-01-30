@@ -9,6 +9,8 @@ fit_hal(
   Y,
   X_unpenalized = NULL,
   max_degree = 3,
+  smoothness_orders = rep(0, ncol(X)),
+  num_knots = sapply(1:max_degree, function(d) {     round(500/d) }),
   fit_type = c("glmnet", "lassi"),
   n_folds = 10,
   foldid = NULL,
@@ -22,6 +24,7 @@ fit_hal(
   id = NULL,
   offset = NULL,
   cv_select = TRUE,
+  adaptive_smoothing = FALSE,
   ...,
   yolo = TRUE
 )
@@ -37,7 +40,36 @@ penalization is performed on these covariates.}
 
 \item{max_degree}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
-generating basis functions for the full dimensionality of the input matrix.}
+generating basis functions for the full dimensionality of the input matrix.
+@param smoothness_orders An \code{integer} vector of length 1 or length ncol(\code{X}).
+If \code{smoothness_orders} is of length 1 then its values are recycled to form a vector of length length ncol(\code{X}).
+Given such a vector of length ncol(\code{X}), the ith element specifies the level of smoothness for the variable
+corresponding with the ith column in \code{X}.
+A value of "0" corresponds with 0-order splines (piece-wise constant) which assumes no smoothness or continuity of true regression function.
+A value of "1" corresponds with 1-order splines (piece-wise linear) which only assumes continuity of true regression function.
+A value of "2" corresponds with 2-order splines (piece-wise quadratic and linear terms) which assumes one order of differentiability for the true regression function.
+Warning: if \code{smoothness_orders} has length less than ncol(\code{X}) then values are recycled as needed.
+@param num_knots An \code{integer} vector of length 1 or length \code{max_degree}.
+If \code{num_knots} is a vector of length 1 then its values are recycled to produce a vector of length \code{max_degree}.
+Given a possibly recycled vector of length \code{max_degree},
+num_knots[i] specifies the maximum number of knot points used when generating basis functions of degree i for each covariate.
+For example, num_knots[1] specifies how many knot points to use when generating main-term additive basis functions.
+num_knots[2] specifies how many knot points should be used when generating each univariate basis function in the 2-tensor product basis functions.
+A smaller number of knot points gives rise to a less smooth function. However, fewer knot points can significantly decrease runtime.
+If smoothness_orders is 1 or higher then few knot points (10-30) are needed to maintain near optimal performance. For smoothness_orders = 0, too few knot points (< 50) can significantly reduce performance.
+We recommend specifying a vector of length \code{max_degree} that decreases exponentially to prevent combinatorical explosions in the number of higher degree interaction basis functions generated.
+Recommended settings for no cost in performance:
+If smoothness_orders = 0 and max_degree = 3, num_knots = c(400, 200, 100).
+If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(100, 75, 50).
+Recommended settings for fairly fast runtime and great performance:
+If smoothness_orders = 0 and max_degree = 3, num_knots = c(200, 100, 50).
+If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(50, 25, 15).
+Recommended settings for fast runtime and good/great performance:
+If smoothness_orders = 0 and max_degree = 3, num_knots = c(100, 50, 25).
+If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(40, 15, 10).
+Recommended settings for very fast runtime and good performance:
+If smoothness_orders = 0 and max_degree = 3, num_knots = c(50, 25, 10).
+If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(25, 10, 5).}
 
 \item{fit_type}{The specific routine to be called when fitting the Lasso
 regression in a cross-validated manner. Choosing the \code{glmnet} option
@@ -102,7 +134,10 @@ pick the optimal value (based on cross-validation) (when set to
 value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
 
 \item{...}{Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
-consult its documentation for a full list of options.}
+consult its documentation for a full list of options.
+@param adaptive_smoothing A \code{boolean} which if true HAL will perform adaptive smoothing up until the maximum order of smoothness specified by \ref{smoothness_orders}.
+For example, if smoothness_orders = 2 and adaptive_smoothing = TRUE then HAL will generate all basis functions of smoothness order 0, 1, and 2, and data-adaptively select the basis functions to use.
+Warning: This can increase runtime by a factor of 2-3+ depending on value of \code{smoothness_orders}.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically

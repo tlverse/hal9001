@@ -17,6 +17,36 @@
 #' @param max_degree The highest order of interaction terms for which the basis
 #'  functions ought to be generated. The default (\code{NULL}) corresponds to
 #'  generating basis functions for the full dimensionality of the input matrix.
+#'  @param smoothness_orders An \code{integer} vector of length 1 or length ncol(\code{X}).
+#'  If \code{smoothness_orders} is of length 1 then its values are recycled to form a vector of length length ncol(\code{X}).
+#'  Given such a vector of length ncol(\code{X}), the ith element specifies the level of smoothness for the variable
+#'  corresponding with the ith column in \code{X}.
+#'  A value of "0" corresponds with 0-order splines (piece-wise constant) which assumes no smoothness or continuity of true regression function.
+#'  A value of "1" corresponds with 1-order splines (piece-wise linear) which only assumes continuity of true regression function.
+#'  A value of "2" corresponds with 2-order splines (piece-wise quadratic and linear terms) which assumes one order of differentiability for the true regression function.
+#'  Warning: if \code{smoothness_orders} has length less than ncol(\code{X}) then values are recycled as needed.
+#'  @param num_knots An \code{integer} vector of length 1 or length \code{max_degree}.
+#'  If \code{num_knots} is a vector of length 1 then its values are recycled to produce a vector of length \code{max_degree}.
+#'  Given a possibly recycled vector of length \code{max_degree},
+#'  num_knots[i] specifies the maximum number of knot points used when generating basis functions of degree i for each covariate.
+#'  For example, num_knots[1] specifies how many knot points to use when generating main-term additive basis functions.
+#'  num_knots[2] specifies how many knot points should be used when generating each univariate basis function in the 2-tensor product basis functions.
+#'  A smaller number of knot points gives rise to a less smooth function. However, fewer knot points can significantly decrease runtime.
+#'  If smoothness_orders is 1 or higher then few knot points (10-30) are needed to maintain near optimal performance. For smoothness_orders = 0, too few knot points (< 50) can significantly reduce performance.
+#'  We recommend specifying a vector of length \code{max_degree} that decreases exponentially to prevent combinatorical explosions in the number of higher degree interaction basis functions generated.
+#'  Recommended settings for no cost in performance:
+#'  If smoothness_orders = 0 and max_degree = 3, num_knots = c(400, 200, 100).
+#'  If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(100, 75, 50).
+#'  Recommended settings for fairly fast runtime and great performance:
+#'  If smoothness_orders = 0 and max_degree = 3, num_knots = c(200, 100, 50).
+#'  If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(50, 25, 15).
+#'  Recommended settings for fast runtime and good/great performance:
+#'  If smoothness_orders = 0 and max_degree = 3, num_knots = c(100, 50, 25).
+#'  If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(40, 15, 10).
+#'  Recommended settings for very fast runtime and good performance:
+#'  If smoothness_orders = 0 and max_degree = 3, num_knots = c(50, 25, 10).
+#'  If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(25, 10, 5).
+#'
 #' @param fit_type The specific routine to be called when fitting the Lasso
 #'  regression in a cross-validated manner. Choosing the \code{glmnet} option
 #'  will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
@@ -68,6 +98,9 @@
 #' @param offset a vector of offset values, used in fitting.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
+#'  @param adaptive_smoothing A \code{boolean} which if true HAL will perform adaptive smoothing up until the maximum order of smoothness specified by \ref{smoothness_orders}.
+#'  For example, if smoothness_orders = 2 and adaptive_smoothing = TRUE then HAL will generate all basis functions of smoothness order 0, 1, and 2, and data-adaptively select the basis functions to use.
+#'  Warning: This can increase runtime by a factor of 2-3+ depending on value of \code{smoothness_orders}.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
@@ -96,6 +129,8 @@ fit_hal <- function(X,
                     Y,
                     X_unpenalized = NULL,
                     max_degree = 3,
+                    smoothness_orders = rep(0, ncol(X)),
+                    num_knots = sapply(1:max_degree, function(d){round(500/d)}),
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     foldid = NULL,
@@ -109,6 +144,7 @@ fit_hal <- function(X,
                     id = NULL,
                     offset = NULL,
                     cv_select = TRUE,
+                    adaptive_smoothing = FALSE,
                     ...,
                     yolo = TRUE) {
   # check arguments and catch function call
@@ -123,6 +159,13 @@ fit_hal <- function(X,
   assertthat::assert_that(
     !("lambda.min.ratio" %in% names(dot_args) & family == "binomial"),
     msg = "`glmnet` ignores `lambda.min.ratio` when `family = 'binomial'`."
+  )
+
+  # If someone tries to pass (glmnet) standardize argument through "..." throw error.
+  # This is done because the HAL algorithm requires standardize = F for the variation norm interpretation to hold.
+  assertthat::assert_that(
+    !("standardize" %in% names(dot_args)),
+    msg = "hal9001 does not support the standardize argument."
   )
 
   # NOTE: NOT supporting non-gaussian outcomes with lassi method currently
@@ -153,7 +196,16 @@ fit_hal <- function(X,
 
   # enumerate basis functions for making HAL design matrix
   if (is.null(basis_list)) {
-    basis_list <- enumerate_basis(X, max_degree)
+    # Generates all basis functions of smoothness less than or equal to the smoothness specified in smoothness_order
+    # This allows the lasso algorithm to data-adaptively choose the smoothness.
+    if(adaptive_smoothing && all(smoothness_orders!=0)) {
+      include_lower_order <- T
+      include_zero_order <- T
+    } else {
+      include_zero_order <- F
+      include_lower_order <- F
+    }
+    basis_list <- enumerate_basis(X, max_degree = max_degree, smoothness_orders = smoothness_orders, num_knots = num_knots, include_lower_order = include_lower_order, include_zero_order = include_zero_order)
   }
 
   # bookkeeping: get end time of enumerate basis procedure
@@ -166,7 +218,7 @@ fit_hal <- function(X,
   time_design_matrix <- proc.time()
 
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
-  if (!is.null(reduce_basis) && is.numeric(reduce_basis)) {
+  if (!is.null(reduce_basis) && is.numeric(reduce_basis) && all(smoothness_orders == 0)) {
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
@@ -174,9 +226,17 @@ fit_hal <- function(X,
   time_reduce_basis <- proc.time()
 
   # catalog and eliminate duplicates
-  copy_map <- make_copy_map(x_basis)
-  unique_columns <- as.numeric(names(copy_map))
-  x_basis <- x_basis[, unique_columns]
+  # Lars' change: copy_map is not needed but to preserve functionality (e.g. summary) I pass a trivial copy_map.
+  if(all(smoothness_orders == 0)) {
+    copy_map <- make_copy_map(x_basis)
+    unique_columns <- as.numeric(names(copy_map))
+    x_basis <- x_basis[, unique_columns]
+    basis_list <- basis_list[unique_columns]
+
+  }
+  copy_map <- seq_along(basis_list)
+  names(copy_map) <- seq_along(basis_list)
+
 
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
@@ -240,6 +300,7 @@ fit_hal <- function(X,
         family = family,
         lambda = lambda,
         penalty.factor = penalty_factor,
+        standardize = FALSE,
         ...
       )
       lambda_star <- hal_lasso$lambda
@@ -253,6 +314,7 @@ fit_hal <- function(X,
         lambda = lambda,
         foldid = foldid,
         penalty.factor = penalty_factor,
+        standardize = FALSE,
         ...
       )
       if (use_min) {

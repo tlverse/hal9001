@@ -46,13 +46,6 @@
 #'  h(x,.) -> h(x,w) + h(x,z) and h(.,.) -> h(x,w) + h(x,z) + h(w,z) and h(x,w,.) -> h(x,w,z) (assuming the covariates are only (x,w,z)).
 #'  All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.
 #' @param data A data.frame or named matrix containing the outcome and covariates specified in the formula.
-#' @param smoothness_orders Same as \code{smoothness_orders} in function \code{fit_hal}.
-#' Note it should be of length 1 or length ncol(data)-1. Vector recycling will be employed otherwise.
-#' @param include_zero_order Same as \code{include_zero_order} in function \code{fit_hal}
-#' @param bins Same as \code{bins} in function \code{fit_hal}
-#' @param generate_lower_degrees Boolean indicator for whether all lower interaction/main term basis functions should be generated for each
-#' specified term. If true then "y~h(x,w)" behaves similar to "y~x*w" in \code{formula},
-#' and if false then it behaves similar to "y~x:y" in \code{formula}.
 #' @param exclusive_dot Boolean indicator for whether the "." and ".^max_degree" arguments in the formula
 #' should be treated as exclusive or inclusive the variables already specified in the formula.
 #' For example, if "y ~ h(x,w) + ." should the "." be interpreted as: add all one-way basis functions
@@ -80,17 +73,18 @@ formula_hal <-
   function(formula,
            data,
            smoothness_orders = NULL,
-           include_zero_order = F,
-           bins = NULL,
+           num_knots = NULL,
            generate_lower_degrees = F,
            exclusive_dot = F,
-           custom_group = NULL, remove = NULL,...) {
+           custom_group = NULL, remove = NULL, adaptive_smoothing = F, ...) {
     other_args <- list(...)
+    generate_lower_degrees <- adaptive_smoothing
+    include_zero_order <- adaptive_smoothing
     if(any(sapply(names(custom_group), function(name){nchar(name)!=1}))){
       stop("Custom group names must be single characters of length one.")
     }
-    if(any(sapply(names(custom_group), function(name){name %in% colnames(data)}))){
-      stop("Custom group names must not be variable names in data.")
+    if(any(sapply(names(custom_group), function(name){name %in% unlist(sapply(colnames(data), function(a){strsplit(a, "")}))}))){
+      stop("Custom group names must not be characters found in variables of data.")
     }
     if(any(sapply(names(custom_group), function(name){name == "."}))){
       stop("Group name '.' is not allowed.")
@@ -179,7 +173,7 @@ formula_hal <-
     }
     X = data[,-which(colnames(data) == outcome), drop = F]
     X_orig = X
-    #X = quantizer(X, bins)
+    #X = quantizer(X, num_knots)
 
     Y= data[, outcome]
     names = colnames(X)
@@ -213,10 +207,10 @@ formula_hal <-
       degree_rest = NULL
     }
     if(!is.null(degree_rest)) {
-      bins <- bins + rep(0, degree_rest)
+      num_knots <- num_knots + rep(0, degree_rest)
 
     } else {
-      bins <- bins
+      num_knots <- num_knots
 
     }
 
@@ -473,10 +467,15 @@ formula_hal <-
         return()
       }
       col_index <- interactions_index[[i]]
-      num_bins <- bins[length(col_index)]
-      X <- quantizer(X, num_bins)
+      if(length(num_knots) < length(col_index)) {
+        n <- min(num_knots)
+      } else {
+        n <- num_knots[length(col_index)]
+      }
 
-      new_basis = basis_list_cols_order(col_index, X, order_map, include_zero_order, F)
+      X <- quantizer(X, n)
+
+      new_basis = basis_list_cols(col_index, X, order_map, include_zero_order, F)
       if (monotone_type[i] == "i") {
         lower.limits <<- c(lower.limits, rep(0, length(new_basis)))
         upper.limits<<-c(upper.limits, rep(Inf, length(new_basis)))
@@ -491,6 +490,7 @@ formula_hal <-
       }
       basis_list<<-c(basis_list, new_basis)
     }
+
     lapply(1:length(interactions_index), add_basis)
     keep_dot_arg = function(combo){
       if(any(remove %in% combo)){
@@ -506,8 +506,13 @@ formula_hal <-
       lapply(
         dot_argument_combos,
         function(combo) {
-          X <- quantizer(X, bins[length(combo)])
-          basis_list_cols_order(combo, X, order_map, include_zero_order, F)
+          if(length(num_knots) < length(combo)) {
+            n <- min(num_knots)
+          } else {
+            n <- num_knots[length(combo)]
+          }
+          X <- quantizer(X, n)
+          basis_list_cols(combo, X, order_map, include_zero_order, F)
         }
       ),
       recursive = F
@@ -537,7 +542,7 @@ formula_hal <-
     form_obj$outcome = outcome
     form_obj$X = as.matrix(X_orig)
     form_obj$Y = (Y)
-    form_obj$bins = bins
+    form_obj$num_knots = num_knots
     form_obj$include_zero_order = include_zero_order
     form_obj$other_args = other_args
     class(form_obj) <- "formula_hal9001"
@@ -580,22 +585,6 @@ print.formula_hal9001 <- function(formula, expand = F){
   return(invisible(NULL))
 }
 
-basis_list_cols_order <- function(cols, x, order_map, include_zero_order, include_lower_order) {
-
-
-  basis_list <- basis_list_cols(cols, x, order_map, include_zero_order, include_lower_order)
-  # Generate edge basis (including all lower order basis functions)
-  # Do not enforce that knot points are observed, as this is unlikely for edge points.
-  # Edge basis functions are important so just generate all of them from min of each column.
-  x_edge <- matrix(apply(x,2,min), nrow = 1)
-  basis_list_edge <- basis_list_cols(cols, x_edge, order_map, F, T)
-  basis_list <- union(basis_list, basis_list_edge)
-
-
-  # output
-  return(basis_list)
-}
-
 
 #' @export
 model.matrix.formula_hal9001 <- function(formula, new_X = NULL){
@@ -609,121 +598,16 @@ fit_hal <- function(x){
   UseMethod("fit_hal",x)
 
 }
+
 #' @export
-fit_hal.formula_hal9001 = function(formula, family = ifelse(all(formula$Y %in% c(0,1)), "binomial", "gaussian"), ...){
+fit_hal.formula_hal9001 = function(formula){
   other_args <- formula$other_args
 
   do.call(function(...) {fit_halfast(X = formula$X, Y = formula$Y,
               lower.limits = formula$lower.limits,
               upper.limits = formula$upper.limits,
               smoothness_orders = formula$smoothness_orders,
-              num_bins = formula$bins,
+              num_knots = formula$num_knots,
               basis_list = formula$basis_list,
               yolo=F, ...)}, other_args)
 }
-
-#' @export
-importance <- function(fit, covariate, X = NULL, intervene_on = NULL){
-
-  if(!is.null(intervene_on)){
-    intervene_on = intervene_on[setdiff(names(intervene_on),covariate)]
-  }
-  if(is.null(X)){
-    X = fit$formula$X
-  }
-  for(name in names(intervene_on)){
-
-    X[, name] = intervene_on[[name]]
-  }
-
-  index = which(colnames(X)==covariate)
-  quantiles = quantile(X[,index], seq(0,1,length.out = 10))
-  preds = colMeans(do.call(cbind, lapply(quantiles, function(q, Z){
-    X[,index] = q
-    predict(fit, new_data = X)
-  }, Z = X)))
-
-  plot_data = data.frame(quantiles, preds)
-  colnames(plot_data) = c(covariate, "outcome")
-  plot = ggplot2::ggplot(plot_data, aes_string(x = covariate, y = "outcome" )) +
-    ggplot2::geom_smooth(se = F) + ggplot2::labs(
-      title  =paste0("Estimated conditional mean of outcome ", paste0(fit$formula$outcome), " given covariate ", covariate),
-      subtitle = ifelse(!is.null(intervene_on), paste0("and setting intervention node(s) ", names(intervene_on)," to value(s): ", paste0(intervene_on, collapse = ", ")), ""),
-      ylab = "Estimated conditional mean"
-    )
-  coefs =  stats::coef(lm(as.formula(paste0("outcome ~ ",covariate)), plot_data))
-  output = list()
-  output$plot = plot
-  output$beta_projection = coefs[2]
-  output$intercept_projection = coefs[1]
-  output$preds = preds
-  return(output)
-}
-
-
-#' @export
-summary.hal9001fast <- function(fit, lambda_index = NULL, vim = F, plot_vim = F){
-  formula =  fit$formula
-  preds = predict(fit, new_data = formula$X)
-  coefs = fit$coefs
-  if(is.matrix(preds)){
-    preds = as.vector(preds[,lambda_index])
-    coefs = as.vector(coefs[,lambda_index])
-  }
-  X = formula$X
-  Y = formula$Y
-  output = list()
-  if(fit$family == "gaussian"){
-    output$MSE = mean((Y - preds)^2)
-    output$bias = mean(Y - preds)
-    output$abs_bias = mean(abs(Y - preds))
-  }
-  else if(fit$family == "binomial"){
-    output$loglik = (sum(log(preds[Y==0])) + sum(log(preds[Y==1])))/length(Y)
-    output$bias = mean(Y - preds)
-  }
-  output$`R^2` = cor(Y, preds)^2
-  keep = which(coefs!=0)
-  basis_chosen = fit$basis_list[keep]
-  coefs = coefs[keep]
-  col_map = lapply(basis_chosen, function(basis) {basis$cols})
-  main_term_index = which(sapply(col_map, function(cols){length(cols)==1}))
-  col_map_main = as.vector(unlist(col_map[main_term_index]))
-  coefs = coefs[main_term_index]
-  cols_uniq = unique(col_map_main)
-  output$selected_covariates = colnames(X)[cols_uniq]
-  mat = matrix(nrow = ifelse(vim, 4, 1), ncol = length(cols_uniq))
-  colnames(mat) = colnames(X)[cols_uniq]
-  if(vim){
-    rownames(mat) =c("covariate-specific l1 norm","covariate-specific TV", "beta: E[Y|x]~x", "intercept: E[Y|x]~x")
-  }
-  else{
-    rownames(mat) = c("covariate-specific l1 norm")
-  }
-  index = 1
-  for(col in cols_uniq){
-
-    inds = which(col_map_main==col)
-    coefs_for_col = coefs[inds]
-    mat[1,index] = sum(abs(coefs_for_col))
-    index = index + 1
-  }
-  if(vim){
-    vim_measures = lapply(colnames(mat), importance, fit = fit)
-    beta = sapply(vim_measures, function(elem){elem$beta_projection})
-    intercept = sapply(vim_measures, function(elem){elem$intercept_projection})
-    predss = sapply(vim_measures, function(elem){sum(abs(diff(elem$preds)))})
-
-    if(plot_vim){
-      plots = sapply(vim_measures, function(elem){print(elem$plot)})
-    }
-    mat[2,] = predss
-    mat[3,] = beta
-    mat[4,] = intercept
-
-  }
-  output$variable_importance = (mat)
-
-  return(output)
-}
-
