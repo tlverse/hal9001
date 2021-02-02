@@ -4,7 +4,7 @@
 # R/`hal9001`
 
 [![Travis-CI Build
-Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis-ci.org/tlverse/hal9001)
+Status](https://travis-ci.com/tlverse/hal9001.svg?branch=master)](https://travis-ci.com/tlverse/hal9001)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/tlverse/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/tlverse/hal9001)
 [![Coverage
@@ -98,12 +98,12 @@ hal_fit <- fit_hal(X = x, Y = y)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.003    0.000   0.003          0         0
-#> design_matrix         0.003    0.000   0.002          0         0
+#> enumerate_basis       0.004    0.000   0.005          0         0
+#> design_matrix         0.004    0.000   0.004          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
-#> remove_duplicates     0.010    0.000   0.011          0         0
-#> lasso                 0.289    0.012   0.304          0         0
-#> total                 0.306    0.012   0.321          0         0
+#> remove_duplicates     0.013    0.004   0.016          0         0
+#> lasso                 0.280    0.007   0.290          0         0
+#> total                 0.303    0.011   0.317          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)

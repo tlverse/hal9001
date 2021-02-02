@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 # R/`hal9001`
 
-[![Travis-CI Build Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis-ci.org/tlverse/hal9001)
+[![Travis-CI Build Status](https://travis-ci.com/tlverse/hal9001.svg?branch=master)](https://travis-ci.com/tlverse/hal9001)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/tlverse/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/tlverse/hal9001)
 [![Coverage Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
 [![CRAN](https://www.r-pkg.org/badges/version/hal9001)](https://www.r-pkg.org/pkg/hal9001)
