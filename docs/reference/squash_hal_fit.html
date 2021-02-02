@@ -104,7 +104,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/tlverse/hal9001">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fas fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -130,7 +130,7 @@
     <p>Reduce footprint by dropping basis functions with coefficients of zero</p>
     </div>
 
-    <pre class="usage"><span class='fu'>squash_hal_fit</span>(<span class='kw'>object</span>)</pre>
+    <pre class="usage"><span class='fu'>squash_hal_fit</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,14 +151,14 @@ fitting the Highly Adaptive LASSO, as produced by a call to <code>fit_hal</code>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='co'># generate simple test data</span>
-<span class='kw'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
-<span class='kw'>p</span> <span class='op'>&lt;-</span> <span class='fl'>3</span>
-<span class='kw'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span> <span class='op'>*</span> <span class='kw'>p</span>), <span class='kw'>n</span>, <span class='kw'>p</span>)
-<span class='kw'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='kw'>x</span>[, <span class='fl'>1</span>]) <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span>(<span class='kw'>x</span>[, <span class='fl'>2</span>]) <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n</span>, mean = <span class='fl'>0</span>, sd = <span class='fl'>0.2</span>)
+<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fl'>3</span>
+<span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>p</span><span class='op'>)</span>, <span class='va'>n</span>, <span class='va'>p</span><span class='op'>)</span>
+<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
 
 <span class='co'># fit HAL model and squash resulting object to reduce footprint</span>
-<span class='kw'>hal_fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fit_hal.html'>fit_hal</a></span>(X = <span class='kw'>x</span>, Y = <span class='kw'>y</span>, yolo = <span class='fl'>FALSE</span>)
-<span class='kw'>squashed</span> <span class='op'>&lt;-</span> <span class='fu'>squash_hal_fit</span>(<span class='kw'>hal_fit</span>)
+<span class='va'>hal_fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fit_hal.html'>fit_hal</a></span><span class='op'>(</span>X <span class='op'>=</span> <span class='va'>x</span>, Y <span class='op'>=</span> <span class='va'>y</span>, yolo <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>squashed</span> <span class='op'>&lt;-</span> <span class='fu'>squash_hal_fit</span><span class='op'>(</span><span class='va'>hal_fit</span><span class='op'>)</span>
 <span class='co'># }</span>
 
 </div></pre>
