@@ -8,20 +8,17 @@ env:
     - RGL_USE_NULL=TRUE
 
 language: r
-sudo: false
+sudo: required
 cache: packages
-cran: https://cran.rstudio.com
-
 warnings_are_errors: true
+
+cran: https://cran.rstudio.com
 r_build_args: '--no-manual'
 r_check_args: '--no-build-vignettes --no-manual'
 
 r:
   - release
   - devel
-
-before_install:
-  Rscript -e 'update.packages(ask = FALSE)'
 
 r_packages:
   - devtools
@@ -34,6 +31,9 @@ r_github_packages:
 # coverage
 after_success:
   - travis_wait 60 Rscript -e 'covr::codecov()'
+
+on_failure:
+  - "./travis-tool.sh dump_logs"
 
 notifications:
   email:
