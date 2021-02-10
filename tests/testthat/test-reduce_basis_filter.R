@@ -1,4 +1,6 @@
 context("Unit test for elementary basis function reduction procedure.")
+#### NOTE: The default hal parameters changed so this test fails.
+
 set.seed(45791)
 library(origami)
 

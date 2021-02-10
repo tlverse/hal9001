@@ -125,12 +125,13 @@
 #' }
 #'
 #' @export
+
 fit_hal <- function(X,
                     Y,
                     X_unpenalized = NULL,
-                    max_degree = 3,
-                    smoothness_orders = rep(0, ncol(X)),
-                    num_knots = sapply(1:max_degree, function(d){round(500/d)}),
+                    max_degree =  ifelse(ncol(X) >= 20, 1, ifelse(ncol(X) >= 10, 2, 3)),
+                    smoothness_orders = rep(1, ncol(X)),
+                    num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders),
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     foldid = NULL,
@@ -145,8 +146,9 @@ fit_hal <- function(X,
                     offset = NULL,
                     cv_select = TRUE,
                     adaptive_smoothing = FALSE,
+                    prediction_bounds = "default",
                     ...,
-                    yolo = TRUE) {
+                    yolo = FALSE) {
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
@@ -344,6 +346,14 @@ fit_hal <- function(X,
     total = time_final - time_start
   )
 
+  # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
+  if(is.numeric(Y) & prediction_bounds == "default") {
+    # This would break if Y was a survival object as in coxnet
+    prediction_bounds <- c(min(Y) - sd(Y)/2, max(Y) + sd(Y)/2)
+  } else if(!is.numeric(Y) & prediction_bounds == "default") {
+    prediction_bounds <- NULL
+  }
+
   # construct output object via lazy S3 list
   fit <- list(
     call = call,
@@ -367,8 +377,23 @@ fit_hal <- function(X,
       } else {
         NULL
       },
-    unpenalized_covariates = unpenalized_covariates
+    unpenalized_covariates = unpenalized_covariates,
+    prediction_bounds = prediction_bounds
   )
   class(fit) <- "hal9001"
   return(fit)
 }
+
+
+#' A default generator for the num_knots argument for each degree of interactions
+#' and the smoothness orders.
+num_knots_generator <- function(d, smoothness_orders) {
+  if(all(smoothness_orders==1)) {
+    return(50/d)
+  }
+  else {
+    return(500/d)
+  }
+}
+
+

@@ -603,7 +603,7 @@ fit_hal <- function(x){
 fit_hal.formula_hal9001 = function(formula){
   other_args <- formula$other_args
 
-  do.call(function(...) {fit_halfast(X = formula$X, Y = formula$Y,
+  do.call(function(...) {fit_hal(X = formula$X, Y = formula$Y,
               lower.limits = formula$lower.limits,
               upper.limits = formula$upper.limits,
               smoothness_orders = formula$smoothness_orders,
