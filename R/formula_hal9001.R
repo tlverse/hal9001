@@ -76,10 +76,11 @@ formula_hal <-
            num_knots = NULL,
            generate_lower_degrees = F,
            exclusive_dot = F,
-           custom_group = NULL, remove = NULL, adaptive_smoothing = F, ...) {
+           custom_group = NULL, adaptive_smoothing = F, ...) {
     other_args <- list(...)
     generate_lower_degrees <- adaptive_smoothing
     include_zero_order <- adaptive_smoothing
+    remove <- NULL
     if(any(sapply(names(custom_group), function(name){nchar(name)!=1}))){
       stop("Custom group names must be single characters of length one.")
     }
