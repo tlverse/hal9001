@@ -114,6 +114,7 @@ predict.hal9001 <- function(object,
 
   bounds <- object$prediction_bounds
   if(!is.null(bounds)) {
+    bounds <- sort(bounds)
     preds <- pmax(bounds[1], preds)
     preds <- pmin(preds, bounds[2])
   }

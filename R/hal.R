@@ -101,6 +101,9 @@
 #'  @param adaptive_smoothing A \code{boolean} which if true HAL will perform adaptive smoothing up until the maximum order of smoothness specified by \ref{smoothness_orders}.
 #'  For example, if smoothness_orders = 2 and adaptive_smoothing = TRUE then HAL will generate all basis functions of smoothness order 0, 1, and 2, and data-adaptively select the basis functions to use.
 #'  Warning: This can increase runtime by a factor of 2-3+ depending on value of \code{smoothness_orders}.
+#'  @param prediction_bounds A vector of size two that provides the lower and upper bounds for predictions.
+#'  By default, the predictions are bounded between min(Y) - sd(Y) and max(Y) + sd(Y).
+#'  Bounding ensures that there is no crazy extrapolation and that predictions remain bounded which is necessary for cross-validation selection/SuperLearner.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
