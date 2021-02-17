@@ -154,7 +154,7 @@ basis_of_degree  <- function(x, degree, smoothness_orders, include_zero_order, i
 #'
 #' @return A \code{list} of basis functions generated for all covariates and
 #'  interaction thereof up to a pre-specified degree.
-enumerate_basis <- function(x, max_degree = NULL, smoothness_orders = rep(0, ncol(x)), include_zero_order = F, include_lower_order = F, num_knots = NULL){
+enumerate_basis <- function(x, max_degree = NULL, smoothness_orders = rep(0, ncol(x)), include_zero_order = FALSE, include_lower_order = FALSE, num_knots = NULL){
   if(!is.matrix(x)){
     x <- as.matrix(x)
   }
