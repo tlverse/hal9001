@@ -22,7 +22,7 @@
 #'  input columns.
 
 
-basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order, include_lower_order = F) {
+basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order, include_lower_order = FALSE) {
   # first, subset only to columns of interest
   x_sub <- x[, cols, drop = FALSE]
   # call Rcpp routine to produce the list of basis functions
