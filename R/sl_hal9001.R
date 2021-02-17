@@ -25,7 +25,7 @@
 #' @param obsWeights Not used by the function directly, but meant to ensure
 #'  compatibility with \code{SuperLearner}. These are passed to
 #'  \code{\link[glmnet]{cv.glmnet}} through the \code{...} argument of
-#'  \code{\link{fit_hal}}.
+#'  \code{\link{fit_hal.default}}.
 #' @param ... Placeholder (ignored).
 #'
 #' @importFrom stats predict gaussian

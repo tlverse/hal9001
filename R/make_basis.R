@@ -236,6 +236,7 @@ enumerate_edge_basis <- function(x, max_degree = 3, smoothness_orders = rep(0, n
 
 
 # A helper which discretizes the variables into number "bins" unique values.
+#' @importFrom stats quantile median
 quantizer = function(X, bins) {
   if (is.null(bins)) {
     return(X)
@@ -248,10 +249,10 @@ quantizer = function(X, bins) {
     }
     if(bins==1){
 
-      return(rep(median(x), length(x)))
+      return(rep(stats::median(x), length(x)))
     }
     quants = seq(0, 0.98, length.out = bins)
-    q = quantile(x, quants)
+    q = stats::quantile(x, quants)
 
     nearest <- findInterval(x, q)
     x <- q[nearest]

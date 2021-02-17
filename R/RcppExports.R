@@ -79,6 +79,7 @@ make_basis_list <- function(X_sub, cols, order_map) {
 #' @param row_num Numeri for  a row index over which to evaluate.
 #' @param cols Numeric for the column indices of the basis function.
 #' @param cutoffs Numeric providing thresholds.
+#' @param orders Numeric providing smoothness orders
 #'
 meets_basis <- function(X, row_num, cols, cutoffs, orders) {
     .Call('_hal9001_meets_basis', PACKAGE = 'hal9001', X, row_num, cols, cutoffs, orders)

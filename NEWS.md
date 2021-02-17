@@ -1,3 +1,13 @@
+# hal9001 0.3
+
+As of February 2021:
+* Support Higher Order HAL. `smoothness_order` is a vector of length 1 or length `ncol(X)`.
+  * If `smoothness_orders` is of length 1 then its values are recycled to form a vector of length length `ncol(X)`.
+ * Given such a vector of length `ncol(X)`, the ith element specifies the level of smoothness for the variable corresponding with the ith column in `X`.
+* Degree-dependant Binning. Higher Order terms are binned more coarsely. `num_knots` argument is a vector up to max_degree controlling the degree-specific binning
+* Default `fit_hal` is now a first order smoothed HAL with binning.
+* Adds `formula_hal` which allows a formula specification of a HAL model
+
 # hal9001 0.2.8
 
 As of November 2020:

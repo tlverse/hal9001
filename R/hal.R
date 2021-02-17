@@ -17,7 +17,7 @@
 #' @param max_degree The highest order of interaction terms for which the basis
 #'  functions ought to be generated. The default (\code{NULL}) corresponds to
 #'  generating basis functions for the full dimensionality of the input matrix.
-#'  @param smoothness_orders An \code{integer} vector of length 1 or length ncol(\code{X}).
+#' @param smoothness_orders An \code{integer} vector of length 1 or length ncol(\code{X}).
 #'  If \code{smoothness_orders} is of length 1 then its values are recycled to form a vector of length length ncol(\code{X}).
 #'  Given such a vector of length ncol(\code{X}), the ith element specifies the level of smoothness for the variable
 #'  corresponding with the ith column in \code{X}.
@@ -25,7 +25,7 @@
 #'  A value of "1" corresponds with 1-order splines (piece-wise linear) which only assumes continuity of true regression function.
 #'  A value of "2" corresponds with 2-order splines (piece-wise quadratic and linear terms) which assumes one order of differentiability for the true regression function.
 #'  Warning: if \code{smoothness_orders} has length less than ncol(\code{X}) then values are recycled as needed.
-#'  @param num_knots An \code{integer} vector of length 1 or length \code{max_degree}.
+#' @param num_knots An \code{integer} vector of length 1 or length \code{max_degree}.
 #'  If \code{num_knots} is a vector of length 1 then its values are recycled to produce a vector of length \code{max_degree}.
 #'  Given a possibly recycled vector of length \code{max_degree},
 #'  num_knots[i] specifies the maximum number of knot points used when generating basis functions of degree i for each covariate.
@@ -98,10 +98,10 @@
 #' @param offset a vector of offset values, used in fitting.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
-#'  @param adaptive_smoothing A \code{boolean} which if true HAL will perform adaptive smoothing up until the maximum order of smoothness specified by \ref{smoothness_orders}.
+#' @param adaptive_smoothing A \code{boolean} which if true HAL will perform adaptive smoothing up until the maximum order of smoothness specified by \code{smoothness_orders}.
 #'  For example, if smoothness_orders = 2 and adaptive_smoothing = TRUE then HAL will generate all basis functions of smoothness order 0, 1, and 2, and data-adaptively select the basis functions to use.
 #'  Warning: This can increase runtime by a factor of 2-3+ depending on value of \code{smoothness_orders}.
-#'  @param prediction_bounds A vector of size two that provides the lower and upper bounds for predictions.
+#' @param prediction_bounds A vector of size two that provides the lower and upper bounds for predictions.
 #'  By default, the predictions are bounded between min(Y) - sd(Y) and max(Y) + sd(Y).
 #'  Bounding ensures that there is no crazy extrapolation and that predictions remain bounded which is necessary for cross-validation selection/SuperLearner.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -128,11 +128,11 @@
 #' }
 #'
 #' @export
-
-fit_hal <- function(X,
+#' @rdname fit_hal
+fit_hal.default <- function(X,
                     Y,
                     X_unpenalized = NULL,
-                    max_degree =  ifelse(ncol(X) >= 20, 1, ifelse(ncol(X) >= 10, 2, 3)),
+                    max_degree =  ifelse(ncol(X) >= 20, 2, ifelse(ncol(X) >= 10, 2, 3)),
                     smoothness_orders = rep(1, ncol(X)),
                     num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders),
                     fit_type = c("glmnet", "lassi"),
@@ -390,6 +390,8 @@ fit_hal <- function(X,
 
 #' A default generator for the num_knots argument for each degree of interactions
 #' and the smoothness orders.
+#' @param d interaction degree
+#' @param smoothness_orders see \code{\link{fit_hal}}
 num_knots_generator <- function(d, smoothness_orders) {
   if(all(smoothness_orders==1)) {
     return(50/d)

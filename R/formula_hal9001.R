@@ -1,11 +1,4 @@
-
-
-#' HAL formula: Formula for specifying functional form of HAL
-#' @details The function allows users to specify the functional form/model of
-#' hal9001 similar to in \code{\link[glm]{glm}}. The user can specify which interactions to include,
-#' monotonicity constraints, and smoothness constraints.
-#' The returned formula object can be fed directly into \code{fit_hal}
-#' and the fit can be run with minimal (no) user input.
+#' @rdname fit_hal
 #' @param formula A character string specifying the hal9001 model.
 #' The format should be of the form "y ~ h(x) + i(w) + d(z) + h(x,w) + h(x,w,z) + .^2"
 #' where "y" is the outcome and "w,x,y,z" are variables in \code{data}.
@@ -63,12 +56,14 @@
 #' so that all two way interactions using one variable for each group are generated.
 #' Similarly, "y ~ h(1,r)" -> "y ~ h(x,r) + h(w,r)".
 #' Thus, the custom groups operate exactly as "." except the possible values are restricted to a specific group.
-#'
-#'
-
+#' @param generate_lower_degrees generates lower degrees
+#' @details The function allows users to specify the functional form/model of
+#' hal9001 similar to in \code{\link[stats]{glm}}. The user can specify which interactions to include,
+#' monotonicity constraints, and smoothness constraints.
+#' The returned formula object can be fed directly into \code{fit_hal}
+#' and the fit can be run with minimal (no) user input.
+#' @importFrom stringr str_match str_split
 #' @export
-
-
 formula_hal <-
   function(formula,
            data,
@@ -551,8 +546,16 @@ formula_hal <-
     form_obj
     return(form_obj)
   }
+
 #' @export
-print.formula_hal9001 <- function(formula, expand = F){
+print.formula_hal9001 <- function(x, ...){
+  dot_args <- list(...)
+  expand <- dot_args$expand
+  if(is.null(expand)){
+    expand <- FALSE
+  }
+  
+  formula <- x
 
   if(expand){
     cat(paste0("Functional specification for hal9001 fit:",
@@ -586,22 +589,17 @@ print.formula_hal9001 <- function(formula, expand = F){
   return(invisible(NULL))
 }
 
-
+#' @rdname fit_hal
 #' @export
-model.matrix.formula_hal9001 <- function(formula, new_X = NULL){
-  if(!is.null(new_X)){
-    return(make_design_matrix(as.matrix(new_X), formula$basis_list))
-  }
-  make_design_matrix(as.matrix(formula$X), formula$basis_list)
-}
-#' @export
-fit_hal <- function(x){
-  UseMethod("fit_hal",x)
+fit_hal <- function(X, ...){
+  UseMethod("fit_hal")
 
 }
 
+#' @rdname fit_hal
 #' @export
-fit_hal.formula_hal9001 = function(formula){
+fit_hal.formula_hal9001 = function(X, ...){
+  formula <- X
   other_args <- formula$other_args
 
   do.call(function(...) {fit_hal(X = formula$X, Y = formula$Y,

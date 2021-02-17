@@ -14,6 +14,8 @@ meets_basis(X, row_num, cols, cutoffs, orders)
 \item{cols}{Numeric for the column indices of the basis function.}
 
 \item{cutoffs}{Numeric providing thresholds.}
+
+\item{orders}{Numeric providing smoothness orders}
 }
 \description{
 Computes and returns the indicator value for the basis described by

@@ -1,5 +1,6 @@
 context("Higher order smoothness HAL")
 library(hal9001)
+set.seed(1234)
 n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)

@@ -7,6 +7,11 @@ and the smoothness orders.}
 \usage{
 num_knots_generator(d, smoothness_orders)
 }
+\arguments{
+\item{d}{interaction degree}
+
+\item{smoothness_orders}{see \code{\link{fit_hal}}}
+}
 \description{
 A default generator for the num_knots argument for each degree of interactions
 and the smoothness orders.

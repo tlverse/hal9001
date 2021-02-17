@@ -82,6 +82,7 @@ List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, cons
 //' @param row_num Numeri for  a row index over which to evaluate.
 //' @param cols Numeric for the column indices of the basis function.
 //' @param cutoffs Numeric providing thresholds.
+//' @param orders Numeric providing smoothness orders
 //'
 // [[Rcpp::export]]
 double meets_basis(const NumericMatrix& X, const int row_num,

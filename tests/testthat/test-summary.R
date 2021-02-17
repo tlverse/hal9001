@@ -44,10 +44,12 @@ test_that("Summary with all coefs and remove redundant dups FALSE works", {
 test_that("Print works", {
   summary_short <- summary(hal_fit)
   summary_long <- summary(hal_fit, only_nonzero_coefs = FALSE)
+  sink(tempfile())
   print(summary_short)
   print(summary_long)
   print(summary_short, length = 10)
   print(summary_long, length = 10)
+  sink()
 })
 
 test_that("Errors work", {
