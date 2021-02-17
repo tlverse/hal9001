@@ -203,12 +203,12 @@ fit_hal.default <- function(X,
   if (is.null(basis_list)) {
     # Generates all basis functions of smoothness less than or equal to the smoothness specified in smoothness_order
     # This allows the lasso algorithm to data-adaptively choose the smoothness.
-    if(adaptive_smoothing && all(smoothness_orders!=0)) {
-      include_lower_order <- T
-      include_zero_order <- T
+    if(adaptive_smoothing && all(smoothness_orders != 0)) {
+      include_lower_order <- TRUE
+      include_zero_order <- TRUE
     } else {
-      include_zero_order <- F
-      include_lower_order <- F
+      include_zero_order <- FALSE
+      include_lower_order <- FALSE
     }
     basis_list <- enumerate_basis(X, max_degree = max_degree, smoothness_orders = smoothness_orders, num_knots = num_knots, include_lower_order = include_lower_order, include_zero_order = include_zero_order)
   }
@@ -400,4 +400,3 @@ num_knots_generator <- function(d, smoothness_orders) {
     return(500/d)
   }
 }
-
