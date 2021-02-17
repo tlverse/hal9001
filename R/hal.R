@@ -350,10 +350,10 @@ fit_hal.default <- function(X,
   )
 
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
-  if(!inherits(Y,"Surv") & prediction_bounds == "default") {
+  if(!inherits(Y, "Surv") & prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
-    prediction_bounds <- c(min(Y) - sd(Y)/2, max(Y) + sd(Y)/2)
-  } else if(inherits(Y,"Surv") & prediction_bounds == "default") {
+    prediction_bounds <- c(min(Y) - stats::sd(Y)/2, max(Y) + stats::sd(Y)/2)
+  } else if(inherits(Y, "Surv") & prediction_bounds == "default") {
     prediction_bounds <- NULL
   }
 
@@ -400,5 +400,4 @@ num_knots_generator <- function(d, smoothness_orders) {
     return(500/d)
   }
 }
-
 
