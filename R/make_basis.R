@@ -188,7 +188,7 @@ enumerate_basis <- function(x, max_degree = NULL, smoothness_orders = rep(0, nco
 
   all_bases <- unlist(all_bases, recursive = FALSE)
   edge_basis = c()
-  if(any(smoothness_orders>0)){
+  if (any(smoothness_orders > 0)) {
     edge_basis = enumerate_edge_basis(x, max_degree, smoothness_orders, include_zero_order, include_lower_order)
   }
 
