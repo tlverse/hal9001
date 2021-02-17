@@ -93,7 +93,7 @@ basis_of_degree  <- function(x, degree, smoothness_orders, include_zero_order, i
 
   # compute combinations of columns and generate a list of basis functions
   all_cols <- utils::combn(p, degree)
-  all_basis_lists <- apply(all_cols, 2, basis_list_cols, x = x, smoothness_orders = smoothness_orders, include_zero_order = include_zero_order, include_lower_order=include_lower_order)
+  all_basis_lists <- apply(all_cols, 2, basis_list_cols, x = x, smoothness_orders = smoothness_orders, include_zero_order = include_zero_order, include_lower_order = include_lower_order)
   basis_list <- unlist(all_basis_lists, recursive = FALSE)
 
   # output
