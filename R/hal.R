@@ -350,10 +350,10 @@ fit_hal <- function(X,
   )
 
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
-  if(is.numeric(Y) & prediction_bounds == "default") {
+  if(!inherits(Y,"Surv") & prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
     prediction_bounds <- c(min(Y) - sd(Y)/2, max(Y) + sd(Y)/2)
-  } else if(!is.numeric(Y) & prediction_bounds == "default") {
+  } else if(inherits(Y,"Surv") & prediction_bounds == "default") {
     prediction_bounds <- NULL
   }
 

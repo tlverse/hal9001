@@ -8,9 +8,10 @@ fit_hal(
   X,
   Y,
   X_unpenalized = NULL,
-  max_degree = 3,
-  smoothness_orders = rep(0, ncol(X)),
-  num_knots = sapply(1:max_degree, function(d) {     round(500/d) }),
+  max_degree = ifelse(ncol(X) >= 20, 1, ifelse(ncol(X) >= 10, 2, 3)),
+  smoothness_orders = rep(1, ncol(X)),
+  num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders =
+    smoothness_orders),
   fit_type = c("glmnet", "lassi"),
   n_folds = 10,
   foldid = NULL,
@@ -25,8 +26,9 @@ fit_hal(
   offset = NULL,
   cv_select = TRUE,
   adaptive_smoothing = FALSE,
+  prediction_bounds = "default",
   ...,
-  yolo = TRUE
+  yolo = FALSE
 )
 }
 \arguments{
@@ -137,7 +139,10 @@ value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
 consult its documentation for a full list of options.
 @param adaptive_smoothing A \code{boolean} which if true HAL will perform adaptive smoothing up until the maximum order of smoothness specified by \ref{smoothness_orders}.
 For example, if smoothness_orders = 2 and adaptive_smoothing = TRUE then HAL will generate all basis functions of smoothness order 0, 1, and 2, and data-adaptively select the basis functions to use.
-Warning: This can increase runtime by a factor of 2-3+ depending on value of \code{smoothness_orders}.}
+Warning: This can increase runtime by a factor of 2-3+ depending on value of \code{smoothness_orders}.
+@param prediction_bounds A vector of size two that provides the lower and upper bounds for predictions.
+By default, the predictions are bounded between min(Y) - sd(Y) and max(Y) + sd(Y).
+Bounding ensures that there is no crazy extrapolation and that predictions remain bounded which is necessary for cross-validation selection/SuperLearner.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically

@@ -12,7 +12,6 @@ formula_hal(
   generate_lower_degrees = F,
   exclusive_dot = F,
   custom_group = NULL,
-  remove = NULL,
   adaptive_smoothing = F,
   ...
 )
