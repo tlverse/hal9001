@@ -8,8 +8,8 @@ enumerate_basis(
   x,
   max_degree = NULL,
   smoothness_orders = rep(0, ncol(x)),
-  include_zero_order = F,
-  include_lower_order = F,
+  include_zero_order = FALSE,
+  include_lower_order = FALSE,
   num_knots = NULL
 )
 }

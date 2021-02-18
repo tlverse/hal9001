@@ -34,7 +34,10 @@
 #'  A smaller number of knot points gives rise to a less smooth function. However, fewer knot points can significantly decrease runtime.
 #'  If smoothness_orders is 1 or higher then few knot points (10-30) are needed to maintain near optimal performance. For smoothness_orders = 0, too few knot points (< 50) can significantly reduce performance.
 #'  We recommend specifying a vector of length \code{max_degree} that decreases exponentially to prevent combinatorical explosions in the number of higher degree interaction basis functions generated.
-#'  Recommended settings for no cost in performance:
+#'  Default: For zero order smoothness (any(\code{smoothness_orders}==0)), the number of knots by interaction degree `d` decays as `500/2^{d-1}`.
+#'  For first or higher order smoothness (all(\code{smoothness_orders}>0)), the number of knots by interaction degree `d` decays as `75/2^{d-1}`.
+#'  These defaults ensure that the number of basis functions and thus the complexity of the optimization problem grows scalably in \code{max_degree}.
+#'  Some good settings for little to no cost in performance:
 #'  If smoothness_orders = 0 and max_degree = 3, num_knots = c(400, 200, 100).
 #'  If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(100, 75, 50).
 #'  Recommended settings for fairly fast runtime and great performance:
@@ -132,9 +135,9 @@
 fit_hal.default <- function(X,
                     Y,
                     X_unpenalized = NULL,
-                    max_degree =  ifelse(ncol(X) >= 20, 2, ifelse(ncol(X) >= 10, 2, 3)),
+                    max_degree =  ifelse(ncol(X) >= 20, 2, 3),
                     smoothness_orders = rep(1, ncol(X)),
-                    num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders),
+                    num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     foldid = NULL,
@@ -392,11 +395,18 @@ fit_hal.default <- function(X,
 #' and the smoothness orders.
 #' @param d interaction degree
 #' @param smoothness_orders see \code{\link{fit_hal}}
-num_knots_generator <- function(d, smoothness_orders) {
-  if(all(smoothness_orders==1)) {
-    return(50/d)
+#' @param base_num_knots_0 The base number of knots for 0 order smoothness basis functions.
+#' The number of knots by degree interaction decays as `base_num_knots_0/2^(d-1)` where `d` is the interaction degree of the basis function.
+#' @param base_num_knots_1 The base number of knots for 1 or greater order smoothness basis functions.
+#' The number of knots by degree interaction decays as `base_num_knots_1/2^(d-1)` where `d` is the interaction degree of the basis function.
+
+
+num_knots_generator <- function(d, smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200) {
+
+  if(all(smoothness_orders>0)) {
+    return(round(base_num_knots_1/2^(d-1)))
   }
   else {
-    return(500/d)
+    return(round(base_num_knots_0/2^(d-1)))
   }
 }

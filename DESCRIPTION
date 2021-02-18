@@ -19,6 +19,8 @@ Authors@R: c(
   person("Weixin", "Cai", email = "wcai@berkeley.edu",
          role = "ctb",
          comment = c(ORCID = "0000-0003-2680-3066")),
+  person("van der Laan", "Lars", email = "vanderlaanlars@yahoo.com",
+         role = "ctb"),
   person("Mark", "van der Laan", email = "laan@berkeley.edu",
          role = c("aut", "cph", "ths"),
          comment = c(ORCID = "0000-0003-1432-5511"))

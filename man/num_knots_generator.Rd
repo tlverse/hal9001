@@ -5,12 +5,23 @@
 \title{A default generator for the num_knots argument for each degree of interactions
 and the smoothness orders.}
 \usage{
-num_knots_generator(d, smoothness_orders)
+num_knots_generator(
+  d,
+  smoothness_orders,
+  base_num_knots_0 = 500,
+  base_num_knots_1 = 200
+)
 }
 \arguments{
 \item{d}{interaction degree}
 
 \item{smoothness_orders}{see \code{\link{fit_hal}}}
+
+\item{base_num_knots_0}{The base number of knots for 0 order smoothness basis functions.
+The number of knots by degree interaction decays as `base_num_knots_0/2^(d-1)` where `d` is the interaction degree of the basis function.}
+
+\item{base_num_knots_1}{The base number of knots for 1 or greater order smoothness basis functions.
+The number of knots by degree interaction decays as `base_num_knots_1/2^(d-1)` where `d` is the interaction degree of the basis function.}
 }
 \description{
 A default generator for the num_knots argument for each degree of interactions

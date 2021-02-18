@@ -244,13 +244,16 @@ quantizer = function(X, bins) {
   X = as.matrix(X)
 
   convertColumn = function(x) {
+    if(length(unique(x)) <= bins) {
+      return(x)
+    }
     if(all(x %in% c(0,1))) {
       return(rep(0, length(x)))
     }
     if(bins==1){
-
       return(rep(stats::median(x), length(x)))
     }
+    p <- max(1-(25/nrow(X)),0.98)
     quants = seq(0, 0.98, length.out = bins)
     q = stats::quantile(x, quants)
 
