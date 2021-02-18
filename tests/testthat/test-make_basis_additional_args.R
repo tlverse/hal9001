@@ -12,18 +12,17 @@ basis_list1 <- enumerate_basis(x, max_degree = 1, smoothness_orders = rep(1, nco
 basis_list2 <- enumerate_basis(x, max_degree = 1, smoothness_orders = rep(1, ncol(x)), num_knots = c(10))
 
 test_that("Argument num_knots reduces number of basis function as expected", {
-  expect_equal(length(basis_list1), 5*p)
-  expect_equal(length(basis_list2), 10*p)
+  expect_equal(length(basis_list1), 5 * p)
+  expect_equal(length(basis_list2), 10 * p)
 })
 
 basis_list <- enumerate_basis(x, max_degree = 1, smoothness_orders = rep(1, ncol(x)), num_knots = NULL)
 test_that("Argument smoothness_orders = 1 gives basis list with orders = 1", {
   expect_equal(all(unlist(lapply(basis_list, function(basis) {
-    all(basis$orders ==1)
+    all(basis$orders == 1)
   }))), TRUE)
-
 })
-basis_list <- enumerate_basis(x, max_degree = 1, smoothness_orders = rep(2, ncol(x)), num_knots = 25, include_lower_order = T, include_zero_order  = T)
+basis_list <- enumerate_basis(x, max_degree = 1, smoothness_orders = rep(2, ncol(x)), num_knots = 25, include_lower_order = T, include_zero_order = T)
 
 number_0 <- sum(sapply(basis_list, function(basis) {
   all(basis$orders == 0)
@@ -36,9 +35,9 @@ number_2 <- sum(sapply(basis_list, function(basis) {
 }))
 
 test_that("Arguments include_zero_order and include_lower_order work", {
-  expect_equal(number_0, 25*p)
-  expect_equal(number_1, 25*p)
-  expect_equal(number_2, 25*p)
+  expect_equal(number_0, 25 * p)
+  expect_equal(number_1, 25 * p)
+  expect_equal(number_2, 25 * p)
 })
 
 

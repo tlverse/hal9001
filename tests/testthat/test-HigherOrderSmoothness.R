@@ -15,18 +15,18 @@ test_y <- sin(test_x[, 1]) #* sin(test_x[, 2])
 #   sd = 0.2
 # )
 
-fit0 <- fit_hal(x,y, max_degree =1 , smoothness_orders = 0, num_knots = 5)
-fit1 <- fit_hal(x,y, max_degree =1 , smoothness_orders = 1, num_knots = 5)
-fit2 <- fit_hal(x,y, max_degree =1 , smoothness_orders = 2, num_knots = 5)
+fit0 <- fit_hal(x, y, max_degree = 1, smoothness_orders = 0, num_knots = 5)
+fit1 <- fit_hal(x, y, max_degree = 1, smoothness_orders = 1, num_knots = 5)
+fit2 <- fit_hal(x, y, max_degree = 1, smoothness_orders = 2, num_knots = 5)
 
 # Visual check
-plot(predict(fit0,new_data = test_x), test_y)
-plot(predict(fit1,new_data = test_x), test_y)
-plot(predict(fit2,new_data = test_x), test_y)
-#MSE
-mse0 <- mean((predict(fit0,new_data = test_x) -test_y)^2)
-mse1 <- mean((predict(fit1,new_data = test_x)- test_y)^2)
-mse2 <- mean((predict(fit2,new_data = test_x)- test_y)^2)
+plot(predict(fit0, new_data = test_x), test_y)
+plot(predict(fit1, new_data = test_x), test_y)
+plot(predict(fit2, new_data = test_x), test_y)
+# MSE
+mse0 <- mean((predict(fit0, new_data = test_x) - test_y)^2)
+mse1 <- mean((predict(fit1, new_data = test_x) - test_y)^2)
+mse2 <- mean((predict(fit2, new_data = test_x) - test_y)^2)
 # These tests might fail at random???
 test_that("0 order HAL should do worse than 1 order HAL in MSE when fewer knot points", {
   expect_true(mse0 >= mse1)

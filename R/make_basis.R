@@ -30,29 +30,27 @@ basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order, incl
   basis_list <- make_basis_list(x_sub, cols, smoothness_orders)
 
 
-  #Generate lower order basis functions if needed
-  #Primarily to generate lower order edge basis functions.
-  #Inefficient: duplicate basis functions
-  if(include_lower_order){
-    if(include_zero_order){
+  # Generate lower order basis functions if needed
+  # Primarily to generate lower order edge basis functions.
+  # Inefficient: duplicate basis functions
+  if (include_lower_order) {
+    if (include_zero_order) {
       k_deg <- 0
     }
-    else{
+    else {
       k_deg <- 1
     }
     higher_order_cols <- cols[smoothness_orders[cols] > k_deg]
-    if(length(higher_order_cols) > 0){
-      more_basis_list = lapply(higher_order_cols, function(col){
-        new_smoothness_orders = smoothness_orders
-        new_smoothness_orders[col] = new_smoothness_orders[col] -1
+    if (length(higher_order_cols) > 0) {
+      more_basis_list <- lapply(higher_order_cols, function(col) {
+        new_smoothness_orders <- smoothness_orders
+        new_smoothness_orders[col] <- new_smoothness_orders[col] - 1
 
-        return(basis_list_cols(cols, x, new_smoothness_orders, include_zero_order,include_lower_order=T))
+        return(basis_list_cols(cols, x, new_smoothness_orders, include_zero_order, include_lower_order = T))
       })
 
-      basis_list = union(basis_list,unlist(more_basis_list, recursive = F))
+      basis_list <- union(basis_list, unlist(more_basis_list, recursive = F))
     }
-
-
   }
 
   # output
@@ -84,7 +82,7 @@ basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order, incl
 #'
 #' @return A \code{list} containing  basis functions and cutoffs generated from
 #'  a set of input columns up to a particular pre-specified degree.
-basis_of_degree  <- function(x, degree, smoothness_orders, include_zero_order, include_lower_order) {
+basis_of_degree <- function(x, degree, smoothness_orders, include_zero_order, include_lower_order) {
   # get dimensionality of input matrix
   p <- ncol(x)
 
@@ -154,17 +152,17 @@ basis_of_degree  <- function(x, degree, smoothness_orders, include_zero_order, i
 #'
 #' @return A \code{list} of basis functions generated for all covariates and
 #'  interaction thereof up to a pre-specified degree.
-enumerate_basis <- function(x, max_degree = NULL, smoothness_orders = rep(0, ncol(x)), include_zero_order = FALSE, include_lower_order = FALSE, num_knots = NULL){
-  if(!is.matrix(x)){
+enumerate_basis <- function(x, max_degree = NULL, smoothness_orders = rep(0, ncol(x)), include_zero_order = FALSE, include_lower_order = FALSE, num_knots = NULL) {
+  if (!is.matrix(x)) {
     x <- as.matrix(x)
   }
-  #Make sure order map consists of integers in [0,10]
-  smoothness_orders = round(smoothness_orders)
-  #recycle if needed
+  # Make sure order map consists of integers in [0,10]
+  smoothness_orders <- round(smoothness_orders)
+  # recycle if needed
   smoothness_orders <- smoothness_orders + rep(0, ncol(x))
   # truncate
-  smoothness_orders[smoothness_orders<0] = 0
-  smoothness_orders[smoothness_orders>10] = 9
+  smoothness_orders[smoothness_orders < 0] <- 0
+  smoothness_orders[smoothness_orders > 10] <- 9
   # if degree is not specified, set it as the full dimensionality of input x
   if (is.null(max_degree)) {
     max_degree <- ncol(x)
@@ -175,21 +173,21 @@ enumerate_basis <- function(x, max_degree = NULL, smoothness_orders = rep(0, nco
 
   # generate all basis functions up to the specified degree
   all_bases <- lapply(degrees, function(degree) {
-    if(!is.null(num_knots)){
-      if(length(num_knots) < degree) {
+    if (!is.null(num_knots)) {
+      if (length(num_knots) < degree) {
         n_bin <- min(num_knots)
       } else {
         n_bin <- num_knots[degree]
       }
-      x = quantizer(x, n_bin)
+      x <- quantizer(x, n_bin)
     }
     return(basis_of_degree(x, degree, smoothness_orders, include_zero_order, include_lower_order))
   })
 
   all_bases <- unlist(all_bases, recursive = FALSE)
-  edge_basis = c()
+  edge_basis <- c()
   if (any(smoothness_orders > 0)) {
-    edge_basis = enumerate_edge_basis(x, max_degree, smoothness_orders, include_zero_order, include_lower_order)
+    edge_basis <- enumerate_edge_basis(x, max_degree, smoothness_orders, include_zero_order, include_lower_order)
   }
 
 
@@ -222,13 +220,13 @@ enumerate_basis <- function(x, max_degree = NULL, smoothness_orders = rep(0, nco
 #' @param include_zero_order A boolean variable. If true the zero order basis functions are included for each covariate, in addition to the smooth basis functions specified by smoothness_orders.
 #' This allows the algorithm to data-adaptively choose the smoothness.
 #' @param include_lower_order A boolean variable. Similar to include_zero_order, except inclues all basis functions of lower smoothness degrees than specified via smoothness_orders.
-enumerate_edge_basis <- function(x, max_degree = 3, smoothness_orders = rep(0, ncol(x)), include_zero_order = F, include_lower_order = F){
-  edge_basis = c()
-  if(any(smoothness_orders>0)){
-    if(max_degree >1 ){
-      edge_basis <- unlist(lapply(2:max_degree, function(degree) basis_of_degree(matrix(apply(x,2,min),nrow=1), degree, smoothness_orders, include_zero_order, include_lower_order = T)),recursive = F)
+enumerate_edge_basis <- function(x, max_degree = 3, smoothness_orders = rep(0, ncol(x)), include_zero_order = F, include_lower_order = F) {
+  edge_basis <- c()
+  if (any(smoothness_orders > 0)) {
+    if (max_degree > 1) {
+      edge_basis <- unlist(lapply(2:max_degree, function(degree) basis_of_degree(matrix(apply(x, 2, min), nrow = 1), degree, smoothness_orders, include_zero_order, include_lower_order = T)), recursive = F)
     }
-    edge_basis <- union(edge_basis, basis_of_degree(matrix(apply(x,2,min),nrow=1), 1, sapply(smoothness_orders-1,max,1) , include_zero_order, include_lower_order = T))
+    edge_basis <- union(edge_basis, basis_of_degree(matrix(apply(x, 2, min), nrow = 1), 1, sapply(smoothness_orders - 1, max, 1), include_zero_order, include_lower_order = T))
   }
   return(edge_basis)
 }
@@ -237,31 +235,31 @@ enumerate_edge_basis <- function(x, max_degree = 3, smoothness_orders = rep(0, n
 
 # A helper which discretizes the variables into number "bins" unique values.
 #' @importFrom stats quantile median
-quantizer = function(X, bins) {
+quantizer <- function(X, bins) {
   if (is.null(bins)) {
     return(X)
   }
-  X = as.matrix(X)
+  X <- as.matrix(X)
 
-  convertColumn = function(x) {
-    if(length(unique(x)) <= bins) {
+  convertColumn <- function(x) {
+    if (length(unique(x)) <= bins) {
       return(x)
     }
-    if(all(x %in% c(0,1))) {
+    if (all(x %in% c(0, 1))) {
       return(rep(0, length(x)))
     }
-    if(bins==1){
+    if (bins == 1) {
       return(rep(stats::median(x), length(x)))
     }
-    p <- max(1-(25/nrow(X)),0.98)
-    quants = seq(0, 0.98, length.out = bins)
-    q = stats::quantile(x, quants)
+    p <- max(1 - (25 / nrow(X)), 0.98)
+    quants <- seq(0, 0.98, length.out = bins)
+    q <- stats::quantile(x, quants)
 
     nearest <- findInterval(x, q)
     x <- q[nearest]
     return(x)
   }
-  quantizer = function(X) {
+  quantizer <- function(X) {
     as.matrix(apply(X, MARGIN = 2, FUN = convertColumn))
   }
   return(quantizer(X))

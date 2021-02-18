@@ -42,10 +42,10 @@ predict.hal9001 <- function(object,
 
   # generate design matrix
   pred_x_basis <- make_design_matrix(new_data, object$basis_list)
-  #group <- object$copy_map[[1]]
+  # group <- object$copy_map[[1]]
 
   # reduce matrix of basis functions
-  #pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
+  # pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
 
   # add unpenalized covariates
   new_unpenalized_covariates <- ifelse(
@@ -113,7 +113,7 @@ predict.hal9001 <- function(object,
   }
 
   bounds <- object$prediction_bounds
-  if(!is.null(bounds)) {
+  if (!is.null(bounds)) {
     bounds <- sort(bounds)
     preds <- pmax(bounds[1], preds)
     preds <- pmin(preds, bounds[2])

@@ -133,28 +133,28 @@
 #' @export
 #' @rdname fit_hal
 fit_hal.default <- function(X,
-                    Y,
-                    X_unpenalized = NULL,
-                    max_degree =  ifelse(ncol(X) >= 20, 2, 3),
-                    smoothness_orders = rep(1, ncol(X)),
-                    num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
-                    fit_type = c("glmnet", "lassi"),
-                    n_folds = 10,
-                    foldid = NULL,
-                    use_min = TRUE,
-                    reduce_basis = NULL,
-                    family = c("gaussian", "binomial", "poisson", "cox"),
-                    return_lasso = TRUE,
-                    return_x_basis = FALSE,
-                    basis_list = NULL,
-                    lambda = NULL,
-                    id = NULL,
-                    offset = NULL,
-                    cv_select = TRUE,
-                    adaptive_smoothing = FALSE,
-                    prediction_bounds = "default",
-                    ...,
-                    yolo = FALSE) {
+                            Y,
+                            X_unpenalized = NULL,
+                            max_degree = ifelse(ncol(X) >= 20, 2, 3),
+                            smoothness_orders = rep(1, ncol(X)),
+                            num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
+                            fit_type = c("glmnet", "lassi"),
+                            n_folds = 10,
+                            foldid = NULL,
+                            use_min = TRUE,
+                            reduce_basis = NULL,
+                            family = c("gaussian", "binomial", "poisson", "cox"),
+                            return_lasso = TRUE,
+                            return_x_basis = FALSE,
+                            basis_list = NULL,
+                            lambda = NULL,
+                            id = NULL,
+                            offset = NULL,
+                            cv_select = TRUE,
+                            adaptive_smoothing = FALSE,
+                            prediction_bounds = "default",
+                            ...,
+                            yolo = FALSE) {
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
@@ -206,7 +206,7 @@ fit_hal.default <- function(X,
   if (is.null(basis_list)) {
     # Generates all basis functions of smoothness less than or equal to the smoothness specified in smoothness_order
     # This allows the lasso algorithm to data-adaptively choose the smoothness.
-    if(adaptive_smoothing && all(smoothness_orders != 0)) {
+    if (adaptive_smoothing && all(smoothness_orders != 0)) {
       include_lower_order <- TRUE
       include_zero_order <- TRUE
     } else {
@@ -235,12 +235,11 @@ fit_hal.default <- function(X,
 
   # catalog and eliminate duplicates
   # Lars' change: copy_map is not needed but to preserve functionality (e.g. summary) I pass a trivial copy_map.
-  if(all(smoothness_orders == 0)) {
+  if (all(smoothness_orders == 0)) {
     copy_map <- make_copy_map(x_basis)
     unique_columns <- as.numeric(names(copy_map))
     x_basis <- x_basis[, unique_columns]
     basis_list <- basis_list[unique_columns]
-
   }
   copy_map <- seq_along(basis_list)
   names(copy_map) <- seq_along(basis_list)
@@ -353,10 +352,10 @@ fit_hal.default <- function(X,
   )
 
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
-  if(!inherits(Y, "Surv") & prediction_bounds == "default") {
+  if (!inherits(Y, "Surv") & prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
-    prediction_bounds <- c(min(Y) - stats::sd(Y)/2, max(Y) + stats::sd(Y)/2)
-  } else if(inherits(Y, "Surv") & prediction_bounds == "default") {
+    prediction_bounds <- c(min(Y) - stats::sd(Y) / 2, max(Y) + stats::sd(Y) / 2)
+  } else if (inherits(Y, "Surv") & prediction_bounds == "default") {
     prediction_bounds <- NULL
   }
 
@@ -402,11 +401,10 @@ fit_hal.default <- function(X,
 
 
 num_knots_generator <- function(d, smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200) {
-
-  if(all(smoothness_orders>0)) {
-    return(round(base_num_knots_1/2^(d-1)))
+  if (all(smoothness_orders > 0)) {
+    return(round(base_num_knots_1 / 2^(d - 1)))
   }
   else {
-    return(round(base_num_knots_0/2^(d-1)))
+    return(round(base_num_knots_0 / 2^(d - 1)))
   }
 }
