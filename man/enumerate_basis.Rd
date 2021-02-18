@@ -4,7 +4,14 @@
 \alias{enumerate_basis}
 \title{Enumerate Basis Functions}
 \usage{
-enumerate_basis(x, max_degree = NULL)
+enumerate_basis(
+  x,
+  max_degree = NULL,
+  smoothness_orders = rep(0, ncol(x)),
+  include_zero_order = FALSE,
+  include_lower_order = FALSE,
+  num_knots = NULL
+)
 }
 \arguments{
 \item{x}{An input \code{matrix} containing observations and covariates
@@ -13,6 +20,23 @@ following standard conventions in problems of statistical learning.}
 \item{max_degree}{The highest order of interaction terms for which the basis
 functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
+
+\item{smoothness_orders}{An integer vector of length ncol(x) specifying the desired smoothness of the function in each covariate.
+ k = 0 is no smoothness (indicator basis), k = 1 is first order smoothness, and so on.
+For an additive model, the component function for each covariate will have the degree of smoothness as specified by smoothness_orders.
+For non-additive components (tensor products of single variate basis functions),
+the univariate basis functions in each tensor product have smoothness degree as specified by smoothness_orders.}
+
+\item{include_zero_order}{A boolean variable. If true the zero order basis functions are included for each covariate, in addition to the smooth basis functions specified by smoothness_orders.
+This allows the algorithm to data-adaptively choose the smoothness.}
+
+\item{include_lower_order}{A boolean variable. Similar to include_zero_order, except inclues all basis functions of lower smoothness degrees than specified via smoothness_orders.}
+
+\item{num_knots}{A vector of length max_degree which determines how granular the knots points to generate basis functions for should be for each degree of basis function.
+num_knots[1] determines the number of knot points to be used for each univariate basis function.
+More generally, num_knots[k] determines the number of knot points to be used for the kth degree basis functions.
+Specifically, for a kth degree basis function, which is the tensor product of k univariate basis functions, ...
+... this determines the number of knot points to be used for each univariate basis function in the tensor product}
 }
 \value{
 A \code{list} of basis functions generated for all covariates and
