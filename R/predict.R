@@ -67,7 +67,6 @@ predict.hal9001 <- function(object,
   }
 
   # generate predictions
-  family <- object$family
   if (object$family != "cox") {
     if (ncol(object$coefs) > 1) {
       preds <- apply(object$coefs, 2, function(hal_coefs) {
@@ -107,8 +106,8 @@ predict.hal9001 <- function(object,
   }
 
   # apply inverse family (link function) transformations
-  if(inherits(family, "family")) {
-    inverse_link_fun <- family$linkinv
+  if(inherits(object$family, "family")) {
+    inverse_link_fun <- object$family$linkinv
     preds <- inverse_link_fun(preds)
   } else if (object$family == "binomial") {
     preds <- stats::plogis(preds)
