@@ -4,7 +4,14 @@
 \alias{predict.hal9001}
 \title{Prediction from HAL fits}
 \usage{
-\method{predict}{hal9001}(object, offset = NULL, ..., new_data, new_X_unpenalized = NULL)
+\method{predict}{hal9001}(
+  object,
+  offset = NULL,
+  ...,
+  new_data,
+  new_X_unpenalized = NULL,
+  type = c("response", "link")
+)
 }
 \arguments{
 \item{object}{An object of class \code{hal9001}, containing the results of

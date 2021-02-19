@@ -187,15 +187,14 @@ Lasso. Any basis functions with a lower proportion of 1's than the cutoff
 will be removed. This argument defaults to \code{NULL}, in which case all
 basis functions are used in the lasso-fitting stage of the HAL algorithm.}
 
-\item{family}{A \code{character} corresponding to the error family for a
-generalized linear model. Options are limited to "gaussian" for fitting a
-standard linear model, "binomial" for penalized logistic regression,
+\item{family}{A \code{character} or a \code{\link[stats]{family}} object (supported by \code{\link[glmnet]{glmnet}})
+corresponding to the error family for a generalized linear model. \code{character} options are limited to "gaussian" for fitting a
+standard penalized linear model, "binomial" for penalized logistic regression,
 "poisson" for penalized Poisson regression, and "cox" for a penalized
 proportional hazards model. Note that in all cases where family is not set
-to "gaussian", \code{fit_type} is limited to "glmnet". In future, aribtrary
-outcome types may be supported by passed in a \code{\link[stats]{family}}
-objects (e.g., \code{\link[stats]{quasibinomial}}), which could be passed
-through to \code{\link[glmnet]{glmnet}} or \code{\link[glmnet]{cv.glmnet}}.}
+to "gaussian", \code{fit_type} is limited to "glmnet".
+NOTE: Passing in family objects lead to signficantly slower performance relative to passing in a character family (if supported).
+Thus, for nonparametric logistic regression, one should always set family = "binomial" and never set family = binomial().}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
 the \code{glmnet} fit of the lasso model.}

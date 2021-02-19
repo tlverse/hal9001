@@ -36,7 +36,8 @@ predict.hal9001 <- function(object,
                             offset = NULL,
                             ...,
                             new_data,
-                            new_X_unpenalized = NULL) {
+                            new_X_unpenalized = NULL, type = c("response", "link")) {
+  type <- match.arg(type)
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
@@ -67,7 +68,7 @@ predict.hal9001 <- function(object,
   }
 
   # generate predictions
-  if (object$family != "cox") {
+  if (inherits(object$family, "family") || object$family != "cox") {
     if (ncol(object$coefs) > 1) {
       preds <- apply(object$coefs, 2, function(hal_coefs) {
         as.vector(Matrix::tcrossprod(
@@ -104,7 +105,9 @@ predict.hal9001 <- function(object,
   if (!is.null(offset)) {
     preds <- preds + offset
   }
-
+  if(type == "link") {
+    return(preds)
+  }
   # apply inverse family (link function) transformations
   if(inherits(object$family, "family")) {
     inverse_link_fun <- object$family$linkinv

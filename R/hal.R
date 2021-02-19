@@ -68,15 +68,14 @@
 #'  Lasso. Any basis functions with a lower proportion of 1's than the cutoff
 #'  will be removed. This argument defaults to \code{NULL}, in which case all
 #'  basis functions are used in the lasso-fitting stage of the HAL algorithm.
-#' @param family A \code{character} corresponding to the error family for a
-#'  generalized linear model. Options are limited to "gaussian" for fitting a
-#'  standard linear model, "binomial" for penalized logistic regression,
+#' @param family A \code{character} or a \code{\link[stats]{family}} object (supported by \code{\link[glmnet]{glmnet}})
+#'  corresponding to the error family for a generalized linear model. \code{character} options are limited to "gaussian" for fitting a
+#'  standard penalized linear model, "binomial" for penalized logistic regression,
 #'  "poisson" for penalized Poisson regression, and "cox" for a penalized
 #'  proportional hazards model. Note that in all cases where family is not set
-#'  to "gaussian", \code{fit_type} is limited to "glmnet". In future, aribtrary
-#'  outcome types may be supported by passed in a \code{\link[stats]{family}}
-#'  objects (e.g., \code{\link[stats]{quasibinomial}}), which could be passed
-#'  through to \code{\link[glmnet]{glmnet}} or \code{\link[glmnet]{cv.glmnet}}.
+#'  to "gaussian", \code{fit_type} is limited to "glmnet".
+#'  NOTE: Passing in family objects lead to signficantly slower performance relative to passing in a character family (if supported).
+#'  Thus, for nonparametric logistic regression, one should always set family = "binomial" and never set family = binomial().
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{glmnet} fit of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -158,18 +157,18 @@ fit_hal.default <- function(X,
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
-  if(!inherits(family, "family")) {
-    family <- match.arg(family)
-  }
+
 
   # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
   dot_args <- list(...)
-
-  # check that lambda.min.ratio is not passed to glmnet for binary outcomes
-  assertthat::assert_that(
-    !("lambda.min.ratio" %in% names(dot_args) & family == "binomial"),
-    msg = "`glmnet` ignores `lambda.min.ratio` when `family = 'binomial'`."
-  )
+  if(!inherits(family, "family")) {
+    family <- match.arg(family)
+    # check that lambda.min.ratio is not passed to glmnet for binary outcomes
+    assertthat::assert_that(
+      !("lambda.min.ratio" %in% names(dot_args) && family == "binomial"),
+      msg = "`glmnet` ignores `lambda.min.ratio` when `family = 'binomial'`."
+    )
+  }
 
   # If someone tries to pass (glmnet) standardize argument through "..." throw error.
   # This is done because the HAL algorithm requires standardize = F for the variation norm interpretation to hold.
@@ -180,7 +179,7 @@ fit_hal.default <- function(X,
 
   # NOTE: NOT supporting non-gaussian outcomes with lassi method currently
   assertthat::assert_that(
-    !(fit_type == "lassi" && family != "gaussian"),
+    !(fit_type == "lassi" && (inherits(family, "family") || family != "gaussian")),
     msg = "Outcome is non-gaussian, set `fit_type = 'glmnet'`."
   )
 
@@ -276,7 +275,9 @@ fit_hal.default <- function(X,
 
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
   #       casting to a regular (dense) matrix has a large memory cost :(
-  if (family == "cox") {
+  # General families throws warnings if you pass in sparse matrix and does not seem to lead to speed benefit.
+  # Im guessing glmnet internally converts to matrix.
+  if (inherits(family, "family") || family == "cox") {
     x_basis <- as.matrix(x_basis)
   }
 
