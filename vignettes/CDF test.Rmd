@@ -1,0 +1,233 @@
+---
+title: "estimate CDF test"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(R6)
+Lrnr_CDF <- R6Class(
+  classname = "Lrnr_CDF",
+  inherit = Lrnr_base, portable = TRUE,
+  class = TRUE,
+  public = list(
+    initialize = function(binomial_learner = NULL, n_bins = 20, breaks = NULL, ...) {
+      if (is.null(binomial_learner)) {
+        binomial_learner <- make_learner(Lrnr_glmnet)
+      }
+      params <- list(
+       n_bins = n_bins,
+        binomial_learner = binomial_learner, breaks = breaks, ...
+      )
+      super$initialize(params = params, ...)
+    }
+  ),
+  
+  private = list(
+    .properties = c("CDF"),
+
+    .train = function(task) {
+      lrnr <- self$params$binomial_learner
+      if(is.null(self$params$breaks)) {
+        breaks <- quantile(task$Y, seq(0, 1,length.out = self$params$n_bins ))
+      }
+      lrnr_list <- list()
+      for(i in (seq_along(breaks[-1]))) {
+        new_columns <-
+        task$add_columns(data.table(
+          discrete_Y =
+            as.numeric(task$Y <= breaks[i+1])
+        ))
+      discrete_task <- task$next_in_chain(
+        outcome = "discrete_Y",
+        column_names = new_columns
+      )
+      lrnr_trained <- lrnr$clone()$train(discrete_task)
+      lrnr_list[[i]] <- lrnr_trained
+      }
+      
+      fit_object <- list(
+        lrnr_list = lrnr_list,
+        breaks = breaks
+      )
+      return(fit_object)
+    },
+
+    .predict = function(task) {
+      # make discretized task
+      lrnr_list <- self$fit_object$lrnr_list
+      breaks <- self$fit_object$breaks
+      all_preds <- list()
+      all_preds[[1]] <- rep(0, task$nrow)
+      for(i in seq_along(breaks[-1])) {
+        new_columns <-
+        task$add_columns(data.table(
+          discrete_Y =
+            as.numeric(task$Y <= breaks[i])
+        ))
+      discrete_task <- task$next_in_chain(
+        outcome = "discrete_Y",
+        column_names = new_columns
+      )
+      lrnr_trained <- lrnr_list[[i]]
+      preds <- lrnr_trained$predict(discrete_task)
+      all_preds[[i+1]] <- preds
+      }
+      predmat <- do.call(cbind, all_preds)
+     
+      # predict categorical learner on discretized task
+      match_index <- sapply(task$Y, function(v) {which.min(abs(breaks - v))}) 
+      
+      # subset predictions to only those bins relevant
+      obs_pred <- predmat[cbind(seq_len(task$nrow), match_index)]
+      return(obs_pred)
+    },
+    .required_packages = c()
+  )
+)
+
+```
+
+
+```{r}
+
+library(R6)
+Lrnr_density_discretize <- R6Class(
+  classname = "Lrnr_density_discretize",
+  inherit = Lrnr_base, portable = TRUE,
+  class = TRUE,
+  public = list(
+    initialize = function(categorical_learner = NULL, type = "equal_mass", n_bins = 20, predict_type = c("density", "CDF", "RCDF"), ...) {
+      predict_type <- match.arg(predict_type)
+      if (is.null(categorical_learner)) {
+        categorical_learner <- make_learner(Lrnr_glmnet)
+      }
+      params <- list(
+        type = type, n_bins = n_bins, predict_type = predict_type,
+        categorical_learner = categorical_learner, ...
+      )
+      super$initialize(params = params, ...)
+    }
+  ),
+  
+  private = list(
+    .properties = c("density"),
+
+    .train = function(task) {
+      discretized <- sl3:::discretize_variable(task$Y,
+        type = self$params$type,
+        n_bins = self$params$n_bins,
+        breaks = self$params_breaks
+      )
+
+      # make discretized task
+      new_columns <-
+        task$add_columns(data.table(
+          discrete_Y =
+            factor(discretized$x_discrete)
+        ))
+      discrete_task <- task$next_in_chain(
+        outcome = "discrete_Y",
+        column_names = new_columns
+      )
+      # fit categorical learner to discretized task
+      categorical_fit <- self$params$categorical_learner$train(discrete_task)
+
+      fit_object <- list(
+        categorical_fit = categorical_fit,
+        breaks = discretized$breaks
+      )
+      return(fit_object)
+    },
+
+    .predict = function(task) {
+      # make discretized task
+      discretized <- sl3:::discretize_variable(task$Y,
+        breaks = self$fit_object$breaks
+      )
+      new_columns <-
+        task$add_columns(data.table(
+          discrete_Y =
+            factor(discretized$x_discrete)
+        ))
+      discrete_task <- task$next_in_chain(
+        outcome = "discrete_Y",
+        column_names = new_columns
+      )
+
+      # predict categorical learner on discretized task
+      raw_preds <- self$fit_object$categorical_fit$predict(discrete_task)
+      predmat <- unpack_predictions(raw_preds)
+      if(self$params$predict_type != "density") {
+        predmat <- t(apply(predmat, 1, function(v) {
+          c(0, cumsum(v))
+        }))
+        if(self$params$predict_type == "RCDF") {
+          predmat <- 1 - predmat
+        }
+      } else {
+        bin_lengths <- diff(self$fit_object$breaks)
+        scale_mat <- matrix(rep(1 / bin_lengths, each = task$nrow),
+        nrow = task$nrow
+        )
+        predmat <- predmat * scale_mat
+      }
+    
+      # subset predictions to only those bins relevant
+      obs_pred <- predmat[cbind(seq_len(task$nrow), discretized$x_discrete)]
+      return(obs_pred)
+    },
+    .required_packages = c()
+  )
+)
+
+```
+
+
+```{r}
+library(data.table)
+library(sl3)
+#set.seed(5)
+library(simcausal)
+bound <- Vectorize(tmle3::bound)
+n = 3500
+D <- DAG.empty()
+D <- D +
+ 
+   node("W", distr = "runif", min = -1, max = 1) +
+  node("W1", distr = "runif", min = -1, max = 1) +
+  node("A", distr = "rnorm", mean = W1, sd=0.5 )
+  
+
+setD <- set.DAG(D, vecfun = c("bound", "round"))
+data <- sim(setD, n = n)
+data <- setDT(data)
+
+head(data)
+task <- sl3_Task$new(data, outcome = "A", covariates = c("W", "W1"), id = "ID")
+```
+
+
+```{r}
+# Using independent binomials, this one is essentially a bad version of Lrnr_CDF. So dont use this
+lrnr1 <- Lrnr_density_discretize$new(Lrnr_independent_binomial$new(Lrnr_glm$new()), n_bins = 20, predict_type = "CDF")
+lrnr1 <- lrnr1$train(task)
+
+# Using pooled hazard estimation. It also models the "a" component of P(A <=a|W). Important to use a good nonparametric learner
+lrnr2 <- Lrnr_density_discretize$new(Lrnr_pooled_hazards$new(Lrnr_glm$new()), n_bins = 20, predict_type = "CDF")
+lrnr2 <- lrnr2$train(task)
+# This learner is entirely nonparametric in "a". This learner literally just regresses 1(A_i <= a) on W for each a. One drawback is that this learner does not enforce monotonicity of the CDF. However, this learner will correspond with the NPMLE when no baseline covariates are adjusted for. I found this learner to be very robust, and best in smaller sample sizes when using parametric learners.
+lrnr3 <- Lrnr_CDF$new(Lrnr_glm$new())
+lrnr3 <- lrnr3$train(task)
+```
+
+
+```{r}
+data.table(task$id, CDF_pred = round(lrnr1$predict(task),3), CDF_true = round(pnorm(task$Y, mean = task$X$W1, sd= 0.5),4))
+data.table(task$id, CDF_pred = round(lrnr2$predict(task),3), CDF_true = round(pnorm(task$Y, mean = task$X$W1, sd= 0.5),4))
+data.table(task$id, CDF_pred = round(lrnr3$predict(task),3), CDF_true = round(pnorm(task$Y, mean = task$X$W1, sd= 0.5),4))
+
+```

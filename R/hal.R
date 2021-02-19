@@ -158,7 +158,9 @@ fit_hal.default <- function(X,
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
-  family <- match.arg(family)
+  if(!inherits(family, "family")) {
+    family <- match.arg(family)
+  }
 
   # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
   dot_args <- list(...)
