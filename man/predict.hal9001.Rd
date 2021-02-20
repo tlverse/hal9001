@@ -29,6 +29,8 @@ compute predicted values.}
 \item{new_X_unpenalized}{If the user supplied \code{X_unpenalized} during
 training, the user should also supply this matrix with the same number of
 observations as \code{new_data}. Optional.}
+
+\item{type}{Either "response" (default) for predictions of the response or "link" for untransformed link function predictions.}
 }
 \value{
 A \code{numeric} vector of predictions from a \code{hal9001} object.

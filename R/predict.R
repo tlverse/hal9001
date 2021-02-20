@@ -15,7 +15,7 @@
 #' @param new_X_unpenalized If the user supplied \code{X_unpenalized} during
 #'  training, the user should also supply this matrix with the same number of
 #'  observations as \code{new_data}. Optional.
-#'
+#' @param type Either "response" (default) for predictions of the response or "link" for untransformed link function predictions.
 #' @importFrom Matrix tcrossprod
 #' @importFrom stats plogis
 #' @importFrom assertthat assert_that
