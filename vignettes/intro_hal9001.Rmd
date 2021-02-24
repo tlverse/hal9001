@@ -32,6 +32,8 @@ descriptions of the highly adaptive Lasso and its various optimality properties.
 ## Preliminaries
 
 ```{r sim-data}
+library(data.table)
+library(ggplot2)
 # simulation constants
 set.seed(467392)
 n_obs <- 500
@@ -151,7 +153,7 @@ Let us see this in action. We will use the num_knots argument to increase the co
 ```{r}
 set.seed(9)
 
-num_knots <- 7 # Try changing this value to see what happens.
+num_knots <- 500 # Try changing this value to see what happens.
 n_covars <- 1
 n_obs <- 500
 x <- replicate(n_covars, runif(n_obs, min = -4, max = 4))
@@ -160,17 +162,36 @@ ytrue <-sin(x[, 1])
 
 
 hal_fit_0 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                           smoothness_orders = 0, num_knots = num_knots)
+                           smoothness_orders = 0, num_knots = num_knots,
+                           lambda.min.ratio=1e-4)
 hal_fit_smooth_1 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                           smoothness_orders = 1, num_knots = num_knots)
+                           smoothness_orders = 1, num_knots = num_knots,
+                           lambda.min.ratio=1e-4)
+
+hal_fit_smooth_2_all <- fit_hal(X = x, Y = y, fit_type = "glmnet",
+                           smoothness_orders = 2, 
+                           num_knots = num_knots,
+                           adaptive_smoothing = FALSE,
+                           cv_select = FALSE,
+                           lambda.min.ratio=1e-3)
 
 hal_fit_smooth_2 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                           smoothness_orders = 2, num_knots = num_knots)
+                           smoothness_orders = 2, 
+                           num_knots = num_knots,
+                           adaptive_smoothing = FALSE,
+                           cv_select = TRUE,
+                           lambda.min.ratio=1e-4)
 
+debugonce(predict.hal9001)
 pred_0 <- predict(hal_fit_0, new_data = x)
 pred_smooth_1 <- predict(hal_fit_smooth_1, new_data = x)
 pred_smooth_2 <- predict(hal_fit_smooth_2, new_data = x)
 
+pred_smooth_2_all <- predict(hal_fit_smooth_2_all, new_data = x)
+dt <- data.table(x=as.vector(x))
+dt <- cbind(dt, pred_smooth_2_all)
+long <- melt(dt,id="x")
+ggplot(long, aes(x=x,y=value,group=variable))+geom_line()
 ```
 
 Comparing the mean-squared-error between the predictions and the true (denoised) outcome, we see that the first and second order smoothness HAL is able to recover from the coarseness of the basis functions caused by the small num_knots argument. We see that the second order smoothness HAL is able to fit the true function very well (as expected since sin(x) is a very smooth function). The main benefit of imposing higher order smoothness is that fewer knot points are required for a near optimal fit. Thus one can pass a smaller value to the num_knots argument for a big decrease in runtime.
@@ -180,6 +201,14 @@ mean((pred_0 - ytrue)^2)
 mean((pred_smooth_1- ytrue)^2)
 mean((pred_smooth_2 - ytrue)^2)
 
+dt <- data.table(x=as.vector(x),
+                 ytrue=ytrue,
+                 y=y,
+                 pred0=pred_0, 
+                 pred1=pred_smooth_1,
+                 pred2=pred_smooth_2)
+long <- melt(dt,id="x")
+ggplot(long,aes(x=x,y=value,color=variable))+geom_line()
 plot(x, pred_0, main = "Zero order smoothness fit")
 plot(x, pred_smooth_1, main = "First order smoothness fit")
 plot(x, pred_smooth_2, main = "Second order smoothness fit")

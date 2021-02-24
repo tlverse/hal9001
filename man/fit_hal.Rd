@@ -46,6 +46,7 @@ fit_hal(X, ...)
   adaptive_smoothing = FALSE,
   prediction_bounds = "default",
   ...,
+  lambda.min.ratio = 1e-04,
   yolo = FALSE
 )
 }
@@ -228,6 +229,8 @@ value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
 \item{prediction_bounds}{A vector of size two that provides the lower and upper bounds for predictions.
 By default, the predictions are bounded between min(Y) - sd(Y) and max(Y) + sd(Y).
 Bounding ensures that there is no crazy extrapolation and that predictions remain bounded which is necessary for cross-validation selection/SuperLearner.}
+
+\item{lambda.min.ratio}{passed to \code{\link[glmnet]{cv.glmnet}}, controls the ratio of largest to smallest lambda values considered}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically
