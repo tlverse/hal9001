@@ -277,7 +277,11 @@ fit_hal.default <- function(X,
   #       casting to a regular (dense) matrix has a large memory cost :(
   # General families throws warnings if you pass in sparse matrix and does not seem to lead to speed benefit.
   # Im guessing glmnet internally converts to matrix.
-  if (inherits(family, "family") || family == "cox") {
+  # if (inherits(family, "family") || family == "cox") {
+  #   x_basis <- as.matrix(x_basis)
+  # }
+  
+  if (!inherits(family, "family") && family == "cox") {
     x_basis <- as.matrix(x_basis)
   }
 
