@@ -15,7 +15,7 @@
 #' @param new_X_unpenalized If the user supplied \code{X_unpenalized} during
 #'  training, the user should also supply this matrix with the same number of
 #'  observations as \code{new_data}. Optional.
-#'
+#' @param type Either "response" (default) for predictions of the response or "link" for untransformed link function predictions.
 #' @importFrom Matrix tcrossprod
 #' @importFrom stats plogis
 #' @importFrom assertthat assert_that
@@ -36,7 +36,8 @@ predict.hal9001 <- function(object,
                             offset = NULL,
                             ...,
                             new_data,
-                            new_X_unpenalized = NULL) {
+                            new_X_unpenalized = NULL, type = c("response", "link")) {
+  type <- match.arg(type)
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
@@ -67,7 +68,7 @@ predict.hal9001 <- function(object,
   }
 
   # generate predictions
-  if (object$family != "cox") {
+  if (inherits(object$family, "family") || object$family != "cox") {
     if (ncol(object$coefs) > 1) {
       preds <- apply(object$coefs, 2, function(hal_coefs) {
         as.vector(Matrix::tcrossprod(
@@ -104,9 +105,14 @@ predict.hal9001 <- function(object,
   if (!is.null(offset)) {
     preds <- preds + offset
   }
-
+  if(type == "link") {
+    return(preds)
+  }
   # apply inverse family (link function) transformations
-  if (object$family == "binomial") {
+  if(inherits(object$family, "family")) {
+    inverse_link_fun <- object$family$linkinv
+    preds <- inverse_link_fun(preds)
+  } else if (object$family == "binomial") {
     preds <- stats::plogis(preds)
   } else if (object$family %in% c("poisson", "cox")) {
     preds <- exp(preds)

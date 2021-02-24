@@ -4,7 +4,14 @@
 \alias{predict.hal9001}
 \title{Prediction from HAL fits}
 \usage{
-\method{predict}{hal9001}(object, offset = NULL, ..., new_data, new_X_unpenalized = NULL)
+\method{predict}{hal9001}(
+  object,
+  offset = NULL,
+  ...,
+  new_data,
+  new_X_unpenalized = NULL,
+  type = c("response", "link")
+)
 }
 \arguments{
 \item{object}{An object of class \code{hal9001}, containing the results of
@@ -22,6 +29,8 @@ compute predicted values.}
 \item{new_X_unpenalized}{If the user supplied \code{X_unpenalized} during
 training, the user should also supply this matrix with the same number of
 observations as \code{new_data}. Optional.}
+
+\item{type}{Either "response" (default) for predictions of the response or "link" for untransformed link function predictions.}
 }
 \value{
 A \code{numeric} vector of predictions from a \code{hal9001} object.
