@@ -106,6 +106,7 @@
 #' @param prediction_bounds A vector of size two that provides the lower and upper bounds for predictions.
 #'  By default, the predictions are bounded between min(Y) - sd(Y) and max(Y) + sd(Y).
 #'  Bounding ensures that there is no crazy extrapolation and that predictions remain bounded which is necessary for cross-validation selection/SuperLearner.
+#' @param lambda.min.ratio passed to \code{\link[glmnet]{cv.glmnet}}, controls the ratio of largest to smallest lambda values considered
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
@@ -153,6 +154,7 @@ fit_hal.default <- function(X,
                             adaptive_smoothing = FALSE,
                             prediction_bounds = "default",
                             ...,
+                            lambda.min.ratio = 1e-4,
                             yolo = FALSE) {
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
@@ -315,6 +317,7 @@ fit_hal.default <- function(X,
         lambda = lambda,
         penalty.factor = penalty_factor,
         standardize = FALSE,
+        lambda.min.ratio = lambda.min.ratio,
         ...
       )
       lambda_star <- hal_lasso$lambda
@@ -329,6 +332,7 @@ fit_hal.default <- function(X,
         foldid = foldid,
         penalty.factor = penalty_factor,
         standardize = FALSE,
+        lambda.min.ratio = lambda.min.ratio,
         ...
       )
       if (use_min) {
