@@ -28,7 +28,7 @@ fit_hal(X, ...)
   X_unpenalized = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
   smoothness_orders = rep(1, ncol(X)),
-  num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders =
+  num_knots = sapply(seq_len(max_degree), num_knots_generator, smoothness_orders =
     smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
   fit_type = c("glmnet", "lassi"),
   n_folds = 10,
@@ -55,20 +55,20 @@ fit_hal(X, ...)
 The format should be of the form "y ~ h(x) + h(w,x) + h(x,w) + h(x,w,z) "
 where "y" is the outcome and "w,x,y,z" are variables in \code{data}.
 Each term represents a main-term/interaction to be included in the model.
- h(x) signifies that all
- one-way/main term basis functions of the variable x should be included.
- h(x,w) specifies that all interaction (two-way) basis functions between x and w
- should be included in the model. Similarly, h(x,w,z) specifies
- that all interaction (three-way) basis functions between x,w,z should be included in the model.
- Note that "y ~ h(x,y,z)" will only construct three-way basis functions for x,y,z
- and not the two-way and one-way basis functions.
- Additionally, a formula of the form "y ~ ." will generate all one-way main term basis functions for variables in \code{data}.
- Similarly, "y ~ .^2" will generate all basis functions up to degree 2 for all variables in \code{data}.
- More generally, "y ~ .^max_degree" will construct all basis functions up to degree max_degree.
- One can combine all the notions above. For example,
- "y ~ h(x,w,z) + ." and "y ~ h(x,w,z) + .^2" will generate all one-way (resp. up to two-way) basis functions
- and additionally all the three-way interaction basis functions between variables w,x,z.
- One can also specify monotonicity constraints by replacing the letter `h` with `d` (for decreasing) or `i` (for increasing), e.g. formulas like "y ~ i(x) + i(y) + i(x,y)", "y ~ d(x) + d(y) + d(x,y)", or "y ~ d(x) + i(y) + h(x,y)".
+h(x) signifies that all
+one-way/main term basis functions of the variable x should be included.
+h(x,w) specifies that all interaction (two-way) basis functions between x and w
+should be included in the model. Similarly, h(x,w,z) specifies
+that all interaction (three-way) basis functions between x,w,z should be included in the model.
+Note that "y ~ h(x,y,z)" will only construct three-way basis functions for x,y,z
+and not the two-way and one-way basis functions.
+Additionally, a formula of the form "y ~ ." will generate all one-way main term basis functions for variables in \code{data}.
+Similarly, "y ~ .^2" will generate all basis functions up to degree 2 for all variables in \code{data}.
+More generally, "y ~ .^max_degree" will construct all basis functions up to degree max_degree.
+One can combine all the notions above. For example,
+"y ~ h(x,w,z) + ." and "y ~ h(x,w,z) + .^2" will generate all one-way (resp. up to two-way) basis functions
+and additionally all the three-way interaction basis functions between variables w,x,z.
+One can also specify monotonicity constraints by replacing the letter \code{h} with \code{d} (for decreasing) or \code{i} (for increasing), e.g. formulas like "y ~ i(x) + i(y) + i(x,y)", "y ~ d(x) + d(y) + d(x,y)", or "y ~ d(x) + i(y) + h(x,y)".
 The letters h, i, d specify functional restrictions of each term:
 h specifies no constraints on the term,
 i specifies that the term should be enforced to be monotonely increasing,
@@ -77,55 +77,81 @@ Ambigious operations like "y ~ i(x) + ."  will use the first specification/evalu
 That is, "y ~ i(x) + ." -> "y ~ i(x) + h(z) + h(w)" and "y ~ h(x) + i(x)" -> "y ~ h(x)".
 Note that "." and ".^max_degree" have the lowest importance and are evaluated last, regardless of their location in the formula.
 As a result, "y ~ . + i(x)" -> "y ~ i(x) + h(w) + h(z), contrary to the previous case.
-Familar operations such as the ":", `*` ,"-" are also supported:
- ":" is a concatnation operator which maps h(x):h(w) -> h(x,w) or h(x):h(w):h(z) -> h(x,w,z)
- `*` concatenates and then generates all lower order terms/interactions. For example, h(x)*h(w) -> h(x) + h(w) + h(x,w)
- or h(x)`*`h(w)`*`h(z) -> h(x) + h(w) + h(z) + h(x,w) + h(x,z) + h(z,w) + h(x,w,z).
- "-" subtracts/removes the term from the formula. For example, h(x) + h(w) - h(w) -> h(x).
- Note that the above operations are sensitive to the constraint prefix "h, i, d".
- For ambigious operations such as i(x):h(w), the unconstrained prefix "h" will be used unless all prefixes in the term are the same.
- So i(x):h(w) -> h(x,w) and i(x):i(w):d(z) -> h(x,w,z) and i(x):i(w) -> i(x,w).
- The above logic will be applied recursively to `*` so that i(x)`*`h(w)`*`i(z) -> i(x) + h(w) + i(z) + h(x,w) + i(x,z) + h(w,z) + h(x,w,z).
- Another useful operation is the wild-card "." operation which when used in a specified term will generate
- all valid terms where the value of "." is iterated over the non-outcome columns in the data matrix. For example,
- h(x,.) -> h(x,w) + h(x,z) and h(.,.) -> h(x,w) + h(x,z) + h(w,z) and h(x,w,.) -> h(x,w,z) (assuming the covariates are only (x,w,z)).
- All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.}
+Familar operations such as the ":", \code{*} ,"-" are also supported:
+":" is a concatnation operator which maps h(x):h(w) -> h(x,w) or h(x):h(w):h(z) -> h(x,w,z)
+\code{*} concatenates and then generates all lower order terms/interactions. For example, h(x)*h(w) -> h(x) + h(w) + h(x,w)
+or h(x)\code{*}h(w)\code{*}h(z) -> h(x) + h(w) + h(z) + h(x,w) + h(x,z) + h(z,w) + h(x,w,z).
+"-" subtracts/removes the term from the formula. For example, h(x) + h(w) - h(w) -> h(x).
+Note that the above operations are sensitive to the constraint prefix "h, i, d".
+For ambigious operations such as i(x):h(w), the unconstrained prefix "h" will be used unless all prefixes in the term are the same.
+So i(x):h(w) -> h(x,w) and i(x):i(w):d(z) -> h(x,w,z) and i(x):i(w) -> i(x,w).
+The above logic will be applied recursively to \code{*} so that i(x)\code{*}h(w)\code{*}i(z) -> i(x) + h(w) + i(z) + h(x,w) + i(x,z) + h(w,z) + h(x,w,z).
+Another useful operation is the wild-card "." operation which when used in a specified term will generate
+all valid terms where the value of "." is iterated over the non-outcome columns in the data matrix. For example,
+h(x,.) -> h(x,w) + h(x,z) and h(.,.) -> h(x,w) + h(x,z) + h(w,z) and h(x,w,.) -> h(x,w,z) (assuming the covariates are only (x,w,z)).
+All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.}
 
 \item{data}{A data.frame or named matrix containing the outcome and covariates specified in the formula.}
 
-\item{smoothness_orders}{An \code{integer} vector of length 1 or length ncol(\code{X}).
-If \code{smoothness_orders} is of length 1 then its values are recycled to form a vector of length length ncol(\code{X}).
-Given such a vector of length ncol(\code{X}), the ith element specifies the level of smoothness for the variable
-corresponding with the ith column in \code{X}.
-A value of "0" corresponds with 0-order splines (piece-wise constant) which assumes no smoothness or continuity of true regression function.
-A value of "1" corresponds with 1-order splines (piece-wise linear) which only assumes continuity of true regression function.
-A value of "2" corresponds with 2-order splines (piece-wise quadratic and linear terms) which assumes one order of differentiability for the true regression function.
-Warning: if \code{smoothness_orders} has length less than ncol(\code{X}) then values are recycled as needed.}
+\item{smoothness_orders}{An \code{integer} vector of length 1 or length
+\code{ncol(X)}. If \code{smoothness_orders} is of length 1, then its values
+are recycled to form a vector of length length \code{ncol(X)}. Given such a
+vector of length \code{ncol(X)}, the ith element specifies the level of
+smoothness for the variable corresponding with the ith column in \code{X}.
+A value of "0" corresponds with 0-order splines (piece-wise constant) which
+assumes no smoothness or continuity of true regression function. A value of
+"1" corresponds with 1-order splines (piece-wise linear) which only assumes
+continuity of true regression function. A value of "2" corresponds with
+2-order splines (piece-wise quadratic and linear terms) which assumes one
+order of differentiability for the true regression function. WARNING: if
+\code{smoothness_orders} has length less than \code{ncol(X)}, then values
+are recycled as needed.}
 
-\item{num_knots}{An \code{integer} vector of length 1 or length \code{max_degree}.
-If \code{num_knots} is a vector of length 1 then its values are recycled to produce a vector of length \code{max_degree}.
-Given a possibly recycled vector of length \code{max_degree},
-num_knots[i] specifies the maximum number of knot points used when generating basis functions of degree i for each covariate.
-For example, num_knots[1] specifies how many knot points to use when generating main-term additive basis functions.
-num_knots[2] specifies how many knot points should be used when generating each univariate basis function in the 2-tensor product basis functions.
-A smaller number of knot points gives rise to a less smooth function. However, fewer knot points can significantly decrease runtime.
-If smoothness_orders is 1 or higher then few knot points (10-30) are needed to maintain near optimal performance. For smoothness_orders = 0, too few knot points (< 50) can significantly reduce performance.
-We recommend specifying a vector of length \code{max_degree} that decreases exponentially to prevent combinatorical explosions in the number of higher degree interaction basis functions generated.
-Default: For zero order smoothness (any(\code{smoothness_orders}==0)), the number of knots by interaction degree `d` decays as `500/2^{d-1}`.
-For first or higher order smoothness (all(\code{smoothness_orders}>0)), the number of knots by interaction degree `d` decays as `75/2^{d-1}`.
-These defaults ensure that the number of basis functions and thus the complexity of the optimization problem grows scalably in \code{max_degree}.
-Some good settings for little to no cost in performance:
-If smoothness_orders = 0 and max_degree = 3, num_knots = c(400, 200, 100).
-If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(100, 75, 50).
-Recommended settings for fairly fast runtime and great performance:
-If smoothness_orders = 0 and max_degree = 3, num_knots = c(200, 100, 50).
-If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(50, 25, 15).
-Recommended settings for fast runtime and good/great performance:
-If smoothness_orders = 0 and max_degree = 3, num_knots = c(100, 50, 25).
-If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(40, 15, 10).
-Recommended settings for very fast runtime and good performance:
-If smoothness_orders = 0 and max_degree = 3, num_knots = c(50, 25, 10).
-If smoothness_orders = 1 or higher and max_degree = 3, num_knots = c(25, 10, 5).}
+\item{num_knots}{An \code{integer} vector of length 1 or length
+\code{max_degree}. If \code{num_knots} is a vector of length 1 then its
+values are recycled to produce a vector of length \code{max_degree}. Given
+a possibly recycled vector of length \code{max_degree}, num_knots\link{i}
+specifies the maximum number of knot points used when generating basis
+functions of degree i for each covariate. For example, num_knots\link{1}
+specifies how many knot points to use when generating main-term additive
+basis functions. \code{num_knots[2]} specifies how many knot points should
+be used when generating each univariate basis function in the 2-tensor
+product basis functions. A smaller number of knot points gives rise to a
+less smooth function. However, fewer knot points can significantly decrease
+runtime. If smoothness_orders is 1 or higher then few knot points (10-30)
+are needed to maintain near optimal performance. For smoothness_orders = 0,
+too few knot points (< 50) can significantly reduce performance. We
+recommend specifying a vector of length \code{max_degree} that decreases
+exponentially to prevent combinatorical explosions in the number of higher
+degree interaction basis functions generated. Default: For zero order
+smoothness (any(\code{smoothness_orders}==0)), the number of knots by
+interaction degree \code{d} decays as \code{500/2^{d-1}}. For first or higher order
+smoothness (all(\code{smoothness_orders}>0)), the number of knots by
+interaction degree \code{d} decays as \code{75/2^{d-1}}. These defaults ensure that
+the number of basis functions and thus the complexity of the optimization
+problem grows scalably in \code{max_degree}.
+\itemize{
+\item Some good settings for little to no cost in performance:
+\itemize{
+\item If smoothness_orders = 0, max_degree = 3, num_knots = c(400, 200, 100).
+\item If smoothness_orders = 1+, max_degree = 3, num_knots = c(100, 75, 50).
+}
+\item Recommended settings for fairly fast runtime and great performance:
+\itemize{
+\item If smoothness_orders = 0, max_degree = 3, num_knots = c(200, 100, 50).
+\item If smoothness_orders = 1+, max_degree = 3, num_knots = c(50, 25, 15).
+}
+\item Recommended settings for fast runtime and good/great performance:
+\itemize{
+\item If smoothness_orders = 0, max_degree = 3, num_knots = c(100, 50, 25).
+\item If smoothness_orders = 1+, max_degree = 3, num_knots = c(40, 15, 10).
+}
+\item Recommended settings for very fast runtime and good performance:
+\itemize{
+\item If smoothness_orders = 0, max_degree = 3, num_knots = c(50, 25, 10).
+\item If smoothness_orders = 1+, max_degree = 3, num_knots = c(25, 10, 5).
+}
+}}
 
 \item{exclusive_dot}{Boolean indicator for whether the "." and ".^max_degree" arguments in the formula
 should be treated as exclusive or inclusive the variables already specified in the formula.
@@ -146,9 +172,14 @@ so that all two way interactions using one variable for each group are generated
 Similarly, "y ~ h(1,r)" -> "y ~ h(x,r) + h(w,r)".
 Thus, the custom groups operate exactly as "." except the possible values are restricted to a specific group.}
 
-\item{adaptive_smoothing}{A \code{boolean} which if true HAL will perform adaptive smoothing up until the maximum order of smoothness specified by \code{smoothness_orders}.
-For example, if smoothness_orders = 2 and adaptive_smoothing = TRUE then HAL will generate all basis functions of smoothness order 0, 1, and 2, and data-adaptively select the basis functions to use.
-Warning: This can increase runtime by a factor of 2-3+ depending on value of \code{smoothness_orders}.}
+\item{adaptive_smoothing}{A \code{logical}, which, if \code{TRUE}, HAL will
+perform adaptive smoothing up until the maximum order of smoothness
+specified by \code{smoothness_orders}. For example, if
+\code{smoothness_orders = 2} and \code{adaptive_smoothing = TRUE}, then HAL
+will generate all basis functions of smoothness order 0, 1, and 2, and
+data-adaptively select the basis functions to use. WARNING: This can
+increase runtime by a factor of 2-3+ depending on value of
+\code{smoothness_orders}.}
 
 \item{...}{Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 consult its documentation for a full list of options.}
@@ -188,14 +219,17 @@ Lasso. Any basis functions with a lower proportion of 1's than the cutoff
 will be removed. This argument defaults to \code{NULL}, in which case all
 basis functions are used in the lasso-fitting stage of the HAL algorithm.}
 
-\item{family}{A \code{character} or a \code{\link[stats]{family}} object (supported by \code{\link[glmnet]{glmnet}})
-corresponding to the error family for a generalized linear model. \code{character} options are limited to "gaussian" for fitting a
-standard penalized linear model, "binomial" for penalized logistic regression,
-"poisson" for penalized Poisson regression, and "cox" for a penalized
-proportional hazards model. Note that in all cases where family is not set
-to "gaussian", \code{fit_type} is limited to "glmnet".
-NOTE: Passing in family objects lead to signficantly slower performance relative to passing in a character family (if supported).
-Thus, for nonparametric logistic regression, one should always set family = "binomial" and never set family = binomial().}
+\item{family}{A \code{character} or a \code{\link[stats]{family}} object
+(supported by \code{\link[glmnet]{glmnet}}) corresponding to the error/link
+family for a generalized linear model. \code{character} options are limited
+to "gaussian" for fitting a standard penalized linear model, "binomial" for
+penalized logistic regression, "poisson" for penalized Poisson regression,
+and "cox" for a penalized proportional hazards model. Note that in all
+cases where family is not set to "gaussian", \code{fit_type} is limited to
+"glmnet". NOTE: Passing in family objects lead to signficantly slower
+performance relative to passing in a character family (if supported). Thus,
+for nonparametric (HAL) logistic regression, one should always set
+\code{family = "binomial"} and never set \code{family = binomial()}.}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
 the \code{glmnet} fit of the lasso model.}
@@ -226,11 +260,14 @@ pick the optimal value (based on cross-validation) (when set to
 \code{TRUE}) or to simply fit along the sequence of values (or single
 value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
 
-\item{prediction_bounds}{A vector of size two that provides the lower and upper bounds for predictions.
-By default, the predictions are bounded between min(Y) - sd(Y) and max(Y) + sd(Y).
-Bounding ensures that there is no crazy extrapolation and that predictions remain bounded which is necessary for cross-validation selection/SuperLearner.}
+\item{prediction_bounds}{A vector of size two that provides the lower and
+upper bounds for predictions. By default, the predictions are bounded
+between \code{min(Y) - sd(Y) and max(Y) + sd(Y)}. Bounding ensures that
+there is no extrapolation and that predictions remain bounded, which is
+necessary for cross-validation selection and/or Super Learning.}
 
-\item{lambda.min.ratio}{passed to \code{\link[glmnet]{cv.glmnet}}, controls the ratio of largest to smallest lambda values considered}
+\item{lambda.min.ratio}{passed to \code{\link[glmnet]{cv.glmnet}}, controls
+the ratio of largest to smallest lambda values considered}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically
@@ -238,8 +275,8 @@ acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).}
 }
 \value{
 Object of class \code{hal9001}, containing a list of basis
- functions, a copy map, coefficients estimated for basis functions, and
- timing results (for assessing computational efficiency).
+functions, a copy map, coefficients estimated for basis functions, and
+timing results (for assessing computational efficiency).
 }
 \description{
 Estimation procedure for HAL, the Highly Adaptive Lasso
@@ -252,11 +289,11 @@ The returned formula object can be fed directly into \code{fit_hal}
 and the fit can be run with minimal (no) user input.
 
 The procedure uses a custom C++ implementation to generate a design
- matrix consisting of basis functions corresponding to covariates and
- interactions of covariates and to remove duplicate columns of indicators.
- The Lasso regression is fit to this (usually) very wide matrix using either
- a custom implementation (based on \pkg{origami}) or by a call to
- \code{\link[glmnet]{cv.glmnet}}.
+matrix consisting of basis functions corresponding to covariates and
+interactions of covariates and to remove duplicate columns of indicators.
+The Lasso regression is fit to this (usually) very wide matrix using either
+a custom implementation (based on \pkg{origami}) or by a call to
+\code{\link[glmnet]{cv.glmnet}}.
 }
 \examples{
 \donttest{

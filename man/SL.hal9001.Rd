@@ -55,7 +55,7 @@ compatibility with \code{SuperLearner}. These are passed to
 }
 \value{
 An object of class \code{SL.hal9001} with a fitted \code{hal9001}
- object and corresponding predictions based on the input data.
+object and corresponding predictions based on the input data.
 }
 \description{
 Wrapper for \pkg{SuperLearner} for objects of class \code{hal9001}

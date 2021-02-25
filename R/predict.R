@@ -15,7 +15,9 @@
 #' @param new_X_unpenalized If the user supplied \code{X_unpenalized} during
 #'  training, the user should also supply this matrix with the same number of
 #'  observations as \code{new_data}. Optional.
-#' @param type Either "response" (default) for predictions of the response or "link" for untransformed link function predictions.
+#' @param type Either "response" (default) for predictions of the response or
+#'  "link" for untransformed link function predictions.
+#'
 #' @importFrom Matrix tcrossprod
 #' @importFrom stats plogis
 #' @importFrom assertthat assert_that
@@ -36,7 +38,8 @@ predict.hal9001 <- function(object,
                             offset = NULL,
                             ...,
                             new_data,
-                            new_X_unpenalized = NULL, type = c("response", "link")) {
+                            new_X_unpenalized = NULL,
+                            type = c("response", "link")) {
   type <- match.arg(type)
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
@@ -121,8 +124,8 @@ predict.hal9001 <- function(object,
   bounds <- object$prediction_bounds
   if (!is.null(bounds)) {
     bounds <- sort(bounds)
-    preds[] <- ifelse(preds[]<bounds[1],bounds[1],preds[])
-    preds[] <- ifelse(preds[]>bounds[2],bounds[2],preds[])
+    preds[] <- ifelse(preds[] < bounds[1], bounds[1], preds[])
+    preds[] <- ifelse(preds[] > bounds[2], bounds[2], preds[])
   }
   # output
   return(preds)

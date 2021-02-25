@@ -49,7 +49,7 @@ Summary Method for HAL fit objects
 }
 \details{
 Method for summarizing the coefficients of the Highly Adaptive
- Lasso estimator in terms of the basis functions corresponding to covariates
- and interactions of covariates, returned as a single S3 object of class
- \code{hal9001}.
+Lasso estimator in terms of the basis functions corresponding to covariates
+and interactions of covariates, returned as a single S3 object of class
+\code{hal9001}.
 }

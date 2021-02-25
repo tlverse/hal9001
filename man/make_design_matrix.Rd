@@ -13,7 +13,7 @@ make_design_matrix(X, blist)
 }
 \value{
 A \code{dgCMatrix} sparse matrix of indicator basis functions
- corresponding to the design matrix in a zero-order highly adaptive lasso.
+corresponding to the design matrix in a zero-order highly adaptive lasso.
 }
 \description{
 Make a HAL design matrix based on original design matrix X and a list of

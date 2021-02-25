@@ -21,7 +21,7 @@ functions ought to be generated. The default (\code{NULL}) corresponds to
 generating basis functions for the full dimensionality of the input matrix.}
 
 \item{smoothness_orders}{An integer vector of length ncol(x) specifying the desired smoothness of the function in each covariate.
- k = 0 is no smoothness (indicator basis), k = 1 is first order smoothness, and so on.
+k = 0 is no smoothness (indicator basis), k = 1 is first order smoothness, and so on.
 For an additive model, the component function for each covariate will have the degree of smoothness as specified by smoothness_orders.
 For non-additive components (tensor products of single variate basis functions),
 the univariate basis functions in each tensor product have smoothness degree as specified by smoothness_orders.}
@@ -33,7 +33,7 @@ This allows the algorithm to data-adaptively choose the smoothness.}
 }
 \value{
 A \code{list} containing  basis functions and cutoffs generated from
- a set of input columns up to a particular pre-specified degree.
+a set of input columns up to a particular pre-specified degree.
 }
 \description{
 Find the full list of basis functions up to a particular degree

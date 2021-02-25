@@ -19,5 +19,5 @@ meets_basis(X, row_num, cols, cutoffs, orders)
 }
 \description{
 Computes and returns the indicator value for the basis described by
-cols and cutoffs for a given row of X (X[row_num, ])
+cols and cutoffs for a given row of X (X\link{row_num, })
 }
