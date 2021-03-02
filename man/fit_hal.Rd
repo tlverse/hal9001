@@ -51,30 +51,38 @@ fit_hal(X, ...)
 )
 }
 \arguments{
-\item{formula}{A character string specifying the hal9001 model.
-The format should be of the form "y ~ h(x) + h(w,x) + h(x,w) + h(x,w,z) "
-where "y" is the outcome and "w,x,y,z" are variables in \code{data}.
-Each term represents a main-term/interaction to be included in the model.
-h(x) signifies that all
-one-way/main term basis functions of the variable x should be included.
-h(x,w) specifies that all interaction (two-way) basis functions between x and w
-should be included in the model. Similarly, h(x,w,z) specifies
-that all interaction (three-way) basis functions between x,w,z should be included in the model.
-Note that "y ~ h(x,y,z)" will only construct three-way basis functions for x,y,z
-and not the two-way and one-way basis functions.
-Additionally, a formula of the form "y ~ ." will generate all one-way main term basis functions for variables in \code{data}.
-Similarly, "y ~ .^2" will generate all basis functions up to degree 2 for all variables in \code{data}.
-More generally, "y ~ .^max_degree" will construct all basis functions up to degree max_degree.
-One can combine all the notions above. For example,
-"y ~ h(x,w,z) + ." and "y ~ h(x,w,z) + .^2" will generate all one-way (resp. up to two-way) basis functions
-and additionally all the three-way interaction basis functions between variables w,x,z.
-One can also specify monotonicity constraints by replacing the letter \code{h} with \code{d} (for decreasing) or \code{i} (for increasing), e.g. formulas like "y ~ i(x) + i(y) + i(x,y)", "y ~ d(x) + d(y) + d(x,y)", or "y ~ d(x) + i(y) + h(x,y)".
-The letters h, i, d specify functional restrictions of each term:
-h specifies no constraints on the term,
-i specifies that the term should be enforced to be monotonely increasing,
-d specifies that the term should be enforced to be monotonely decreasing.
-Ambigious operations like "y ~ i(x) + ."  will use the first specification/evaluation of the term in the formula (generally from left to right).
-That is, "y ~ i(x) + ." -> "y ~ i(x) + h(z) + h(w)" and "y ~ h(x) + i(x)" -> "y ~ h(x)".
+\item{formula}{A character string specifying the hal9001 model. The format
+should be of the form "y ~ h(x) + h(w,x) + h(x,w) + h(x,w,z) ", where "y"
+is the outcome and "w,x,y,z" are variables in \code{data}. Each term
+represents a main-term/interaction to be included in the model. h(x)
+signifies that all one-way/main terms basis functions of the variable x
+should be included. h(x,w) specifies that all interaction (two-way) basis
+functions between x and w should be included in the model. Similarly,
+h(x,w,z) specifies that all interaction (three-way) basis functions between
+x,w,z should be included in the model. Note that "y ~ h(x,y,z)" will only
+construct three-way basis functions for x,y,z and not the two-way and
+one-way basis functions. Additionally, a formula of the form "y ~ ." will
+generate all one-way main term basis functions for variables in
+\code{data}. Similarly, "y ~ .^2" will generate all basis functions up to
+degree 2 for all variables in \code{data}. More generally,
+"y ~ .^max_degree" will construct all basis functions up to degree
+\code{max_degree}. One can combine all the notions above. For example,
+"y ~ h(x,w,z) + ." and "y ~ h(x,w,z) + .^2" will generate all one-way
+(respectively, up to two-way) basis functions and additionally all the
+three-way interaction basis functions between variables w,x,z. One can also
+specify monotonicity constraints by replacing the letter \code{h} with \code{d} (for
+decreasing) or \code{i} (for increasing), e.g., formulas like
+"y ~ i(x) + i(y) + i(x,y)", "y ~ d(x) + d(y) + d(x,y)", or
+"y ~ d(x) + i(y) + h(x,y)". The letters h, i, d specify functional
+restrictions of each term:
+\itemize{
+\item h specifies no constraints on the term,
+\item i specifies that the term should be enforced to be monotonely increasing,
+\item d specifies that the term should be enforced to be monotonely decreasing.
+Ambigious operations like "y ~ i(x) + ."  will use the first specification
+of the term in the formula (generally from left to right). That is,
+"y ~ i(x) + ." -> "y ~ i(x) + h(z) + h(w)" and
+"y ~ h(x) + i(x)" -> "y ~ h(x)".
 Note that "." and ".^max_degree" have the lowest importance and are evaluated last, regardless of their location in the formula.
 As a result, "y ~ . + i(x)" -> "y ~ i(x) + h(w) + h(z), contrary to the previous case.
 Familar operations such as the ":", \code{*} ,"-" are also supported:
@@ -86,10 +94,11 @@ Note that the above operations are sensitive to the constraint prefix "h, i, d".
 For ambigious operations such as i(x):h(w), the unconstrained prefix "h" will be used unless all prefixes in the term are the same.
 So i(x):h(w) -> h(x,w) and i(x):i(w):d(z) -> h(x,w,z) and i(x):i(w) -> i(x,w).
 The above logic will be applied recursively to \code{*} so that i(x)\code{*}h(w)\code{*}i(z) -> i(x) + h(w) + i(z) + h(x,w) + i(x,z) + h(w,z) + h(x,w,z).
-Another useful operation is the wild-card "." operation which when used in a specified term will generate
+Another useful operation is the wildcard "." operation which when used in a specified term will generate
 all valid terms where the value of "." is iterated over the non-outcome columns in the data matrix. For example,
 h(x,.) -> h(x,w) + h(x,z) and h(.,.) -> h(x,w) + h(x,z) + h(w,z) and h(x,w,.) -> h(x,w,z) (assuming the covariates are only (x,w,z)).
-All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.}
+All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.
+}}
 
 \item{data}{A data.frame or named matrix containing the outcome and covariates specified in the formula.}
 
@@ -120,7 +129,7 @@ product basis functions. A smaller number of knot points gives rise to a
 less smooth function. However, fewer knot points can significantly decrease
 runtime. If smoothness_orders is 1 or higher then few knot points (10-30)
 are needed to maintain near optimal performance. For smoothness_orders = 0,
-too few knot points (< 50) can significantly reduce performance. We
+too few knot points (<50) can significantly reduce performance. We
 recommend specifying a vector of length \code{max_degree} that decreases
 exponentially to prevent combinatorical explosions in the number of higher
 degree interaction basis functions generated. Default: For zero order
@@ -212,12 +221,12 @@ passed directly to \code{\link[glmnet]{cv.glmnet}}.}
 \item{use_min}{Specify lambda selected by \code{\link[glmnet]{cv.glmnet}}.
 \code{TRUE}, \code{"lambda.min"} is used; otherwise, \code{"lambda.1se"}.}
 
-\item{reduce_basis}{A \code{numeric} value bounded in the open interval
-(0,1) indicating the minimum proportion of 1's in a basis function column
-needed for the basis function to be included in the procedure to fit the
-Lasso. Any basis functions with a lower proportion of 1's than the cutoff
-will be removed. This argument defaults to \code{NULL}, in which case all
-basis functions are used in the lasso-fitting stage of the HAL algorithm.}
+\item{reduce_basis}{A \code{numeric} value bounded in the open unit interval
+indicating the minimum proportion of 1's in a basis function column needed
+for the basis function to be included in the procedure to fit the Lasso.
+Any basis functions with a lower proportion of 1's than the cutoff will be
+removed. This argument defaults to \code{NULL}, in which case all basis
+functions are used in the lasso-fitting stage of the HAL algorithm.}
 
 \item{family}{A \code{character} or a \code{\link[stats]{family}} object
 (supported by \code{\link[glmnet]{glmnet}}) corresponding to the error/link
@@ -283,10 +292,10 @@ Estimation procedure for HAL, the Highly Adaptive Lasso
 }
 \details{
 The function allows users to specify the functional form/model of
-hal9001 similar to in \code{\link[stats]{glm}}. The user can specify which interactions to include,
-monotonicity constraints, and smoothness constraints.
-The returned formula object can be fed directly into \code{fit_hal}
-and the fit can be run with minimal (no) user input.
+hal9001 similar to in \code{\link[stats]{glm}}. The user can specify which
+interactions to include, monotonicity constraints, and smoothness
+constraints. The returned \code{formula} object can be fed directly into
+\code{fit_hal} and the fit can be run with minimal (no) user input.
 
 The procedure uses a custom C++ implementation to generate a design
 matrix consisting of basis functions corresponding to covariates and

@@ -1,28 +1,36 @@
 #' @rdname fit_hal
-#' @param formula A character string specifying the hal9001 model.
-#' The format should be of the form "y ~ h(x) + h(w,x) + h(x,w) + h(x,w,z) "
-#' where "y" is the outcome and "w,x,y,z" are variables in \code{data}.
-#' Each term represents a main-term/interaction to be included in the model.
-#'  h(x) signifies that all
-#'  one-way/main term basis functions of the variable x should be included.
-#'  h(x,w) specifies that all interaction (two-way) basis functions between x and w
-#'  should be included in the model. Similarly, h(x,w,z) specifies
-#'  that all interaction (three-way) basis functions between x,w,z should be included in the model.
-#'  Note that "y ~ h(x,y,z)" will only construct three-way basis functions for x,y,z
-#'  and not the two-way and one-way basis functions.
-#'  Additionally, a formula of the form "y ~ ." will generate all one-way main term basis functions for variables in \code{data}.
-#'  Similarly, "y ~ .^2" will generate all basis functions up to degree 2 for all variables in \code{data}.
-#'  More generally, "y ~ .^max_degree" will construct all basis functions up to degree max_degree.
-#'  One can combine all the notions above. For example,
-#'  "y ~ h(x,w,z) + ." and "y ~ h(x,w,z) + .^2" will generate all one-way (resp. up to two-way) basis functions
-#'  and additionally all the three-way interaction basis functions between variables w,x,z.
-#'  One can also specify monotonicity constraints by replacing the letter `h` with `d` (for decreasing) or `i` (for increasing), e.g. formulas like "y ~ i(x) + i(y) + i(x,y)", "y ~ d(x) + d(y) + d(x,y)", or "y ~ d(x) + i(y) + h(x,y)".
-#' The letters h, i, d specify functional restrictions of each term:
-#' h specifies no constraints on the term,
-#' i specifies that the term should be enforced to be monotonely increasing,
-#' d specifies that the term should be enforced to be monotonely decreasing.
-#' Ambigious operations like "y ~ i(x) + ."  will use the first specification/evaluation of the term in the formula (generally from left to right).
-#' That is, "y ~ i(x) + ." -> "y ~ i(x) + h(z) + h(w)" and "y ~ h(x) + i(x)" -> "y ~ h(x)".
+#'
+#' @param formula A character string specifying the hal9001 model. The format
+#'  should be of the form "y ~ h(x) + h(w,x) + h(x,w) + h(x,w,z) ", where "y"
+#'  is the outcome and "w,x,y,z" are variables in \code{data}. Each term
+#'  represents a main-term/interaction to be included in the model. h(x)
+#'  signifies that all one-way/main terms basis functions of the variable x
+#'  should be included. h(x,w) specifies that all interaction (two-way) basis
+#'  functions between x and w should be included in the model. Similarly,
+#'  h(x,w,z) specifies that all interaction (three-way) basis functions between
+#'  x,w,z should be included in the model. Note that "y ~ h(x,y,z)" will only
+#'  construct three-way basis functions for x,y,z and not the two-way and
+#'  one-way basis functions. Additionally, a formula of the form "y ~ ." will
+#'  generate all one-way main term basis functions for variables in
+#'  \code{data}. Similarly, "y ~ .^2" will generate all basis functions up to
+#'  degree 2 for all variables in \code{data}. More generally,
+#'  "y ~ .^max_degree" will construct all basis functions up to degree 
+#'  \code{max_degree}. One can combine all the notions above. For example,
+#'  "y ~ h(x,w,z) + ." and "y ~ h(x,w,z) + .^2" will generate all one-way
+#'  (respectively, up to two-way) basis functions and additionally all the
+#'  three-way interaction basis functions between variables w,x,z. One can also
+#'  specify monotonicity constraints by replacing the letter `h` with `d` (for
+#'  decreasing) or `i` (for increasing), e.g., formulas like
+#'  "y ~ i(x) + i(y) + i(x,y)", "y ~ d(x) + d(y) + d(x,y)", or
+#'  "y ~ d(x) + i(y) + h(x,y)". The letters h, i, d specify functional
+#'  restrictions of each term:
+#'  - h specifies no constraints on the term,
+#'  - i specifies that the term should be enforced to be monotonely increasing,
+#'  - d specifies that the term should be enforced to be monotonely decreasing.
+#'  Ambigious operations like "y ~ i(x) + ."  will use the first specification
+#'  of the term in the formula (generally from left to right). That is,
+#'  "y ~ i(x) + ." -> "y ~ i(x) + h(z) + h(w)" and
+#'  "y ~ h(x) + i(x)" -> "y ~ h(x)".
 #' Note that "." and ".^max_degree" have the lowest importance and are evaluated last, regardless of their location in the formula.
 #' As a result, "y ~ . + i(x)" -> "y ~ i(x) + h(w) + h(z), contrary to the previous case.
 #' Familar operations such as the ":", `*` ,"-" are also supported:
@@ -34,11 +42,13 @@
 #'  For ambigious operations such as i(x):h(w), the unconstrained prefix "h" will be used unless all prefixes in the term are the same.
 #'  So i(x):h(w) -> h(x,w) and i(x):i(w):d(z) -> h(x,w,z) and i(x):i(w) -> i(x,w).
 #'  The above logic will be applied recursively to `*` so that i(x)`*`h(w)`*`i(z) -> i(x) + h(w) + i(z) + h(x,w) + i(x,z) + h(w,z) + h(x,w,z).
-#'  Another useful operation is the wild-card "." operation which when used in a specified term will generate
+#'  Another useful operation is the wildcard "." operation which when used in a specified term will generate
 #'  all valid terms where the value of "." is iterated over the non-outcome columns in the data matrix. For example,
 #'  h(x,.) -> h(x,w) + h(x,z) and h(.,.) -> h(x,w) + h(x,z) + h(w,z) and h(x,w,.) -> h(x,w,z) (assuming the covariates are only (x,w,z)).
 #'  All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.
+#'
 #' @param data A data.frame or named matrix containing the outcome and covariates specified in the formula.
+#'
 #' @param exclusive_dot Boolean indicator for whether the "." and ".^max_degree" arguments in the formula
 #' should be treated as exclusive or inclusive the variables already specified in the formula.
 #' For example, if "y ~ h(x,w) + ." should the "." be interpreted as: add all one-way basis functions
@@ -48,6 +58,7 @@
 #' However, if \code{exclusive_dot} is true, then "y ~ h(x) + .^2"  encodes a different formula than "y ~ .^2".
 #' Specifically, it means to generate one way basis functions for 'x' and then all basis functions
 #' up to degree 2 for other variables excluding 'x' in \code{data}. As a result, no interactions will be added for the variable 'x'.
+#'
 #' @param custom_group A named list with single character names representing a group, and elements being a character vector of variable names.
 #' This allows the user to specify their own wild card symbols (e.g. '.').
 #' However, the value of the symbol will be iterated over all variables specified in the user supplied group.
@@ -56,12 +67,15 @@
 #' so that all two way interactions using one variable for each group are generated.
 #' Similarly, "y ~ h(1,r)" -> "y ~ h(x,r) + h(w,r)".
 #' Thus, the custom groups operate exactly as "." except the possible values are restricted to a specific group.
+#'
 #' @details The function allows users to specify the functional form/model of
-#' hal9001 similar to in \code{\link[stats]{glm}}. The user can specify which interactions to include,
-#' monotonicity constraints, and smoothness constraints.
-#' The returned formula object can be fed directly into \code{fit_hal}
-#' and the fit can be run with minimal (no) user input.
+#'  hal9001 similar to in \code{\link[stats]{glm}}. The user can specify which
+#'  interactions to include, monotonicity constraints, and smoothness
+#'  constraints. The returned \code{formula} object can be fed directly into
+#'  \code{fit_hal} and the fit can be run with minimal (no) user input.
+#'
 #' @importFrom stringr str_match str_split
+#'
 #' @export
 formula_hal <-
   function(formula,

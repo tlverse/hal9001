@@ -43,7 +43,7 @@
 #'  less smooth function. However, fewer knot points can significantly decrease
 #'  runtime. If smoothness_orders is 1 or higher then few knot points (10-30)
 #'  are needed to maintain near optimal performance. For smoothness_orders = 0,
-#'  too few knot points (< 50) can significantly reduce performance. We
+#'  too few knot points (<50) can significantly reduce performance. We
 #'  recommend specifying a vector of length \code{max_degree} that decreases
 #'  exponentially to prevent combinatorical explosions in the number of higher
 #'  degree interaction basis functions generated. Default: For zero order
@@ -77,12 +77,12 @@
 #'  passed directly to \code{\link[glmnet]{cv.glmnet}}.
 #' @param use_min Specify lambda selected by \code{\link[glmnet]{cv.glmnet}}.
 #'  \code{TRUE}, \code{"lambda.min"} is used; otherwise, \code{"lambda.1se"}.
-#' @param reduce_basis A \code{numeric} value bounded in the open interval
-#'  (0,1) indicating the minimum proportion of 1's in a basis function column
-#'  needed for the basis function to be included in the procedure to fit the
-#'  Lasso. Any basis functions with a lower proportion of 1's than the cutoff
-#'  will be removed. This argument defaults to \code{NULL}, in which case all
-#'  basis functions are used in the lasso-fitting stage of the HAL algorithm.
+#' @param reduce_basis A \code{numeric} value bounded in the open unit interval
+#'  indicating the minimum proportion of 1's in a basis function column needed
+#'  for the basis function to be included in the procedure to fit the Lasso.
+#'  Any basis functions with a lower proportion of 1's than the cutoff will be
+#'  removed. This argument defaults to \code{NULL}, in which case all basis
+#'  functions are used in the lasso-fitting stage of the HAL algorithm.
 #' @param family A \code{character} or a \code{\link[stats]{family}} object
 #'  (supported by \code{\link[glmnet]{glmnet}}) corresponding to the error/link
 #'  family for a generalized linear model. \code{character} options are limited
