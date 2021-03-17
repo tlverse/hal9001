@@ -130,7 +130,7 @@
 #' }
 #'
 #' @export
-#' @rdname fit_hal
+
 fit_hal.default <- function(X,
                             Y,
                             X_unpenalized = NULL,
