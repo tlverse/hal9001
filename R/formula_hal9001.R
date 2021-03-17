@@ -593,16 +593,10 @@ print.formula_hal9001 <- function(x, ...) {
   return(invisible(NULL))
 }
 
-#' @rdname fit_hal
-#' @export
-fit_hal <- function(X, ...) {
-  UseMethod("fit_hal")
-}
 
-#' @rdname fit_hal
+
 #' @export
-fit_hal.formula_hal9001 <- function(X, ...) {
-  formula <- X
+fit_hal_formula <- function(formula, ...) {
   other_args <- formula$other_args
 
   do.call(function(...) {
