@@ -156,9 +156,6 @@ fit_hal.default <- function(X,
                             yolo = FALSE) {
   # If X argument is a formula object
   if(!is.missing(X) && inherits(X, "formula_hal9001)) {
-    if(!is.null(Y) && !is.missing(Y)) {
-      X$Y <- Y
-    }
     return(fit_hal_formula(X, ...))
   }
 
