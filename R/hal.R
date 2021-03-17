@@ -131,7 +131,7 @@
 #'
 #' @export
 
-fit_hal.default <- function(X,
+fit_hal <- function(X,
                             Y,
                             X_unpenalized = NULL,
                             max_degree = ifelse(ncol(X) >= 20, 2, 3),
