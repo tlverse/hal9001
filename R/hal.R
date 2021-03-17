@@ -154,6 +154,14 @@ fit_hal.default <- function(X,
                             prediction_bounds = "default",
                             ...,
                             yolo = FALSE) {
+  # If X argument is a formula object
+  if(!is.missing(X) && inherits(X, "formula_hal9001)) {
+    if(!is.null(Y) && !is.missing(Y)) {
+      X$Y <- Y
+    }
+    return(fit_hal_formula(X, ...))
+  }
+
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
