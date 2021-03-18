@@ -106,7 +106,8 @@
 #' @param prediction_bounds A vector of size two that provides the lower and upper bounds for predictions.
 #'  By default, the predictions are bounded between min(Y) - sd(Y) and max(Y) + sd(Y).
 #'  Bounding ensures that there is no crazy extrapolation and that predictions remain bounded which is necessary for cross-validation selection/SuperLearner.
-#' @param yolo A \code{logical} indicating whether to print one of a curated
+#' @param standardize A \code{boolean} passed to \code{\link[glmnet]{glmnet}} for whether to standardize the HAL design matrix.
+#'  Currently, this argument is not used and is always FALSE.
 #'  selection of quotes from the HAL9000 computer, from the critically
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
 #'
@@ -132,28 +133,29 @@
 #' @export
 
 fit_hal <- function(X,
-                            Y,
-                            X_unpenalized = NULL,
-                            max_degree = ifelse(ncol(X) >= 20, 2, 3),
-                            smoothness_orders = rep(1, ncol(X)),
-                            num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
-                            fit_type = c("glmnet", "lassi"),
-                            n_folds = 10,
-                            foldid = NULL,
-                            use_min = TRUE,
-                            reduce_basis = NULL,
-                            family = c("gaussian", "binomial", "poisson", "cox"),
-                            return_lasso = TRUE,
-                            return_x_basis = FALSE,
-                            basis_list = NULL,
-                            lambda = NULL,
-                            id = NULL,
-                            offset = NULL,
-                            cv_select = TRUE,
-                            adaptive_smoothing = FALSE,
-                            prediction_bounds = "default",
-                            ...,
-                            yolo = FALSE) {
+                    Y,
+                    X_unpenalized = NULL,
+                    max_degree = ifelse(ncol(X) >= 20, 2, 3),
+                    smoothness_orders = rep(1, ncol(X)),
+                    num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
+                    fit_type = c("glmnet", "lassi"),
+                    n_folds = 10,
+                    foldid = NULL,
+                    use_min = TRUE,
+                    reduce_basis = NULL,
+                    family = c("gaussian", "binomial", "poisson", "cox"),
+                    return_lasso = TRUE,
+                    return_x_basis = FALSE,
+                    basis_list = NULL,
+                    lambda = NULL,
+                    id = NULL,
+                    offset = NULL,
+                    cv_select = TRUE,
+                    adaptive_smoothing = FALSE,
+                    prediction_bounds = "default",
+                    standardize = FALSE,
+                    ...,
+                    yolo = FALSE) {
   # If X argument is a formula object
   if(!missing(X) && inherits(X, "formula_hal9001")) {
     return(fit_hal_formula(X, ...))
@@ -177,10 +179,12 @@ fit_hal <- function(X,
 
   # If someone tries to pass (glmnet) standardize argument through "..." throw error.
   # This is done because the HAL algorithm requires standardize = F for the variation norm interpretation to hold.
-  assertthat::assert_that(
-    !("standardize" %in% names(dot_args)),
-    msg = "hal9001 does not support the standardize argument."
-  )
+  # assertthat::assert_that(
+  #   !("standardize" %in% names(dot_args)),
+  #   msg = "hal9001 does not support the standardize argument."
+  # )
+  # haldensify passes in standardize
+  standardize <- FALSE
 
   # NOTE: NOT supporting non-gaussian outcomes with lassi method currently
   assertthat::assert_that(
