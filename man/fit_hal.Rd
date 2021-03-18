@@ -3,8 +3,6 @@
 \name{formula_hal}
 \alias{formula_hal}
 \alias{fit_hal}
-\alias{fit_hal.formula_hal9001}
-\alias{fit_hal.default}
 \title{HAL: The Highly Adaptive Lasso}
 \usage{
 formula_hal(
@@ -18,11 +16,7 @@ formula_hal(
   ...
 )
 
-fit_hal(X, ...)
-
-\method{fit_hal}{formula_hal9001}(X, ...)
-
-\method{fit_hal}{default}(
+fit_hal(
   X,
   Y,
   X_unpenalized = NULL,

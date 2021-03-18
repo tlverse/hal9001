@@ -155,7 +155,7 @@ fit_hal <- function(X,
                             ...,
                             yolo = FALSE) {
   # If X argument is a formula object
-  if(!is.missing(X) && inherits(X, "formula_hal9001")) {
+  if(!missing(X) && inherits(X, "formula_hal9001")) {
     return(fit_hal_formula(X, ...))
   }
 
@@ -285,7 +285,7 @@ fit_hal <- function(X,
   # if (inherits(family, "family") || family == "cox") {
   #   x_basis <- as.matrix(x_basis)
   # }
-  
+
   if (!inherits(family, "family") && family == "cox") {
     x_basis <- as.matrix(x_basis)
   }
