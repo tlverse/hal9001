@@ -96,7 +96,8 @@ squash_hal_fit <- function(object) {
     coefs = new_coefs,
     times = object$times,
     lambda_star = object$lambda_star,
-    prediction_bounds = object$prediction_bounds
+    prediction_bounds = object$prediction_bounds,
+    family = object$family
   )
   class(fit) <- "hal9001"
   return(fit)
