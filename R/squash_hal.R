@@ -32,7 +32,7 @@ squash_hal_fit <- function(object) {
 
   # find indices for basis functions with non-zero coefficients
   nz_coefs <- which(as.vector(object$coefs)[-1] != 0)
-  new_coefs <- object$coefs[c(1, nz_coefs)]
+  new_coefs <- object$coefs[c(1, nz_coefs +1)]
 
   # extract all basis functions belonging to any group with nonzero coefficient
   nz_basis_groups <- object$copy_map[nz_coefs]
