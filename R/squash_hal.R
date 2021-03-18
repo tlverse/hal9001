@@ -48,7 +48,7 @@ squash_hal_fit <- function(object) {
   fit <- list(
     basis_list = new_basis,
     copy_map = new_copy_map,
-    coefs = new_coefs,
+    coefs = as.matrix(new_coefs),
     times = object$times,
     lambda_star = object$lambda_star,
     prediction_bounds = object$prediction_bounds,
