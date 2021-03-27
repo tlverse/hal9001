@@ -5,7 +5,7 @@
 \alias{fit_hal}
 \alias{fit_hal.formula_hal9001}
 \alias{fit_hal.default}
-\title{HAL: The Highly Adaptive Lasso}
+\title{Formula Interface for HAL Fitting Procedure}
 \usage{
 formula_hal(
   formula,
@@ -60,47 +60,56 @@ should be included. h(x,w) specifies that all interaction (two-way) basis
 functions between x and w should be included in the model. Similarly,
 h(x,w,z) specifies that all interaction (three-way) basis functions between
 x,w,z should be included in the model. Note that "y ~ h(x,y,z)" will only
-construct three-way basis functions for x,y,z and not the two-way and
-one-way basis functions. Additionally, a formula of the form "y ~ ." will
+construct three-way basis functions for x, y, z and not the two-way and
+one-way basis functions. Additionally, a formula of the form \code{"y ~ ."} will
 generate all one-way main term basis functions for variables in
-\code{data}. Similarly, "y ~ .^2" will generate all basis functions up to
+\code{data}. Similarly, \code{"y ~ .^2"} will generate all basis functions up to
 degree 2 for all variables in \code{data}. More generally,
-"y ~ .^max_degree" will construct all basis functions up to degree
+\code{"y ~ .^max_degree"} will construct all basis functions up to degree
 \code{max_degree}. One can combine all the notions above. For example,
-"y ~ h(x,w,z) + ." and "y ~ h(x,w,z) + .^2" will generate all one-way
+\code{"y ~ h(x,w,z) + ."} and \code{"y ~ h(x,w,z) + .^2"} will generate all one-way
 (respectively, up to two-way) basis functions and additionally all the
-three-way interaction basis functions between variables w,x,z. One can also
-specify monotonicity constraints by replacing the letter \code{h} with \code{d} (for
-decreasing) or \code{i} (for increasing), e.g., formulas like
-"y ~ i(x) + i(y) + i(x,y)", "y ~ d(x) + d(y) + d(x,y)", or
-"y ~ d(x) + i(y) + h(x,y)". The letters h, i, d specify functional
+three-way interaction basis functions between variables w, x, z. One can
+also specify monotonicity constraints by replacing the letter \code{h} with \code{d}
+(for decreasing) or \code{i} (for increasing), e.g., formulas like
+\code{"y ~ i(x) + i(y) + i(x, y)"}, \code{"y ~ d(x) + d(y) + d(x, y)"}, or
+\code{"y ~ d(x) + i(y) + h(x, y)"}. The letters h, i, d specify functional
 restrictions of each term:
 \itemize{
-\item h specifies no constraints on the term,
-\item i specifies that the term should be enforced to be monotonely increasing,
-\item d specifies that the term should be enforced to be monotonely decreasing.
-Ambigious operations like "y ~ i(x) + ."  will use the first specification
+\item \code{h} specifies no constraints on the term,
+\item \code{i} specifies the term should be enforced to be monotonely increasing,
+\item \code{d} specifies the term should be enforced to be monotonely decreasing.
+Ambiguous operations like \code{"y ~ i(x) + ."} will use the first specification
 of the term in the formula (generally from left to right). That is,
-"y ~ i(x) + ." -> "y ~ i(x) + h(z) + h(w)" and
-"y ~ h(x) + i(x)" -> "y ~ h(x)".
-Note that "." and ".^max_degree" have the lowest importance and are evaluated last, regardless of their location in the formula.
-As a result, "y ~ . + i(x)" -> "y ~ i(x) + h(w) + h(z), contrary to the previous case.
-Familar operations such as the ":", \code{*} ,"-" are also supported:
-":" is a concatnation operator which maps h(x):h(w) -> h(x,w) or h(x):h(w):h(z) -> h(x,w,z)
-\code{*} concatenates and then generates all lower order terms/interactions. For example, h(x)*h(w) -> h(x) + h(w) + h(x,w)
-or h(x)\code{*}h(w)\code{*}h(z) -> h(x) + h(w) + h(z) + h(x,w) + h(x,z) + h(z,w) + h(x,w,z).
-"-" subtracts/removes the term from the formula. For example, h(x) + h(w) - h(w) -> h(x).
-Note that the above operations are sensitive to the constraint prefix "h, i, d".
-For ambigious operations such as i(x):h(w), the unconstrained prefix "h" will be used unless all prefixes in the term are the same.
-So i(x):h(w) -> h(x,w) and i(x):i(w):d(z) -> h(x,w,z) and i(x):i(w) -> i(x,w).
-The above logic will be applied recursively to \code{*} so that i(x)\code{*}h(w)\code{*}i(z) -> i(x) + h(w) + i(z) + h(x,w) + i(x,z) + h(w,z) + h(x,w,z).
-Another useful operation is the wildcard "." operation which when used in a specified term will generate
-all valid terms where the value of "." is iterated over the non-outcome columns in the data matrix. For example,
-h(x,.) -> h(x,w) + h(x,z) and h(.,.) -> h(x,w) + h(x,z) + h(w,z) and h(x,w,.) -> h(x,w,z) (assuming the covariates are only (x,w,z)).
-All these operations are compatible with one another, e.g. h(.)*h(x), h(.):h(x)  and h(x) - h(.) are valid and behave as expected.
+\code{"y ~ i(x) + ."} is interpreted as \code{"y ~ i(x) + h(z) + h(w)"} while
+\code{"y ~ h(x) + i(x)"} is interpreted as \code{"y ~ h(x)"}. NOTE that \code{"."} and
+\code{".^max_degree"} have the lowest importance and are evaluated last,
+regardless of their location in the formula. As a result, \code{"y ~ . + i(x)"}
+will be interpreted as \code{"y ~ i(x) + h(w) + h(z)"}, contrary to the previous
+case. Familiar operations such as the \code{:}, \code{*} , \code{-} are also supported:
+\item \code{:} is a concatnation operator which maps \code{h(x):h(w)} into \code{h(x,w)} or
+\code{h(x):h(w):h(z)} into \code{h(x,w,z)}.
+\item \code{*} concatenates and then generates all lower order terms/interactions.
+For example, \code{h(x)*h(w)} into \code{h(x) + h(w) + h(x,w)} or \code{h(x)*h(w)*h(z)}
+into \code{h(x) + h(w) + h(z) + h(x,w) + h(x,z) + h(z,w) + h(x,w,z)}.
+\item \code{-} subtracts/removes the term from the formula. For example, \code{h(x) + h(w) - h(w)} becomes \code{h(x)}.
+Note that the above operations are sensitive to the constraint prefix (\code{h},
+\code{i}, and \code{d}). For ambigious operations like \code{i(x):h(w)}, the unconstrained
+prefix \code{h} will be used unless all prefixes in the term are the same. So,
+\code{i(x):h(w)} becomes \code{h(x,w)} and \code{i(x):i(w):d(z)} becomes \code{h(x,w,z)}, and
+\code{i(x):i(w)} becomes \code{i(x,w)}. The above logic will be applied recursively
+to \code{*} so that \code{i(x) * h(w) * i(z)} is interpreted as \code{i(x) + h(w) + i(z) +  h(x,w) + i(x,z) + h(w,z) + h(x,w,z)}. Another useful operation is the
+wildcard \code{.} operator, which when used in a specified term will generate
+all valid terms where the value of \code{.} is iterated over the non-outcome
+columns in the data matrix. For example, \code{h(x,.)} is \code{h(x,w) + h(x,z)} and
+\code{h(.,.)} is \code{h(x,w) + h(x,z) + h(w,z)}, and \verb{h(x,w,.} is \code{h(x,w,z)},
+assuming the covariates are only (x, w, z). All operations are compatible
+with one another, e.g., \code{h(.)*h(x)}, \code{h(.):h(x)}  and \code{h(x) - h(.)} are
+valid and behave as expected.
 }}
 
-\item{data}{A data.frame or named matrix containing the outcome and covariates specified in the formula.}
+\item{data}{A \code{data.frame} or named matrix containing the outcome and
+covariates specified in the argument \code{formula}.}
 
 \item{smoothness_orders}{An \code{integer} vector of length 1 or length
 \code{ncol(X)}. If \code{smoothness_orders} is of length 1, then its values
@@ -119,26 +128,26 @@ are recycled as needed.}
 \item{num_knots}{An \code{integer} vector of length 1 or length
 \code{max_degree}. If \code{num_knots} is a vector of length 1 then its
 values are recycled to produce a vector of length \code{max_degree}. Given
-a possibly recycled vector of length \code{max_degree}, num_knots\link{i}
+a possibly recycled vector of length \code{max_degree}, \code{num_knots[i]}
 specifies the maximum number of knot points used when generating basis
-functions of degree i for each covariate. For example, num_knots\link{1}
+functions of degree i for each covariate. For example, \code{num_knots[1]}
 specifies how many knot points to use when generating main-term additive
 basis functions. \code{num_knots[2]} specifies how many knot points should
 be used when generating each univariate basis function in the 2-tensor
 product basis functions. A smaller number of knot points gives rise to a
 less smooth function. However, fewer knot points can significantly decrease
 runtime. If smoothness_orders is 1 or higher then few knot points (10-30)
-are needed to maintain near optimal performance. For smoothness_orders = 0,
-too few knot points (<50) can significantly reduce performance. We
-recommend specifying a vector of length \code{max_degree} that decreases
-exponentially to prevent combinatorical explosions in the number of higher
-degree interaction basis functions generated. Default: For zero order
-smoothness (any(\code{smoothness_orders}==0)), the number of knots by
-interaction degree \code{d} decays as \code{500/2^{d-1}}. For first or higher order
-smoothness (all(\code{smoothness_orders}>0)), the number of knots by
-interaction degree \code{d} decays as \code{75/2^{d-1}}. These defaults ensure that
-the number of basis functions and thus the complexity of the optimization
-problem grows scalably in \code{max_degree}.
+are needed to maintain near-optimal performance. When considering setting
+\code{smoothness_orders = 0}, too few knot points (<50) can significantly
+reduce performance; thus, we recommend specifying a vector of length
+\code{max_degree} that decreases exponentially, preventing combinatorial
+explosions in the number of higher-degree basis functions generated.
+Default: For zero order smoothness (any(\code{smoothness_orders}==0)), the
+number of knots by interaction degree d decays as \eqn{500/2^{d-1}}. For
+first or higher-order smoothness (all(\code{smoothness_orders}>0)), the
+number of knots by interaction degree d decays as \eqn{75/2^{d-1}}. These
+defaults ensure that the number of basis functions and thus the complexity
+of the optimization problem grows scalably in \code{max_degree}.
 \itemize{
 \item Some good settings for little to no cost in performance:
 \itemize{
@@ -162,24 +171,33 @@ problem grows scalably in \code{max_degree}.
 }
 }}
 
-\item{exclusive_dot}{Boolean indicator for whether the "." and ".^max_degree" arguments in the formula
-should be treated as exclusive or inclusive the variables already specified in the formula.
-For example, if "y ~ h(x,w) + ." should the "." be interpreted as: add all one-way basis functions
-for the variables remaining in \code{data} not yet specified in the formula (i.e. excluding x,w),
-or: add all one-way basis functions for all variables in the data (including x,w).
-As an example. if \code{exclusive_dot} is false then "y ~ h(x) + .^2" and "y ~ .^2" specify the same formula, i.e. generate all basis functions up to degree 2.
-However, if \code{exclusive_dot} is true, then "y ~ h(x) + .^2"  encodes a different formula than "y ~ .^2".
-Specifically, it means to generate one way basis functions for 'x' and then all basis functions
-up to degree 2 for other variables excluding 'x' in \code{data}. As a result, no interactions will be added for the variable 'x'.}
+\item{exclusive_dot}{A \code{logical} indicator for whether the ``. and
+\code{.^max_degree} arguments in the formula should be treated as exclusive or
+inclusive with respect to the variables already specified in the formula.
+For example, in `y ~ h(x,w) + .`, should the `.` operator be interpreted as
+\itemize{
+\item add all one-way basis functions for variables remaining in \code{data}
+not yet specified in the formula (i.e., excluding x, w); or,
+\item add all one-way basis functions for all variables in the data (including
+x, w).
+As an example, if \code{exclusive_dot} is set to \code{FALSE}, then \code{y ~  h(x) + .^2} and \code{y ~ .^2} specify the same formula, i.e., generating all
+basis functions up to degree 2; however, if \code{exclusive_dot} is set to
+\code{TRUE}, then \code{y ~ h(x) + .^2}  encodes a different formula than
+\code{y ~ .^2}. Specifically, it means to generate one-way basis functions for
+the variable "x" and then all basis functions up to degree 2 for other
+variables excluding "x" in \code{data}. As a result, no interactions will
+be added for the variable "x".
+}}
 
-\item{custom_group}{A named list with single character names representing a group, and elements being a character vector of variable names.
-This allows the user to specify their own wild card symbols (e.g. '.').
-However, the value of the symbol will be iterated over all variables specified in the user supplied group.
-For example, if custom_group = list("1" = c("x", "w"), "2" = c("t","r"))
-then then the following formula is mapped as "y ~ h(1,2)" -> "y ~ h(x,t) + h(x,r) + h(w,t) + h(w,r)",
-so that all two way interactions using one variable for each group are generated.
-Similarly, "y ~ h(1,r)" -> "y ~ h(x,r) + h(w,r)".
-Thus, the custom groups operate exactly as "." except the possible values are restricted to a specific group.}
+\item{custom_group}{A named \code{list} with single character names that
+represent a group, with its elements being a \code{character} vector of
+variable names. This allows the user to specify their own wildcard symbols
+(e.g., \code{.}); however, the value of the symbol will be iterated over all
+variables specified in the user-supplied group. For example, if one sets
+\code{custom_group = list("1" = c("x", "w"), "2" = c("t","r"))}, then the
+following formula is mapped from \code{y ~ h(1,2)} to \code{y ~ h(x,t) + h(x,r) + h(w,t) + h(w,r)}, so that all two-way interactions using one variable for
+each group are generated. Similarly, \code{y ~ h(1,r)} would be mapped to \code{y ~ h(x,r) + h(w,r)}. Thus, the custom groups operate exactly as \code{.}, except
+the possible values are restricted to a specific group.}
 
 \item{adaptive_smoothing}{A \code{logical}, which, if \code{TRUE}, HAL will
 perform adaptive smoothing up until the maximum order of smoothness
@@ -248,8 +266,8 @@ the matrix of (possibly reduced) basis functions used in the HAL lasso fit.}
 
 \item{basis_list}{The full set of basis functions generated from the input
 data X (via a call to \code{enumerate_basis}). The dimensionality of this
-structure is dim = (n * 2^(d - 1)), where n is the number of observations
-and d is the number of columns in X.}
+structure is dim = \eqn{(n * 2^(d - 1))}, where n is the number of
+observations and d is the number of columns in X.}
 
 \item{lambda}{User-specified array of values of the lambda tuning parameter
 of the Lasso L1 regression. If \code{NULL}, \code{\link[glmnet]{cv.glmnet}}

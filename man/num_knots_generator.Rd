@@ -17,7 +17,7 @@ num_knots_generator(
 
 \item{smoothness_orders}{see \code{\link{fit_hal}}.}
 
-\item{base_num_knots_0}{The base number of knots for 0 order smoothness
+\item{base_num_knots_0}{The base number of knots for zeroth-order smoothness
 basis functions. The number of knots by degree interaction decays as
 \code{base_num_knots_0/2^(d-1)} where \code{d} is the interaction degree of the basis
 function.}

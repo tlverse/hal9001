@@ -6,6 +6,12 @@
 \usage{
 quantizer(X, bins)
 }
+\arguments{
+\item{X}{TODO}
+
+\item{bins}{TODO}
+}
 \description{
 Discretize Variables into Number of "Bins" by Unique Values
 }
+\keyword{internal}
