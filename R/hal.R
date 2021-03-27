@@ -33,26 +33,26 @@
 #' @param num_knots An \code{integer} vector of length 1 or length
 #'  \code{max_degree}. If \code{num_knots} is a vector of length 1 then its
 #'  values are recycled to produce a vector of length \code{max_degree}. Given
-#'  a possibly recycled vector of length \code{max_degree}, num_knots[i]
+#'  a possibly recycled vector of length \code{max_degree}, \code{num_knots[i]}
 #'  specifies the maximum number of knot points used when generating basis
-#'  functions of degree i for each covariate. For example, num_knots[1]
+#'  functions of degree i for each covariate. For example, \code{num_knots[1]}
 #'  specifies how many knot points to use when generating main-term additive
 #'  basis functions. \code{num_knots[2]} specifies how many knot points should
 #'  be used when generating each univariate basis function in the 2-tensor
 #'  product basis functions. A smaller number of knot points gives rise to a
 #'  less smooth function. However, fewer knot points can significantly decrease
 #'  runtime. If smoothness_orders is 1 or higher then few knot points (10-30)
-#'  are needed to maintain near optimal performance. For smoothness_orders = 0,
-#'  too few knot points (<50) can significantly reduce performance. We
-#'  recommend specifying a vector of length \code{max_degree} that decreases
-#'  exponentially to prevent combinatorical explosions in the number of higher
-#'  degree interaction basis functions generated. Default: For zero order
-#'  smoothness (any(\code{smoothness_orders}==0)), the number of knots by
-#'  interaction degree `d` decays as `500/2^{d-1}`. For first or higher order
-#'  smoothness (all(\code{smoothness_orders}>0)), the number of knots by
-#'  interaction degree `d` decays as `75/2^{d-1}`. These defaults ensure that
-#'  the number of basis functions and thus the complexity of the optimization
-#'  problem grows scalably in \code{max_degree}.
+#'  are needed to maintain near-optimal performance. When considering setting
+#'  \code{smoothness_orders = 0}, too few knot points (<50) can significantly
+#'  reduce performance; thus, we recommend specifying a vector of length
+#'  \code{max_degree} that decreases exponentially, preventing combinatorial
+#'  explosions in the number of higher-degree basis functions generated.
+#'  Default: For zero order smoothness (any(\code{smoothness_orders}==0)), the
+#'  number of knots by interaction degree d decays as \eqn{500/2^{d-1}}. For
+#'  first or higher-order smoothness (all(\code{smoothness_orders}>0)), the
+#'  number of knots by interaction degree d decays as \eqn{75/2^{d-1}}. These
+#'  defaults ensure that the number of basis functions and thus the complexity
+#'  of the optimization problem grows scalably in \code{max_degree}.
 #'  - Some good settings for little to no cost in performance:
 #'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(400, 200, 100).
 #'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(100, 75, 50).
@@ -100,8 +100,8 @@
 #' the matrix of (possibly reduced) basis functions used in the HAL lasso fit.
 #' @param basis_list The full set of basis functions generated from the input
 #'  data X (via a call to \code{enumerate_basis}). The dimensionality of this
-#'  structure is dim = (n * 2^(d - 1)), where n is the number of observations
-#'  and d is the number of columns in X.
+#'  structure is dim = \eqn{(n * 2^(d - 1))}, where n is the number of
+#'  observations and d is the number of columns in X.
 #' @param lambda User-specified array of values of the lambda tuning parameter
 #'  of the Lasso L1 regression. If \code{NULL}, \code{\link[glmnet]{cv.glmnet}}
 #'  will be used to automatically select a CV-optimal value of this
@@ -145,6 +145,8 @@
 #'  functions, a copy map, coefficients estimated for basis functions, and
 #'  timing results (for assessing computational efficiency).
 #'
+#' @rdname fit_hal
+#'
 #' @examples
 #' \donttest{
 #' n <- 100
@@ -157,7 +159,6 @@
 #' }
 #'
 #' @export
-#' @rdname fit_hal
 fit_hal.default <- function(X,
                             Y,
                             X_unpenalized = NULL,
@@ -191,7 +192,6 @@ fit_hal.default <- function(X,
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
-
 
   # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
   dot_args <- list(...)
@@ -450,7 +450,7 @@ fit_hal.default <- function(X,
 #'
 #' @param d interaction degree.
 #' @param smoothness_orders see \code{\link{fit_hal}}.
-#' @param base_num_knots_0 The base number of knots for 0 order smoothness
+#' @param base_num_knots_0 The base number of knots for zeroth-order smoothness
 #'  basis functions. The number of knots by degree interaction decays as
 #'  `base_num_knots_0/2^(d-1)` where `d` is the interaction degree of the basis
 #'  function.

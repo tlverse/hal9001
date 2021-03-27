@@ -31,10 +31,9 @@ basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order,
                             include_lower_order = FALSE) {
   # first, subset only to columns of interest
   x_sub <- x[, cols, drop = FALSE]
+
   # call Rcpp routine to produce the list of basis functions
-
   basis_list <- make_basis_list(x_sub, cols, smoothness_orders)
-
 
   # Generate lower order basis functions if needed
   # Primarily to generate lower order edge basis functions.
@@ -230,6 +229,7 @@ enumerate_basis <- function(x,
   return(basis_list)
 }
 
+###############################################################################
 
 #' Enumerate Basis Functions at Generalized Edges
 #'
@@ -262,6 +262,7 @@ enumerate_basis <- function(x,
 #'  except including all basis functions of lower smoothness degrees than
 #'  specified via \code{smoothness_orders}.
 #'
+#' @keywords internal
 enumerate_edge_basis <- function(x,
                                  max_degree = 3,
                                  smoothness_orders = rep(0, ncol(x)),
@@ -285,9 +286,16 @@ enumerate_edge_basis <- function(x,
   return(edge_basis)
 }
 
+###############################################################################
+
 #' Discretize Variables into Number of "Bins" by Unique Values
 #'
+#' @param X TODO
+#' @param bins TODO
+#'
 #' @importFrom stats quantile median
+#'
+#' @keywords internal
 quantizer <- function(X, bins) {
   if (is.null(bins)) {
     return(X)
