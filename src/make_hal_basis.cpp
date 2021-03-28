@@ -31,8 +31,8 @@ BasisMap enumerate_basis(const NumericMatrix& X_sub,
 
 //' Sort Basis Functions
 //'
-//' Build a sorted list of unique basis functions based on columns, where each
-//' basis function is a list
+//' @description Build a sorted list of unique basis functions based on
+//'  columns, where each basis function is a list.
 //'
 //' @details Note that sorting of columns is performed such that the basis
 //'  order equals cols.length(), where each basis function is a
@@ -41,7 +41,8 @@ BasisMap enumerate_basis(const NumericMatrix& X_sub,
 //' @param X_sub A subset of the columns of X, the original design matrix.
 //' @param cols An index of the columns that were reduced to by sub-setting.
 //' @param order_map A vector with length the original unsubsetted matrix X,
-//#' which specifies the smoothness of the function in each covariate.
+//'  which specifies the smoothness of the function in each covariate.
+//'
 // [[Rcpp::export]]
 List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols,
                      const IntegerVector& order_map) {
@@ -93,7 +94,6 @@ double meets_basis(const NumericMatrix& X, const int row_num,
   int p = cols.length();
   double value = 1;
 
-
   for (int i = 0; i<p; i++) {
     double obs = X(row_num,cols[i] - 1); // using 1-indexing for basis columns
     int order =  orders[i];
@@ -106,11 +106,8 @@ double meets_basis(const NumericMatrix& X, const int row_num,
     }
 
   }
-
   return(value);
 }
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -128,7 +125,6 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
                     int basis_col) {
   int n = X.rows();
 
-
   //split basis into x[1] x[-1]
   //find sub-bases
   //intersect
@@ -141,9 +137,6 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
       //Add value
       x_basis.insert(row_num, basis_col) = value;
     }
-
-
-
   }
 }
 
@@ -182,6 +175,7 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
 //'
 //' @return A \code{dgCMatrix} sparse matrix of indicator basis functions
 //'  corresponding to the design matrix in a zero-order highly adaptive lasso.
+//'
 // [[Rcpp::export]]
 SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
   //now generate an indicator vector for each
@@ -205,4 +199,3 @@ SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
   x_basis.makeCompressed();
   return(x_basis);
 }
-

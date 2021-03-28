@@ -34,7 +34,7 @@ cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
     intercept <- mean(y_train)
     resid <- y_train - intercept
     xcenter <- rep(0, ncol(x_basis))
-    xscale <- get_xscale(x_train, xcenter)
+    xscale <- calc_xscale(x_train, xcenter)
     beta <- rep(0, ncol(x_basis))
 
     fold_data <- list(

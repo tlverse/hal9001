@@ -51,14 +51,20 @@ apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
 
+#' Prediction from a Lassi Model
+#'
+#' @param X A sparse matrix of HAL basis functions.
+#' @param beta A vector of coefficient values for the HAL basis functions.
+#' @param intercept A numeric value giving the intercept of the HAL model.
+#'
 lassi_predict <- function(X, beta, intercept) {
     .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta, intercept)
 }
 
 #' Sort Basis Functions
 #'
-#' Build a sorted list of unique basis functions based on columns, where each
-#' basis function is a list
+#' @description Build a sorted list of unique basis functions based on
+#'  columns, where each basis function is a list.
 #'
 #' @details Note that sorting of columns is performed such that the basis
 #'  order equals cols.length(), where each basis function is a
@@ -67,8 +73,8 @@ lassi_predict <- function(X, beta, intercept) {
 #' @param X_sub A subset of the columns of X, the original design matrix.
 #' @param cols An index of the columns that were reduced to by sub-setting.
 #' @param order_map A vector with length the original unsubsetted matrix X,
-NULL
-
+#'  which specifies the smoothness of the function in each covariate.
+#'
 make_basis_list <- function(X_sub, cols, order_map) {
     .Call('_hal9001_make_basis_list', PACKAGE = 'hal9001', X_sub, cols, order_map)
 }
@@ -134,6 +140,7 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'
 #' @return A \code{dgCMatrix} sparse matrix of indicator basis functions
 #'  corresponding to the design matrix in a zero-order highly adaptive lasso.
+#'
 make_design_matrix <- function(X, blist) {
     .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist)
 }
@@ -153,27 +160,11 @@ as_dgCMatrix <- function(XX_) {
     .Call('_hal9001_as_dgCMatrix', PACKAGE = 'hal9001', XX_)
 }
 
-non_zeros <- function(X) {
-    .Call('_hal9001_non_zeros', PACKAGE = 'hal9001', X)
-}
-
+#' Calculate Proportion of Nonzero Entries
+#'
+#' @keywords internal
+#'
 calc_pnz <- function(X) {
     .Call('_hal9001_calc_pnz', PACKAGE = 'hal9001', X)
-}
-
-get_pnz <- function(X) {
-    .Call('_hal9001_get_pnz', PACKAGE = 'hal9001', X)
-}
-
-calc_xscale <- function(X, xcenter) {
-    .Call('_hal9001_calc_xscale', PACKAGE = 'hal9001', X, xcenter)
-}
-
-get_xscale <- function(X, xcenter) {
-    .Call('_hal9001_get_xscale', PACKAGE = 'hal9001', X, xcenter)
-}
-
-equal_double <- function(x, y) {
-    .Call('_hal9001_equal_double', PACKAGE = 'hal9001', x, y)
 }
 
