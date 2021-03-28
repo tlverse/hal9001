@@ -58,8 +58,54 @@
 #'  valid and behave as expected.
 #' @param data A \code{data.frame} or named matrix containing the outcome and
 #'  covariates specified in the argument \code{formula}.
-#' @param smoothness_orders TODO
-#' @param num_knots TODO
+#' @param smoothness_orders An \code{integer} vector of length 1 or length
+#'  \code{ncol(X)}. If \code{smoothness_orders} is of length 1, then its values
+#'  are recycled to form a vector of length length \code{ncol(X)}. Given such a
+#'  vector of length \code{ncol(X)}, the ith element specifies the level of
+#'  smoothness for the variable corresponding with the ith column in \code{X}.
+#'  A value of "0" corresponds with 0-order splines (piece-wise constant) which
+#'  assumes no smoothness or continuity of true regression function. A value of
+#'  "1" corresponds with 1-order splines (piece-wise linear) which only assumes
+#'  continuity of true regression function. A value of "2" corresponds with
+#'  2-order splines (piece-wise quadratic and linear terms) which assumes one
+#'  order of differentiability for the true regression function. WARNING: if
+#'  \code{smoothness_orders} has length less than \code{ncol(X)}, then values
+#'  are recycled as needed.
+#' @param num_knots An \code{integer} vector of length 1 or length
+#'  \code{max_degree}. If \code{num_knots} is a vector of length 1 then its
+#'  values are recycled to produce a vector of length \code{max_degree}. Given
+#'  a possibly recycled vector of length \code{max_degree}, \code{num_knots[i]}
+#'  specifies the maximum number of knot points used when generating basis
+#'  functions of degree i for each covariate. For example, \code{num_knots[1]}
+#'  specifies how many knot points to use when generating main-term additive
+#'  basis functions. \code{num_knots[2]} specifies how many knot points should
+#'  be used when generating each univariate basis function in the 2-tensor
+#'  product basis functions. A smaller number of knot points gives rise to a
+#'  less smooth function. However, fewer knot points can significantly decrease
+#'  runtime. If smoothness_orders is 1 or higher then few knot points (10-30)
+#'  are needed to maintain near-optimal performance. When considering setting
+#'  \code{smoothness_orders = 0}, too few knot points (<50) can significantly
+#'  reduce performance; thus, we recommend specifying a vector of length
+#'  \code{max_degree} that decreases exponentially, preventing combinatorial
+#'  explosions in the number of higher-degree basis functions generated.
+#'  Default: For zero order smoothness (any(\code{smoothness_orders}==0)), the
+#'  number of knots by interaction degree d decays as \eqn{500/2^{d-1}}. For
+#'  first or higher-order smoothness (all(\code{smoothness_orders}>0)), the
+#'  number of knots by interaction degree d decays as \eqn{75/2^{d-1}}. These
+#'  defaults ensure that the number of basis functions and thus the complexity
+#'  of the optimization problem grows scalably in \code{max_degree}.
+#'  - Some good settings for little to no cost in performance:
+#'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(400, 200, 100).
+#'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(100, 75, 50).
+#'  - Recommended settings for fairly fast runtime and great performance:
+#'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(200, 100, 50).
+#'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(50, 25, 15).
+#'  - Recommended settings for fast runtime and good/great performance:
+#'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(100, 50, 25).
+#'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(40, 15, 10).
+#'  - Recommended settings for very fast runtime and good performance:
+#'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(50, 25, 10).
+#'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(25, 10, 5).
 #' @param exclusive_dot A \code{logical} indicator for whether the ``. and
 #'  `.^max_degree` arguments in the formula should be treated as exclusive or
 #'  inclusive with respect to the variables already specified in the formula.
@@ -87,8 +133,16 @@
 #'  each group are generated. Similarly, `y ~ h(1,r)` would be mapped to `y ~
 #'  h(x,r) + h(w,r)`. Thus, the custom groups operate exactly as `.`, except
 #'  the possible values are restricted to a specific group.
-#' @param adaptive_smoothing TODO
-#' @param ... TODO
+#' @param adaptive_smoothing A \code{logical}, which, if \code{TRUE}, HAL will
+#'  perform adaptive smoothing up until the maximum order of smoothness
+#'  specified by \code{smoothness_orders}. For example, if
+#'  \code{smoothness_orders = 2} and \code{adaptive_smoothing = TRUE}, then HAL
+#'  will generate all basis functions of smoothness order 0, 1, and 2, and
+#'  data-adaptively select the basis functions to use. WARNING: This can
+#'  increase runtime by a factor of 2-3+ depending on value of
+#'  \code{smoothness_orders}.
+#' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
+#'  consult its documentation for a full list of options.
 #'
 #' @details The function allows users to specify the functional form/model of
 #'  hal9001 similar to in \code{\link[stats]{glm}}. The user can specify which
@@ -612,7 +666,6 @@ print.formula_hal9001 <- function(x, ...) {
   if (is.null(expand)) {
     expand <- FALSE
   }
-
   formula <- x
 
   if (expand) {

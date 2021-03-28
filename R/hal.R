@@ -69,6 +69,11 @@
 #'  regression in a cross-validated manner. Choosing the \code{glmnet} option
 #'  will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
 #'  will produce a (faster) call to a custom Lasso routine.
+#' @param cv_select A \code{logical} specifying whether the array of values
+#'  specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
+#'  pick the optimal value (based on cross-validation) (when set to
+#'  \code{TRUE}) or to simply fit along the sequence of values (or single
+#'  value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).
 #' @param n_folds Integer for the number of folds to be used when splitting the
 #'  data for V-fold cross-validation. This defaults to 10.
 #' @param foldid An optional \code{numeric} containing values between 1 and
@@ -77,6 +82,11 @@
 #'  passed directly to \code{\link[glmnet]{cv.glmnet}}.
 #' @param use_min Specify lambda selected by \code{\link[glmnet]{cv.glmnet}}.
 #'  \code{TRUE}, \code{"lambda.min"} is used; otherwise, \code{"lambda.1se"}.
+#' @param standardize A \code{logical} passed to \code{\link[glmnet]{glmnet}}
+#'  for whether to standardize the HAL design matrix.
+#'  Currently, this argument is not used and is always FALSE.
+#' @param lambda.min.ratio Passed to \code{\link[glmnet]{cv.glmnet}}, controls
+#'  the ratio of largest to smallest lambda values considered.
 #' @param reduce_basis A \code{numeric} value bounded in the open unit interval
 #'  indicating the minimum proportion of 1's in a basis function column needed
 #'  for the basis function to be included in the procedure to fit the Lasso.
@@ -108,16 +118,9 @@
 #'  regularization parameter. If specified, the Lasso L1 regression model will
 #'  be fit via \code{glmnet}, returning regularized coefficient values for each
 #'  value in the input array.
-#' @param cv_select A \code{logical} specifying whether the array of values
-#'  specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
-#'  pick the optimal value (based on cross-validation) (when set to
-#'  \code{TRUE}) or to simply fit along the sequence of values (or single
-#'  value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).
 #' @param id a vector of ID values, used to generate cross-validation folds for
 #'  cross-validated selection of the regularization parameter lambda.
 #' @param offset a vector of offset values, used in fitting.
-#' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
-#'  consult its documentation for a full list of options.
 #' @param adaptive_smoothing A \code{logical}, which, if \code{TRUE}, HAL will
 #'  perform adaptive smoothing up until the maximum order of smoothness
 #'  specified by \code{smoothness_orders}. For example, if
@@ -131,8 +134,8 @@
 #'  between \code{min(Y) - sd(Y) and max(Y) + sd(Y)}. Bounding ensures that
 #'  there is no extrapolation and that predictions remain bounded, which is
 #'  necessary for cross-validation selection and/or Super Learning.
-#' @param lambda.min.ratio passed to \code{\link[glmnet]{cv.glmnet}}, controls
-#'  the ratio of largest to smallest lambda values considered
+#' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
+#'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
@@ -171,9 +174,12 @@ fit_hal.default <- function(X,
                                                base_num_knots_0 = 500,
                                                base_num_knots_1 = 200),
                             fit_type = c("glmnet", "lassi"),
+                            cv_select = TRUE,
                             n_folds = 10,
                             foldid = NULL,
                             use_min = TRUE,
+                            standardize = FALSE,
+                            lambda.min.ratio = 1e-4,
                             reduce_basis = NULL,
                             family = c("gaussian", "binomial", "poisson",
                                        "cox"),
@@ -183,11 +189,9 @@ fit_hal.default <- function(X,
                             lambda = NULL,
                             id = NULL,
                             offset = NULL,
-                            cv_select = TRUE,
                             adaptive_smoothing = FALSE,
                             prediction_bounds = "default",
                             ...,
-                            lambda.min.ratio = 1e-4,
                             yolo = FALSE) {
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
@@ -207,10 +211,11 @@ fit_hal.default <- function(X,
   # Throw error if `standardize` (glmnet) argument is passed through "..." .
   # This is done because the HAL algorithm requires `standardize = FALSE` for
   # the variation norm interpretation to hold.
-  assertthat::assert_that(
-    !("standardize" %in% names(dot_args)),
-    msg = "hal9001 does not support the standardize argument."
-  )
+#   assertthat::assert_that(
+#     !("standardize" %in% names(dot_args)),
+#     msg = "hal9001 does not support the standardize argument."
+#   )
+  standardize <- FALSE
 
   # NOTE: NOT supporting non-gaussian outcomes with lassi method currently
   assertthat::assert_that(
