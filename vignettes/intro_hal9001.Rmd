@@ -326,8 +326,8 @@ print(formula, expand = TRUE)
 We can specify higher order interactions as follows.
 ```{r}
 formula <- formula_hal(
-  "y ~ h(x1) + h(x2) + h(A) + h(x1, x2) + h(x2, A) + h(x1, A) + h(x1,x2,A)",
-  data, smoothness_orders =1, num_knots = 100
+  "y ~ h(x1) + h(x2) + h(A) + h(x1, x2) + h(x2, A) + h(x1, A) + h(x1, x2, A)",
+  data, smoothness_orders = 1, num_knots = 100
 )
 print(formula$formula_expanded)
 
@@ -344,7 +344,7 @@ variety of ways as follows.
 
 ```{r}
 # Write it all out
-formula <- formula_hal("y ~ h(x1) + h(x2) + h(A) + h(A,x1) + h(A,x2)", data,
+formula <- formula_hal("y ~ h(x1) + h(x2) + h(A) + h(A, x1) + h(A,x2)", data,
                        smoothness_orders = 1, num_knots = 100)
 print(formula$formula_expanded)
 # Use the "." which stands for add all additive terms and then manually add
@@ -423,12 +423,12 @@ formula <- formula_hal("y ~ d(x1) + i(x2) + h(A) + h(.,.)", data,
 print(formula, expand = TRUE)
 ```
 
-Now, lets fit some custom HALs. This is easy using the S3-class-based `fit_hal`
-function.
+Now, let's fit some custom HALs. This is easy using the S3-class-based
+`fit_hal` function:
 ```{r}
 # get formula object
 formula <- formula_hal("y ~ .", data, smoothness_orders = 1, num_knots = 100)
-fit <- fit_hal(formula)
+fit <- fit_hal_formula(formula)
 plot(predict(fit, new_data = formula$X), formula$Y)
 ```
 
