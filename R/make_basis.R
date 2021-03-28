@@ -52,11 +52,13 @@ basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order,
         new_smoothness_orders[col] <- new_smoothness_orders[col] - 1
 
         return(basis_list_cols(cols, x, new_smoothness_orders,
-                               include_zero_order,
-                               include_lower_order = TRUE))
+          include_zero_order,
+          include_lower_order = TRUE
+        ))
       })
       basis_list <- union(basis_list, unlist(more_basis_list,
-                                             recursive = FALSE))
+        recursive = FALSE
+      ))
     }
   }
 
@@ -106,10 +108,12 @@ basis_of_degree <- function(x, degree, smoothness_orders, include_zero_order,
 
   # compute combinations of columns and generate a list of basis functions
   all_cols <- utils::combn(p, degree)
-  all_basis_lists <- apply(all_cols, 2, basis_list_cols, x = x,
-                           smoothness_orders = smoothness_orders,
-                           include_zero_order = include_zero_order,
-                           include_lower_order = include_lower_order)
+  all_basis_lists <- apply(all_cols, 2, basis_list_cols,
+    x = x,
+    smoothness_orders = smoothness_orders,
+    include_zero_order = include_zero_order,
+    include_lower_order = include_lower_order
+  )
   basis_list <- unlist(all_basis_lists, recursive = FALSE)
 
   # output
@@ -212,15 +216,19 @@ enumerate_basis <- function(x,
       }
       x <- quantizer(x, n_bin)
     }
-    return(basis_of_degree(x, degree, smoothness_orders, include_zero_order,
-                           include_lower_order))
+    return(basis_of_degree(
+      x, degree, smoothness_orders, include_zero_order,
+      include_lower_order
+    ))
   })
 
   all_bases <- unlist(all_bases, recursive = FALSE)
   edge_basis <- c()
   if (any(smoothness_orders > 0)) {
-    edge_basis <- enumerate_edge_basis(x, max_degree, smoothness_orders,
-                                       include_zero_order, include_lower_order)
+    edge_basis <- enumerate_edge_basis(
+      x, max_degree, smoothness_orders,
+      include_zero_order, include_lower_order
+    )
   }
   all_bases <- union(edge_basis, all_bases)
   basis_list <- all_bases
@@ -273,15 +281,19 @@ enumerate_edge_basis <- function(x,
     if (max_degree > 1) {
       edge_basis <- unlist(lapply(2:max_degree, function(degree) {
         basis_of_degree(matrix(apply(x, 2, min), nrow = 1), degree,
-                        smoothness_orders, include_zero_order,
-                        include_lower_order = TRUE)
+          smoothness_orders, include_zero_order,
+          include_lower_order = TRUE
+        )
       }), recursive = F)
     }
-    edge_basis <- union(edge_basis,
-                        basis_of_degree(matrix(apply(x, 2, min), nrow = 1), 1,
-                                        sapply(smoothness_orders - 1, max, 1),
-                                        include_zero_order,
-                                        include_lower_order = TRUE))
+    edge_basis <- union(
+      edge_basis,
+      basis_of_degree(matrix(apply(x, 2, min), nrow = 1), 1,
+        sapply(smoothness_orders - 1, max, 1),
+        include_zero_order,
+        include_lower_order = TRUE
+      )
+    )
   }
   return(edge_basis)
 }

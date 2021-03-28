@@ -71,9 +71,9 @@ cv_lasso_early_stopping <- function(x_basis, y, n_lambda = 100, n_folds = 10) {
     step_results <- lapply(folds, cv_lassi_step, all_fold_data, lambda)
     all_fold_data <- lapply(step_results, `[[`, "fold_data")
     step_mse <- mean(sapply(step_results, `[[`, "mse"))
-    #step_results <- cross_validate(cv_lassi_step, folds, all_fold_data,
-                                   #lambda, .combine = FALSE)
-    #all_fold_data <- step_results$fold_data
+    # step_results <- cross_validate(cv_lassi_step, folds, all_fold_data,
+    # lambda, .combine = FALSE)
+    # all_fold_data <- step_results$fold_data
 
     if (is.null(null_mse)) {
       # null_mse is the first mse (i.e. for the null model)

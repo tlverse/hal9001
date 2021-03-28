@@ -38,7 +38,7 @@ preds <- predict(ml_hal_fit, new_data = x)
 ml_hal_mse2 <- mse(preds, y_prob)
 
 test_that("MSE for logistic regression close to logistic family object pred", {
-  expect_true(abs(ml_hal_mse1 - ml_hal_mse2) <0.01)
+  expect_true(abs(ml_hal_mse1 - ml_hal_mse2) < 0.01)
 })
 
 
@@ -62,5 +62,5 @@ preds <- predict(ml_hal_fit, new_data = x)
 ml_hal_mse2 <- mse(preds, y_prob)
 
 test_that("MSE for logistic regression close to logistic family object pred", {
-  expect_true(abs(ml_hal_mse1 - ml_hal_mse2) <0.03)
+  expect_true(abs(ml_hal_mse1 - ml_hal_mse2) < 0.03)
 })

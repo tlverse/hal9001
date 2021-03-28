@@ -108,11 +108,11 @@ predict.hal9001 <- function(object,
   if (!is.null(offset)) {
     preds <- preds + offset
   }
-  if(type == "link") {
+  if (type == "link") {
     return(preds)
   }
   # apply inverse family (link function) transformations
-  if(inherits(object$family, "family")) {
+  if (inherits(object$family, "family")) {
     inverse_link_fun <- object$family$linkinv
     preds <- inverse_link_fun(preds)
   } else if (object$family == "binomial") {
