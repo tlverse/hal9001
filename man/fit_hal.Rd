@@ -2,8 +2,7 @@
 % Please edit documentation in R/formula_hal9001.R, R/hal.R
 \name{formula_hal}
 \alias{formula_hal}
-\alias{fit_hal}
-\alias{fit_hal.formula_hal9001}
+\alias{fit_hal_formula}
 \alias{fit_hal.default}
 \title{Formula Interface for HAL Fitting Procedure}
 \usage{
@@ -18,11 +17,9 @@ formula_hal(
   ...
 )
 
-fit_hal(X, ...)
+fit_hal_formula(formula, ...)
 
-\method{fit_hal}{formula_hal9001}(X, ...)
-
-\method{fit_hal}{default}(
+fit_hal.default(
   X,
   Y,
   X_unpenalized = NULL,
