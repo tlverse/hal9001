@@ -168,3 +168,14 @@ calc_pnz <- function(X) {
     .Call('_hal9001_calc_pnz', PACKAGE = 'hal9001', X)
 }
 
+#' Calculating Centered and Scaled Matrices
+#'
+#' @param X A sparse matrix, to be centered.
+#' @param xcenter A vector of column means to be used for centering X. 
+#'
+#' @keywords internal
+#'
+calc_xscale <- function(X, xcenter) {
+    .Call('_hal9001_calc_xscale', PACKAGE = 'hal9001', X, xcenter)
+}
+

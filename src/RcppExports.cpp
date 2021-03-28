@@ -118,6 +118,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// calc_xscale
+NumericVector calc_xscale(const MSpMat& X, const NumericVector& xcenter);
+RcppExport SEXP _hal9001_calc_xscale(SEXP XSEXP, SEXP xcenterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type xcenter(xcenterSEXP);
+    rcpp_result_gen = Rcpp::wrap(calc_xscale(X, xcenter));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_lassi_module();
 
@@ -131,6 +143,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_make_design_matrix", (DL_FUNC) &_hal9001_make_design_matrix, 2},
     {"_hal9001_as_dgCMatrix", (DL_FUNC) &_hal9001_as_dgCMatrix, 1},
     {"_hal9001_calc_pnz", (DL_FUNC) &_hal9001_calc_pnz, 1},
+    {"_hal9001_calc_xscale", (DL_FUNC) &_hal9001_calc_xscale, 2},
     {"_rcpp_module_boot_lassi_module", (DL_FUNC) &_rcpp_module_boot_lassi_module, 0},
     {NULL, NULL, 0}
 };

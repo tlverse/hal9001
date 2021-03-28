@@ -78,7 +78,14 @@ NumericVector not_dumb_sqrt(const NumericVector& x){
 
 //------------------------------------------------------------------------------
 
-// Calculating Rescaled X
+//' Calculating Centered and Scaled Matrices
+//'
+//' @param X A sparse matrix, to be centered.
+//' @param xcenter A vector of column means to be used for centering X. 
+//'
+//' @keywords internal
+//'
+// [[Rcpp::export]]
 NumericVector calc_xscale(const MSpMat& X, const NumericVector& xcenter) {
  int n = X.rows();
  NumericVector pnz = calc_pnz(X);
