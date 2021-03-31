@@ -134,12 +134,14 @@
 #'  between \code{min(Y) - sd(Y) and max(Y) + sd(Y)}. Bounding ensures that
 #'  there is no extrapolation and that predictions remain bounded, which is
 #'  necessary for cross-validation selection and/or Super Learning.
+#' @param p_reserve Sparse matrix pre-allocation proportion. Default value is 0.5. 
+#' If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
-#'
+#' 
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
 #' @importFrom assertthat assert_that
