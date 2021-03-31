@@ -2,11 +2,11 @@
 #include <RcppEigen.h>
 #include "hal9001_types.h"
 using namespace Rcpp;
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Functions to enumerate basis functions
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // populates a map with unique basis functions based on data in xsub values are
 // thresholds, keys are column indices
@@ -27,25 +27,22 @@ BasisMap enumerate_basis(const NumericMatrix& X_sub,
   return(bmap);
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 //' Sort Basis Functions
 //'
-//' @description Build a sorted list of unique basis functions based on
-//'  columns, where each basis function is a list.
+//' Build a sorted list of unique basis functions based on columns, where each
+//' basis function is a list
 //'
-//' @details Note that sorting of columns is performed such that the basis
-//'  order equals cols.length(), where each basis function is a
-//'  list(cols, cutoffs).
+//' @details Note that sorting of columns is performed such that the basis order
+//' equals cols.length() and each basis function is a list(cols, cutoffs).
 //'
 //' @param X_sub A subset of the columns of X, the original design matrix.
 //' @param cols An index of the columns that were reduced to by sub-setting.
-//' @param order_map A vector with length the original unsubsetted matrix X,
-//'  which specifies the smoothness of the function in each covariate.
-//'
+//' @param order_map A vector with length the original unsubsetted matrix X which specifies the smoothness of the function in each covariate.
 // [[Rcpp::export]]
-List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols,
-                     const IntegerVector& order_map) {
+List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, const IntegerVector& order_map){
+
   BasisMap bmap = enumerate_basis(X_sub, cols);
   List basis_list(bmap.size());
   int index = 0;
@@ -74,25 +71,25 @@ List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols,
   return(basis_list);
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 //' Compute Values of Basis Functions
 //'
 //' Computes and returns the indicator value for the basis described by
-//' cols and cutoffs for a given row of X.
+//' cols and cutoffs for a given row of X (X[row_num, ])
 //'
 //' @param X The design matrix, containing the original data.
-//' @param row_num Numeric for a row index over which to evaluate.
+//' @param row_num Numeri for  a row index over which to evaluate.
 //' @param cols Numeric for the column indices of the basis function.
 //' @param cutoffs Numeric providing thresholds.
 //' @param orders Numeric providing smoothness orders
 //'
 // [[Rcpp::export]]
 double meets_basis(const NumericMatrix& X, const int row_num,
-                   const IntegerVector& cols, const NumericVector& cutoffs,
-                   const IntegerVector& orders) {
+                   const IntegerVector& cols, const NumericVector& cutoffs,  const IntegerVector& orders) {
   int p = cols.length();
   double value = 1;
+
 
   for (int i = 0; i<p; i++) {
     double obs = X(row_num,cols[i] - 1); // using 1-indexing for basis columns
@@ -106,10 +103,13 @@ double meets_basis(const NumericMatrix& X, const int row_num,
     }
 
   }
+
   return(value);
 }
 
-//-----------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 
 //' Generate Basis Functions
 //'
@@ -125,6 +125,7 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
                     int basis_col) {
   int n = X.rows();
 
+
   //split basis into x[1] x[-1]
   //find sub-bases
   //intersect
@@ -137,10 +138,13 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
       //Add value
       x_basis.insert(row_num, basis_col) = value;
     }
+
+
+
   }
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 //' Build HAL Design Matrix
 //'
@@ -175,15 +179,14 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
 //'
 //' @return A \code{dgCMatrix} sparse matrix of indicator basis functions
 //'  corresponding to the design matrix in a zero-order highly adaptive lasso.
-//'
 // [[Rcpp::export]]
-SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
+SpMat make_design_matrix(const NumericMatrix& X, const List& blist, double p_reserve = 0.5) {
   //now generate an indicator vector for each
   int n = X.rows();
   int basis_p = blist.size();
 
   SpMat x_basis(n, basis_p);
-  x_basis.reserve(0.5 * n * basis_p);
+  x_basis.reserve(p_reserve * n * basis_p);
 
   List basis;
   NumericVector cutoffs, current_row;
@@ -199,3 +202,4 @@ SpMat make_design_matrix(const NumericMatrix& X, const List& blist) {
   x_basis.makeCompressed();
   return(x_basis);
 }
+
