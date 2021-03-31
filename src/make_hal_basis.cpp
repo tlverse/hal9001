@@ -76,7 +76,7 @@ List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, cons
 //' Compute Values of Basis Functions
 //'
 //' Computes and returns the indicator value for the basis described by
-//' cols and cutoffs for a given row of X (X[row_num, ])
+//' cols and cutoffs for a given row of X
 //'
 //' @param X The design matrix, containing the original data.
 //' @param row_num Numeri for  a row index over which to evaluate.
@@ -153,7 +153,8 @@ void evaluate_basis(const List& basis, const NumericMatrix& X, SpMat& x_basis,
 //'
 //' @param X Matrix of covariates containing observed data in the columns.
 //' @param blist List of basis functions with which to build HAL design matrix.
-//'
+//' @param p_reserve Sparse matrix pre-allocation proportion. Default value is 0.5. 
+//' If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.
 //' @export
 //'
 //' @examples

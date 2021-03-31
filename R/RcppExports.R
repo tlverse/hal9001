@@ -63,18 +63,15 @@ lassi_predict <- function(X, beta, intercept) {
 
 #' Sort Basis Functions
 #'
-#' @description Build a sorted list of unique basis functions based on
-#'  columns, where each basis function is a list.
+#' Build a sorted list of unique basis functions based on columns, where each
+#' basis function is a list
 #'
-#' @details Note that sorting of columns is performed such that the basis
-#'  order equals cols.length(), where each basis function is a
-#'  list(cols, cutoffs).
+#' @details Note that sorting of columns is performed such that the basis order
+#' equals cols.length() and each basis function is a list(cols, cutoffs).
 #'
 #' @param X_sub A subset of the columns of X, the original design matrix.
 #' @param cols An index of the columns that were reduced to by sub-setting.
-#' @param order_map A vector with length the original unsubsetted matrix X,
-#'  which specifies the smoothness of the function in each covariate.
-#'
+#' @param order_map A vector with length the original unsubsetted matrix X which specifies the smoothness of the function in each covariate.
 make_basis_list <- function(X_sub, cols, order_map) {
     .Call('_hal9001_make_basis_list', PACKAGE = 'hal9001', X_sub, cols, order_map)
 }
@@ -82,10 +79,10 @@ make_basis_list <- function(X_sub, cols, order_map) {
 #' Compute Values of Basis Functions
 #'
 #' Computes and returns the indicator value for the basis described by
-#' cols and cutoffs for a given row of X.
+#' cols and cutoffs for a given row of X
 #'
 #' @param X The design matrix, containing the original data.
-#' @param row_num Numeric for a row index over which to evaluate.
+#' @param row_num Numeri for  a row index over which to evaluate.
 #' @param cols Numeric for the column indices of the basis function.
 #' @param cutoffs Numeric providing thresholds.
 #' @param orders Numeric providing smoothness orders
@@ -114,7 +111,8 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'
 #' @param X Matrix of covariates containing observed data in the columns.
 #' @param blist List of basis functions with which to build HAL design matrix.
-#'
+#' @param p_reserve Sparse matrix pre-allocation proportion. Default value is 0.5. 
+#' If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.
 #' @export
 #'
 #' @examples
@@ -140,9 +138,8 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'
 #' @return A \code{dgCMatrix} sparse matrix of indicator basis functions
 #'  corresponding to the design matrix in a zero-order highly adaptive lasso.
-#'
-make_design_matrix <- function(X, blist) {
-    .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist)
+make_design_matrix <- function(X, blist, p_reserve = 0.5) {
+    .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist, p_reserve)
 }
 
 #' Fast Coercion to Sparse Matrix

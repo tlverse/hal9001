@@ -25,15 +25,12 @@ fit_hal(
   X_unpenalized = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
   smoothness_orders = rep(1, ncol(X)),
-  num_knots = sapply(seq_len(max_degree), num_knots_generator, smoothness_orders =
+  num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders =
     smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
   fit_type = c("glmnet", "lassi"),
-  cv_select = TRUE,
   n_folds = 10,
   foldid = NULL,
   use_min = TRUE,
-  standardize = FALSE,
-  lambda.min.ratio = 1e-04,
   reduce_basis = NULL,
   family = c("gaussian", "binomial", "poisson", "cox"),
   return_lasso = TRUE,
@@ -42,8 +39,10 @@ fit_hal(
   lambda = NULL,
   id = NULL,
   offset = NULL,
+  cv_select = TRUE,
   adaptive_smoothing = FALSE,
   prediction_bounds = "default",
+  p_reserve = 0.5,
   ...,
   yolo = FALSE
 )
@@ -226,12 +225,6 @@ regression in a cross-validated manner. Choosing the \code{glmnet} option
 will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
 will produce a (faster) call to a custom Lasso routine.}
 
-\item{cv_select}{A \code{logical} specifying whether the array of values
-specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
-pick the optimal value (based on cross-validation) (when set to
-\code{TRUE}) or to simply fit along the sequence of values (or single
-value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
-
 \item{n_folds}{Integer for the number of folds to be used when splitting the
 data for V-fold cross-validation. This defaults to 10.}
 
@@ -242,13 +235,6 @@ passed directly to \code{\link[glmnet]{cv.glmnet}}.}
 
 \item{use_min}{Specify lambda selected by \code{\link[glmnet]{cv.glmnet}}.
 \code{TRUE}, \code{"lambda.min"} is used; otherwise, \code{"lambda.1se"}.}
-
-\item{standardize}{A \code{logical} passed to \code{\link[glmnet]{glmnet}}
-for whether to standardize the HAL design matrix.
-Currently, this argument is not used and is always FALSE.}
-
-\item{lambda.min.ratio}{Passed to \code{\link[glmnet]{cv.glmnet}}, controls
-the ratio of largest to smallest lambda values considered.}
 
 \item{reduce_basis}{A \code{numeric} value bounded in the open unit interval
 indicating the minimum proportion of 1's in a basis function column needed
@@ -292,11 +278,20 @@ cross-validated selection of the regularization parameter lambda.}
 
 \item{offset}{a vector of offset values, used in fitting.}
 
+\item{cv_select}{A \code{logical} specifying whether the array of values
+specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
+pick the optimal value (based on cross-validation) (when set to
+\code{TRUE}) or to simply fit along the sequence of values (or single
+value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
+
 \item{prediction_bounds}{A vector of size two that provides the lower and
 upper bounds for predictions. By default, the predictions are bounded
 between \code{min(Y) - sd(Y) and max(Y) + sd(Y)}. Bounding ensures that
 there is no extrapolation and that predictions remain bounded, which is
 necessary for cross-validation selection and/or Super Learning.}
+
+\item{p_reserve}{Sparse matrix pre-allocation proportion. Default value is 0.5.
+If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically

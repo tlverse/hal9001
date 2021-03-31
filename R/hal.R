@@ -82,11 +82,6 @@
 #'  passed directly to \code{\link[glmnet]{cv.glmnet}}.
 #' @param use_min Specify lambda selected by \code{\link[glmnet]{cv.glmnet}}.
 #'  \code{TRUE}, \code{"lambda.min"} is used; otherwise, \code{"lambda.1se"}.
-#' @param standardize A \code{logical} passed to \code{\link[glmnet]{glmnet}}
-#'  for whether to standardize the HAL design matrix.
-#'  Currently, this argument is not used and is always FALSE.
-#' @param lambda.min.ratio Passed to \code{\link[glmnet]{cv.glmnet}}, controls
-#'  the ratio of largest to smallest lambda values considered.
 #' @param reduce_basis A \code{numeric} value bounded in the open unit interval
 #'  indicating the minimum proportion of 1's in a basis function column needed
 #'  for the basis function to be included in the procedure to fit the Lasso.

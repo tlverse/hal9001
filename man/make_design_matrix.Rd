@@ -4,12 +4,15 @@
 \alias{make_design_matrix}
 \title{Build HAL Design Matrix}
 \usage{
-make_design_matrix(X, blist)
+make_design_matrix(X, blist, p_reserve = 0.5)
 }
 \arguments{
 \item{X}{Matrix of covariates containing observed data in the columns.}
 
 \item{blist}{List of basis functions with which to build HAL design matrix.}
+
+\item{p_reserve}{Sparse matrix pre-allocation proportion. Default value is 0.5.
+If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.}
 }
 \value{
 A \code{dgCMatrix} sparse matrix of indicator basis functions

@@ -85,14 +85,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_design_matrix
-SpMat make_design_matrix(const NumericMatrix& X, const List& blist);
-RcppExport SEXP _hal9001_make_design_matrix(SEXP XSEXP, SEXP blistSEXP) {
+SpMat make_design_matrix(const NumericMatrix& X, const List& blist, double p_reserve);
+RcppExport SEXP _hal9001_make_design_matrix(SEXP XSEXP, SEXP blistSEXP, SEXP p_reserveSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const List& >::type blist(blistSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_design_matrix(X, blist));
+    Rcpp::traits::input_parameter< double >::type p_reserve(p_reserveSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_design_matrix(X, blist, p_reserve));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -140,7 +141,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_make_basis_list", (DL_FUNC) &_hal9001_make_basis_list, 3},
     {"_hal9001_meets_basis", (DL_FUNC) &_hal9001_meets_basis, 5},
     {"_hal9001_evaluate_basis", (DL_FUNC) &_hal9001_evaluate_basis, 4},
-    {"_hal9001_make_design_matrix", (DL_FUNC) &_hal9001_make_design_matrix, 2},
+    {"_hal9001_make_design_matrix", (DL_FUNC) &_hal9001_make_design_matrix, 3},
     {"_hal9001_as_dgCMatrix", (DL_FUNC) &_hal9001_as_dgCMatrix, 1},
     {"_hal9001_calc_pnz", (DL_FUNC) &_hal9001_calc_pnz, 1},
     {"_hal9001_calc_xscale", (DL_FUNC) &_hal9001_calc_xscale, 2},

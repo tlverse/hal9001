@@ -9,7 +9,7 @@ meets_basis(X, row_num, cols, cutoffs, orders)
 \arguments{
 \item{X}{The design matrix, containing the original data.}
 
-\item{row_num}{Numeric for a row index over which to evaluate.}
+\item{row_num}{Numeri for  a row index over which to evaluate.}
 
 \item{cols}{Numeric for the column indices of the basis function.}
 
@@ -19,5 +19,5 @@ meets_basis(X, row_num, cols, cutoffs, orders)
 }
 \description{
 Computes and returns the indicator value for the basis described by
-cols and cutoffs for a given row of X.
+cols and cutoffs for a given row of X
 }
