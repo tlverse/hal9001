@@ -446,7 +446,8 @@ fit_hal <- function(X,
         NULL
       },
     unpenalized_covariates = unpenalized_covariates,
-    prediction_bounds = prediction_bounds
+    prediction_bounds = prediction_bounds,
+    p_reserve = p_reserve
   )
   class(fit) <- "hal9001"
   return(fit)
