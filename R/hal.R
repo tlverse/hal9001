@@ -162,47 +162,46 @@
 #' }
 #'
 #' @export
+
 fit_hal <- function(X,
                     Y,
                     X_unpenalized = NULL,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
                     smoothness_orders = rep(1, ncol(X)),
-                    num_knots = sapply(seq_len(max_degree),
-                      num_knots_generator,
-                      smoothness_orders =
-                        smoothness_orders,
-                      base_num_knots_0 = 500,
-                      base_num_knots_1 = 200
-                    ),
+                    num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
                     fit_type = c("glmnet", "lassi"),
-                    cv_select = TRUE,
                     n_folds = 10,
                     foldid = NULL,
                     use_min = TRUE,
-                    standardize = FALSE,
-                    lambda.min.ratio = 1e-4,
                     reduce_basis = NULL,
-                    family = c(
-                      "gaussian", "binomial", "poisson",
-                      "cox"
-                    ),
+                    family = c("gaussian", "binomial", "poisson", "cox"),
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     basis_list = NULL,
                     lambda = NULL,
                     id = NULL,
                     offset = NULL,
+                    cv_select = TRUE,
                     adaptive_smoothing = FALSE,
                     prediction_bounds = "default",
+                    p_reserve = 0.5,
                     ...,
                     yolo = FALSE) {
+  p_reserve <- pmax(pmin(p_reserve,1),0)
+  # If X argument is a formula object
+  if(!missing(X) && inherits(X, "formula_hal9001")) {
+    return(fit_hal_formula(X, ...))
+  }
+
   # check arguments and catch function call
   call <- match.call(expand.dots = TRUE)
   fit_type <- match.arg(fit_type)
 
+
   # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
   dot_args <- list(...)
-  if (!inherits(family, "family")) {
+
+  if(!inherits(family, "family")) {
     family <- match.arg(family)
     # check that lambda.min.ratio is not passed to glmnet for binary outcomes
     assertthat::assert_that(
@@ -211,19 +210,18 @@ fit_hal <- function(X,
     )
   }
 
-  # Throw error if `standardize` (glmnet) argument is passed through "..." .
-  # This is done because the HAL algorithm requires `standardize = FALSE` for
-  # the variation norm interpretation to hold.
-  #   assertthat::assert_that(
-  #     !("standardize" %in% names(dot_args)),
-  #     msg = "hal9001 does not support the standardize argument."
-  #   )
-  standardize <- FALSE
+  # If someone tries to pass (glmnet) standardize argument through "..." throw error.
+  # This is done because the HAL algorithm requires standardize = F for the variation norm interpretation to hold.
+  # assertthat::assert_that(
+  #   !("standardize" %in% names(dot_args)),
+  #   msg = "hal9001 does not support the standardize argument."
+  # )
+  # haldensify passes in standardize
+
 
   # NOTE: NOT supporting non-gaussian outcomes with lassi method currently
   assertthat::assert_that(
-    !(fit_type == "lassi" && (inherits(family, "family") ||
-      family != "gaussian")),
+    !(fit_type == "lassi" && (inherits(family, "family") || family != "gaussian")),
     msg = "Outcome is non-gaussian, set `fit_type = 'glmnet'`."
   )
 
@@ -249,8 +247,7 @@ fit_hal <- function(X,
 
   # enumerate basis functions for making HAL design matrix
   if (is.null(basis_list)) {
-    # Generates all basis functions of smoothness less than or equal to the
-    #   smoothness specified in smoothness_order
+    # Generates all basis functions of smoothness less than or equal to the smoothness specified in smoothness_order
     # This allows the lasso algorithm to data-adaptively choose the smoothness.
     if (adaptive_smoothing && all(smoothness_orders != 0)) {
       include_lower_order <- TRUE
@@ -259,27 +256,20 @@ fit_hal <- function(X,
       include_zero_order <- FALSE
       include_lower_order <- FALSE
     }
-    basis_list <- enumerate_basis(X,
-      max_degree = max_degree,
-      smoothness_orders = smoothness_orders,
-      num_knots = num_knots,
-      include_lower_order = include_lower_order,
-      include_zero_order = include_zero_order
-    )
+    basis_list <- enumerate_basis(X, max_degree = max_degree, smoothness_orders = smoothness_orders, num_knots = num_knots, include_lower_order = include_lower_order, include_zero_order = include_zero_order)
   }
 
   # bookkeeping: get end time of enumerate basis procedure
   time_enumerate_basis <- proc.time()
 
   # make design matrix for HAL from basis functions
-  x_basis <- make_design_matrix(X, basis_list)
+  x_basis <- make_design_matrix(X, basis_list, p_reserve = p_reserve)
 
   # bookkeeping: get end time of design matrix procedure
   time_design_matrix <- proc.time()
 
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
-  if (!is.null(reduce_basis) && is.numeric(reduce_basis) &&
-    all(smoothness_orders == 0)) {
+  if (!is.null(reduce_basis) && is.numeric(reduce_basis) && all(smoothness_orders == 0)) {
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
@@ -287,8 +277,7 @@ fit_hal <- function(X,
   time_reduce_basis <- proc.time()
 
   # catalog and eliminate duplicates
-  # Lars's change: copy_map is not needed but to preserve functionality
-  #                (e.g., summary) I pass a trivial copy_map.
+  # Lars' change: copy_map is not needed but to preserve functionality (e.g. summary) I pass a trivial copy_map.
   if (all(smoothness_orders == 0)) {
     copy_map <- make_copy_map(x_basis)
     unique_columns <- as.numeric(names(copy_map))
@@ -328,9 +317,8 @@ fit_hal <- function(X,
 
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
   #       casting to a regular (dense) matrix has a large memory cost :(
-  # General families throws warnings if you pass in sparse matrix and does not
-  #   seem to lead to speed benefit.
-  # I'm guessing glmnet internally converts to matrix.
+  # General families throws warnings if you pass in sparse matrix and does not seem to lead to speed benefit.
+  # Im guessing glmnet internally converts to matrix.
   # if (inherits(family, "family") || family == "cox") {
   #   x_basis <- as.matrix(x_basis)
   # }
@@ -361,32 +349,42 @@ fit_hal <- function(X,
     }
   } else if (fit_type == "glmnet") {
     # just use the standard implementation available in glmnet
+    all_args <- dot_args
+    all_args$standardize <- FALSE
+    all_args$x <- x_basis
+    all_args$y <- Y
+    all_args$family <- family
+    all_args$lambda <- lambda
+    all_args$penalty.factor <- penalty_factor
+    all_args$nfolds <- n_folds
+    all_args$foldid <- foldid
+
     if (!cv_select) {
-      hal_lasso <- glmnet::glmnet(
-        x = x_basis,
-        y = Y,
-        family = family,
-        lambda = lambda,
-        penalty.factor = penalty_factor,
-        standardize = FALSE,
-        lambda.min.ratio = lambda.min.ratio,
-        ...
-      )
+      hal_lasso <- do.call(glmnet::glmnet, all_args)
+      # hal_lasso <- glmnet::glmnet(
+      #   x = x_basis,
+      #   y = Y,
+      #   family = family,
+      #   lambda = lambda,
+      #   penalty.factor = penalty_factor,
+      #   ...
+      # )
       lambda_star <- hal_lasso$lambda
       coefs <- stats::coef(hal_lasso)
     } else {
-      hal_lasso <- glmnet::cv.glmnet(
-        x = x_basis,
-        y = Y,
-        nfolds = n_folds,
-        family = family,
-        lambda = lambda,
-        foldid = foldid,
-        penalty.factor = penalty_factor,
-        standardize = FALSE,
-        lambda.min.ratio = lambda.min.ratio,
-        ...
-      )
+      hal_lasso <- do.call(glmnet::cv.glmnet, all_args)
+
+      # hal_lasso <- glmnet::cv.glmnet(
+      #   x = x_basis,
+      #   y = Y,
+      #   nfolds = n_folds,
+      #   family = family,
+      #   lambda = lambda,
+      #   foldid = foldid,
+      #   penalty.factor = penalty_factor,
+      #   standardize = FALSE,
+      #   ...
+      # )
       if (use_min) {
         lambda_type <- "lambda.min"
         lambda_star <- hal_lasso$lambda.min
@@ -417,8 +415,7 @@ fit_hal <- function(X,
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (!inherits(Y, "Surv") & prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
-    prediction_bounds <- c(min(Y) - stats::sd(Y) / 2, max(Y) +
-      stats::sd(Y) / 2)
+    prediction_bounds <- c(min(Y) - stats::sd(Y) / 2, max(Y) + stats::sd(Y) / 2)
   } else if (inherits(Y, "Surv") & prediction_bounds == "default") {
     prediction_bounds <- NULL
   }
@@ -452,6 +449,8 @@ fit_hal <- function(X,
   class(fit) <- "hal9001"
   return(fit)
 }
+
+
 
 ###############################################################################
 
