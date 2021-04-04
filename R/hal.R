@@ -129,14 +129,15 @@
 #'  between \code{min(Y) - sd(Y) and max(Y) + sd(Y)}. Bounding ensures that
 #'  there is no extrapolation and that predictions remain bounded, which is
 #'  necessary for cross-validation selection and/or Super Learning.
-#' @param p_reserve Sparse matrix pre-allocation proportion. Default value is 0.5. 
-#' If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.
+#' @param p_reserve Sparse matrix pre-allocation proportion. Default value is
+#'  0.5.  If a dense HAL design matrix is expected, it would be useful to set
+#'  \code{p_reserve} to a higher value.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
-#' 
+#'
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
 #' @importFrom assertthat assert_that
@@ -165,7 +166,11 @@ fit_hal <- function(X,
                     X_unpenalized = NULL,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
                     smoothness_orders = rep(1, ncol(X)),
-                    num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders = smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
+                    num_knots = sapply(seq_len(max_degree),
+                                       num_knots_generator,
+                                       smoothness_orders = smoothness_orders,
+                                       base_num_knots_0 = 500,
+                                       base_num_knots_1 = 200),
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     foldid = NULL,
@@ -184,7 +189,9 @@ fit_hal <- function(X,
                     p_reserve = 0.5,
                     ...,
                     yolo = FALSE) {
-  p_reserve <- pmax(pmin(p_reserve,1),0)
+  # set reserved proportion of nonzero basis functions
+  p_reserve <- pmax(pmin(p_reserve, 1), 0)
+
   # If X argument is a formula object
   if(!missing(X) && inherits(X, "formula_hal9001")) {
     return(fit_hal_formula(X, ...))
@@ -207,18 +214,19 @@ fit_hal <- function(X,
     )
   }
 
-  # If someone tries to pass (glmnet) standardize argument through "..." throw error.
-  # This is done because the HAL algorithm requires standardize = F for the variation norm interpretation to hold.
+  # If someone tries to pass (glmnet) standardize argument through "..." throw
+  # error. This is done because the HAL algorithm requires standardize = FALSE
+  # for the variation norm interpretation to hold.
   # assertthat::assert_that(
   #   !("standardize" %in% names(dot_args)),
   #   msg = "hal9001 does not support the standardize argument."
   # )
-  # haldensify passes in standardize
-
+  # NOTE: haldensify passes in standardize
 
   # NOTE: NOT supporting non-gaussian outcomes with lassi method currently
   assertthat::assert_that(
-    !(fit_type == "lassi" && (inherits(family, "family") || family != "gaussian")),
+    !(fit_type == "lassi" && (inherits(family, "family") ||
+                              family != "gaussian")),
     msg = "Outcome is non-gaussian, set `fit_type = 'glmnet'`."
   )
 
@@ -244,7 +252,8 @@ fit_hal <- function(X,
 
   # enumerate basis functions for making HAL design matrix
   if (is.null(basis_list)) {
-    # Generates all basis functions of smoothness less than or equal to the smoothness specified in smoothness_order
+    # Generates all basis functions of smoothness less than or equal to the
+    # smoothness specified in smoothness_order
     # This allows the lasso algorithm to data-adaptively choose the smoothness.
     if (adaptive_smoothing && all(smoothness_orders != 0)) {
       include_lower_order <- TRUE
@@ -253,7 +262,13 @@ fit_hal <- function(X,
       include_zero_order <- FALSE
       include_lower_order <- FALSE
     }
-    basis_list <- enumerate_basis(X, max_degree = max_degree, smoothness_orders = smoothness_orders, num_knots = num_knots, include_lower_order = include_lower_order, include_zero_order = include_zero_order)
+    basis_list <- enumerate_basis(
+      X, max_degree = max_degree,
+      smoothness_orders = smoothness_orders,
+      num_knots = num_knots,
+      include_lower_order = include_lower_order,
+      include_zero_order = include_zero_order
+    )
   }
 
   # bookkeeping: get end time of enumerate basis procedure
@@ -266,7 +281,8 @@ fit_hal <- function(X,
   time_design_matrix <- proc.time()
 
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
-  if (!is.null(reduce_basis) && is.numeric(reduce_basis) && all(smoothness_orders == 0)) {
+  if (!is.null(reduce_basis) && is.numeric(reduce_basis) &&
+      all(smoothness_orders == 0)) {
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
@@ -274,7 +290,8 @@ fit_hal <- function(X,
   time_reduce_basis <- proc.time()
 
   # catalog and eliminate duplicates
-  # Lars' change: copy_map is not needed but to preserve functionality (e.g. summary) I pass a trivial copy_map.
+  # Lars's change: copy_map is not needed but to preserve functionality (e.g.,
+  # summary), pass in a trivial copy_map.
   if (all(smoothness_orders == 0)) {
     copy_map <- make_copy_map(x_basis)
     unique_columns <- as.numeric(names(copy_map))
@@ -283,7 +300,6 @@ fit_hal <- function(X,
   }
   copy_map <- seq_along(basis_list)
   names(copy_map) <- seq_along(basis_list)
-
 
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
@@ -314,8 +330,9 @@ fit_hal <- function(X,
 
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
   #       casting to a regular (dense) matrix has a large memory cost :(
-  # General families throws warnings if you pass in sparse matrix and does not seem to lead to speed benefit.
-  # Im guessing glmnet internally converts to matrix.
+  # General families throws warnings if you pass in sparse matrix and does not
+  # seem to lead to speed benefit.
+  # I'm guessing glmnet internally converts to matrix.
   # if (inherits(family, "family") || family == "cox") {
   #   x_basis <- as.matrix(x_basis)
   # }
@@ -412,7 +429,8 @@ fit_hal <- function(X,
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (!inherits(Y, "Surv") & prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
-    prediction_bounds <- c(min(Y) - stats::sd(Y) / 2, max(Y) + stats::sd(Y) / 2)
+    prediction_bounds <- c(min(Y) - stats::sd(Y) / 2, max(Y) +
+                           stats::sd(Y) / 2)
   } else if (inherits(Y, "Surv") & prediction_bounds == "default") {
     prediction_bounds <- NULL
   }
@@ -447,8 +465,6 @@ fit_hal <- function(X,
   class(fit) <- "hal9001"
   return(fit)
 }
-
-
 
 ###############################################################################
 

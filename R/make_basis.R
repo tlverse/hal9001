@@ -300,10 +300,11 @@ enumerate_edge_basis <- function(x,
 
 ###############################################################################
 
-#' Discretize Variables into Number of "Bins" by Unique Values
+#' Discretize Variables into Number of Bins by Unique Values
 #'
-#' @param X TODO
-#' @param bins TODO
+#' @param X A \code{numeric} vector to be discretized.
+#' @param bins A \code{numeric} scalar indicating the number of bins into which
+#'  \code{X} should be discretized..
 #'
 #' @importFrom stats quantile median
 #'

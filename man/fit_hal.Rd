@@ -25,7 +25,7 @@ fit_hal(
   X_unpenalized = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
   smoothness_orders = rep(1, ncol(X)),
-  num_knots = sapply(1:max_degree, num_knots_generator, smoothness_orders =
+  num_knots = sapply(seq_len(max_degree), num_knots_generator, smoothness_orders =
     smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
   fit_type = c("glmnet", "lassi"),
   n_folds = 10,
@@ -290,8 +290,9 @@ between \code{min(Y) - sd(Y) and max(Y) + sd(Y)}. Bounding ensures that
 there is no extrapolation and that predictions remain bounded, which is
 necessary for cross-validation selection and/or Super Learning.}
 
-\item{p_reserve}{Sparse matrix pre-allocation proportion. Default value is 0.5.
-If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.}
+\item{p_reserve}{Sparse matrix pre-allocation proportion. Default value is
+0.5.  If a dense HAL design matrix is expected, it would be useful to set
+\code{p_reserve} to a higher value.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically

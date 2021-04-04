@@ -2,16 +2,17 @@
 % Please edit documentation in R/make_basis.R
 \name{quantizer}
 \alias{quantizer}
-\title{Discretize Variables into Number of "Bins" by Unique Values}
+\title{Discretize Variables into Number of Bins by Unique Values}
 \usage{
 quantizer(X, bins)
 }
 \arguments{
-\item{X}{TODO}
+\item{X}{A \code{numeric} vector to be discretized.}
 
-\item{bins}{TODO}
+\item{bins}{A \code{numeric} scalar indicating the number of bins into which
+\code{X} should be discretized..}
 }
 \description{
-Discretize Variables into Number of "Bins" by Unique Values
+Discretize Variables into Number of Bins by Unique Values
 }
 \keyword{internal}

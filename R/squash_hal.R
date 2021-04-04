@@ -8,6 +8,10 @@
 #' @importFrom methods is
 #' @importFrom assertthat assert_that
 #'
+#' @return Object of class \code{hal9001}, similar to the input object but
+#'  reduced such that coefficients belonging to bases with coefficients equal
+#'  to zero removed.
+#'
 #' @export
 #'
 #' @examples
@@ -22,10 +26,6 @@
 #' hal_fit <- fit_hal(X = x, Y = y, yolo = FALSE)
 #' squashed <- squash_hal_fit(hal_fit)
 #' }
-#'
-#' @return Object of class \code{hal9001}, similar to the input object but
-#'  reduced such that coefficients belonging to bases with coefficients equal
-#'  to zero removed.
 squash_hal_fit <- function(object) {
   assertthat::assert_that(is(object, "hal9001"))
 
@@ -58,6 +58,3 @@ squash_hal_fit <- function(object) {
   class(fit) <- "hal9001"
   return(fit)
 }
-
-
-

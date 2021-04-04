@@ -16,7 +16,7 @@
 #'  training, the user should also supply this matrix with the same number of
 #'  observations as \code{new_data}. Optional.
 #' @param type Either "response" (default) for predictions of the response or
-#'  "link" for untransformed link function predictions.
+#'  "link" for un-transformed predictions (on the scale of the link function).
 #'
 #' @importFrom Matrix tcrossprod
 #' @importFrom stats plogis
@@ -38,7 +38,8 @@ predict.hal9001 <- function(object,
                             offset = NULL,
                             ...,
                             new_data,
-                            new_X_unpenalized = NULL, type = c("response", "link")) {
+                            new_X_unpenalized = NULL,
+                            type = c("response", "link")) {
   type <- match.arg(type)
   p_reserve <- object$p_reserve
   p_reserve <- pmax(pmin(p_reserve,1),0)
@@ -50,7 +51,8 @@ predict.hal9001 <- function(object,
   }
 
   # generate design matrix
-  pred_x_basis <- make_design_matrix(new_data, object$basis_list, p_reserve = p_reserve)
+  pred_x_basis <- make_design_matrix(new_data, object$basis_list,
+                                     p_reserve = p_reserve)
   # group <- object$copy_map[[1]]
 
   # reduce matrix of basis functions

@@ -31,7 +31,7 @@ training, the user should also supply this matrix with the same number of
 observations as \code{new_data}. Optional.}
 
 \item{type}{Either "response" (default) for predictions of the response or
-"link" for untransformed link function predictions.}
+"link" for un-transformed predictions (on the scale of the link function).}
 }
 \value{
 A \code{numeric} vector of predictions from a \code{hal9001} object.
