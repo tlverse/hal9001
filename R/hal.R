@@ -167,10 +167,11 @@ fit_hal <- function(X,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
                     smoothness_orders = rep(1, ncol(X)),
                     num_knots = sapply(seq_len(max_degree),
-                                       num_knots_generator,
-                                       smoothness_orders = smoothness_orders,
-                                       base_num_knots_0 = 500,
-                                       base_num_knots_1 = 200),
+                      num_knots_generator,
+                      smoothness_orders = smoothness_orders,
+                      base_num_knots_0 = 500,
+                      base_num_knots_1 = 200
+                    ),
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     foldid = NULL,
@@ -193,7 +194,7 @@ fit_hal <- function(X,
   p_reserve <- pmax(pmin(p_reserve, 1), 0)
 
   # If X argument is a formula object
-  if(!missing(X) && inherits(X, "formula_hal9001")) {
+  if (!missing(X) && inherits(X, "formula_hal9001")) {
     return(fit_hal_formula(X, ...))
   }
 
@@ -205,7 +206,7 @@ fit_hal <- function(X,
   # catch dot arguments to stop misuse of glmnet's `lambda.min.ratio`
   dot_args <- list(...)
 
-  if(!inherits(family, "family")) {
+  if (!inherits(family, "family")) {
     family <- match.arg(family)
     # check that lambda.min.ratio is not passed to glmnet for binary outcomes
     assertthat::assert_that(
@@ -226,7 +227,7 @@ fit_hal <- function(X,
   # NOTE: NOT supporting non-gaussian outcomes with lassi method currently
   assertthat::assert_that(
     !(fit_type == "lassi" && (inherits(family, "family") ||
-                              family != "gaussian")),
+      family != "gaussian")),
     msg = "Outcome is non-gaussian, set `fit_type = 'glmnet'`."
   )
 
@@ -263,7 +264,8 @@ fit_hal <- function(X,
       include_lower_order <- FALSE
     }
     basis_list <- enumerate_basis(
-      X, max_degree = max_degree,
+      X,
+      max_degree = max_degree,
       smoothness_orders = smoothness_orders,
       num_knots = num_knots,
       include_lower_order = include_lower_order,
@@ -282,7 +284,7 @@ fit_hal <- function(X,
 
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
   if (!is.null(reduce_basis) && is.numeric(reduce_basis) &&
-      all(smoothness_orders == 0)) {
+    all(smoothness_orders == 0)) {
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
@@ -430,7 +432,7 @@ fit_hal <- function(X,
   if (!inherits(Y, "Surv") & prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
     prediction_bounds <- c(min(Y) - stats::sd(Y) / 2, max(Y) +
-                           stats::sd(Y) / 2)
+      stats::sd(Y) / 2)
   } else if (inherits(Y, "Surv") & prediction_bounds == "default") {
     prediction_bounds <- NULL
   }

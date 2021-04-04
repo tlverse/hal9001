@@ -42,17 +42,18 @@ predict.hal9001 <- function(object,
                             type = c("response", "link")) {
   type <- match.arg(type)
   p_reserve <- object$p_reserve
-  p_reserve <- pmax(pmin(p_reserve,1),0)
+  p_reserve <- pmax(pmin(p_reserve, 1), 0)
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
-  if(!is.null(object$formula)) {
-    new_data <- new_data[,object$covariates]
+  if (!is.null(object$formula)) {
+    new_data <- new_data[, object$covariates]
   }
 
   # generate design matrix
   pred_x_basis <- make_design_matrix(new_data, object$basis_list,
-                                     p_reserve = p_reserve)
+    p_reserve = p_reserve
+  )
   # group <- object$copy_map[[1]]
 
   # reduce matrix of basis functions
@@ -115,11 +116,11 @@ predict.hal9001 <- function(object,
   if (!is.null(offset)) {
     preds <- preds + offset
   }
-  if(type == "link") {
+  if (type == "link") {
     return(preds)
   }
   # apply inverse family (link function) transformations
-  if(inherits(object$family, "family")) {
+  if (inherits(object$family, "family")) {
     inverse_link_fun <- object$family$linkinv
     preds <- inverse_link_fun(preds)
   } else if (object$family == "binomial") {
