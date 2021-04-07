@@ -30,7 +30,8 @@ compute predicted values.}
 training, the user should also supply this matrix with the same number of
 observations as \code{new_data}. Optional.}
 
-\item{type}{Either "response" (default) for predictions of the response or "link" for untransformed link function predictions.}
+\item{type}{Either "response" (default) for predictions of the response or
+"link" for un-transformed predictions (on the scale of the link function).}
 }
 \value{
 A \code{numeric} vector of predictions from a \code{hal9001} object.
@@ -40,16 +41,16 @@ Prediction from HAL fits
 }
 \details{
 Method for computing and extracting predictions from fits of the
- Highly Adaptive Lasso estimator, returned as a single S3 objects of class
- \code{hal9001}.
+Highly Adaptive Lasso estimator, returned as a single S3 objects of class
+\code{hal9001}.
 }
 \note{
 This prediction method does not function similarly to the equivalent
- method from \pkg{glmnet}. In particular, this procedure will NOT return a
- subset of lambdas originally specified in calling \code{\link{fit_hal}}
- nor result in re-fitting. Instead, it will return predictions for all of
- the lambdas specified in the call to \code{\link{fit_hal}} that constructs
- \code{object}, when \code{cv_select = FALSE}. When \code{cv_select = TRUE},
- predictions will only be returned for the value of lambda selected by
- cross-validation.
+method from \pkg{glmnet}. In particular, this procedure will NOT return a
+subset of lambdas originally specified in calling \code{\link{fit_hal}}
+nor result in re-fitting. Instead, it will return predictions for all of
+the lambdas specified in the call to \code{\link{fit_hal}} that constructs
+\code{object}, when \code{cv_select = FALSE}. When \code{cv_select = TRUE},
+predictions will only be returned for the value of lambda selected by
+cross-validation.
 }

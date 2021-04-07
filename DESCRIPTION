@@ -19,7 +19,7 @@ Authors@R: c(
   person("Weixin", "Cai", email = "wcai@berkeley.edu",
          role = "ctb",
          comment = c(ORCID = "0000-0003-2680-3066")),
-  person("van der Laan", "Lars", email = "vanderlaanlars@yahoo.com",
+  person("Lars", "van der Laan", email = "vanderlaanlars@yahoo.com",
          role = "ctb"),
   person("Mark", "van der Laan", email = "laan@berkeley.edu",
          role = c("aut", "cph", "ths"),
@@ -69,4 +69,5 @@ LinkingTo:
   Rcpp,
   RcppEigen
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.1.9001
+Roxygen: list(markdown = TRUE)

@@ -49,13 +49,13 @@ compatibility with \code{SuperLearner}.}
 \item{obsWeights}{Not used by the function directly, but meant to ensure
 compatibility with \code{SuperLearner}. These are passed to
 \code{\link[glmnet]{cv.glmnet}} through the \code{...} argument of
-\code{\link{fit_hal.default}}.}
+\code{\link{fit_hal}}.}
 
 \item{...}{Placeholder (ignored).}
 }
 \value{
 An object of class \code{SL.hal9001} with a fitted \code{hal9001}
- object and corresponding predictions based on the input data.
+object and corresponding predictions based on the input data.
 }
 \description{
 Wrapper for \pkg{SuperLearner} for objects of class \code{hal9001}

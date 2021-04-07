@@ -13,8 +13,8 @@ apply_copy_map(X, copy_map)
 }
 \value{
 A \code{dgCMatrix} sparse matrix corresponding to the design matrix
- for a zero-th order highly adaptive lasso, but with all duplicated columns
- (basis functions) removed.
+for a zero-th order highly adaptive lasso, but with all duplicated columns
+(basis functions) removed.
 }
 \description{
 OR duplicate training set columns together

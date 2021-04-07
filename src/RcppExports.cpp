@@ -85,14 +85,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_design_matrix
-SpMat make_design_matrix(const NumericMatrix& X, const List& blist);
-RcppExport SEXP _hal9001_make_design_matrix(SEXP XSEXP, SEXP blistSEXP) {
+SpMat make_design_matrix(const NumericMatrix& X, const List& blist, double p_reserve);
+RcppExport SEXP _hal9001_make_design_matrix(SEXP XSEXP, SEXP blistSEXP, SEXP p_reserveSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const List& >::type blist(blistSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_design_matrix(X, blist));
+    Rcpp::traits::input_parameter< double >::type p_reserve(p_reserveSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_design_matrix(X, blist, p_reserve));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -107,17 +108,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// non_zeros
-IntegerVector non_zeros(const MSpMat& X);
-RcppExport SEXP _hal9001_non_zeros(SEXP XSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(non_zeros(X));
-    return rcpp_result_gen;
-END_RCPP
-}
 // calc_pnz
 NumericVector calc_pnz(const MSpMat& X);
 RcppExport SEXP _hal9001_calc_pnz(SEXP XSEXP) {
@@ -126,17 +116,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
     rcpp_result_gen = Rcpp::wrap(calc_pnz(X));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_pnz
-NumericVector get_pnz(const MSpMat& X);
-RcppExport SEXP _hal9001_get_pnz(SEXP XSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_pnz(X));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -152,30 +131,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// get_xscale
-NumericVector get_xscale(const MSpMat& X, const NumericVector& xcenter);
-RcppExport SEXP _hal9001_get_xscale(SEXP XSEXP, SEXP xcenterSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const MSpMat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type xcenter(xcenterSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_xscale(X, xcenter));
-    return rcpp_result_gen;
-END_RCPP
-}
-// equal_double
-bool equal_double(double x, double y);
-RcppExport SEXP _hal9001_equal_double(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(equal_double(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 RcppExport SEXP _rcpp_module_boot_lassi_module();
 
@@ -186,14 +141,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_make_basis_list", (DL_FUNC) &_hal9001_make_basis_list, 3},
     {"_hal9001_meets_basis", (DL_FUNC) &_hal9001_meets_basis, 5},
     {"_hal9001_evaluate_basis", (DL_FUNC) &_hal9001_evaluate_basis, 4},
-    {"_hal9001_make_design_matrix", (DL_FUNC) &_hal9001_make_design_matrix, 2},
+    {"_hal9001_make_design_matrix", (DL_FUNC) &_hal9001_make_design_matrix, 3},
     {"_hal9001_as_dgCMatrix", (DL_FUNC) &_hal9001_as_dgCMatrix, 1},
-    {"_hal9001_non_zeros", (DL_FUNC) &_hal9001_non_zeros, 1},
     {"_hal9001_calc_pnz", (DL_FUNC) &_hal9001_calc_pnz, 1},
-    {"_hal9001_get_pnz", (DL_FUNC) &_hal9001_get_pnz, 1},
     {"_hal9001_calc_xscale", (DL_FUNC) &_hal9001_calc_xscale, 2},
-    {"_hal9001_get_xscale", (DL_FUNC) &_hal9001_get_xscale, 2},
-    {"_hal9001_equal_double", (DL_FUNC) &_hal9001_equal_double, 2},
     {"_rcpp_module_boot_lassi_module", (DL_FUNC) &_rcpp_module_boot_lassi_module, 0},
     {NULL, NULL, 0}
 };
