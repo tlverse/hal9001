@@ -95,21 +95,22 @@ x <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
 # fit the HAL regression
-hal_fit <- fit_hal(X = x, Y = y)
+hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
+#> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 #> Argument `standardize` to `glmnet` detected, overriding to `FALSE`.
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.009    0.000   0.011          0         0
-#> design_matrix         0.005    0.000   0.004          0         0
+#> enumerate_basis       0.002    0.004   0.006          0         0
+#> design_matrix         0.003    0.000   0.002          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 0.487    0.004   0.491          0         0
-#> total                 0.504    0.004   0.510          0         0
+#> lasso                 0.452    0.004   0.457          0         0
+#> total                 0.458    0.008   0.466          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
-#> [1] 0.03698071
+#> [1] 0.03552136
 ```
 
 -----

@@ -355,7 +355,7 @@ fit_hal <- function(X,
 
     # If the standardize argument is passed to glmnet through "...", simply
     # note that it will be discarded and set to FALSE.
-    if (!("standardize" %in% names(dot_args))) {
+    if ("standardize" %in% names(dot_args)) {
       message(
         "Argument `standardize` to `glmnet` detected, overriding to `FALSE`."
       )
