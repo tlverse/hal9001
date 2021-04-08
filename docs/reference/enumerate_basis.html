@@ -41,7 +41,7 @@
 
 <meta property="og:title" content="Enumerate Basis Functions — enumerate_basis" />
 <meta property="og:description" content="Generate basis functions for all covariates and interaction terms thereof up
-to a specified order/degree" />
+to a specified order/degree." />
 
 
 
@@ -83,7 +83,7 @@ to a specified order/degree" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -129,10 +129,17 @@ to a specified order/degree" />
 
     <div class="ref-description">
     <p>Generate basis functions for all covariates and interaction terms thereof up
-to a specified order/degree</p>
+to a specified order/degree.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>enumerate_basis</span><span class='op'>(</span><span class='va'>x</span>, max_degree <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>enumerate_basis</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  max_degree <span class='op'>=</span> <span class='cn'>NULL</span>,
+  smoothness_orders <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span>,
+  include_zero_order <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  include_lower_order <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  num_knots <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -148,12 +155,49 @@ following standard conventions in problems of statistical learning.</p></td>
 functions ought to be generated. The default (<code>NULL</code>) corresponds to
 generating basis functions for the full dimensionality of the input matrix.</p></td>
     </tr>
+    <tr>
+      <th>smoothness_orders</th>
+      <td><p>An integer vector of length <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(x)</a></code>
+specifying the desired smoothness of the function in each covariate. k = 0
+is no smoothness (indicator basis), k = 1 is first order smoothness, and so
+on. For an additive model, the component function for each covariate will
+have the degree of smoothness as specified by smoothness_orders. For
+non-additive components (tensor products of univariate basis functions),
+the univariate basis functions in each tensor product have smoothness
+degree as specified by smoothness_orders.</p></td>
+    </tr>
+    <tr>
+      <th>include_zero_order</th>
+      <td><p>A <code>logical</code>, indicating whether the zeroth
+order basis functions are included for each covariate (if <code>TRUE</code>), in
+addition to the smooth basis functions given by <code>smoothness_orders</code>.
+This allows the algorithm to data-adaptively choose the appropriate degree
+of smoothness.</p></td>
+    </tr>
+    <tr>
+      <th>include_lower_order</th>
+      <td><p>A <code>logical</code>, like <code>include_zero_order</code>,
+except including all basis functions of lower smoothness degrees than
+specified via <code>smoothness_orders</code>.</p></td>
+    </tr>
+    <tr>
+      <th>num_knots</th>
+      <td><p>A vector of length <code>max_degree</code>, which determines how
+granular the knot points to generate basis functions should be for each
+degree of basis function. The first entry of <code>num_knots</code> determines
+the number of knot points to be used for each univariate basis function.
+More generally, The kth entry of <code>num_knots</code> determines the number of
+knot points to be used for the kth degree basis functions. Specifically,
+for a kth degree basis function, which is the tensor product of k
+univariate basis functions, this determines the number of knot points to be
+used for each univariate basis function in the tensor product.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A <code>list</code> of basis functions generated for all covariates and
- interaction thereof up to a pre-specified degree.</p>
+interaction thereof up to a pre-specified degree.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>

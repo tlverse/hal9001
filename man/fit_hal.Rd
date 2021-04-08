@@ -110,17 +110,17 @@ covariates specified in the argument \code{formula}.}
 
 \item{smoothness_orders}{An \code{integer} vector of length 1 or length
 \code{ncol(X)}. If \code{smoothness_orders} is of length 1, then its values
-are recycled to form a vector of length length \code{ncol(X)}. Given such a
-vector of length \code{ncol(X)}, the ith element specifies the level of
-smoothness for the variable corresponding with the ith column in \code{X}.
-A value of "0" corresponds with 0-order splines (piece-wise constant) which
-assumes no smoothness or continuity of true regression function. A value of
-"1" corresponds with 1-order splines (piece-wise linear) which only assumes
-continuity of true regression function. A value of "2" corresponds with
-2-order splines (piece-wise quadratic and linear terms) which assumes one
-order of differentiability for the true regression function. WARNING: if
-\code{smoothness_orders} has length less than \code{ncol(X)}, then values
-are recycled as needed.}
+are recycled to form a vector of length \code{ncol(X)}. Given such a vector
+of length \code{ncol(X)}, the ith element specifies the level of smoothness
+for the variable corresponding with the ith column in \code{X}. A value of
+"0" corresponds with 0th-order splines (piece-wise constant), which assumes
+no smoothness or continuity of the true regression function. A value of "1"
+corresponds with 1st-order splines (piece-wise linear), which only assumes
+continuity of the true regression function. A value of "2" corresponds with
+2nd-order splines (piece-wise quadratic and linear terms), which assumes a
+single order of differentiability for the true regression function. NOTE:
+If \code{smoothness_orders} has length less than \code{ncol(X)}, then its
+values are recycled as needed.}
 
 \item{num_knots}{An \code{integer} vector of length 1 or length
 \code{max_degree}. If \code{num_knots} is a vector of length 1 then its
@@ -202,7 +202,7 @@ specified by \code{smoothness_orders}. For example, if
 \code{smoothness_orders = 2} and \code{adaptive_smoothing = TRUE}, then HAL
 will generate all basis functions of smoothness order 0, 1, and 2, and
 data-adaptively select the basis functions to use. WARNING: This can
-increase runtime by a factor of 2-3+ depending on value of
+increase runtime by a factor of 2-3 times depending on value of
 \code{smoothness_orders}.}
 
 \item{...}{Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
@@ -263,7 +263,7 @@ the matrix of (possibly reduced) basis functions used in the HAL lasso fit.}
 
 \item{basis_list}{The full set of basis functions generated from the input
 data X (via a call to \code{enumerate_basis}). The dimensionality of this
-structure is dim = \eqn{(n * 2^(d - 1))}, where n is the number of
+structure is dim = \eqn{(n * 2^(d-1))}, where n is the number of
 observations and d is the number of columns in X.}
 
 \item{lambda}{User-specified array of values of the lambda tuning parameter
@@ -286,9 +286,9 @@ value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
 
 \item{prediction_bounds}{A vector of size two that provides the lower and
 upper bounds for predictions. By default, the predictions are bounded
-between \code{min(Y) - sd(Y) and max(Y) + sd(Y)}. Bounding ensures that
-there is no extrapolation and that predictions remain bounded, which is
-necessary for cross-validation selection and/or Super Learning.}
+between \code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures
+that there is no extrapolation and that predictions remain bounded, which is
+is necessary for cross-validation selection and/or Super Learning.}
 
 \item{p_reserve}{Sparse matrix pre-allocation proportion. Default value is
 0.5.  If a dense HAL design matrix is expected, it would be useful to set

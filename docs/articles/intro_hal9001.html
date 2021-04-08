@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>
 </h4>
             
-            <h4 class="date">2021-01-21</h4>
+            <h4 class="date">2021-04-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -101,9 +101,11 @@
 <h2 class="hasAnchor">
 <a href="#preliminaries" class="anchor"></a>Preliminaries</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># simulation constants</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="co"># simulation constants</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">467392</span><span class="op">)</span>
-<span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">200</span>
+<span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">500</span>
 <span class="va">n_covars</span> <span class="op">&lt;-</span> <span class="fl">3</span>
 
 <span class="co"># make some training data</span>
@@ -117,15 +119,15 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></code></pre></div>
 <pre><code>##             [,1]       [,2]       [,3]
-## [1,]  2.44102981 -0.6441252 -0.4632021
-## [2,] -1.21932335 -0.9481608  2.6358511
-## [3,] -0.40613567  0.4337314 -0.2226760
-## [4,] -1.09760477 -1.5845711 -1.0496038
-## [5,]  0.23710498  0.1261754  1.4717507
-## [6,]  0.06810091 -0.2623992 -0.7534596</code></pre>
+## [1,]  2.44102981 -0.4337909  0.4670282
+## [2,] -1.21932335  0.3336395  0.8894277
+## [3,] -0.40613567 -0.3869374  0.3474353
+## [4,] -1.09760477 -1.4663219 -0.1173214
+## [5,]  0.23710498  1.2565812  1.8049389
+## [6,]  0.06810091 -0.7020905  0.9301941</code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1]  0.31596199 -1.74749349 -0.08198272 -2.13963686  0.42902938 -0.12824651</code></pre>
+<pre><code>## [1]  0.2372289 -0.6023415 -0.7569124 -1.8021339  1.0589707 -0.3373555</code></pre>
 <hr>
 </div>
 <div id="using-the-highly-adaptive-lasso" class="section level2">
@@ -134,7 +136,8 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tlverse/hal9001">hal9001</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## Loading required package: Rcpp</code></pre>
-<pre><code>## hal9001 v0.2.7: The Scalable Highly Adaptive Lasso</code></pre>
+<pre><code>## hal9001 v0.3.0: The Scalable Highly Adaptive Lasso
+## note: fit_hal defaults have changed. See ?fit_hal for details</code></pre>
 <!-- ### Fitting the HAL model: "lassi" -->
 <!-- Our custom implementation of the Lasso has been dubbed _lassi_. For the purposes -->
 <!-- of HAL, it is faster than using the standard `glmnet` approach, but it is not -->
@@ -153,353 +156,59 @@
 </h3>
 <p>HAL uses the popular <code>glmnet</code> R package for the lasso step:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "Without your space helmet, Dave. You're going to find that rather difficult."</code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
+<code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span><span class="op">)</span>
+<span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.003    0.000   0.003          0         0
-## design_matrix         0.016    0.000   0.016          0         0
+## enumerate_basis       0.018    0.000   0.018          0         0
+## design_matrix         0.127    0.000   0.127          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## remove_duplicates     0.010    0.000   0.010          0         0
-## lasso                 0.735    0.004   0.738          0         0
-## total                 0.764    0.004   0.768          0         0</code></pre>
+## remove_duplicates     0.000    0.000   0.000          0         0
+## lasso                 1.187    0.032   1.219          0         0
+## total                 1.335    0.032   1.367          0         0</code></pre>
 <p>While the raw output object may be examined, it has (usually large) slots that make quick examination challenging. Instead, we recommend the <code>summary</code> method, which provides an interpretable table of basis functions with non-zero coefficients.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
-<pre><code>##              coef
-##  1: -7.812231e-01
-##  2:  1.968808e-01
-##  3:  1.632766e-01
-##  4:  1.483639e-01
-##  5:  1.462592e-01
-##  6:  1.456650e-01
-##  7:  1.441887e-01
-##  8:  1.367758e-01
-##  9:  1.348308e-01
-## 10:  1.324568e-01
-## 11:  1.247913e-01
-## 12:  1.171875e-01
-## 13:  1.146518e-01
-## 14:  1.125166e-01
-## 15:  1.120689e-01
-## 16:  1.098491e-01
-## 17:  1.038959e-01
-## 18:  1.000336e-01
-## 19:  8.276983e-02
-## 20:  7.750062e-02
-## 21:  7.317027e-02
-## 22:  7.296611e-02
-## 23:  6.535017e-02
-## 24:  6.344607e-02
-## 25:  6.300968e-02
-## 26:  5.772281e-02
-## 27:  5.638586e-02
-## 28:  5.585372e-02
-## 29:  5.433344e-02
-## 30:  5.086507e-02
-## 31:  5.041330e-02
-## 32:  4.925794e-02
-## 33:  4.846195e-02
-## 34:  4.137366e-02
-## 35:  3.869325e-02
-## 36:  3.812788e-02
-## 37:  3.652213e-02
-## 38:  3.631055e-02
-## 39:  3.597019e-02
-## 40:  3.377831e-02
-## 41:  3.351076e-02
-## 42:  2.921166e-02
-## 43:  2.851651e-02
-## 44:  2.676665e-02
-## 45:  2.459752e-02
-## 46:  2.402039e-02
-## 47:  2.344251e-02
-## 48:  2.154657e-02
-## 49:  1.971008e-02
-## 50:  1.873740e-02
-## 51:  1.842638e-02
-## 52:  1.760974e-02
-## 53:  1.755002e-02
-## 54:  1.557752e-02
-## 55:  1.429619e-02
-## 56:  1.267729e-02
-## 57:  1.142536e-02
-## 58:  7.771376e-03
-## 59:  3.178810e-03
-## 60:  2.607689e-03
-## 61:  2.534992e-03
-## 62:  1.790010e-03
-## 63:  1.617822e-03
-## 64:  1.424163e-03
-## 65:  2.166444e-04
-## 66:  8.432367e-05
-## 67: -8.648258e-05
-## 68: -2.281031e-03
-## 69: -7.607974e-03
-## 70: -2.909367e-02
-## 71: -3.439369e-02
-## 72: -3.944700e-02
-## 73: -4.035840e-02
-## 74: -9.726592e-02
-## 75: -1.056429e-01
-## 76: -1.466408e-01
-## 77: -2.054773e-01
-## 78: -7.314642e-01
-##              coef
-##                                                                                                                                                                                                                                                                                                                                                                                                   term
-##  1:                                                                                                                                                                                                                                                                                                                                                                                          Intercept
-##  2:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.1725)
-##  3:                                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 0.3807)
-##  4:                                                                                                                                                                                                                                                                                                                                                                                      I(2 &gt;= 0.119)
-##  5:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.5685)
-##  6:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -0.1015)
-##  7:                                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 0.1386)
-##  8:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 1.0291)
-##  9:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -0.6441)
-## 10:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.6786)
-## 11:                                                                                                                                                                                                                                                                                                                                                                      I(2 &gt;= 1.3571)*I(3 &gt;= 1.4599)
-## 12:                                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 0.4752)
-## 13:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -0.9482)
-## 14:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.5113)
-## 15:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -0.1938)
-## 16:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= -0.782)
-## 17:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -0.9921)
-## 18:                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 0.8989)*I(3 &gt;= -1.0482)
-## 19:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= -0.313)
-## 20:                                                                                                                                                                                                                                                                                                                                                                      I(1 &gt;= 0.0911)*I(2 &gt;= 0.3539)
-## 21:                                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 0.0345)
-## 22:                                                                                                                                                                                                                                                                                                                                                                      I(1 &gt;= 0.0855)*I(2 &gt;= 0.4067)
-## 23:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.2045)
-## 24:                                                                                                                                                                                                                                                                                                                                                                                      I(1 &gt;= 0.634)
-## 25:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -0.6718)
-## 26:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.6959)
-## 27:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.4061)
-## 28:                                                                                                                                                                                                                                                                                                                                                       I(1 &gt;= 1.182)*I(2 &gt;= 0.5866)*I(3 &gt;= -0.5114)
-## 29:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.8398)
-## 30:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.1844)
-## 31:                                                                                                                                                                                                                                                                                                                                                                                      I(1 &gt;= 0.747)
-## 32:                                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= -0.908)
-## 33:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.3545)
-## 34:                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.1378)*I(3 &gt;= -1.5644)
-## 35:                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.6488)*I(3 &gt;= -1.0124)
-## 36:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -0.7863)
-## 37:                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 1.2184)*I(3 &gt;= -0.6318)
-## 38:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.0232)
-## 39:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.2092)
-## 40:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.4512)
-## 41:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.2844)
-## 42:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.4766)
-## 43:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.8281)
-## 44:                                                                                                                                                                                                                                                                                                                                                                      I(2 &gt;= 0.1737)*I(3 &gt;= 1.8577)
-## 45:                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 1.1353)*I(3 &gt;= -1.0124)
-## 46:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -1.2687)
-## 47:                                                                                                                                                                                                                                                                                                                                                                       I(1 &gt;= 0.747)*I(3 &gt;= -1.753)
-## 48:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.1737)
-## 49:                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= -0.3937)*I(2 &gt;= -0.782)
-## 50:                                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 0.3645)
-## 51:                                                                                                                                                                                                                                                                                                                   I(1 &gt;= 1.2006)*I(3 &gt;= -1.011)  OR  I(1 &gt;= 1.2006)*I(2 &gt;= -1.1474)*I(3 &gt;= -1.011)
-## 52:                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= -0.8452)*I(3 &gt;= -0.628)
-## 53:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.3879)
-## 54:                                                                                                                                                                                                                                                                                                                                                                      I(1 &gt;= 0.1485)*I(2 &gt;= 0.9348)
-## 55:                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 1.2523)*I(2 &gt;= -0.0958)*I(3 &gt;= -0.6158)
-## 56:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -0.3809)
-## 57:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.0444)
-## 58:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 0.3237)
-## 59:                                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 0.1302)
-## 60:                                                                                                                                                                                                                                                                                                                                                       I(1 &gt;= 0.747)*I(2 &gt;= -0.1954)*I(3 &gt;= -1.753)
-## 61:                                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= 0.1921)
-## 62:                                                                                                                                                                                                                                                                                                                                                                                      I(2 &gt;= 0.738)
-## 63:                                                                                                                                                                                                                                                                                                                                                                      I(1 &gt;= 0.634)*I(3 &gt;= -0.8881)
-## 64:                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.8398)*I(3 &gt;= -1.5209)
-## 65:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.3937)
-## 66:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -0.4836)
-## 67:                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= -2.1625)*I(3 &gt;= 0.3336)
-## 68:                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= -0.7038)*I(3 &gt;= 0.3925)
-## 69:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -2.1828)
-## 70:                                                                                                                                                                                                                                                                                                   I(1 &gt;= 1.7813)*I(2 &gt;= 0.4792)*I(3 &gt;= -0.9682)  OR  I(1 &gt;= 2.0998)*I(2 &gt;= 0.3074)*I(3 &gt;= -1.3211)
-## 71: I(1 &gt;= 1.8165)*I(3 &gt;= 0.7568)  OR  I(1 &gt;= 1.8717)*I(3 &gt;= 0.4161)  OR  I(1 &gt;= 1.9814)*I(3 &gt;= 0.0149)  OR  I(1 &gt;= 2.2918)*I(3 &gt;= 0.0013)  OR  I(1 &gt;= 1.5647)*I(2 &gt;= 1.3684)*I(3 &gt;= 0.3794)  OR  I(1 &gt;= 1.8165)*I(2 &gt;= 0.3545)*I(3 &gt;= 0.7568)  OR  I(1 &gt;= 1.8717)*I(2 &gt;= 0.2858)*I(3 &gt;= 0.4161)  OR  I(1 &gt;= 1.9814)*I(2 &gt;= -0.7717)*I(3 &gt;= 0.0149)  OR  I(1 &gt;= 2.2918)*I(2 &gt;= -1.0968)*I(3 &gt;= 0.0013)
-## 72:                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= -2.1579)*I(3 &gt;= 0.3054)
-## 73:                                                                                                                                                                                                                                                                                                                                                                     I(1 &gt;= -2.3015)*I(2 &gt;= 2.1782)
-## 74:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 2.0022)
-## 75:                                                                                                                                                                                                                                                                                                                                                                                     I(2 &gt;= 2.1818)
-## 76:                                                                                                                                                                                                                                                             I(1 &gt;= 2.441)  OR  I(1 &gt;= 2.441)*I(2 &gt;= -0.6441)  OR  I(1 &gt;= 2.441)*I(3 &gt;= -0.4632)  OR  I(1 &gt;= 2.441)*I(2 &gt;= -0.6441)*I(3 &gt;= -0.4632)
-## 77:                                                                                                                                                                                                                                                                                                                                                                                    I(2 &gt;= -2.3508)
-## 78:                                                                                                                                                                                                                                                                                                                                                                                    I(1 &gt;= -3.0511)
-##                                                                                                                                                                                                                                                                                                                                                                                                   term</code></pre>
+<pre><code>##             coef                                                  term
+## 1: -1.7687874362                                             Intercept
+## 2:  0.1726315141                   I(1,2 &gt;= -3.2242)*I(1,3 &gt;= -3.0377)
+## 3:  0.0200119716                   I(1,3 &gt;= -0.6451)*I(2,3 &gt;= -3.2886)
+## 4:  0.0083551475 I(1,2 &gt;= -0.7397)*I(1,3 &gt;= -3.0377)*I(2,3 &gt;= -1.8899)
+## 5:  0.0021217969  I(1,2 &gt;= -3.2242)*I(1,3 &gt;= -0.593)*I(2,3 &gt;= -1.5283)
+## 6: -0.0005975216  I(1,2 &gt;= 0.3049)*I(1,3 &gt;= -1.4075)*I(2,3 &gt;= -3.2886)
+## 7: -0.0245964275  I(1,2 &gt;= -3.2242)*I(1,3 &gt;= 0.4993)*I(2,3 &gt;= -3.2886)</code></pre>
 </div>
 <div id="reducing-basis-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#reducing-basis-functions" class="anchor"></a>Reducing basis functions</h3>
 <p>As described in <span class="citation">Benkeser and van der Laan (2016)</span>, the HAL algorithm operates by first constructing a set of basis functions and subsequently fitting a Lasso model with this set of basis functions as the design matrix. Several approaches are considered for reducing this set of basis functions: 1. Removing duplicated basis functions (done by default in the <code>fit_hal</code> function), 2. Removing basis functions that correspond to only a small set of observations; a good rule of thumb is to scale with <span class="math inline">\(\frac{1}{\sqrt{n}}\)</span>.</p>
 <p>The second of these two options may be invoked by specifying the <code>reduce_basis</code> argument to the <code>fit_hal</code> function:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                           reduce_basis <span class="op">=</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "Dave, although you took very thorough precautions in the pod against my hearing you, I could see your lips move."</code></pre>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
+                           reduce_basis <span class="op">=</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.003    0.000   0.003          0         0
-## design_matrix         0.016    0.000   0.015          0         0
-## reduce_basis          0.006    0.001   0.007          0         0
-## remove_duplicates     0.007    0.000   0.007          0         0
-## lasso                 0.727    0.004   0.731          0         0
-## total                 0.760    0.005   0.764          0         0</code></pre>
-<p>In the above, all basis functions with fewer than 7.0710678% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+## enumerate_basis       0.021    0.000   0.021          0         0
+## design_matrix         0.138    0.000   0.138          0         0
+## reduce_basis          0.000    0.000   0.000          0         0
+## remove_duplicates     0.000    0.000   0.000          0         0
+## lasso                 2.219    0.012   2.232          0         0
+## total                 2.379    0.012   2.392          0         0</code></pre>
+<p>In the above, all basis functions with fewer than 4.472136% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
-<pre><code>##              coef
-##  1: -8.509040e-01
-##  2:  2.148854e-01
-##  3:  1.901724e-01
-##  4:  1.672545e-01
-##  5:  1.650474e-01
-##  6:  1.531422e-01
-##  7:  1.510468e-01
-##  8:  1.402116e-01
-##  9:  1.326720e-01
-## 10:  1.321485e-01
-## 11:  1.249675e-01
-## 12:  1.115810e-01
-## 13:  1.114218e-01
-## 14:  1.058269e-01
-## 15:  9.755956e-02
-## 16:  9.358887e-02
-## 17:  7.869787e-02
-## 18:  7.592093e-02
-## 19:  7.429796e-02
-## 20:  7.047377e-02
-## 21:  6.739943e-02
-## 22:  6.696098e-02
-## 23:  6.191745e-02
-## 24:  6.106494e-02
-## 25:  5.956340e-02
-## 26:  5.925512e-02
-## 27:  5.917987e-02
-## 28:  5.909718e-02
-## 29:  5.404921e-02
-## 30:  4.790203e-02
-## 31:  4.695250e-02
-## 32:  4.542445e-02
-## 33:  4.247331e-02
-## 34:  4.069736e-02
-## 35:  4.002579e-02
-## 36:  3.625673e-02
-## 37:  3.592245e-02
-## 38:  3.224930e-02
-## 39:  3.203616e-02
-## 40:  2.771001e-02
-## 41:  2.653015e-02
-## 42:  2.596375e-02
-## 43:  2.559650e-02
-## 44:  2.301804e-02
-## 45:  2.256363e-02
-## 46:  2.048626e-02
-## 47:  1.949827e-02
-## 48:  1.753155e-02
-## 49:  1.373297e-02
-## 50:  1.317963e-02
-## 51:  1.029828e-02
-## 52:  9.586481e-03
-## 53:  9.319139e-03
-## 54:  8.921289e-03
-## 55:  6.506866e-03
-## 56:  5.956689e-03
-## 57:  4.749919e-03
-## 58:  3.716205e-03
-## 59:  1.188659e-03
-## 60:  4.492954e-04
-## 61:  3.206061e-04
-## 62:  8.100191e-05
-## 63:  6.515244e-05
-## 64:  2.994393e-05
-## 65:  1.740718e-05
-## 66: -1.165468e-02
-## 67: -1.663354e-02
-## 68: -2.146260e-02
-## 69: -9.731628e-02
-## 70: -2.042386e-01
-## 71: -6.717951e-01
-##              coef
-##                                                                                   term
-##  1:                                                                          Intercept
-##  2:                                                                    I(1 &gt;= -0.1725)
-##  3:                                                                    I(2 &gt;= -0.1015)
-##  4:                                                                     I(1 &gt;= 0.3807)
-##  5:                                                                    I(1 &gt;= -0.5685)
-##  6:                                                                      I(2 &gt;= 0.119)
-##  7:                                                                     I(2 &gt;= 0.6786)
-##  8:                                                                     I(1 &gt;= 0.1386)
-##  9:                                                                     I(2 &gt;= 1.0291)
-## 10:                                                                    I(2 &gt;= -0.6441)
-## 11:                                                                     I(1 &gt;= 0.4752)
-## 12:                                                                    I(2 &gt;= -0.9482)
-## 13:                                                                     I(2 &gt;= -0.782)
-## 14:                                                                    I(2 &gt;= -0.9921)
-## 15:                                                                     I(2 &gt;= -0.313)
-## 16:                                                                    I(1 &gt;= -0.5113)
-## 17:                                                      I(1 &gt;= 0.0911)*I(2 &gt;= 0.3539)
-## 18:                                                     I(1 &gt;= 0.8989)*I(3 &gt;= -1.0482)
-## 19:                                                     I(2 &gt;= 1.2184)*I(3 &gt;= -0.6318)
-## 20:                                                      I(1 &gt;= 0.0855)*I(2 &gt;= 0.4067)
-## 21:                                                                    I(2 &gt;= -0.6718)
-## 22:                                                                      I(1 &gt;= 0.747)
-## 23:                                                                    I(1 &gt;= -0.4061)
-## 24:                                                                      I(1 &gt;= 0.634)
-## 25:                                                                    I(1 &gt;= -0.8398)
-## 26:                                                                    I(1 &gt;= -0.2045)
-## 27:                                                                    I(2 &gt;= -0.1938)
-## 28:                                                                     I(1 &gt;= -0.908)
-## 29:                                                                     I(1 &gt;= 0.0345)
-## 30:                                                                     I(2 &gt;= 0.1844)
-## 31:                                                    I(1 &gt;= -0.1378)*I(3 &gt;= -1.5644)
-## 32:                                                                     I(2 &gt;= 0.8281)
-## 33:                                                                     I(2 &gt;= 0.3545)
-## 34:                                                                     I(2 &gt;= 0.6959)
-## 35:                                                                     I(2 &gt;= 0.1737)
-## 36:                                                                     I(2 &gt;= 0.0232)
-## 37:                                                                     I(2 &gt;= 0.4512)
-## 38:                                                                    I(2 &gt;= -0.7863)
-## 39:                                                                    I(2 &gt;= -1.2687)
-## 40:                                                                     I(2 &gt;= 0.2092)
-## 41:                                                                     I(2 &gt;= 0.3237)
-## 42:                                                     I(1 &gt;= -0.1388)*I(2 &gt;= 0.9292)
-## 43:                                                     I(1 &gt;= 1.1353)*I(3 &gt;= -1.0124)
-## 44:                                                                    I(1 &gt;= -0.4766)
-## 45:                                                     I(1 &gt;= -0.3937)*I(2 &gt;= -0.782)
-## 46:                                                                    I(1 &gt;= -0.3879)
-## 47:                                                                     I(2 &gt;= 0.2844)
-## 48:                                                     I(1 &gt;= 0.6882)*I(3 &gt;= -0.7632)
-## 49:                                                       I(1 &gt;= 0.747)*I(3 &gt;= -1.753)
-## 50:                                                     I(1 &gt;= -0.8452)*I(3 &gt;= -0.628)
-## 51:                                                                     I(2 &gt;= 0.0444)
-## 52:   I(1 &gt;= 1.2006)*I(3 &gt;= -1.011)  OR  I(1 &gt;= 1.2006)*I(2 &gt;= -1.1474)*I(3 &gt;= -1.011)
-## 53:                                                                     I(2 &gt;= 1.3571)
-## 54:                                                                     I(1 &gt;= 0.1921)
-## 55:                                                                     I(1 &gt;= 1.1153)
-## 56:                                                     I(2 &gt;= 0.5866)*I(3 &gt;= -0.5114)
-## 57:                                                     I(1 &gt;= 1.1153)*I(2 &gt;= -0.3809)
-## 58: I(1 &gt;= 1.1072)*I(3 &gt;= -1.4661)  OR  I(1 &gt;= 1.1072)*I(2 &gt;= -1.3281)*I(3 &gt;= -1.4661)
-## 59:                                                                    I(1 &gt;= -0.4836)
-## 60:                                                                     I(1 &gt;= 0.0954)
-## 61:                                                                    I(1 &gt;= -0.3937)
-## 62:                                                                     I(1 &gt;= 0.5926)
-## 63:                                                                     I(1 &gt;= 0.1884)
-## 64:                                                                     I(1 &gt;= 0.1023)
-## 65:                                                                     I(2 &gt;= 0.3466)
-## 66:                                                                      I(3 &gt;= 0.505)
-## 67:                                                                    I(2 &gt;= -2.1828)
-## 68:                                                     I(1 &gt;= -2.1579)*I(3 &gt;= 0.3054)
-## 69:                                                                     I(2 &gt;= 1.4561)
-## 70:                                                                    I(2 &gt;= -2.3508)
-## 71:                                                                    I(1 &gt;= -3.0511)
-##                                                                                   term</code></pre>
+<pre><code>##             coef                                                  term
+## 1: -1.7687874362                                             Intercept
+## 2:  0.1726315141                   I(1,2 &gt;= -3.2242)*I(1,3 &gt;= -3.0377)
+## 3:  0.0200119716                   I(1,3 &gt;= -0.6451)*I(2,3 &gt;= -3.2886)
+## 4:  0.0083551475 I(1,2 &gt;= -0.7397)*I(1,3 &gt;= -3.0377)*I(2,3 &gt;= -1.8899)
+## 5:  0.0021217969  I(1,2 &gt;= -3.2242)*I(1,3 &gt;= -0.593)*I(2,3 &gt;= -1.5283)
+## 6: -0.0005975216  I(1,2 &gt;= 0.3049)*I(1,3 &gt;= -1.4075)*I(2,3 &gt;= -3.2886)
+## 7: -0.0245964275  I(1,2 &gt;= -3.2242)*I(1,3 &gt;= 0.4993)*I(2,3 &gt;= -3.2886)</code></pre>
 </div>
 <div id="obtaining-model-predictions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#obtaining-model-predictions" class="anchor"></a>Obtaining model predictions</h3>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># training sample prediction for HAL vs HAL9000</span>
 <span class="va">mse</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">preds</span>, <span class="va">y</span><span class="op">)</span> <span class="op">{</span>
     <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">preds</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
@@ -508,13 +217,315 @@
 <span class="va">preds_hal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="va">mse_hal</span> <span class="op">&lt;-</span> <span class="fu">mse</span><span class="op">(</span>preds <span class="op">=</span> <span class="va">preds_hal</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">mse_hal</span></code></pre></div>
-<pre><code>## [1] 0.02493478</code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<pre><code>## [1] 0.1940649</code></pre>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">oob_hal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">test_x</span><span class="op">)</span>
 <span class="va">oob_hal_mse</span> <span class="op">&lt;-</span> <span class="fu">mse</span><span class="op">(</span>preds <span class="op">=</span> <span class="va">oob_hal</span>, y <span class="op">=</span> <span class="va">test_y</span><span class="op">)</span>
 <span class="va">oob_hal_mse</span></code></pre></div>
-<pre><code>## [1] 1.543119</code></pre>
-<hr>
+<pre><code>## [1] 1.540186</code></pre>
+</div>
+<div id="specifying-smoothness-of-fit-and-improving-runtime-with-the-num_knots" class="section level3">
+<h3 class="hasAnchor">
+<a href="#specifying-smoothness-of-fit-and-improving-runtime-with-the-num_knots" class="anchor"></a>Specifying smoothness of fit and improving runtime with the <code>num_knots</code>
+</h3>
+<p>One might wish to enforce smoothness on the functional form of the HAL fit. This can be done using the “smoothness_orders” argument. Setting <code>smoothness_orders = 0</code> gives a piece-wise constant fit, allowing for discontinuous jumps in the function. This is useful if one does not want to assume any smoothness of the “true” function (not even continuity). Setting <code>smoothness_orders = 1</code> gives a piece-wise linear fit which is continuous and mostly differentiable. In general <code>smoothness_orders = k</code> corresponds to a piece-wise polynomial fit of degree k. Mathematically, <code>smoothness_orders = k</code> corresponds with finding the best fit under the constraint that the total variation of the function’s k-th deriviative is bounded by some constant (chosen by CV).</p>
+<p>Let us see this in action. We will use the num_knots argument to increase the coarseness of the approximation so that the difference between smooth and unsmooth fits is more clear (see next section). Specifically, we set <code>num_knots = 7</code>. The argument num_knots allows one to specify the number of knot points used to generate the basis functions (for each interaction degree). This effectivelly reduces the total number of basis functions generated and can significantly decrease runtime by reducing the size of the optimization problem. One can pass in a vector of length max_degree specifying the number of knot points to use by interaction degree for each basis function. Thus, one can specify that two or three way interaction basis functions should be more coarse, which helps prevent the combinatorical explosion of basis functions that occurs when basis functions are generated for all possible knot points.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
+<span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">500</span> <span class="co"># Try changing this value to see what happens.</span>
+<span class="va">n_covars</span> <span class="op">&lt;-</span> <span class="fl">1</span>
+<span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">500</span>
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="va">n_covars</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
+<span class="va">ytrue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+
+<span class="va">hal_fit_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
+                     smoothness_orders <span class="op">=</span> <span class="fl">0</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span>,
+                     lambda.min.ratio <span class="op">=</span> <span class="fl">1e-4</span><span class="op">)</span>
+
+<span class="va">hal_fit_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
+                            smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
+                            num_knots <span class="op">=</span> <span class="va">num_knots</span>,
+                            lambda.min.ratio <span class="op">=</span> <span class="fl">1e-4</span><span class="op">)</span>
+
+<span class="va">hal_fit_smooth_2_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
+                                smoothness_orders <span class="op">=</span> <span class="fl">2</span>,
+                                num_knots <span class="op">=</span> <span class="va">num_knots</span>,
+                                adaptive_smoothing <span class="op">=</span> <span class="cn">FALSE</span>,
+                                cv_select <span class="op">=</span> <span class="cn">FALSE</span>,
+                                lambda.min.ratio <span class="op">=</span> <span class="fl">1e-3</span><span class="op">)</span>
+
+<span class="va">hal_fit_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
+                           smoothness_orders <span class="op">=</span> <span class="fl">2</span>,
+                           num_knots <span class="op">=</span> <span class="va">num_knots</span>,
+                           adaptive_smoothing <span class="op">=</span> <span class="cn">FALSE</span>,
+                           cv_select <span class="op">=</span> <span class="cn">TRUE</span>,
+                           lambda.min.ratio <span class="op">=</span> <span class="fl">1e-4</span><span class="op">)</span>
+
+<span class="va">pred_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_0</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
+<span class="va">pred_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_1</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
+<span class="va">pred_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_2</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
+
+<span class="va">pred_smooth_2_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_2_all</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">dt</span>, <span class="va">pred_smooth_2_all</span><span class="op">)</span>
+<span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt</a></span><span class="op">(</span><span class="va">dt</span>, id <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">value</span>, group <span class="op">=</span> <span class="va">variable</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<p>Comparing the mean-squared-error between the predictions and the true (denoised) outcome, we see that the first and second order smoothness HAL is able to recover from the coarseness of the basis functions caused by the small <code>num_knots</code> argument. We see that the second order smoothness HAL is able to fit the true function very well (as expected since sin(x) is a very smooth function). The main benefit of imposing higher order smoothness is that fewer knot points are required for a near optimal fit. Thus one can pass a smaller value to the <code>num_knots</code> argument for a big decrease in runtime.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 0.003995069</code></pre>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 0.0006370113</code></pre>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 0.000896322</code></pre>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
+                 ytrue <span class="op">=</span> <span class="va">ytrue</span>,
+                 y <span class="op">=</span> <span class="va">y</span>,
+                 pred0 <span class="op">=</span> <span class="va">pred_0</span>,
+                 pred1 <span class="op">=</span> <span class="va">pred_smooth_1</span>,
+                 pred2 <span class="op">=</span> <span class="va">pred_smooth_2</span><span class="op">)</span>
+<span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt</a></span><span class="op">(</span><span class="va">dt</span>, id <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">value</span>, color <span class="op">=</span> <span class="va">variable</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_0</span>, main <span class="op">=</span> <span class="st">"Zero order smoothness fit"</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-2.png" width="700"></p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_1</span>, main <span class="op">=</span> <span class="st">"First order smoothness fit"</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-3.png" width="700"></p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_2</span>, main <span class="op">=</span> <span class="st">"Second order smoothness fit"</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-4.png" width="700"></p>
+<p>In general, if we do not make the basis functions coarse, the performance for different smoothness orders is similar. Notice how the runtime is a fair bit slower when we generate more knot points. In general, we recommend either zero or first order smoothness. Second order smoothness tends to be less robust and suffers from extrapolation on new data. One can also use cross-validation to data-adaptively choose the optimal smoothness. Interestingly, comparing the following simulation and the previous one, we see that the second order smoothness HAL performed better when there were fewer knot points.</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
+<span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">300</span>
+<span class="va">n_covars</span> <span class="op">&lt;-</span> <span class="fl">1</span>
+<span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">500</span>
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="va">n_covars</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
+<span class="va">ytrue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+
+<span class="va">hal_fit_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
+                           smoothness_orders <span class="op">=</span> <span class="fl">0</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span><span class="op">)</span>
+<span class="va">hal_fit_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
+                           smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span><span class="op">)</span>
+
+<span class="va">hal_fit_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
+                           smoothness_orders <span class="op">=</span> <span class="fl">2</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span><span class="op">)</span>
+
+<span class="va">pred_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_0</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
+<span class="va">pred_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_1</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
+<span class="va">pred_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_2</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 0.003287863</code></pre>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 0.0006975263</code></pre>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 0.0009657804</code></pre>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_0</span>, main <span class="op">=</span> <span class="st">"Zero order smoothness fit"</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_1</span>, main <span class="op">=</span> <span class="st">"First order smoothness fit"</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-2.png" width="700"></p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_2</span>, main <span class="op">=</span> <span class="st">"Second order smoothness fit"</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-3.png" width="700"></p>
+<p>Note for higher dimensional models, one can specify the smoothness in each variable by passing in a vector of smoothness orders of length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>. See documentation for more details.</p>
+</div>
+<div id="formula-interface" class="section level3">
+<h3 class="hasAnchor">
+<a href="#formula-interface" class="anchor"></a>Formula interface</h3>
+<p>One might wish to specify the functional form of the HAL fit further. This can be done using the formula interface. Specifically, the formula interface allows one to specify monotonicity constraints on components of the HAL fit, as well as specify exactly which basis functions (e.g., interactions) one wishes to model. First, we need to generate a formula object containing the necessary specification information. Later, we will see how to use this formula object to fit HAL. Note any arguments that one wishes to pass to <code>fit_hal</code> should be passed instead to the <code>formula_hal</code> function.</p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
+<span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">100</span>
+
+<span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">500</span>
+<span class="va">x1</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="va">x2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
+<span class="va">ytrue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>
+<span class="co"># The formula interface requires us to input a data.frame with all variables</span>
+<span class="co"># including outcome.</span>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="va">x1</span>, x2 <span class="op">=</span> <span class="va">x2</span>, A <span class="op">=</span> <span class="va">A</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span></code></pre></div>
+<p>We can specify an additive model in a number of ways. We can print the formula object obtained by calling <code>formula_hal</code> to see some helpful information about our HAL specification.</p>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1) + h(x2) + h(A)"</span>, <span class="va">data</span>,
+                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>## Functional specification for hal9001 fit:
+##  Call: y ~ h(x1) + h(x2) + h(A)
+##  Formula: y ~ h(x1) + h(x2) + h(A)
+##  Expanded Formula: y ~ h(x1) + h(x2) + h(A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 300
+##  Number of monotone-increasing basis functions: 0
+##  Number of monotone-decreasing basis functions: 0</code></pre>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">" "</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] " "</code></pre>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ ."</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>## Functional specification for hal9001 fit:
+##  Call: y ~ .
+##  Formula: y ~ .
+##  Expanded Formula: y ~ h(x1) + h(x2) + h(A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 300
+##  Number of monotone-increasing basis functions: 0
+##  Number of monotone-decreasing basis functions: 0</code></pre>
+<p>We can specify higher order interactions as follows.</p>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ h(x1) + h(x2) + h(A) + h(x1, x2) + h(x2, A) + h(x1, A) + h(x1, x2, A)"</span>,
+  <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x2,A) + h(x1,A) + h(x1,x2,A)"</code></pre>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ .^2"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A)"</code></pre>
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ .^3"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A) + h(x1,x2,A)"</code></pre>
+<p>Sometimes, you may want to build an additive model but include all two way interactions with one variable “A” (e.g., treatment). This can be done in a variety of ways as follows.</p>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Write it all out</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1) + h(x2) + h(A) + h(A, x1) + h(A,x2)"</span>, <span class="va">data</span>,
+                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the "." which stands for add all additive terms and then manually add</span>
+<span class="co"># interactions</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ . + h(A,x1) + h(A,x2)"</span>, <span class="va">data</span>,
+                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Use the "wildcard" feature for when "." is included in the "h()" term. This</span>
+<span class="co"># useful when you have many variables and do not want to write out every term.</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ . + h(A,.)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span><span class="fl">1</span>,
+                       num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
+<p>Here are some other shortcuts inspired by the glm formula interace.</p>
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># The "*" operation generates lower order interactions as well.</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1)*h(x2)"</span>, <span class="va">data</span>,
+                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1) + h(x2) + h(x1,x2)"</span>, <span class="va">data</span>,
+                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># The ":" operator generates an interaction term.</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1) + h(x2) + h(x1):h(x2)"</span>, <span class="va">data</span>,
+                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
+<p>Another interesting feature allows one to define custom wildcard symbols analagous to “.” that specifies groups, using the <code>custom_group</code> argument. The custom group argument should be a named list (with one character names) whose elements are character vectors of variable names. This allows one to generate interactions between user supplied groups.</p>
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">custom_group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"a"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x1"</span>, <span class="st">"x2"</span><span class="op">)</span>, <span class="st">"b"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
+                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2)"</code></pre>
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a, b)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
+                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1,A) + h(x2,A)"</code></pre>
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a) + h(a, b)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
+                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1) + h(x2) + h(x1,A) + h(x2,A)"</code></pre>
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a, b, x1)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
+                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1,x2,A)"</code></pre>
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a, b, a)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
+                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] "y ~ h(x1,x2,A)"</code></pre>
+<p>So far we have ignored a key feature of the formula interface that is not available in the generic <code>fit_hal</code> function: monotonicity constraints. This is done by replacing the “h” with either “i” (for monotonely increasing) or “d” (for monotonely decreasing). It’s simple.</p>
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># An additive monotone increasing model</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ i(.)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
+                       num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>## Functional specification for hal9001 fit:
+##  Call: y ~ i(.)
+##  Formula: y ~ i(.)
+##  Expanded Formula: y ~ i(x1) + i(x2) + i(A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 300
+##  Number of monotone-increasing basis functions: 300
+##  Number of monotone-decreasing basis functions: 0</code></pre>
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">" "</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] " "</code></pre>
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># A bi-additive monotone decreasing model</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ d(.) + d(.,.)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
+                       num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>## Functional specification for hal9001 fit:
+##  Call: y ~ d(.) + d(.,.)
+##  Formula: y ~ d(.) + d(.,.)
+##  Expanded Formula: y ~ d(x1) + d(x2) + d(A) + d(x1,x2) + d(x1,A) + d(x2,A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 1779
+##  Number of monotone-increasing basis functions: 0
+##  Number of monotone-decreasing basis functions: 1779</code></pre>
+<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">" "</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] " "</code></pre>
+<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># mix it up</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ d(x1) + i(x2) + h(A) + h(.,.)"</span>, <span class="va">data</span>,
+                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>## Functional specification for hal9001 fit:
+##  Call: y ~ d(x1) + i(x2) + h(A) + h(.,.)
+##  Formula: y ~ d(x1) + i(x2) + h(A) + h(.,.)
+##  Expanded Formula: y ~ d(x1) + i(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 1779
+##  Number of monotone-increasing basis functions: 100
+##  Number of monotone-decreasing basis functions: 100</code></pre>
+<p>Now, let’s fit some custom HALs. This is easy using the S3-class-based <code>fit_hal</code> function:</p>
+<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># get formula object</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ ."</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal_formula</a></span><span class="op">(</span><span class="va">formula</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">fit</span>, new_data <span class="op">=</span> <span class="va">formula</span><span class="op">$</span><span class="va">X</span><span class="op">)</span>, <span class="va">formula</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></code></pre></div>
+<p><img src="intro_hal9001_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">

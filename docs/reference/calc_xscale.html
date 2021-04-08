@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cross-validated Lasso on Indicator Bases — cv_lasso • hal9001</title>
+<title>Calculating Centered and Scaled Matrices — calc_xscale • hal9001</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Cross-validated Lasso on Indicator Bases — cv_lasso" />
-<meta property="og:description" content="Fits Lasso regression using a customized procedure, with cross-validation
-based on origami" />
+<meta property="og:title" content="Calculating Centered and Scaled Matrices — calc_xscale" />
+<meta property="og:description" content="Calculating Centered and Scaled Matrices" />
 
 
 
@@ -122,46 +121,27 @@ based on origami" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Cross-validated Lasso on Indicator Bases</h1>
-    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/cv_lasso.R'><code>R/cv_lasso.R</code></a></small>
-    <div class="hidden name"><code>cv_lasso.Rd</code></div>
+    <h1>Calculating Centered and Scaled Matrices</h1>
+    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
+    <div class="hidden name"><code>calc_xscale.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Fits Lasso regression using a customized procedure, with cross-validation
-based on <span class="pkg">origami</span></p>
+    <p>Calculating Centered and Scaled Matrices</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cv_lasso</span><span class='op'>(</span><span class='va'>x_basis</span>, <span class='va'>y</span>, n_lambda <span class='op'>=</span> <span class='fl'>100</span>, n_folds <span class='op'>=</span> <span class='fl'>10</span>, center <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>calc_xscale</span><span class='op'>(</span><span class='va'>X</span>, <span class='va'>xcenter</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x_basis</th>
-      <td><p>A <code>dgCMatrix</code> object corresponding to a sparse matrix of
-the basis functions generated for the HAL algorithm.</p></td>
+      <th>X</th>
+      <td><p>A sparse matrix, to be centered.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>A <code>numeric</code> vector of the observed outcome variable values.</p></td>
-    </tr>
-    <tr>
-      <th>n_lambda</th>
-      <td><p>A <code>numeric</code> scalar indicating the number of values of
-the L1 regularization parameter (lambda) to be obtained from fitting the
-Lasso to the full data. Cross-validation is used to select an optimal
-lambda (that minimizes the risk) from among these.</p></td>
-    </tr>
-    <tr>
-      <th>n_folds</th>
-      <td><p>A <code>numeric</code> scalar for the number of folds to be used in
-the cross-validation procedure to select an optimal value of lambda.</p></td>
-    </tr>
-    <tr>
-      <th>center</th>
-      <td><p>binary. If <code>TRUE</code>, covariates are centered. This is much
-slower, but matches the <code>glmnet</code> implementation. Default <code>FALSE</code>.</p></td>
+      <th>xcenter</th>
+      <td><p>A vector of column means to be used for centering X.</p></td>
     </tr>
     </table>
 

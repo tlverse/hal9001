@@ -81,7 +81,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -124,14 +124,44 @@
       <small>Source: <a href='https://github.com/tlverse/hal9001/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="hal9001-03" class="section level1">
+<h1 class="page-header" data-toc-text="0.3">
+<a href="#hal9001-03" class="anchor"></a>hal9001 0.3<small> Unreleased </small>
+</h1>
+<p>As of February 2021:</p>
+<ul>
+<li>Support Higher Order HAL. <code>smoothness_order</code> is a vector of length 1 or length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>.
+<ul>
+<li>If <code>smoothness_orders</code> is of length 1 then its values are recycled to form a vector of length length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>.</li>
+</ul>
+</li>
+<li>Given such a vector of length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>, the ith element specifies the level of smoothness for the variable corresponding with the ith column in <code>X</code>.</li>
+<li>Degree-dependant Binning. Higher Order terms are binned more coarsely. <code>num_knots</code> argument is a vector up to max_degree controlling the degree-specific binning</li>
+<li>Default <code>fit_hal</code> is now a first order smoothed HAL with binning.</li>
+<li>Adds <code>formula_hal</code> which allows a formula specification of a HAL model</li>
+</ul>
+</div>
+    <div id="hal9001-028" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.8">
+<a href="#hal9001-028" class="anchor"></a>hal9001 0.2.8<small> Unreleased </small>
+</h1>
+<p>As of November 2020:</p>
+<ul>
+<li>Allow support for Poisson family to <code>glmnet()</code>.</li>
+<li>Begins consideration of supporting arbitrary <code><a href="https://rdrr.io/r/stats/family.html">stats::family()</a></code> objects to be passed through to calls to <code>glmnet()</code>.</li>
+<li>Simplifies output of <code><a href="../reference/formula_hal.html">fit_hal()</a></code> by unifying the redundant <code>hal_lasso</code> and <code>glmnet_lasso</code> slots into the new <code>lasso_fit</code> slot.</li>
+<li>Cleans up of methods throughout and improves documentation, reducing a few redundancies for cleaner/simpler code in <code>summary.hal9001</code>.</li>
+<li>Adds link to DOI of the published <em>Journal of Open Source Software</em> paper in <code>DESCRIPTION</code>.</li>
+</ul>
+</div>
     <div id="hal9001-027" class="section level1">
 <h1 class="page-header" data-toc-text="0.2.7">
-<a href="#hal9001-027" class="anchor"></a>hal9001 0.2.7<small> Unreleased </small>
+<a href="#hal9001-027" class="anchor"></a>hal9001 0.2.7<small> 2021-01-22 </small>
 </h1>
 <p>As of September 2020:</p>
 <ul>
-<li>adds a <code>summary</code> method for interpreting HAL regressions (<a href="https://github.com/tlverse/hal9001/pull/64" class="uri">https://github.com/tlverse/hal9001/pull/64</a>)</li>
-<li>adds a software paper for publication in the <em>Journal of Open Source Software</em> (<a href="https://github.com/tlverse/hal9001/pull/71" class="uri">https://github.com/tlverse/hal9001/pull/71</a>)</li>
+<li>Adds a <code>summary</code> method for interpreting HAL regressions (<a href="https://github.com/tlverse/hal9001/pull/64" class="uri">https://github.com/tlverse/hal9001/pull/64</a>)</li>
+<li>Adds a software paper for publication in the <em>Journal of Open Source Software</em> (<a href="https://github.com/tlverse/hal9001/pull/71" class="uri">https://github.com/tlverse/hal9001/pull/71</a>)</li>
 </ul>
 </div>
     <div id="hal9001-026" class="section level1">

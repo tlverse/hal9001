@@ -83,7 +83,7 @@ basis functions in argument blist" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@ basis functions in argument blist" />
 basis functions in argument blist</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_design_matrix</span><span class='op'>(</span><span class='va'>X</span>, <span class='va'>blist</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>make_design_matrix</span><span class='op'>(</span><span class='va'>X</span>, <span class='va'>blist</span>, p_reserve <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,12 +145,17 @@ basis functions in argument blist</p>
       <th>blist</th>
       <td><p>List of basis functions with which to build HAL design matrix.</p></td>
     </tr>
+    <tr>
+      <th>p_reserve</th>
+      <td><p>Sparse matrix pre-allocation proportion. Default value is 0.5.
+If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A <code>dgCMatrix</code> sparse matrix of indicator basis functions
- corresponding to the design matrix in a zero-order highly adaptive lasso.</p>
+corresponding to the design matrix in a zero-order highly adaptive lasso.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
