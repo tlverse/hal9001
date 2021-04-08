@@ -137,21 +137,21 @@
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
 
 <span class="co"># fit the HAL regression</span>
-<span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
-<span class="co">#&gt; Argument `standardize` to `glmnet` detected, overriding to `FALSE`.</span>
+<span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, yolo <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">#&gt; enumerate_basis       0.009    0.000   0.011          0         0</span>
-<span class="co">#&gt; design_matrix         0.005    0.000   0.004          0         0</span>
+<span class="co">#&gt; enumerate_basis       0.009    0.000   0.008          0         0</span>
+<span class="co">#&gt; design_matrix         0.002    0.001   0.004          0         0</span>
 <span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">#&gt; remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">#&gt; lasso                 0.487    0.004   0.491          0         0</span>
-<span class="co">#&gt; total                 0.504    0.004   0.510          0         0</span>
+<span class="co">#&gt; lasso                 0.604    0.006   0.608          0         0</span>
+<span class="co">#&gt; total                 0.615    0.008   0.622          0         0</span>
 
 <span class="co"># training sample prediction</span>
 <span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">hal_mse</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">preds</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
-<span class="co">#&gt; [1] 0.03698071</span></code></pre></div>
+<span class="co">#&gt; [1] 0.03552136</span></code></pre></div>
 <hr>
 </div>
 <div id="contributions" class="section level2">
