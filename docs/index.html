@@ -20,7 +20,9 @@
   fitting routines invoke code from the glmnet package by default. The highly
   adaptive lasso was first formulated and described by MJ van der Laan (2017)
   &lt;doi:10.1515/ijb-2015-0097&gt;, with practical demonstrations of its performance
-  given by Benkeser and van der Laan (2016) &lt;doi:10.1109/DSAA.2016.93&gt;.">
+  given by Benkeser and van der Laan (2016) &lt;doi:10.1109/DSAA.2016.93&gt;. This
+  implmentation of the highly adaptive lasso algorithm was described by Hejazi,
+  Coyle, and van der Laan (2020) &lt;10.21105/joss.02526&gt;.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -45,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -124,7 +126,8 @@
 <code class="sourceCode R"><span class="co"># load the package and set a seed</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tlverse/hal9001">hal9001</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: Rcpp</span>
-<span class="co">#&gt; hal9001 v0.2.8: The Scalable Highly Adaptive Lasso</span>
+<span class="co">#&gt; hal9001 v0.3.0: The Scalable Highly Adaptive Lasso</span>
+<span class="co">#&gt; note: fit_hal defaults have changed. See ?fit_hal for details</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">385971</span><span class="op">)</span>
 
 <span class="co"># simulate data</span>
@@ -134,21 +137,21 @@
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
 
 <span class="co"># fit the HAL regression</span>
-<span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
-<span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
+<span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
+<span class="co">#&gt; Argument `standardize` to `glmnet` detected, overriding to `FALSE`.</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">#&gt; enumerate_basis       0.003    0.000   0.003          0         0</span>
-<span class="co">#&gt; design_matrix         0.003    0.000   0.002          0         0</span>
+<span class="co">#&gt; enumerate_basis       0.009    0.000   0.011          0         0</span>
+<span class="co">#&gt; design_matrix         0.005    0.000   0.004          0         0</span>
 <span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
-<span class="co">#&gt; remove_duplicates     0.010    0.000   0.011          0         0</span>
-<span class="co">#&gt; lasso                 0.289    0.012   0.304          0         0</span>
-<span class="co">#&gt; total                 0.306    0.012   0.321          0         0</span>
+<span class="co">#&gt; remove_duplicates     0.000    0.000   0.000          0         0</span>
+<span class="co">#&gt; lasso                 0.487    0.004   0.491          0         0</span>
+<span class="co">#&gt; total                 0.504    0.004   0.510          0         0</span>
 
 <span class="co"># training sample prediction</span>
 <span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">hal_mse</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">preds</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
-<span class="co">#&gt; [1] 0.006991539</span></code></pre></div>
+<span class="co">#&gt; [1] 0.03698071</span></code></pre></div>
 <hr>
 </div>
 <div id="contributions" class="section level2">
@@ -264,7 +267,7 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.org/tlverse/hal9001"><img src="https://travis-ci.org/tlverse/hal9001.svg?branch=master" alt="Travis-CI Build Status"></a></li>
+<li><a href="https://travis-ci.com/tlverse/hal9001"><img src="https://travis-ci.com/tlverse/hal9001.svg?branch=master" alt="Travis-CI Build Status"></a></li>
 <li><a href="https://ci.appveyor.com/project/tlverse/hal9001"><img src="https://ci.appveyor.com/api/projects/status/github/tlverse/hal9001?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
 <li><a href="https://codecov.io/github/tlverse/hal9001?branch=master"><img src="https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg" alt="Coverage Status"></a></li>
 <li><a href="https://www.r-pkg.org/pkg/hal9001"><img src="https://www.r-pkg.org/badges/version/hal9001" alt="CRAN"></a></li>

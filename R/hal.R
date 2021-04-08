@@ -360,12 +360,12 @@ fit_hal <- function(X,
         "Argument `standardize` to `glmnet` detected, overriding to `FALSE`."
       )
     }
-    all_args$standardize <- FALSE
 
     # just use the standard implementation available in glmnet
     all_args <- dot_args
     all_args$x <- x_basis
     all_args$y <- Y
+    all_args$standardize <- FALSE
     all_args$family <- family
     all_args$lambda <- lambda
     all_args$penalty.factor <- penalty_factor

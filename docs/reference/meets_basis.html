@@ -41,7 +41,7 @@
 
 <meta property="og:title" content="Compute Values of Basis Functions — meets_basis" />
 <meta property="og:description" content="Computes and returns the indicator value for the basis described by
-cols and cutoffs for a given row of X (X[row_num, ])" />
+cols and cutoffs for a given row of X" />
 
 
 
@@ -83,7 +83,7 @@ cols and cutoffs for a given row of X (X[row_num, ])" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -129,10 +129,10 @@ cols and cutoffs for a given row of X (X[row_num, ])" />
 
     <div class="ref-description">
     <p>Computes and returns the indicator value for the basis described by
-cols and cutoffs for a given row of X (X[row_num, ])</p>
+cols and cutoffs for a given row of X</p>
     </div>
 
-    <pre class="usage"><span class='fu'>meets_basis</span><span class='op'>(</span><span class='va'>X</span>, <span class='va'>row_num</span>, <span class='va'>cols</span>, <span class='va'>cutoffs</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>meets_basis</span><span class='op'>(</span><span class='va'>X</span>, <span class='va'>row_num</span>, <span class='va'>cols</span>, <span class='va'>cutoffs</span>, <span class='va'>orders</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -152,6 +152,10 @@ cols and cutoffs for a given row of X (X[row_num, ])</p>
     <tr>
       <th>cutoffs</th>
       <td><p>Numeric providing thresholds.</p></td>
+    </tr>
+    <tr>
+      <th>orders</th>
+      <td><p>Numeric providing smoothness orders</p></td>
     </tr>
     </table>
 

@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -130,7 +130,13 @@
     <p>Build a list of basis functions from a set of columns</p>
     </div>
 
-    <pre class="usage"><span class='fu'>basis_list_cols</span><span class='op'>(</span><span class='va'>cols</span>, <span class='va'>x</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>basis_list_cols</span><span class='op'>(</span>
+  <span class='va'>cols</span>,
+  <span class='va'>x</span>,
+  <span class='va'>smoothness_orders</span>,
+  <span class='va'>include_zero_order</span>,
+  include_lower_order <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,12 +153,37 @@ computed automatically.</p></td>
       <td><p>A <code>matrix</code> containing observations in the rows and covariates
 in the columns. Basis functions are computed for these covariates.</p></td>
     </tr>
+    <tr>
+      <th>smoothness_orders</th>
+      <td><p>An integer vector of length <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(x)</a></code>
+specifying the desired smoothness of the function in each covariate. k = 0
+is no smoothness (indicator basis), k = 1 is first order smoothness, and so
+on. For an additive model, the component function for each covariate will
+have the degree of smoothness as specified by smoothness_orders. For
+non-additive components (tensor products of univariate basis functions),
+the univariate basis functions in each tensor product have smoothness
+degree as specified by smoothness_orders.</p></td>
+    </tr>
+    <tr>
+      <th>include_zero_order</th>
+      <td><p>A <code>logical</code>, indicating whether the zeroth
+order basis functions are included for each covariate (if <code>TRUE</code>), in
+addition to the smooth basis functions given by <code>smoothness_orders</code>.
+This allows the algorithm to data-adaptively choose the appropriate degree
+of smoothness.</p></td>
+    </tr>
+    <tr>
+      <th>include_lower_order</th>
+      <td><p>A <code>logical</code>, like <code>include_zero_order</code>,
+except including all basis functions of lower smoothness degrees than
+specified via <code>smoothness_orders</code>.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A <code>list</code> containing the basis functions generated from a set of
- input columns.</p>
+input columns.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -83,7 +83,7 @@ basis function is a list" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@ basis function is a list" />
 basis function is a list</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_basis_list</span><span class='op'>(</span><span class='va'>X_sub</span>, <span class='va'>cols</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>make_basis_list</span><span class='op'>(</span><span class='va'>X_sub</span>, <span class='va'>cols</span>, <span class='va'>order_map</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,6 +144,10 @@ basis function is a list</p>
     <tr>
       <th>cols</th>
       <td><p>An index of the columns that were reduced to by sub-setting.</p></td>
+    </tr>
+    <tr>
+      <th>order_map</th>
+      <td><p>A vector with length the original unsubsetted matrix X which specifies the smoothness of the function in each covariate.</p></td>
     </tr>
     </table>
 

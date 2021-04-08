@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 __Authors:__ [Jeremy Coyle](https://github.com/tlverse), [Nima
 Hejazi](https://nimahejazi.org), and [Mark van der
 Laan](https://vanderlaan-lab.org/)
- 
+
 ---
 
 ## What's `hal9001`?

@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -145,8 +145,8 @@ fitting the Highly Adaptive LASSO, as produced by a call to <code>fit_hal</code>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Object of class <code>hal9001</code>, similar to the input object but
- reduced such that coefficients belonging to bases with coefficients equal
- to zero removed.</p>
+reduced such that coefficients belonging to bases with coefficients equal
+to zero removed.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
@@ -157,10 +157,9 @@ fitting the Highly Adaptive LASSO, as produced by a call to <code>fit_hal</code>
 <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
 
 <span class='co'># fit HAL model and squash resulting object to reduce footprint</span>
-<span class='va'>hal_fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fit_hal.html'>fit_hal</a></span><span class='op'>(</span>X <span class='op'>=</span> <span class='va'>x</span>, Y <span class='op'>=</span> <span class='va'>y</span>, yolo <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>squashed</span> <span class='op'>&lt;-</span> <span class='fu'>squash_hal_fit</span><span class='op'>(</span><span class='va'>hal_fit</span><span class='op'>)</span>
+<span class='va'>hal_fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='formula_hal.html'>fit_hal</a></span><span class='op'>(</span>X <span class='op'>=</span> <span class='va'>x</span>, Y <span class='op'>=</span> <span class='va'>y</span>, yolo <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Argument `standardize` to `glmnet` detected, overriding to `FALSE`.</span></div><div class='input'><span class='va'>squashed</span> <span class='op'>&lt;-</span> <span class='fu'>squash_hal_fit</span><span class='op'>(</span><span class='va'>hal_fit</span><span class='op'>)</span>
 <span class='co'># }</span>
-
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
