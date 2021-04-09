@@ -8,7 +8,7 @@
 #'  should be included. h(x,w) specifies that all interaction (two-way) basis
 #'  functions between x and w should be included in the model. Similarly,
 #'  h(x,w,z) specifies that all interaction (three-way) basis functions between
-#'  x,w,z should be included in the model. Note that "y ~ h(x,y,z)" will only
+#'  x,w,z should be included in the model. Note that formulas of the form "y ~ h(x,y,z)" will only
 #'  construct three-way basis functions for x, y, z and not the two-way and
 #'  one-way basis functions. Additionally, a formula of the form `"y ~ ."` will
 #'  generate all one-way main term basis functions for variables in
@@ -35,7 +35,7 @@
 #'  regardless of their location in the formula. As a result, `"y ~ . + i(x)"`
 #'  will be interpreted as `"y ~ i(x) + h(w) + h(z)"`, contrary to the previous
 #'  case. Familiar operations such as the `:`, `*` , `-` are also supported:
-#'  - `:` is a concatnation operator which maps `h(x):h(w)` into `h(x,w)` or
+#'  - `:` is a concatenation operator which maps `h(x):h(w)` into `h(x,w)` or
 #'    `h(x):h(w):h(z)` into `h(x,w,z)`.
 #'  - `*` concatenates and then generates all lower order terms/interactions.
 #'    For example, `h(x)*h(w)` into `h(x) + h(w) + h(x,w)` or `h(x)*h(w)*h(z)`
@@ -52,7 +52,7 @@
 #'  wildcard `.` operator, which when used in a specified term will generate
 #'  all valid terms where the value of `.` is iterated over the non-outcome
 #'  columns in the data matrix. For example, `h(x,.)` is `h(x,w) + h(x,z)` and
-#'  `h(.,.)` is `h(x,w) + h(x,z) + h(w,z)`, and `h(x,w,.` is `h(x,w,z)`,
+#'  `h(.,.)` is `h(x,w) + h(x,z) + h(w,z)`, and `h(x,w,.)` is `h(x,w,z)`,
 #'  assuming the covariates are only (x, w, z). All operations are compatible
 #'  with one another, e.g., `h(.)*h(x)`, `h(.):h(x)`  and `h(x) - h(.)` are
 #'  valid and behave as expected.
@@ -106,7 +106,7 @@
 #'  - Recommended settings for very fast runtime and good performance:
 #'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(50, 25, 10).
 #'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(25, 10, 5).
-#' @param exclusive_dot A \code{logical} indicator for whether the ``. and
+#' @param exclusive_dot A \code{logical} indicator for whether the `.` and
 #'  `.^max_degree` arguments in the formula should be treated as exclusive or
 #'  inclusive with respect to the variables already specified in the formula.
 #'  For example, in `y ~ h(x,w) + .`, should the `.` operator be interpreted as
@@ -141,8 +141,8 @@
 #'  data-adaptively select the basis functions to use. WARNING: This can
 #'  increase runtime by a factor of 2-3+ depending on value of
 #'  \code{smoothness_orders}.
-#' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
-#'  consult its documentation for a full list of options.
+#' @param ... Other arguments passed to \code{fit_hal} and \code{\link[glmnet]{cv.glmnet}}. Please
+#'  consult its documentation for a full list of options. 
 #'
 #' @details The function allows users to specify the functional form/model of
 #'  hal9001 similar to in \code{\link[stats]{glm}}. The user can specify which
