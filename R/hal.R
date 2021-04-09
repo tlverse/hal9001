@@ -132,6 +132,7 @@
 #' @param p_reserve Sparse matrix pre-allocation proportion. The default value
 #'  is 0.5. If a dense HAL design matrix is expected, it would be useful to set
 #'  \code{p_reserve} to a higher value.
+#' @param lambda.min.ratio Passed to \code{\link[glmnet]{cv.glmnet}}. See \code{\link[glmnet]{glmnet}} for documentation.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
@@ -186,6 +187,7 @@ fit_hal <- function(X,
                     adaptive_smoothing = FALSE,
                     prediction_bounds = "default",
                     p_reserve = 0.5,
+                    lambda.min.ratio = 1e-4,
                     ...,
                     yolo = FALSE) {
   # if X argument is a formula object, use formula-based convenience function
@@ -365,6 +367,7 @@ fit_hal <- function(X,
     all_args$penalty.factor <- penalty_factor
     all_args$nfolds <- n_folds
     all_args$foldid <- foldid
+    all_args$lambda.min.ratio <- lambda.min.ratio
 
     if (!cv_select) {
       hal_lasso <- do.call(glmnet::glmnet, all_args)
