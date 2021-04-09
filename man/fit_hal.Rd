@@ -287,11 +287,11 @@ value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
 \item{prediction_bounds}{A vector of size two that provides the lower and
 upper bounds for predictions. By default, the predictions are bounded
 between \code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures
-that there is no extrapolation and that predictions remain bounded, which is
+that there is no extrapolation and that predictions remain bounded, which
 is necessary for cross-validation selection and/or Super Learning.}
 
-\item{p_reserve}{Sparse matrix pre-allocation proportion. Default value is
-0.5.  If a dense HAL design matrix is expected, it would be useful to set
+\item{p_reserve}{Sparse matrix pre-allocation proportion. The default value
+is 0.5. If a dense HAL design matrix is expected, it would be useful to set
 \code{p_reserve} to a higher value.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
@@ -321,14 +321,11 @@ a custom implementation (based on \pkg{origami}) or by a call to
 \code{\link[glmnet]{cv.glmnet}}.
 }
 \examples{
-\donttest{
 n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
 y <- rbinom(n = n, size = 1, prob = y_prob)
-ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
-preds <- predict(ml_hal_fit, new_data = x)
-}
-
+hal_fit <- fit_hal(X = x, Y = y, family = "binomial")
+preds <- predict(hal_fit, new_data = x)
 }
