@@ -51,7 +51,7 @@
 #'  Default: For zero order smoothness (any(\code{smoothness_orders}==0)), the
 #'  number of knots by interaction degree d decays as \eqn{500/2^{d-1}}. For
 #'  first or higher-order smoothness (all(\code{smoothness_orders}>0)), the
-#'  number of knots by interaction degree d decays as \eqn{75/2^{d-1}}. These
+#'  number of knots by interaction degree d decays as \eqn{200/2^{d-1}}. These
 #'  defaults ensure that the number of basis functions and thus the complexity
 #'  of the optimization problem grows scalably in \code{max_degree}.
 #'  - Some good settings for little to no cost in performance:
@@ -166,12 +166,13 @@ fit_hal <- function(X,
                     X_unpenalized = NULL,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
                     smoothness_orders = rep(1, ncol(X)),
-                    num_knots = sapply(seq_len(max_degree),
-                      num_knots_generator,
-                      smoothness_orders = smoothness_orders,
-                      base_num_knots_0 = 500,
-                      base_num_knots_1 = 200
-                    ),
+                    num_knots = 
+                      num_knots_generator(
+                        max_degree = max_degree,
+                        smoothness_orders = smoothness_orders,
+                        base_num_knots_0 = 500,
+                        base_num_knots_1 = 200
+                      ),
                     fit_type = c("glmnet", "lassi"),
                     n_folds = 10,
                     foldid = NULL,
@@ -479,12 +480,12 @@ fit_hal <- function(X,
 #'  the basis function.
 #'
 #' @keywords internal
-num_knots_generator <- function(d, smoothness_orders, base_num_knots_0 = 500,
+num_knots_generator <- function(max_degree, smoothness_orders, base_num_knots_0 = 500,
                                 base_num_knots_1 = 200) {
   if (all(smoothness_orders > 0)) {
-    return(round(base_num_knots_1 / 2^(d - 1)))
+    return(sapply(seq_len(max_degree), function(d){round(base_num_knots_1 / 2^(d - 1))}))
   }
   else {
-    return(round(base_num_knots_0 / 2^(d - 1)))
+    return(sapply(seq_len(max_degree), function(d){round(base_num_knots_0 / 2^(d - 1))}))
   }
 }
