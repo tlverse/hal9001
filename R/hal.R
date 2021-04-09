@@ -150,13 +150,8 @@ fit_hal <- function(X,
 
   # Generate fold_ids that respect id
   if (is.null(foldid)) {
-    if (is.null(id)) {
-      foldid <- sample(seq_len(n_folds), length(Y), replace = TRUE)
-    } else {
-      unique_ids <- unique(id)
-      id_foldid <- sample(seq_len(n_folds), length(unique_ids), replace = TRUE)
-      foldid <- id_foldid[match(id, unique_ids)]
-    }
+    folds <- origami::make_folds(n=length(Y),V=n_folds, cluster_ids=id)
+    foldid <- origami::folds2foldvec(folds)
   }
 
   # bookkeeping: get start time of enumerate basis procedure
