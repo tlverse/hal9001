@@ -123,12 +123,10 @@ system.time({
   hal_fit_full <- fit_hal(
     X = x, Y = y,
     return_lasso = TRUE,
-    screen_basis = FALSE,
-    screen_lambda = FALSE,
-    yolo = FALSE,
     max_degree = 3,
     num_knots = length(y),
-    smoothness_orders = 0
+    smoothness_orders = 0,
+    yolo = FALSE
   )
 })
 hff_preds <- predict(hal_fit_full, new_data = x)
@@ -142,14 +140,11 @@ hal_fit_reduced <- fit_hal(
   X = x, Y = y,
   return_lasso = TRUE,
   reduce_basis = 1 / sqrt(n),
-  screen_basis = FALSE,
-  screen_lambda = FALSE,
-  yolo = FALSE,
   max_degree = 3,
   num_knots = length(y),
-  smoothness_orders = 0
+  smoothness_orders = 0,
+  yolo = FALSE
 )
-
 hal_fit_reduced$times
 hal_pred_reduced <- predict(hal_fit_reduced, new_data = x)
 mse_hal_reduced <- mean((y - hal_pred_reduced)^2)

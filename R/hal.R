@@ -141,6 +141,7 @@
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
 #' @importFrom assertthat assert_that
+#' @importFrom origami make_folds folds2foldvec
 #'
 #' @return Object of class \code{hal9001}, containing a list of basis
 #'  functions, a copy map, coefficients estimated for basis functions, and
@@ -224,13 +225,8 @@ fit_hal <- function(X,
 
   # Generate fold_ids that respect id
   if (is.null(foldid)) {
-    if (is.null(id)) {
-      foldid <- sample(seq_len(n_folds), length(Y), replace = TRUE)
-    } else {
-      unique_ids <- unique(id)
-      id_foldid <- sample(seq_len(n_folds), length(unique_ids), replace = TRUE)
-      foldid <- id_foldid[match(id, unique_ids)]
-    }
+    folds <- origami::make_folds(n = length(Y), V = n_folds, cluster_ids = id)
+    foldid <- origami::folds2foldvec(folds)
   }
 
   # bookkeeping: get start time of enumerate basis procedure
