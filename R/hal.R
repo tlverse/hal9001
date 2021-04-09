@@ -32,16 +32,17 @@
 #'  values are recycled as needed.
 #' @param num_knots An \code{integer} vector of length 1 or length
 #'  \code{max_degree}. If \code{num_knots} is a vector of length 1 then its
-#'  values are recycled to produce a vector of length \code{max_degree}. Given
+#'  values are recycled to produce a vector of length \code{max_degree}. 
+#'  Put simply, num_knots[k] specifies the coarseness of the k-way basis functions. Specifically, given
 #'  a possibly recycled vector of length \code{max_degree}, \code{num_knots[i]}
-#'  specifies the maximum number of knot points used when generating basis
+#'  specifies the maximum number of knot points used in each variable when generating basis
 #'  functions of degree i for each covariate. For example, \code{num_knots[1]}
 #'  specifies how many knot points to use when generating main-term additive
-#'  basis functions. \code{num_knots[2]} specifies how many knot points should
-#'  be used when generating each univariate basis function in the 2-tensor
-#'  product basis functions. A smaller number of knot points gives rise to a
+#'  basis functions. \code{num_knots[2]} specifies the maximum number of knot points to use 
+#'  for each variable when generating generating the two-way (tensor-product) basis functions. 
+#'  A smaller number of knot points gives rise to a
 #'  less smooth function. However, fewer knot points can significantly decrease
-#'  runtime. If smoothness_orders is 1 or higher then few knot points (10-30)
+#'  runtime. If smoothness_orders is 1 or higher then few knot points (10-50)
 #'  are needed to maintain near-optimal performance. When considering setting
 #'  \code{smoothness_orders = 0}, too few knot points (<50) can significantly
 #'  reduce performance; thus, we recommend specifying a vector of length
