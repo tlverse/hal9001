@@ -459,12 +459,12 @@ value) using <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>g
 upper bounds for predictions. By default, the predictions are bounded
 between <code>min(Y) - sd(Y)</code> and <code>max(Y) + sd(Y)</code>. Bounding ensures
 that there is no extrapolation and that predictions remain bounded, which
-is is necessary for cross-validation selection and/or Super Learning.</p></td>
+is necessary for cross-validation selection and/or Super Learning.</p></td>
     </tr>
     <tr>
       <th>p_reserve</th>
-      <td><p>Sparse matrix pre-allocation proportion. Default value is
-0.5.  If a dense HAL design matrix is expected, it would be useful to set
+      <td><p>Sparse matrix pre-allocation proportion. The default value
+is 0.5. If a dense HAL design matrix is expected, it would be useful to set
 <code>p_reserve</code> to a higher value.</p></td>
     </tr>
     <tr>

@@ -128,9 +128,9 @@
 #'  upper bounds for predictions. By default, the predictions are bounded
 #'  between \code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures
 #'  that there is no extrapolation and that predictions remain bounded, which
-#'  is is necessary for cross-validation selection and/or Super Learning.
-#' @param p_reserve Sparse matrix pre-allocation proportion. Default value is
-#'  0.5.  If a dense HAL design matrix is expected, it would be useful to set
+#'  is necessary for cross-validation selection and/or Super Learning.
+#' @param p_reserve Sparse matrix pre-allocation proportion. The default value
+#'  is 0.5. If a dense HAL design matrix is expected, it would be useful to set
 #'  \code{p_reserve} to a higher value.
 #' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
 #'  consult its documentation for a full list of options.
