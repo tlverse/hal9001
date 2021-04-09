@@ -54,10 +54,9 @@ predict.hal9001 <- function(object,
   pred_x_basis <- make_design_matrix(new_data, object$basis_list,
     p_reserve = p_reserve
   )
-  # group <- object$copy_map[[1]]
 
   # reduce matrix of basis functions
-  # pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
+  #pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
 
   # add unpenalized covariates
   new_unpenalized_covariates <- ifelse(
@@ -96,8 +95,6 @@ predict.hal9001 <- function(object,
   } else {
     # Note: there is no intercept in the Cox model (built into the baseline
     #       hazard and would cancel in the partial likelihood).
-    # message(paste("The Cox Model is not commonly used for prediction,",
-    # "proceed with caution."))
     if (ncol(object$coefs) > 1) {
       preds <- apply(object$coefs, 2, function(hal_coefs) {
         as.vector(Matrix::tcrossprod(
@@ -113,12 +110,17 @@ predict.hal9001 <- function(object,
     }
   }
 
+  # incorporate offset into predictions
   if (!is.null(offset)) {
     preds <- preds + offset
   }
+
+  # return predictions if link function scale is acceptable
   if (type == "link") {
+    # output predictions on the link function scale
     return(preds)
   }
+
   # apply inverse family (link function) transformations
   if (inherits(object$family, "family")) {
     inverse_link_fun <- object$family$linkinv
@@ -129,12 +131,19 @@ predict.hal9001 <- function(object,
     preds <- exp(preds)
   }
 
+  # bound predictions within observed outcome bounds if on response scale
   bounds <- object$prediction_bounds
   if (!is.null(bounds)) {
     bounds <- sort(bounds)
-    preds <- pmax(bounds[1], preds)
-    preds <- pmin(preds, bounds[2])
+    if (is.matrix(preds)) {
+      preds <- apply(preds, 2, pmax, bounds[1])
+      preds <- apply(preds, 2, pmin, bounds[2])
+    } else {
+      preds <- pmax(bounds[1], preds)
+      preds <- pmin(preds, bounds[2])
+    }
   }
-  # output
+
+  # output predictions on the response scale
   return(preds)
 }
