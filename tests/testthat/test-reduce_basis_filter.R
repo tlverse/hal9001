@@ -121,8 +121,6 @@ system.time({
   hal_fit_full <- fit_hal(
     X = x, Y = y, fit_type = "lassi",
     return_lasso = TRUE,
-    screen_basis = FALSE,
-    screen_lambda = FALSE,
     yolo = FALSE
   )
 })
@@ -137,11 +135,8 @@ hal_fit_reduced <- fit_hal(
   X = x, Y = y, fit_type = "lassi",
   return_lasso = TRUE,
   reduce_basis = 1 / sqrt(n),
-  screen_basis = FALSE,
-  screen_lambda = FALSE,
   yolo = FALSE
 )
-
 hal_fit_reduced$times
 hal_pred_reduced <- predict(hal_fit_reduced, new_data = x)
 mse_hal_reduced <- mean((y - hal_pred_reduced)^2)
@@ -154,7 +149,7 @@ test_that("Basis reduction passes fewer beta estimates to the lasso model", {
 })
 
 test_that("Predictions are not too different when reducing basis functions", {
-  expect_lt(mean((hal_pred_full - hal_pred_reduced)^2), 0.01)
+  expect_lt(mean((hal_pred_full - hal_pred_reduced)^2), 0.02)
 })
 
 # ensure hal fit with reduce_basis works with new data for prediction
