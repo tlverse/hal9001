@@ -82,7 +82,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>
 </h4>
             
-            <h4 class="date">2021-04-08</h4>
+            <h4 class="date">2021-04-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -159,12 +159,12 @@
 <code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span><span class="op">)</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.018    0.000   0.018          0         0
-## design_matrix         0.127    0.000   0.127          0         0
+## enumerate_basis       0.026    0.000   0.026          0         0
+## design_matrix         0.138    0.008   0.146          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
 ## remove_duplicates     0.000    0.000   0.000          0         0
-## lasso                 1.187    0.032   1.219          0         0
-## total                 1.335    0.032   1.367          0         0</code></pre>
+## lasso                 2.185    0.031   2.221          0         0
+## total                 2.351    0.039   2.395          0         0</code></pre>
 <p>While the raw output object may be examined, it has (usually large) slots that make quick examination challenging. Instead, we recommend the <code>summary</code> method, which provides an interpretable table of basis functions with non-zero coefficients.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
@@ -188,11 +188,11 @@
 <span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
 ## enumerate_basis       0.021    0.000   0.021          0         0
-## design_matrix         0.138    0.000   0.138          0         0
+## design_matrix         0.146    0.000   0.145          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
 ## remove_duplicates     0.000    0.000   0.000          0         0
-## lasso                 2.219    0.012   2.232          0         0
-## total                 2.379    0.012   2.392          0         0</code></pre>
+## lasso                 1.737    0.012   1.748          0         0
+## total                 1.905    0.012   1.916          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 4.472136% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
@@ -275,13 +275,13 @@
 <p>Comparing the mean-squared-error between the predictions and the true (denoised) outcome, we see that the first and second order smoothness HAL is able to recover from the coarseness of the basis functions caused by the small <code>num_knots</code> argument. We see that the second order smoothness HAL is able to fit the true function very well (as expected since sin(x) is a very smooth function). The main benefit of imposing higher order smoothness is that fewer knot points are required for a near optimal fit. Thus one can pass a smaller value to the <code>num_knots</code> argument for a big decrease in runtime.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.003995069</code></pre>
+<pre><code>## [1] 0.003327325</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.0006370113</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.000896322</code></pre>
+<pre><code>## [1] 0.0008864687</code></pre>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
                  ytrue <span class="op">=</span> <span class="va">ytrue</span>,
@@ -324,13 +324,13 @@
 <span class="va">pred_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_2</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.003287863</code></pre>
+<pre><code>## [1] 0.003323484</code></pre>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.0006975263</code></pre>
+<pre><code>## [1] 0.0006508832</code></pre>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.0009657804</code></pre>
+<pre><code>## [1] 0.0008376741</code></pre>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_0</span>, main <span class="op">=</span> <span class="st">"Zero order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>

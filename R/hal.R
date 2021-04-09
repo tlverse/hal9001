@@ -127,8 +127,8 @@
 #' @param prediction_bounds A vector of size two that provides the lower and
 #'  upper bounds for predictions. By default, the predictions are bounded
 #'  between \code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures
-#'  that there is no extrapolation and that predictions remain bounded, which is
-#'  is necessary for cross-validation selection and/or Super Learning.
+#'  that there is no extrapolation and that predictions remain bounded, which
+#'  is is necessary for cross-validation selection and/or Super Learning.
 #' @param p_reserve Sparse matrix pre-allocation proportion. Default value is
 #'  0.5.  If a dense HAL design matrix is expected, it would be useful to set
 #'  \code{p_reserve} to a higher value.
@@ -149,18 +149,16 @@
 #'
 #' @rdname fit_hal
 #'
+#' @export
+#'
 #' @examples
-#' \donttest{
 #' n <- 100
 #' p <- 3
 #' x <- xmat <- matrix(rnorm(n * p), n, p)
 #' y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
 #' y <- rbinom(n = n, size = 1, prob = y_prob)
-#' ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
-#' preds <- predict(ml_hal_fit, new_data = x)
-#' }
-#'
-#' @export
+#' hal_fit <- fit_hal(X = x, Y = y, family = "binomial")
+#' preds <- predict(hal_fit, new_data = x)
 fit_hal <- function(X,
                     Y,
                     X_unpenalized = NULL,
