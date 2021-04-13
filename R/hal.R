@@ -338,13 +338,8 @@ fit_hal <- function(X,
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
 
-  # generate a vector of col lists corresponding to the bases generated
-  col_lists <- unique(lapply(basis_list, `[[`, "cols"))
-  col_names <- colnames(X)
-  if (!is.null(colnames(X))) {
-    col_lists <- lapply(col_lists, function(col_list) col_names[col_list])
-  }
-  col_lists <- sapply(col_lists, paste, collapse = ",")
+  # generate a vector of colnames
+  X_colnames <- colnames(X)
 
   # the HAL basis are subject to L1 penalty
   penalty_factor <- rep(1, ncol(x_basis))
@@ -446,7 +441,7 @@ fit_hal <- function(X,
         NULL
       },
     basis_list = basis_list,
-    col_lists = col_lists,
+    X_colnames = X_colnames,
     copy_map = copy_map,
     coefs = as.matrix(coefs),
     times = times,
