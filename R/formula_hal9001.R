@@ -734,26 +734,3 @@ print.formula_hal9001 <- function(x, ...) {
 
   return(invisible(NULL))
 }
-
-###############################################################################
-
-#' Formula method for HAL fitting procedure
-#'
-#' @rdname fit_hal
-#'
-#' @export
-fit_hal_formula <- function(formula, ...) {
-  other_args <- formula$other_args
-
-  do.call(function(...) {
-    fit_hal(
-      X = formula$X, Y = formula$Y,
-      lower.limits = formula$lower.limits,
-      upper.limits = formula$upper.limits,
-      smoothness_orders = formula$smoothness_orders,
-      num_knots = formula$num_knots,
-      basis_list = formula$basis_list,
-      yolo = FALSE, ...
-    )
-  }, other_args)
-}
