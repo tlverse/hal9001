@@ -17,6 +17,10 @@
 #'  observations as \code{new_data}. Optional.
 #' @param type Either "response" (default) for predictions of the response or
 #'  "link" for un-transformed predictions (on the scale of the link function).
+#' @param p_reserve Sparse matrix pre-allocation proportion, which is the
+#'  anticipated proportion of 1's in the design matrix. Default value is
+#'  recommended in most settings. If a dense design matrix is expected, it
+#'  would be useful to set \code{p_reserve} to a higher value.
 #'
 #' @importFrom Matrix tcrossprod
 #' @importFrom stats plogis
@@ -39,9 +43,9 @@ predict.hal9001 <- function(object,
                             ...,
                             new_data,
                             new_X_unpenalized = NULL,
-                            type = c("response", "link")) {
+                            type = c("response", "link"),
+                            p_reserve = 0.75) {
   type <- match.arg(type)
-  p_reserve <- object$p_reserve
   p_reserve <- pmax(pmin(p_reserve, 1), 0)
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
