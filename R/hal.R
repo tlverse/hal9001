@@ -4,7 +4,7 @@
 #'
 #' @details The procedure uses a custom C++ implementation to generate a design
 #'  matrix of spline basis functions of covariates and interactions of
-#'  covariates. The Lasso regression is fit to this design matrix via
+#'  covariates. The lasso regression is fit to this design matrix via
 #'  \code{\link[glmnet]{cv.glmnet}} or a custom implementation derived from
 #'  \pkg{origami}. The maximum dimension of the design matrix is \eqn{n} -by-
 #'  \eqn{(n * 2^(d-1))}, where where \eqn{n} is the number of observations and
@@ -57,24 +57,45 @@
 #'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(25, 10, 5)}.
 #'
+#'  \code{adaptive_smoothing} is easiest to explain with an example. Consider
+#'  \code{smoothness_orders = 2} and \code{adaptive_smoothing = TRUE}. First,
+#'  basis functions of \code{smoothness_orders} 0, 1 and 2 are generated and
+#'  lasso models are fit to the three corresponding design matrices via
+#'  \code{\link[glmnet]{cv.glmnet}}. For each of the three lasso fits, which
+#'  correspond to the three \code{smoothness_orders}, the optimal lambda value
+#'  is selected. Let's refer to the optimal lambda value from each lasso model
+#'  as "lambda_star". Lastly, final selection of \code{smoothness_orders} is
+#'  based on the smoothness whose lambda_star yielded the smallest
+#'  cross-validated risk according to the \code{\link[glmnet]{cv.glmnet}} fit.
+#'  The coefficients, design matrix, etc. from this optimal order of smoothness
+#'  are returned. Note that adaptive smoothing can increase run time by a factor
+#'  of 2-3 depending on the value of \code{smoothness_orders} and the number of
+#'  \code{smoothness_orders} considered. Wen \code{smoothness_orders} is of
+#'  length greater than 1, \code{adaptive_smoothing} is automatically set to
+#'  \code{TRUE} and performed over the vector of supplied
+#'  \code{smoothness_orders}. For example, to only consider
+#'  \code{adaptive_smoothing} over \code{smoothness_orders} of 1 and 2, but not
+#'  0, one would need to specify \code{smoothness_orders = c(1,2)}.
 #'
 #' @param X An input \code{matrix} with dimensions number of observations -by-
 #'  number of covariates that will be used to derive the design matrix of basis
 #'  functions.
+#' @param Y A \code{numeric} vector of observations of the outcome variable.
+#' @param formula A character string formula to be used in
+#'  \code{\link{formula_hal}}. See its documentation for details.
 #' @param X_unpenalized An input \code{matrix} with the same number of rows as
 #'  \code{X}, for which no L1 penalization will be performed. Note that
 #'  \code{X_unpenalized} is directly appended to the design matrix; no basis
-#'  expansion is performed on  \code{X_unpenalized}.
-#' @param Y A \code{numeric} vector of observations of the outcome variable.
+#'  expansion is performed on \code{X_unpenalized}.
 #' @param max_degree The highest order of interaction terms for which basis
-#'  functions ought to be generated. The default is recommended.
+#'  functions ought to be generated.
 #' @param smoothness_orders An \code{integer} vector of length 1 or greater,
 #'  specifying the smoothness of the basis functions. If
 #'  \code{smoothness_orders} is a vector of length greater than 1, then all
 #'  \code{smoothness_orders} in the vector will be considered in the
 #'  \code{adaptive_smoothing} procedure. See details for
-#'  \code{smoothness_orders}, and the \code{adaptive_smoothing} argument (in
-#'  \code{basis_control}) for more information.
+#'  \code{smoothness_orders}, and the \code{adaptive_smoothing} argument for
+#'  more information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
 #'  specifying the maximum number of knot points (i.e., bins) for each covariate
 #'  for generating basis functions. If \code{num_knots} is a vector of length 1,
@@ -87,48 +108,35 @@
 #'  scalably. See details for \code{num_knots} more information.
 #' @param reduce_basis A \code{numeric} value bounded in the open unit interval
 #'  indicating the minimum proportion of 1's in a basis function column needed
-#'  for the basis function to be included in the procedure to fit the Lasso.
+#'  for the basis function to be included in the procedure to fit the lasso.
 #'  Any basis functions with a lower proportion of 1's than the cutoff will be
-#'  removed. This argument defaults to \code{NULL}, in which case all basis
+#'  removed. When \code{reduce_basis} is set to \code{NULL}, all basis
 #'  functions are used in the lasso-fitting stage of \code{fit_hal}.
+#' @param adaptive_smoothing A \code{logical} indicating whether to perform
+#'  adaptive smoothing up to the maximum order of \code{smoothness_orders}. See
+#'  details on \code{adaptive_smoothing} for more information.
 #' @param family A \code{character} or a \code{\link[stats]{family}} object
-#'  (supported by \code{\link[glmnet]{glmnet}}) corresponding to the error/link
+#'  (supported by \code{\link[glmnet]{glmnet}}) specifying the error/link
 #'  family for a generalized linear model. \code{character} options are limited
 #'  to "gaussian" for fitting a standard penalized linear model, "binomial" for
 #'  penalized logistic regression, "poisson" for penalized Poisson regression,
-#'  and "cox" for a penalized proportional hazards model. Note that in all
-#'  cases where family is not set to "gaussian", \code{fit_type} is limited to
-#'  "glmnet". Also, passing in family objects leads to slower performance
-#'  relative to passing in a character family (if supported). For example,
-#'  one should always set \code{family = "binomial"} and never set
-#'  \code{family = binomial()} when calling \code{fit_hal}.
+#'  and "cox" for a penalized proportional hazards model. Note that passing in
+#'  family objects leads to slower performance relative to passing in a
+#'  character family (if supported). For example, one should set
+#'  \code{family = "binomial"} instead of \code{family = binomial()} when
+#'  calling \code{fit_hal}.
 #' @param lambda User-specified sequence of values of the regularization
-#'  parameter for the Lasso L1 regression. If \code{NULL}, the default sequence
+#'  parameter for the lasso L1 regression. If \code{NULL}, the default sequence
 #'  in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated optimal
 #'  value of this regularization parameter will be selected with
-#'  \code{\link[glmnet]{cv.glmnet}}. If \code{fit_type = "glmnet"}, then the
-#'  Lasso model will be fit via \code{\link[glmnet]{glmnet}}, and regularized
-#'  coefficient values for each lambda in the input array will be returned.
-#' @param id a vector of ID values used to generate cross-validation folds for
-#'  cross-validated selection of the regularization parameter lambda.
+#'  \code{\link[glmnet]{cv.glmnet}}. If \code{fit_control}'s \code{cv_select}
+#'  argument is set to \code{FALSE}, then the lasso model will be fit via
+#'  \code{\link[glmnet]{glmnet}}, and regularized coefficient values for each
+#'  lambda in the input array will be returned.
+#' @param id a vector of ID values that is used to generate cross-validation
+#'  folds for \code{\link[glmnet]{cv.glmnet}}, and is ignored when
+#'  \code{fit_control}'s \code{cv_select} argument is \code{FALSE}.
 #' @param offset a vector of offset values, used in fitting.
-#' @param adaptive_smoothing A \code{logical} indicating whether to perform
-#'  adaptive smoothing up to the maximum order of \code{smoothness_orders}. For
-#'  example, consider \code{smoothness_orders = 2} and
-#'  \code{adaptive_smoothing = TRUE}. First, all basis functions of smoothness
-#'  order 0, 1 and 2 will be generated. Second, the optimal lambda from each
-#'  \code{smoothness_orders} will be selected via
-#'  \code{\link[glmnet]{cv.glmnet}}. Lastly, final selection of is based on the
-#'  smoothness whose lambda star yielded the smallest cross-validated risk.
-#'  Adaptive smoothing can increase run time by a factor of 2-3 depending on
-#'  value of \code{smoothness_orders}. Also, when \code{smoothness_orders} is
-#'  of length greater than 1, \code{adaptive_smoothing} is performed over the
-#'  vector of supplied \code{smoothness_orders}.
-#' @param yolo A \code{logical} indicating whether to print one of a curated
-#'  selection of quotes from the HAL9000 computer, from the critically
-#'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
-#' @param formula_control List of arguments for \code{\link{formula_hal}}. See
-#'  its documentation for details.
 #' @param fit_control List of arguments for fitting. Includes the following
 #'  arguments, and others to be passed to \code{\link[glmnet]{cv.glmnet}}
 #'  and \code{\link[glmnet]{glmnet}}.
@@ -150,15 +158,20 @@
 #'   When \code{TRUE}, \code{"lambda.min"} is used; otherwise,
 #'   \code{"lambda.1se"}. Only used when \code{cv_select = TRUE}.
 #' - \code{prediction_bounds}: A vector of size two that provides the lower and
-#'   upper bounds for predictions. By default, the predictions are bounded
-#'   between \code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures
-#'   that there is no extrapolation and that predictions remain bounded, which
-#'   is necessary for cross-validation selection and/or Super Learning.
+#'   upper bounds for predictions. When \code{prediction_bounds = "default"},
+#'   the predictions are bounded between \code{min(Y) - sd(Y)} and
+#'   \code{max(Y) + sd(Y)}. Bounding ensures that there is no extrapolation,
+#'   and it is necessary for cross-validation selection and/or Super Learning.
+#' @param formula_control List of arguments for \code{\link{formula_hal}}. See
+#'  its documentation for details.
 #' @param basis_list The full set of basis functions generated from \code{X}.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
 #'  the matrix of (possibly reduced) basis functions used in \code{fit_hal}.
+#' @param yolo A \code{logical} indicating whether to print one of a curated
+#'  selection of quotes from the HAL9000 computer, from the critically
+#'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
 #'
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
@@ -196,68 +209,83 @@ fit_hal <- function(X,
                       base_num_knots_1 = 200
                     ),
                     adaptive_smoothing = FALSE,
-                    reduce_basis = NULL,
+                    reduce_basis = 1 / sqrt(length(Y)),
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
                     id = NULL,
                     offset = NULL,
-                    formula_control = list(exclusive_dot = FALSE,
-                                           custom_group = NULL,
-                                           print_formula = TRUE),
-                    fit_control = list(cv_select = TRUE,
-                                       n_folds = 10,
-                                       foldid = NULL,
-                                       use_min = TRUE,
-                                       prediction_bounds = "default"),
+                    fit_control = list(
+                      cv_select = TRUE,
+                      n_folds = 10,
+                      foldid = NULL,
+                      use_min = TRUE,
+                      prediction_bounds = "default"
+                    ),
+                    formula_control = list(
+                      exclusive_dot = FALSE,
+                      custom_group = NULL
+                    ),
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     yolo = FALSE) {
 
+  ##### TODO: revisit temporary fixes to avoid test errors
+  # binomial() crashes in match.arg
+  if (length(family) == 4) {
+    family <- match.arg(family)
+  }
+
+  # errors when a supplied control list is missing arguments
+  defaults <- list(
+    cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
+    prediction_bounds = "default"
+  )
+  if (any(!names(defaults) %in% names(fit_control))) {
+    fit_control <- c(
+      defaults[which(!names(defaults) %in% names(fit_control))], fit_control
+    )
+  }
+  # errors when a supplied control list is missing arguments
+  defaults <- list(
+    exclusive_dot = FALSE, custom_group = NULL
+  )
+  if (any(!names(defaults) %in% names(formula_control))) {
+    formula_control <- c(
+      defaults[which(!names(defaults) %in% names(formula_control))], formula_control
+    )
+  }
 
 
-  if (!is.null(formula)){
-    assertthat::assert_that(
-      !is.null(data),
-      msg = "`data` must be provided with `formula`"
-    )
-    assertthat::assert_that(
-      all(!is.na(data)),
-      msg = "NA detected in `data`, missingness in `data` is not supported"
-    )
+  if (!is.matrix(X)) X <- as.matrix(X)
+
+  # check for missingness and ensure dimensionality matches
+  assertthat::assert_that(
+    all(!is.na(X)),
+    msg = "NA detected in `X`, missingness in `X` is not supported"
+  )
+  assertthat::assert_that(
+    all(!is.na(Y)),
+    msg = "NA detected in `Y`, missingness in `Y` is not supported"
+  )
+  assertthat::assert_that(
+    nrow(X) == length(Y),
+    msg = "Number of rows in `X` and length of `Y` must be equal"
+  )
+
+  if (!is.null(formula)) {
     formula <- formula_hal(
-      formula = formula, data = data, smoothness_orders = smoothness_orders,
+      formula = formula, X = X, smoothness_orders = smoothness_orders,
       num_knots = num_knots, adaptive_smoothing = adaptive_smoothing,
       exclusive_dot = formula_control$exclusive_dot,
-      custom_group = formula_control$custom_group,
-      print_formula = formula_control$print_formula
+      custom_group = formula_control$custom_group
     )
     basis_list <- formula$basis_list
     fit_control$upper.limits <- formula$upper.limits
     fit_control$lower.limits <- formula$lower.limits
-  } else {
-    if(!is.null(data) & (is.null(X) | is.null(Y))){
-      assertthat::assert_that(
-        !is.null(Y_name),
-        msg = "`Y_name` must be provided with `data` when `formula = NULL`"
-      )
-      X <- data[,-which(colnames(data) == Y_name)]
-      Y <- data[,which(colnames(data) == Y_name)]
-    }
-    # check for missingness and ensure dimensionality matches
-    assertthat::assert_that(
-      all(!is.na(X)), msg = "NA detected in `X`, missingness in `X` is not supported"
-    )
-    assertthat::assert_that(
-      all(!is.na(Y)), msg = "NA detected in `Y`, missingness in `Y` is not supported"
-    )
-    assertthat::assert_that(
-      nrow(X) == length(Y),
-      msg = "Number of rows in `X` and length of `Y` must be equal"
-    )
   }
 
-  if(!is.null(X_unpenalized)){
+  if (!is.null(X_unpenalized)) {
     assertthat::assert_that(
       all(!is.na(X_unpenalized)),
       msg = "NA detected in `X_unpenalized`, missingness in `X_unpenalized` is not supported"
@@ -268,15 +296,14 @@ fit_hal <- function(X,
     )
   }
 
-  # cast X to matrix -- and don't start the timer until after
-  if (!is.matrix(X)) X <- as.matrix(X)
-
   # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
   if (yolo) hal9000()
 
   # Generate fold_ids that respect id
-  if (is.null(foldid)) {
-    folds <- origami::make_folds(n = length(Y), V = n_folds, cluster_ids = id)
+  if (is.null(fit_control$foldid)) {
+    folds <- origami::make_folds(
+      n = length(Y), V = fit_control$n_folds, cluster_ids = id
+    )
     foldid <- origami::folds2foldvec(folds)
   }
 
@@ -338,8 +365,13 @@ fit_hal <- function(X,
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
 
-  # generate a vector of colnames
-  X_colnames <- colnames(X)
+  # generate a vector of col names
+  if (!is.null(colnames(X))) {
+    X_colnames <- colnames(X)
+  } else {
+    # TODO: add warning
+    X_colnames <- paste0("x", 1:ncol(X))
+  }
 
   # the HAL basis are subject to L1 penalty
   penalty_factor <- rep(1, ncol(x_basis))
@@ -373,7 +405,7 @@ fit_hal <- function(X,
   # bookkeeping: get start time of lasso
   time_start_lasso <- proc.time()
 
-  # fit Lasso regression
+  # fit lasso regression
   # If the standardize argument is passed to glmnet through "...", simply
   # note that it will be discarded and set to FALSE.
   if ("standardize" %in% names(fit_control)) {
@@ -389,15 +421,14 @@ fit_hal <- function(X,
   fit_control$family <- family
   fit_control$lambda <- lambda
   fit_control$penalty.factor <- penalty_factor
-  fit_control$foldid <- foldid
 
-  if (!cv_select) {
-    hal_lasso <- do.call(glmnet::glmnet, all_args)
+  if (!fit_control$cv_select) {
+    hal_lasso <- do.call(glmnet::glmnet, fit_control)
     lambda_star <- hal_lasso$lambda
     coefs <- stats::coef(hal_lasso)
   } else {
-    hal_lasso <- do.call(glmnet::cv.glmnet, all_args)
-    if (use_min) {
+    hal_lasso <- do.call(glmnet::cv.glmnet, fit_control)
+    if (fit_control$use_min) {
       lambda_type <- "lambda.min"
       lambda_star <- hal_lasso$lambda.min
     } else {
@@ -407,7 +438,7 @@ fit_hal <- function(X,
     coefs <- stats::coef(hal_lasso, lambda_type)
   }
 
-  # bookkeeping: get time for computation of the Lasso regression
+  # bookkeeping: get time for computation of the lasso regression
   time_lasso <- proc.time()
 
   # bookkeeping: get time for the whole procedure
@@ -424,12 +455,13 @@ fit_hal <- function(X,
   )
 
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
-  if (!inherits(Y, "Surv") & prediction_bounds == "default") {
+  if (!inherits(Y, "Surv") & fit_control$prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
-    prediction_bounds <- c(min(Y) - stats::sd(Y) / 2, max(Y) +
-      stats::sd(Y) / 2)
-  } else if (inherits(Y, "Surv") & prediction_bounds == "default") {
-    prediction_bounds <- NULL
+    fit_control$prediction_bounds <- c(
+      min(Y) - stats::sd(Y) / 2, max(Y) + stats::sd(Y) / 2
+    )
+  } else if (inherits(Y, "Surv") & fit_control$prediction_bounds == "default") {
+    fit_control$prediction_bounds <- NULL
   }
 
   # construct output object via lazy S3 list
@@ -455,7 +487,7 @@ fit_hal <- function(X,
         NULL
       },
     unpenalized_covariates = unpenalized_covariates,
-    prediction_bounds = prediction_bounds
+    prediction_bounds = fit_control$prediction_bounds
   )
   class(fit) <- "hal9001"
   return(fit)
