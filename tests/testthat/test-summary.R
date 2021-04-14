@@ -7,11 +7,13 @@ x <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 colnames(x) <- c("col1", "col2", "col3")
 
-hal_fit <- fit_hal(X = x, Y = y, use_min = FALSE)
+hal_fit <- fit_hal(X = x, Y = y, fit_control = list(use_min = FALSE))
 hal_fit_nolasso <- fit_hal(X = x, Y = y, yolo = FALSE, return_lasso = FALSE)
-hal_fit_nocv <- fit_hal(X = x, Y = y, yolo = FALSE, cv_select = FALSE)
+hal_fit_nocv <- fit_hal(
+  X = x, Y = y, yolo = FALSE, fit_control = list(cv_select = FALSE)
+)
 hal_fit_nocv_nolasso <- fit_hal(
-  X = x, Y = y, yolo = FALSE, cv_select = FALSE,
+  X = x, Y = y, yolo = FALSE, fit_control = list(cv_select = FALSE),
   return_lasso = FALSE, return_x_basis = TRUE
 )
 
@@ -74,3 +76,20 @@ test_that("Warnings work", {
     summary(hal_fit_nocv_nolasso)
   )
 })
+
+n <- 50
+p <- 3
+x <- matrix(rnorm(n * p), n, p)
+y <- sin(x[, 1]) + sin(x[, 2]) + 2 * sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
+colnames(x) <- c("cov1", "cov2", "cov3")
+hal_fit <- fit_hal(X = x, Y = y, smoothness_orders = 2, max_degree = 3, adaptive_smoothing = T)
+hal_fit <- fit_hal(X = x, Y = y, smoothness_orders = 2, max_degree = 1)
+
+# screening that can avoid blowing up design matrix
+# all pairs whose product of proportions is smaller than your cutoff -> out (assumes independence)
+
+# stratified random sampling that decreases sampling rate with increasing degree
+# randomly sample among the covariates after assigning probability (p1_k/sum(p1))
+# to each covariate k.
+# sample with probability the main-terms indicator
+# sample with probability two one-way indicators

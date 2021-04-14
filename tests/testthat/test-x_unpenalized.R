@@ -6,15 +6,13 @@ a <- rnorm(n)
 y <- 2 * x + 5 * a + rnorm(n)
 
 hal_fit <- fit_hal(
-  X = x,
+  X = as.matrix(x),
   Y = y,
   X_unpenalized = as.matrix(a),
-  use_min = TRUE,
+  fit_control = list(use_min = TRUE, cv_select = FALSE),
   yolo = FALSE,
-  fit_type = "glmnet",
   family = "gaussian",
   lambda = 2e-2,
-  cv_select = FALSE,
   return_lasso = TRUE
 )
 beta_hat <- hal_fit$coefs[, 1]
@@ -29,12 +27,10 @@ test_that("Training: input is not a matrix.", {
     X = x,
     Y = y,
     X_unpenalized = a,
-    use_min = TRUE,
+    fit_control = list(use_min = TRUE, cv_select = FALSE),
     yolo = FALSE,
-    fit_type = "glmnet",
     family = "gaussian",
     lambda = 2e-2,
-    cv_select = FALSE,
     return_lasso = TRUE
   ))
 })
@@ -43,12 +39,10 @@ test_that("Training: Number of rows do not match.", {
     X = x,
     Y = y,
     X_unpenalized = as.matrix(a[-1]),
-    use_min = TRUE,
     yolo = FALSE,
-    fit_type = "glmnet",
     family = "gaussian",
     lambda = 2e-2,
-    cv_select = FALSE,
+    fit_control = list(use_min = TRUE, cv_select = FALSE),
     return_lasso = TRUE
   ))
 })

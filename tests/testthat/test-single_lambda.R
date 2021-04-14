@@ -9,13 +9,10 @@ wts <- rep(1, n)
 hal_fit <- fit_hal(
   X = x,
   Y = y,
-  weights = wts,
-  use_min = TRUE,
+  fit_control = list(weights = wts, use_min = TRUE, cv_select = FALSE),
   yolo = FALSE,
-  fit_type = "glmnet",
   family = "binomial",
   lambda = 2e-2,
-  cv_select = FALSE,
   return_lasso = TRUE
 )
 
