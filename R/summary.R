@@ -156,37 +156,34 @@ summary.hal9001 <- function(object,
     }))
   }
 
-  # summarize with respect to x column names, not indices:
-  max_x_col_idx <- max(coefs_summ$col_idx)
+  # summarize with respect to x column names:
   x_names <- data.table::data.table(
-    col_idx = 1:max_x_col_idx,
-    col_names = object$col_lists[!grepl(",",object$col_lists)]
+    col_idx = 1:length(object$X_colnames),
+    col_names = object$X_colnames
   )
-  init_desc_summ <- merge(coefs_summ, x_names, by = "col_idx", all.x = TRUE)
+  summ <- merge(coefs_summ, x_names, by = "col_idx", all.x = TRUE)
 
   # combine name, cutoff into 0-order basis function (may include interaction)
-  init_desc_summ$zero_term <- paste0(
-    "I(", init_desc_summ$col_names, " >= ",
-    round(init_desc_summ$col_cutoff, round_cutoffs), ")"
+  summ$zero_term <- paste0(
+    "I(", summ$col_names, " >= ", round(summ$col_cutoff, round_cutoffs), ")"
   )
-  init_desc_summ$higher_term <- ifelse(
-    init_desc_summ$col_order == 0, "",
-    paste0("(", init_desc_summ$col_names, " - ",
-           round(init_desc_summ$col_cutoff, round_cutoffs), ")")
+  summ$higher_term <- ifelse(
+    summ$col_order == 0, "",
+    paste0("(", summ$col_names, " - ", round(summ$col_cutoff, round_cutoffs), ")")
   )
-  init_desc_summ$higher_term <- ifelse(
-    init_desc_summ$col_order < 1, init_desc_summ$higher_term,
-    paste0(init_desc_summ$higher_term, "^", init_desc_summ$col_order)
+  summ$higher_term <- ifelse(
+    summ$col_order < 1, summ$higher_term,
+    paste0(summ$higher_term, "^", summ$col_order)
   )
-  init_desc_summ$term <- ifelse(
-    init_desc_summ$col_order == 0,
-    paste0("[ ", init_desc_summ$zero_term, " ]"),
-    paste0("[ ", init_desc_summ$zero_term, "*",init_desc_summ$higher_term, " ]")
+  summ$term <- ifelse(
+    summ$col_order == 0,
+    paste0("[ ", summ$zero_term, " ]"),
+    paste0("[ ", summ$zero_term, "*", summ$higher_term, " ]")
   )
 
   term_tbl <- data.table::as.data.table(stats::aggregate(
     term ~ basis_list_idx,
-    data = init_desc_summ, paste, collapse = " * "
+    data = summ, paste, collapse = " * "
   ))
 
   # no longer need the columns or rows that were incorporated in the term
@@ -194,44 +191,44 @@ summary.hal9001 <- function(object,
     "term", "col_cutoff", "col_names", "col_idx", "col_order", "zero_term",
     "higher_term"
   )
-  init_desc_summ <- init_desc_summ[, -..redundant]
-  init_desc_summ_unique <- unique(init_desc_summ)
-  desc_summ <- merge(term_tbl, init_desc_summ_unique,
-    by = "basis_list_idx",
-    all.x = TRUE, all.y = FALSE
+  summ <- summ[, -..redundant]
+  summ_unique <- unique(summ)
+  summ <- merge(
+    term_tbl, summ_unique,
+    by = "basis_list_idx", all.x = TRUE, all.y = FALSE
   )
 
   # summarize in a list
-  coefs_list <- lapply(unique(desc_summ$coef_idx), function(this_coef_idx) {
-    coef_terms <- desc_summ[coef_idx == this_coef_idx]
+  coefs_list <- lapply(unique(summ$coef_idx), function(this_coef_idx) {
+    coef_terms <- summ[coef_idx == this_coef_idx]
     list(coef = unique(coef_terms$coef), term = t(coef_terms$term))
   })
 
   # summarize in a table
-  coefs_tbl <- data.table::as.data.table(stats::aggregate(term ~ coef_idx,
-    data = desc_summ,
-    FUN = paste, collapse = "  OR  "
+  coefs_tbl <- data.table::as.data.table(stats::aggregate(
+    term ~ coef_idx,
+    data = summ, FUN = paste, collapse = "  OR  "
   ))
   redundant <- c("term", "basis_list_idx")
-  desc_summ_unique_coefs <- unique(desc_summ[, -..redundant])
-  coefs_tbl <- data.table::data.table(merge(desc_summ_unique_coefs, coefs_tbl,
-    by = "coef_idx",
-    all = TRUE
+  summ_unique_coefs <- unique(summ[, -..redundant])
+  coefs_tbl <- data.table::data.table(merge(
+    summ_unique_coefs, coefs_tbl,
+    by = "coef_idx", all = TRUE
   ))
   coefs_tbl[, "abs_coef" := abs(coef)]
   coefs_tbl <- data.table::setorder(coefs_tbl[, -"coef_idx"], -abs_coef)
-  coefs_tbl <- coefs_tbl[,-"abs_coef",with=F]
+  coefs_tbl <- coefs_tbl[, -"abs_coef", with = FALSE]
 
   # incorporate intercept
   if (object$family != "cox") {
     intercept <- list(data.table::data.table(
-      coef = coefs[1],
-      term = "(Intercept)"
+      coef = coefs[1], term = "(Intercept)"
     ))
-    coefs_tbl <- data.table::rbindlist(c(intercept, list(coefs_tbl)),
+    coefs_tbl <- data.table::rbindlist(
+      c(intercept, list(coefs_tbl)),
       fill = TRUE
     )
-    intercept <- list(coef = coefs[1], term = "Intercept")
+    intercept <- list(coef = coefs[1], term = "(Intercept)")
     coefs_list <- c(list(intercept), coefs_list)
   }
   out <- list(
