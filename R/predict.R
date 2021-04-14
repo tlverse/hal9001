@@ -61,7 +61,7 @@ predict.hal9001 <- function(object,
   )
 
   # reduce matrix of basis functions
-  #pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
+  # pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
 
   # add unpenalized covariates
   new_unpenalized_covariates <- ifelse(
