@@ -29,9 +29,10 @@ utils::globalVariables(c("..redundant"))
 #'  "bmi" was numeric that was rounded to the third decimal, in the example
 #'  above we would have needed to specify \code{round_cutoffs = 0} in order to
 #'  yield a term like "I(bmi >= 18)" opposed to something like
-#'  "I(bmi >= 18.111)". This rounding is for simplifying the
-#'  interpretation, and returned coefficients are not rounded.
-#' @param ... Additional arguments passed to \code{summary} as necessary.
+#'  "I(bmi >= 18.111)". This rounding is intended to simplify the term-wise 
+#'  part of the output and only rounds the basis cutoffs, the \code{hal9001} 
+#'  model's coefficients are not rounded.
+#' @param ... Additional arguments passed to \code{summary}, not supported. 
 #'
 #' @importFrom stats aggregate
 #' @importFrom data.table data.table rbindlist setorder `:=`
