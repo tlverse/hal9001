@@ -137,7 +137,8 @@
   <span class='va'>...</span>,
   <span class='va'>new_data</span>,
   new_X_unpenalized <span class='op'>=</span> <span class='cn'>NULL</span>,
-  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"response"</span>, <span class='st'>"link"</span><span class='op'>)</span>
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"response"</span>, <span class='st'>"link"</span><span class='op'>)</span>,
+  p_reserve <span class='op'>=</span> <span class='fl'>0.75</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -146,11 +147,11 @@
     <tr>
       <th>object</th>
       <td><p>An object of class <code>hal9001</code>, containing the results of
-fitting the Highly Adaptive Lasso, as produced by <code><a href='formula_hal.html'>fit_hal</a></code>.</p></td>
+fitting the Highly Adaptive Lasso, as produced by <code><a href='fit_hal.html'>fit_hal</a></code>.</p></td>
     </tr>
     <tr>
       <th>offset</th>
-      <td><p>A vector of offsets. Must be provided if provided at training</p></td>
+      <td><p>A vector of offsets. Must be provided if provided at training.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -159,20 +160,27 @@ fitting the Highly Adaptive Lasso, as produced by <code><a href='formula_hal.htm
     <tr>
       <th>new_data</th>
       <td><p>A <code>matrix</code> or <code>data.frame</code> containing new data
-(observations NOT used in fitting the <code>hal9001</code> object passed in via
-the <code>object</code> argument above) for which the <code>hal9001</code> object will
-compute predicted values.</p></td>
+(i.e., observations not used for fitting the <code>hal9001</code> object that's
+passed in via the <code>object</code> argument above) for which the <code>hal9001</code>
+object will compute predicted values.</p></td>
     </tr>
     <tr>
       <th>new_X_unpenalized</th>
       <td><p>If the user supplied <code>X_unpenalized</code> during
-training, the user should also supply this matrix with the same number of
-observations as <code>new_data</code>. Optional.</p></td>
+training, then user should also supply this matrix with the same number of
+observations as <code>new_data</code>.</p></td>
     </tr>
     <tr>
       <th>type</th>
-      <td><p>Either "response" (default) for predictions of the response or
-"link" for un-transformed predictions (on the scale of the link function).</p></td>
+      <td><p>Either "response" for predictions of the response, or "link" for
+un-transformed predictions (on the scale of the link function).</p></td>
+    </tr>
+    <tr>
+      <th>p_reserve</th>
+      <td><p>Sparse matrix pre-allocation proportion, which is the
+anticipated proportion of 1's in the design matrix. Default value is
+recommended in most settings. If a dense design matrix is expected, it
+would be useful to set <code>p_reserve</code> to a higher value.</p></td>
     </tr>
     </table>
 
@@ -188,12 +196,13 @@ Highly Adaptive Lasso estimator, returned as a single S3 objects of class
 
     <p>This prediction method does not function similarly to the equivalent
 method from <span class="pkg">glmnet</span>. In particular, this procedure will NOT return a
-subset of lambdas originally specified in calling <code><a href='formula_hal.html'>fit_hal</a></code>
+subset of lambdas originally specified in calling <code><a href='fit_hal.html'>fit_hal</a></code>
 nor result in re-fitting. Instead, it will return predictions for all of
-the lambdas specified in the call to <code><a href='formula_hal.html'>fit_hal</a></code> that constructs
-<code>object</code>, when <code>cv_select = FALSE</code>. When <code>cv_select = TRUE</code>,
-predictions will only be returned for the value of lambda selected by
-cross-validation.</p>
+the lambdas specified in the call to <code><a href='fit_hal.html'>fit_hal</a></code> that constructs
+<code>object</code>, when <code>fit_control</code>'s <code>cv_select</code> is set to
+<code>FALSE</code>. When <code>fit_control</code>'s <code>cv_select</code> is set to
+<code>TRUE</code>, predictions will only be returned for the value of lambda
+selected by cross-validation.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -99,12 +99,12 @@ hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.009    0.000   0.008          0         0
-#> design_matrix         0.002    0.001   0.004          0         0
+#> enumerate_basis       0.005    0.000   0.006          0         0
+#> design_matrix         0.003    0.000   0.003          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 0.604    0.006   0.608          0         0
-#> total                 0.615    0.008   0.622          0         0
+#> lasso                 0.482    0.021   0.514          0         0
+#> total                 0.490    0.021   0.524          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -165,7 +165,7 @@ See file `LICENSE` for details.
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 
 <div id="ref-benkeser2016hal">
 
