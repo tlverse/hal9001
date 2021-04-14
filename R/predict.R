@@ -6,8 +6,6 @@
 #'
 #' @param object An object of class \code{hal9001}, containing the results of
 #'  fitting the Highly Adaptive Lasso, as produced by \code{\link{fit_hal}}.
-#' @param offset A vector of offsets. Must be provided if provided at training.
-#' @param ... Additional arguments passed to \code{predict} as necessary.
 #' @param new_data A \code{matrix} or \code{data.frame} containing new data
 #'  (i.e., observations not used for fitting the \code{hal9001} object that's
 #'  passed in via the \code{object} argument above) for which the \code{hal9001}
@@ -15,12 +13,14 @@
 #' @param new_X_unpenalized If the user supplied \code{X_unpenalized} during
 #'  training, then user should also supply this matrix with the same number of
 #'  observations as \code{new_data}.
+#' @param offset A vector of offsets. Must be provided if provided at training.
 #' @param type Either "response" for predictions of the response, or "link" for
 #' un-transformed predictions (on the scale of the link function).
 #' @param p_reserve Sparse matrix pre-allocation proportion, which is the
 #'  anticipated proportion of 1's in the design matrix. Default value is
 #'  recommended in most settings. If a dense design matrix is expected, it
 #'  would be useful to set \code{p_reserve} to a higher value.
+#' @param ... Additional arguments passed to \code{predict} as necessary.
 #'
 #' @importFrom Matrix tcrossprod
 #' @importFrom stats plogis
@@ -29,7 +29,7 @@
 #' @export
 #'
 #' @note This prediction method does not function similarly to the equivalent
-#'  method from \pkg{glmnet}. In particular, this procedure will NOT return a
+#'  method from \pkg{glmnet}. In particular, this procedure will not return a
 #'  subset of lambdas originally specified in calling \code{\link{fit_hal}}
 #'  nor result in re-fitting. Instead, it will return predictions for all of
 #'  the lambdas specified in the call to \code{\link{fit_hal}} that constructs
@@ -40,12 +40,12 @@
 #'
 #' @return A \code{numeric} vector of predictions from a \code{hal9001} object.
 predict.hal9001 <- function(object,
-                            offset = NULL,
-                            ...,
                             new_data,
                             new_X_unpenalized = NULL,
+                            offset = NULL,
                             type = c("response", "link"),
-                            p_reserve = 0.75) {
+                            p_reserve = 0.75,
+                            ...) {
   type <- match.arg(type)
   p_reserve <- pmax(pmin(p_reserve, 1), 0)
   # cast new data to matrix if not so already
