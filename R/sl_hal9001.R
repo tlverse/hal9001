@@ -2,31 +2,16 @@
 #'
 #' Wrapper for \pkg{SuperLearner} for objects of class \code{hal9001}
 #'
-#' @param Y A \code{numeric} of outcomes.
+#' @param Y A \code{numeric} vector of observations of the outcome variable.
 #' @param X A \code{matrix} of predictors/covariates.
 #' @param newX A matrix of new observations on which to obtain predictions. The
 #'  default of \code{NULL} computes predictions on training inputs \code{X}.
-#' @param max_degree The highest order of interaction terms for which the basis
-#'  functions ought to be generated. \code{NULL} corresponds to generating
-#'  basis functions for the full dimensionality of the input matrix.
-#' @param fit_type The specific routine to be called when fitting the Lasso
-#'  regression via cross-validation. Choosing \code{cv.glmnet} option results
-#'  in option results in a call to \code{\link[glmnet]{cv.glmnet}} while
-#'  \code{lassi} produces a (faster) call to a custom routine based on a custom
-#'  routine for fitting the Lasso.
-#' @param n_folds Integer for the number of folds to be used when splitting the
-#'  data for cross-validation. This defaults to 10 as this is the convention
-#'  for V-fold cross-validation.
-#' @param use_min Determines which lambda is selected from \code{cv.glmnet}.
-#'  \code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
-#'  to \code{"lambda.1se"}.
-#' @param family Not used by the function directly, but meant to ensure
-#'  compatibility with \code{SuperLearner}.
-#' @param obsWeights Not used by the function directly, but meant to ensure
-#'  compatibility with \code{SuperLearner}. These are passed to
-#'  \code{\link[glmnet]{cv.glmnet}} through the \code{...} argument of
-#'  \code{\link{fit_hal}}.
-#' @param ... Placeholder (ignored).
+#' @param family A \code{\link[stats]{family}} object (one that is supported 
+#'  by \code{\link[glmnet]{glmnet}}) specifying the error/link family for a 
+#'  generalized linear model.
+#' @param obsWeights A \code{numeric} vector of observational-level weights.
+#' @param ... Additional arguments passed to \code{fit_hal}. See its 
+#'  documentation for more details.
 #'
 #' @importFrom stats predict gaussian
 #'
@@ -37,53 +22,40 @@
 SL.hal9001 <- function(Y,
                        X,
                        newX = NULL,
-                       max_degree = 3,
-                       fit_type = c("glmnet", "lassi"),
-                       n_folds = 10,
-                       use_min = TRUE,
                        family = stats::gaussian(),
                        obsWeights = rep(1, length(Y)),
+                       id = NULL,
                        ...) {
+  
   # create matrix version of X and newX for use with hal9001::fit_hal
-  if (!is.matrix(X)) {
-    X_in <- as.matrix(X)
+  if (!is.matrix(X)) X <- as.matrix(X)
+  if (!is.null(newX) & !is.matrix(newX)) newX <- as.matrix(newX)
+  
+  # populate arguments
+  args <- list(...)
+  args$Y <- Y
+  args$X <- X
+  args$family <- family$family
+  args$id <- id
+  # add observational weights to fit_control
+  if("fit_control" %in% names(args)){
+    args$fit_control <- c(args$fit_control, list(weights = obsWeights))
   } else {
-    X_in <- X
+    args$fit_control <- list(weights = obsWeights)
   }
-  if (!is.null(newX) & !is.matrix(newX)) {
-    newX_in <- as.matrix(newX)
-  } else {
-    newX_in <- newX
-  }
-
-  if (family$family == "gaussian") {
-    # fit HAL
-    hal_out <- fit_hal(
-      Y = Y, X = X_in, max_degree = max_degree, fit_type = fit_type,
-      n_folds = n_folds, use_min = use_min, family = "gaussian",
-      weights = obsWeights, yolo = FALSE
-    )
-  }
-
-  if (family$family == "binomial") {
-    # fit HAL with logistic regression
-    hal_out <- fit_hal(
-      Y = Y, X = X_in, max_degree = max_degree, fit_type = fit_type,
-      n_folds = n_folds, use_min = use_min, family = "binomial",
-      weights = obsWeights, yolo = FALSE
-    )
-  }
+  
+  # fit hal 
+  hal_fit <- do.call(fit_hal, args)
 
   # compute predictions based on `newX` or input `X`
   if (!is.null(newX)) {
-    pred <- stats::predict(hal_out, new_data = newX_in)
+    pred <- stats::predict(hal_fit, new_data = newX)
   } else {
-    pred <- stats::predict(hal_out, new_data = X_in)
+    pred <- stats::predict(hal_fit, new_data = X)
   }
 
   # build output object
-  fit <- list(object = hal_out)
-  out <- list(pred = pred, fit = fit)
+  out <- list(pred = pred, fit = list(object = hal_fit))
   class(out$fit) <- "SL.hal9001"
   return(out)
 }
@@ -96,7 +68,8 @@ SL.hal9001 <- function(Y,
 #'
 #' @param object A fitted object of class \code{hal9001}.
 #' @param newdata A matrix of new observations on which to obtain predictions.
-#' @param ... Placeholder (ignored).
+#' @param ... Additional arguments passed to \code{fit_hal}. See its 
+#'  documentation for more details.
 #'
 #' @importFrom stats predict
 #'
@@ -106,13 +79,9 @@ SL.hal9001 <- function(Y,
 #'  object based on the provide \code{newdata}.
 predict.SL.hal9001 <- function(object, newdata, ...) {
   # coerce newdata to matrix if not already so
-  if (!is.matrix(newdata)) {
-    newdata_in <- as.matrix(newdata)
-  } else {
-    newdata_in <- newdata
-  }
+  if (!is.matrix(newdata)) newdata <- as.matrix(newdata)
 
   # generate predictions and return
-  pred <- stats::predict(object$object, new_data = newdata_in)
+  pred <- stats::predict(object$object, new_data = newdata)
   return(pred)
 }
