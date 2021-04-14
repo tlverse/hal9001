@@ -12,7 +12,7 @@ y <- rbinom(n = n_obs, size = 1, prob = y_prob)
 hal_fit_nocv <- fit_hal(
   X = x, Y = y,
   family = "binomial",
-  cv_select = FALSE
+  fit_control = list(cv_select = FALSE)
 )
 
 # training sample prediction
