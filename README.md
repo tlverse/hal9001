@@ -109,7 +109,7 @@ hal_fit$times
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
-#> [1] 0.03552136
+#> [1] 0.03528068
 ```
 
 -----

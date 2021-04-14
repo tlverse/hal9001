@@ -1,12 +1,17 @@
-# hal9001 0.3
+# hal9001 0.3.0
 
 As of February 2021:
-* Support Higher Order HAL. `smoothness_order` is a vector of length 1 or length `ncol(X)`.
-  * If `smoothness_orders` is of length 1 then its values are recycled to form a vector of length length `ncol(X)`.
- * Given such a vector of length `ncol(X)`, the ith element specifies the level of smoothness for the variable corresponding with the ith column in `X`.
-* Degree-dependant Binning. Higher Order terms are binned more coarsely. `num_knots` argument is a vector up to max_degree controlling the degree-specific binning
-* Default `fit_hal` is now a first order smoothed HAL with binning.
-* Adds `formula_hal` which allows a formula specification of a HAL model
+* Support _higher order_ HAL via the new `smoothness_orders` argument
+   * `smoothness_orders` is a vector of length 1 or length `ncol(X)`.
+  * If `smoothness_orders` is of length 1 then its values are recycled to form
+      a vector of length `ncol(X)`.
+  * Given such a vector of length `ncol(X)`, the ith element gives the level of
+    smoothness for the variable corresponding to the ith column in `X`.
+* Degree-dependant binning. Higher order terms are binned more coarsely; the
+  `num_knots` argument is a vector up to `max_degree` controlling the
+  degree-specific binning.
+* Adds `formula_hal` which allows a formula specification of a HAL model.
+* The default of `fit_hal` is now a first order smoothed HAL with binning.
 * Updated documentation for `formula_hal`, `fit_hal` and `predict`; and 
   added `fit_control` and `formula_control` lists for arguments. Moved much of 
   the text to details sections, and shortened the argument descriptions. 
@@ -38,9 +43,9 @@ As of November 2020:
 
 As of September 2020:
 * Adds a `summary` method for interpreting HAL regressions
-  (https://github.com/tlverse/hal9001/pull/64)
+  (https://github.com/tlverse/hal9001/pull/64).
 * Adds a software paper for publication in the _Journal of Open Source
-  Software_ (https://github.com/tlverse/hal9001/pull/71)
+  Software_ (https://github.com/tlverse/hal9001/pull/71).
 
 # hal9001 0.2.6
 

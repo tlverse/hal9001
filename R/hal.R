@@ -184,18 +184,16 @@
 #'
 #' @rdname fit_hal
 #'
+#' @export
+#'
 #' @examples
-#' \donttest{
 #' n <- 100
 #' p <- 3
 #' x <- xmat <- matrix(rnorm(n * p), n, p)
 #' y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
 #' y <- rbinom(n = n, size = 1, prob = y_prob)
-#' ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
-#' preds <- predict(ml_hal_fit, new_data = x)
-#' }
-#'
-#' @export
+#' hal_fit <- fit_hal(X = x, Y = y, family = "binomial")
+#' preds <- predict(hal_fit, new_data = x)
 fit_hal <- function(X,
                     Y,
                     formula = NULL,

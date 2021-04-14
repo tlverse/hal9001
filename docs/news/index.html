@@ -124,21 +124,23 @@
       <small>Source: <a href='https://github.com/tlverse/hal9001/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="hal9001-03" class="section level1">
-<h1 class="page-header" data-toc-text="0.3">
-<a href="#hal9001-03" class="anchor"></a>hal9001 0.3<small> Unreleased </small>
+    <div id="hal9001-030" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.0">
+<a href="#hal9001-030" class="anchor"></a>hal9001 0.3.0<small> Unreleased </small>
 </h1>
 <p>As of February 2021:</p>
 <ul>
-<li>Support Higher Order HAL. <code>smoothness_order</code> is a vector of length 1 or length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>.
+<li>Support <em>higher order</em> HAL via the new <code>smoothness_orders</code> argument
 <ul>
-<li>If <code>smoothness_orders</code> is of length 1 then its values are recycled to form a vector of length length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>.</li>
+<li>
+<code>smoothness_orders</code> is a vector of length 1 or length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>.</li>
+<li>If <code>smoothness_orders</code> is of length 1 then its values are recycled to form a vector of length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>.</li>
+<li>Given such a vector of length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>, the ith element gives the level of smoothness for the variable corresponding to the ith column in <code>X</code>.</li>
 </ul>
 </li>
-<li>Given such a vector of length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>, the ith element specifies the level of smoothness for the variable corresponding with the ith column in <code>X</code>.</li>
-<li>Degree-dependant Binning. Higher Order terms are binned more coarsely. <code>num_knots</code> argument is a vector up to max_degree controlling the degree-specific binning</li>
-<li>Default <code>fit_hal</code> is now a first order smoothed HAL with binning.</li>
-<li>Adds <code>formula_hal</code> which allows a formula specification of a HAL model</li>
+<li>Degree-dependant binning. Higher order terms are binned more coarsely; the <code>num_knots</code> argument is a vector up to <code>max_degree</code> controlling the degree-specific binning.</li>
+<li>Adds <code>formula_hal</code> which allows a formula specification of a HAL model.</li>
+<li>The default of <code>fit_hal</code> is now a first order smoothed HAL with binning.</li>
 </ul>
 </div>
     <div id="hal9001-028" class="section level1">
@@ -160,8 +162,8 @@
 </h1>
 <p>As of September 2020:</p>
 <ul>
-<li>Adds a <code>summary</code> method for interpreting HAL regressions (<a href="https://github.com/tlverse/hal9001/pull/64" class="uri">https://github.com/tlverse/hal9001/pull/64</a>)</li>
-<li>Adds a software paper for publication in the <em>Journal of Open Source Software</em> (<a href="https://github.com/tlverse/hal9001/pull/71" class="uri">https://github.com/tlverse/hal9001/pull/71</a>)</li>
+<li>Adds a <code>summary</code> method for interpreting HAL regressions (<a href="https://github.com/tlverse/hal9001/pull/64" class="uri">https://github.com/tlverse/hal9001/pull/64</a>).</li>
+<li>Adds a software paper for publication in the <em>Journal of Open Source Software</em> (<a href="https://github.com/tlverse/hal9001/pull/71" class="uri">https://github.com/tlverse/hal9001/pull/71</a>).</li>
 </ul>
 </div>
     <div id="hal9001-026" class="section level1">

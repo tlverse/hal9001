@@ -240,14 +240,11 @@ length greater than 1, \code{adaptive_smoothing} is automatically set to
 0, one would need to specify \code{smoothness_orders = c(1,2)}.
 }
 \examples{
-\donttest{
 n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
 y <- rbinom(n = n, size = 1, prob = y_prob)
-ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
-preds <- predict(ml_hal_fit, new_data = x)
-}
-
+hal_fit <- fit_hal(X = x, Y = y, family = "binomial")
+preds <- predict(hal_fit, new_data = x)
 }
