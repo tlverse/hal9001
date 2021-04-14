@@ -6,17 +6,17 @@
 #'
 #' @param object An object of class \code{hal9001}, containing the results of
 #'  fitting the Highly Adaptive Lasso, as produced by \code{\link{fit_hal}}.
-#' @param offset A vector of offsets. Must be provided if provided at training
+#' @param offset A vector of offsets. Must be provided if provided at training.
 #' @param ... Additional arguments passed to \code{predict} as necessary.
 #' @param new_data A \code{matrix} or \code{data.frame} containing new data
-#'  (observations NOT used in fitting the \code{hal9001} object passed in via
-#'  the \code{object} argument above) for which the \code{hal9001} object will
-#'  compute predicted values.
+#'  (i.e., observations not used for fitting the \code{hal9001} object that's
+#'  passed in via the \code{object} argument above) for which the \code{hal9001}
+#'  object will compute predicted values.
 #' @param new_X_unpenalized If the user supplied \code{X_unpenalized} during
-#'  training, the user should also supply this matrix with the same number of
-#'  observations as \code{new_data}. Optional.
-#' @param type Either "response" (default) for predictions of the response or
-#'  "link" for un-transformed predictions (on the scale of the link function).
+#'  training, then user should also supply this matrix with the same number of
+#'  observations as \code{new_data}.
+#' @param type Either "response" for predictions of the response, or "link" for
+#' un-transformed predictions (on the scale of the link function).
 #' @param p_reserve Sparse matrix pre-allocation proportion, which is the
 #'  anticipated proportion of 1's in the design matrix. Default value is
 #'  recommended in most settings. If a dense design matrix is expected, it
@@ -33,9 +33,10 @@
 #'  subset of lambdas originally specified in calling \code{\link{fit_hal}}
 #'  nor result in re-fitting. Instead, it will return predictions for all of
 #'  the lambdas specified in the call to \code{\link{fit_hal}} that constructs
-#'  \code{object}, when \code{cv_select = FALSE}. When \code{cv_select = TRUE},
-#'  predictions will only be returned for the value of lambda selected by
-#'  cross-validation.
+#'  \code{object}, when \code{fit_control}'s \code{cv_select} is set to
+#'  \code{FALSE}. When \code{fit_control}'s \code{cv_select} is set to
+#'  \code{TRUE}, predictions will only be returned for the value of lambda
+#'  selected by cross-validation.
 #'
 #' @return A \code{numeric} vector of predictions from a \code{hal9001} object.
 predict.hal9001 <- function(object,
