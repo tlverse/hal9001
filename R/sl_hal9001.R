@@ -6,11 +6,11 @@
 #' @param X A \code{matrix} of predictors/covariates.
 #' @param newX A matrix of new observations on which to obtain predictions. The
 #'  default of \code{NULL} computes predictions on training inputs \code{X}.
-#' @param family A \code{\link[stats]{family}} object (one that is supported 
-#'  by \code{\link[glmnet]{glmnet}}) specifying the error/link family for a 
+#' @param family A \code{\link[stats]{family}} object (one that is supported
+#'  by \code{\link[glmnet]{glmnet}}) specifying the error/link family for a
 #'  generalized linear model.
 #' @param obsWeights A \code{numeric} vector of observational-level weights.
-#' @param ... Additional arguments passed to \code{fit_hal}. See its 
+#' @param ... Additional arguments passed to \code{fit_hal}. See its
 #'  documentation for more details.
 #'
 #' @importFrom stats predict gaussian
@@ -26,11 +26,11 @@ SL.hal9001 <- function(Y,
                        obsWeights = rep(1, length(Y)),
                        id = NULL,
                        ...) {
-  
+
   # create matrix version of X and newX for use with hal9001::fit_hal
   if (!is.matrix(X)) X <- as.matrix(X)
   if (!is.null(newX) & !is.matrix(newX)) newX <- as.matrix(newX)
-  
+
   # populate arguments
   args <- list(...)
   args$Y <- Y
@@ -38,13 +38,13 @@ SL.hal9001 <- function(Y,
   args$family <- family$family
   args$id <- id
   # add observational weights to fit_control
-  if("fit_control" %in% names(args)){
+  if ("fit_control" %in% names(args)) {
     args$fit_control <- c(args$fit_control, list(weights = obsWeights))
   } else {
     args$fit_control <- list(weights = obsWeights)
   }
-  
-  # fit hal 
+
+  # fit hal
   hal_fit <- do.call(fit_hal, args)
 
   # compute predictions based on `newX` or input `X`
@@ -68,7 +68,7 @@ SL.hal9001 <- function(Y,
 #'
 #' @param object A fitted object of class \code{hal9001}.
 #' @param newdata A matrix of new observations on which to obtain predictions.
-#' @param ... Additional arguments passed to \code{fit_hal}. See its 
+#' @param ... Additional arguments passed to \code{fit_hal}. See its
 #'  documentation for more details.
 #'
 #' @importFrom stats predict
