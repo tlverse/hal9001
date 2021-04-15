@@ -119,6 +119,7 @@
 #' @param custom_group A named \code{list} that represents a grouping of
 #'  variables in \code{X}. Each group in the \code{custom_group} list contains
 #'  a character vector of column names in \code{X} that belong to that group.
+#'  The names of the \code{custom_group} must be single characters of length 1.
 #'  See \code{custom_group} details for more information.
 #' @param smoothness_orders Necessary argument for generating basis functions
 #'  from the \code{formula}. See its documentation in \code{\link{fit_hal}}.
@@ -245,6 +246,8 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     msg = "Incorrect format for formula."
   )
   outcome <- stringr::str_match(form, "([^\\s]+)~")
+  outcome <- gsub("~", "", outcome)
+  outcome <- gsub(" ", "", outcome)
 
   X_orig <- X
   # X = quantizer(X, num_knots)
@@ -542,15 +545,13 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   # Get expanded formula
   if (length(total_terms) != 0) {
     formula_expanded <- paste0(
-      outcome, " ~ ",
-      paste0(sapply(
-        1:length(total_terms),
-        expand_term
-      ), collapse = " + ")
+      "~ ", paste0(sapply(1:length(total_terms), expand_term), collapse = " + ")
     )
+  } else {
+    formula_expanded <- paste0("~ 1")
   }
-  else {
-    formula_expanded <- paste0(" ~ 1")
+  if (!all(is.na(outcome))) {
+    formula_expanded <- paste0(outcome, formula_expanded)
   }
 
   lower.limits <- c()
