@@ -28,6 +28,8 @@ generalized linear model.}
 
 \item{obsWeights}{A \code{numeric} vector of observational-level weights.}
 
+\item{id}{A \code{numeric} vector of IDs.}
+
 \item{...}{Additional arguments passed to \code{fit_hal}. See its
 documentation for more details.}
 }
