@@ -10,6 +10,7 @@
 #'  by \code{\link[glmnet]{glmnet}}) specifying the error/link family for a
 #'  generalized linear model.
 #' @param obsWeights A \code{numeric} vector of observational-level weights.
+#' @param id A \code{numeric} vector of IDs.
 #' @param ... Additional arguments passed to \code{fit_hal}. See its
 #'  documentation for more details.
 #'
@@ -68,8 +69,7 @@ SL.hal9001 <- function(Y,
 #'
 #' @param object A fitted object of class \code{hal9001}.
 #' @param newdata A matrix of new observations on which to obtain predictions.
-#' @param ... Additional arguments passed to \code{fit_hal}. See its
-#'  documentation for more details.
+#' @param ... Not used.
 #'
 #' @importFrom stats predict
 #'
