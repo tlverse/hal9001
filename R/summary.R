@@ -1,3 +1,4 @@
+utils::globalVariables(c("..redundant"))
 #' Summary Method for HAL fit objects
 #'
 #' @details Method for summarizing the coefficients of the Highly Adaptive
@@ -50,7 +51,8 @@ summary.hal9001 <- function(object,
                             include_redundant_terms = FALSE,
                             round_cutoffs = 3,
                             ...) {
-  basis_list_idx <- coef_idx <- dup <- NULL
+  abs_coef <- basis_list_idx <- coef_idx <- dup <- NULL
+
   # retain coefficients corresponding to lambda
   if (!is.null(lambda)) {
     if (length(lambda) > 1) {
