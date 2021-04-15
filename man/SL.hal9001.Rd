@@ -8,50 +8,28 @@ SL.hal9001(
   Y,
   X,
   newX = NULL,
-  max_degree = 3,
-  fit_type = c("glmnet", "lassi"),
-  n_folds = 10,
-  use_min = TRUE,
   family = stats::gaussian(),
   obsWeights = rep(1, length(Y)),
+  id = NULL,
   ...
 )
 }
 \arguments{
-\item{Y}{A \code{numeric} of outcomes.}
+\item{Y}{A \code{numeric} vector of observations of the outcome variable.}
 
 \item{X}{A \code{matrix} of predictors/covariates.}
 
 \item{newX}{A matrix of new observations on which to obtain predictions. The
 default of \code{NULL} computes predictions on training inputs \code{X}.}
 
-\item{max_degree}{The highest order of interaction terms for which the basis
-functions ought to be generated. \code{NULL} corresponds to generating
-basis functions for the full dimensionality of the input matrix.}
+\item{family}{A \code{\link[stats]{family}} object (one that is supported
+by \code{\link[glmnet]{glmnet}}) specifying the error/link family for a
+generalized linear model.}
 
-\item{fit_type}{The specific routine to be called when fitting the Lasso
-regression via cross-validation. Choosing \code{cv.glmnet} option results
-in option results in a call to \code{\link[glmnet]{cv.glmnet}} while
-\code{lassi} produces a (faster) call to a custom routine based on a custom
-routine for fitting the Lasso.}
+\item{obsWeights}{A \code{numeric} vector of observational-level weights.}
 
-\item{n_folds}{Integer for the number of folds to be used when splitting the
-data for cross-validation. This defaults to 10 as this is the convention
-for V-fold cross-validation.}
-
-\item{use_min}{Determines which lambda is selected from \code{cv.glmnet}.
-\code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
-to \code{"lambda.1se"}.}
-
-\item{family}{Not used by the function directly, but meant to ensure
-compatibility with \code{SuperLearner}.}
-
-\item{obsWeights}{Not used by the function directly, but meant to ensure
-compatibility with \code{SuperLearner}. These are passed to
-\code{\link[glmnet]{cv.glmnet}} through the \code{...} argument of
-\code{\link{fit_hal}}.}
-
-\item{...}{Placeholder (ignored).}
+\item{...}{Additional arguments passed to \code{fit_hal}. See its
+documentation for more details.}
 }
 \value{
 An object of class \code{SL.hal9001} with a fitted \code{hal9001}

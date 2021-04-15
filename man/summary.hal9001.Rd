@@ -40,10 +40,11 @@ places to be used for rounding cutoff values in the term. For example, if
 "bmi" was numeric that was rounded to the third decimal, in the example
 above we would have needed to specify \code{round_cutoffs = 0} in order to
 yield a term like "I(bmi >= 18)" opposed to something like
-"I(bmi >= 18.111)". This rounding is for simplifying the
-interpretation, and returned coefficients are not rounded.}
+"I(bmi >= 18.111)". This rounding is intended to simplify the term-wise
+part of the output and only rounds the basis cutoffs, the \code{hal9001}
+model's coefficients are not rounded.}
 
-\item{...}{Additional arguments passed to \code{summary} as necessary.}
+\item{...}{Additional arguments passed to \code{summary}, not supported.}
 }
 \value{
 A list summarizing a \code{hal9001} object's coefficients.
@@ -56,4 +57,10 @@ Method for summarizing the coefficients of the Highly Adaptive
 Lasso estimator in terms of the basis functions corresponding to covariates
 and interactions of covariates, returned as a single S3 object of class
 \code{hal9001}.
+
+Due to the nature of the basis function terms, the summary tables can be
+extremely wide. The R environment might not be the optimal location to view
+the summary. As a tip, tables can be exported from R to LaTeX with
+\pkg{xtable} R package. Here's an example:
+\code{print(xtable(summary(fit)$table, type = "latex"), file = "~/dt.tex")}.
 }

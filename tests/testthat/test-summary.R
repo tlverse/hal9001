@@ -30,13 +30,14 @@ summ <- summary(hal_fit, only_nonzero_coefs = FALSE)
 
 # Summary with nonzero coefs and include_redundant_terms TRUE works
 summary_all_nonzero_terms <- summary(hal_fit,
-    include_redundant_terms = TRUE
+  include_redundant_terms = TRUE
 )
 
 
 # Summary with all coefs and include_redundant_terms TRUE works
 summary_all_terms <- summary(
-  hal_fit, only_nonzero_coefs = FALSE, include_redundant_terms = TRUE
+  hal_fit,
+  only_nonzero_coefs = FALSE, include_redundant_terms = TRUE
 )
 
 # Print works

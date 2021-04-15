@@ -336,7 +336,7 @@ and linear terms) are generated, which assume a the true regression
 function has a single order of differentiability.</p>
 <p><code>num_knots</code> argument specifies the number of knot points for each
 covariate and for each <code>max_degree</code>. Fewer knot points can
-significantly decrease run time, but might be overly simplistic. When
+significantly decrease runtime, but might be overly simplistic. When
 considering <code>smoothness_orders = 0</code>, too few knot points (e.g., &lt; 50)
 can significantly reduce performance. When <code>smoothness_orders = 1</code> or
 higher, then fewer knot points (e.g., 10-30) is actually better for
@@ -350,26 +350,26 @@ of <code>num_knots</code> follows this logic --- for <code>smoothness_orders = 0
 \(200 / 2^{j-1}\), where \(j\) is the interaction degree. We also
 include some other suitable settings for <code>num_knots</code> below, all of
 which are less complex than default <code>num_knots</code> and will thus result
-in a faster run time:</p><ul>
+in a faster runtime:</p><ul>
 <li><p>Some good settings for little to no cost in performance:</p><ul>
 <li><p>If <code>smoothness_orders = 0</code> and <code>max_degree = 3</code>,
 <code>num_knots = c(400, 200, 100)</code>.</p></li>
 <li><p>If <code>smoothness_orders = 1+</code> and <code>max_degree = 3</code>,
 <code>num_knots = c(100, 75, 50)</code>.</p></li>
 </ul></li>
-<li><p>Recommended settings for fairly fast run time:</p><ul>
+<li><p>Recommended settings for fairly fast runtime:</p><ul>
 <li><p>If <code>smoothness_orders = 0</code> and <code>max_degree = 3</code>,
 <code>num_knots = c(200, 100, 50)</code>.</p></li>
 <li><p>If <code>smoothness_orders = 1+</code> and <code>max_degree = 3</code>,
 <code>num_knots = c(50, 25, 15)</code>.</p></li>
 </ul></li>
-<li><p>Recommended settings for fast run time:</p><ul>
+<li><p>Recommended settings for fast runtime:</p><ul>
 <li><p>If <code>smoothness_orders = 0</code> and <code>max_degree = 3</code>,
 <code>num_knots = c(100, 50, 25)</code>.</p></li>
 <li><p>If <code>smoothness_orders = 1+</code> and <code>max_degree = 3</code>,
 <code>num_knots = c(40, 15, 10)</code>.</p></li>
 </ul></li>
-<li><p>Recommended settings for very fast run time:</p><ul>
+<li><p>Recommended settings for very fast runtime:</p><ul>
 <li><p>If <code>smoothness_orders = 0</code> and <code>max_degree = 3</code>,
 <code>num_knots = c(50, 25, 10)</code>.</p></li>
 <li><p>If <code>smoothness_orders = 1+</code> and <code>max_degree = 3</code>,
@@ -388,7 +388,7 @@ as "lambda_star". Lastly, final selection of <code>smoothness_orders</code> is
 based on the smoothness whose lambda_star yielded the smallest
 cross-validated risk according to the <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> fit.
 The coefficients, design matrix, etc. from this optimal order of smoothness
-are returned. Note that adaptive smoothing can increase run time by a factor
+are returned. Note that adaptive smoothing can increase runtime by a factor
 of 2-3 depending on the value of <code>smoothness_orders</code> and the number of
 <code>smoothness_orders</code> considered. Wen <code>smoothness_orders</code> is of
 length greater than 1, <code>adaptive_smoothing</code> is automatically set to

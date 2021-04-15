@@ -179,12 +179,13 @@ places to be used for rounding cutoff values in the term. For example, if
 "bmi" was numeric that was rounded to the third decimal, in the example
 above we would have needed to specify <code>round_cutoffs = 0</code> in order to
 yield a term like "I(bmi &gt;= 18)" opposed to something like
-"I(bmi &gt;= 18.111)". This rounding is for simplifying the
-interpretation, and returned coefficients are not rounded.</p></td>
+"I(bmi &gt;= 18.111)". This rounding is intended to simplify the term-wise
+part of the output and only rounds the basis cutoffs, the <code>hal9001</code>
+model's coefficients are not rounded.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Additional arguments passed to <code>summary</code> as necessary.</p></td>
+      <td><p>Additional arguments passed to <code>summary</code>, not supported.</p></td>
     </tr>
     </table>
 
@@ -197,6 +198,11 @@ interpretation, and returned coefficients are not rounded.</p></td>
 Lasso estimator in terms of the basis functions corresponding to covariates
 and interactions of covariates, returned as a single S3 object of class
 <code>hal9001</code>.</p>
+<p>Due to the nature of the basis function terms, the summary tables can be
+extremely wide. The R environment might not be the optimal location to view
+the summary. As a tip, tables can be exported from R to LaTeX with
+<span class="pkg">xtable</span> R package. Here's an example:
+<code><a href='https://rdrr.io/r/base/print.html'>print(xtable(summary(fit)$table, type = "latex"), file = "~/dt.tex")</a></code>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

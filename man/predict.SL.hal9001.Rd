@@ -11,7 +11,8 @@
 
 \item{newdata}{A matrix of new observations on which to obtain predictions.}
 
-\item{...}{Placeholder (ignored).}
+\item{...}{Additional arguments passed to \code{fit_hal}. See its
+documentation for more details.}
 }
 \value{
 A \code{numeric} vector of predictions from a \code{SL.hal9001}

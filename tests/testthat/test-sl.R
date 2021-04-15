@@ -47,7 +47,8 @@ test_that("HAL and SuperLearner-HAL produce results of same shape", {
 # (hence the rather low tolerance, esp. given an additive scale)
 test_that("HAL dominates other algorithms when used in SuperLearner", {
   expect_equal(
-    mse(pred_sl_test, test_y), expected = mse(pred_hal_sl_test, test_y),
+    mse(pred_sl_test, test_y),
+    expected = mse(pred_hal_sl_test, test_y),
     scale = mse(pred_hal_sl_test, test_y), tolerance = 0.05
   )
 })

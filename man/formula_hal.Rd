@@ -43,6 +43,7 @@ one-way basis functions for \emph{all} variables in \code{X} (i.e., including
 \item{custom_group}{A named \code{list} that represents a grouping of
 variables in \code{X}. Each group in the \code{custom_group} list contains
 a character vector of column names in \code{X} that belong to that group.
+The names of the \code{custom_group} must be single characters of length 1.
 See \code{custom_group} details for more information.}
 
 \item{smoothness_orders}{Necessary argument for generating basis functions

@@ -134,12 +134,9 @@
   <span class='va'>Y</span>,
   <span class='va'>X</span>,
   newX <span class='op'>=</span> <span class='cn'>NULL</span>,
-  max_degree <span class='op'>=</span> <span class='fl'>3</span>,
-  fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span><span class='op'>)</span>,
-  n_folds <span class='op'>=</span> <span class='fl'>10</span>,
-  use_min <span class='op'>=</span> <span class='cn'>TRUE</span>,
   family <span class='op'>=</span> <span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/family.html'>gaussian</a></span><span class='op'>(</span><span class='op'>)</span>,
   obsWeights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
+  id <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -148,7 +145,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Y</th>
-      <td><p>A <code>numeric</code> of outcomes.</p></td>
+      <td><p>A <code>numeric</code> vector of observations of the outcome variable.</p></td>
     </tr>
     <tr>
       <th>X</th>
@@ -160,46 +157,19 @@
 default of <code>NULL</code> computes predictions on training inputs <code>X</code>.</p></td>
     </tr>
     <tr>
-      <th>max_degree</th>
-      <td><p>The highest order of interaction terms for which the basis
-functions ought to be generated. <code>NULL</code> corresponds to generating
-basis functions for the full dimensionality of the input matrix.</p></td>
-    </tr>
-    <tr>
-      <th>fit_type</th>
-      <td><p>The specific routine to be called when fitting the Lasso
-regression via cross-validation. Choosing <code>cv.glmnet</code> option results
-in option results in a call to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> while
-<code>lassi</code> produces a (faster) call to a custom routine based on a custom
-routine for fitting the Lasso.</p></td>
-    </tr>
-    <tr>
-      <th>n_folds</th>
-      <td><p>Integer for the number of folds to be used when splitting the
-data for cross-validation. This defaults to 10 as this is the convention
-for V-fold cross-validation.</p></td>
-    </tr>
-    <tr>
-      <th>use_min</th>
-      <td><p>Determines which lambda is selected from <code>cv.glmnet</code>.
-<code>TRUE</code> corresponds to <code>"lambda.min"</code> and <code>FALSE</code> corresponds
-to <code>"lambda.1se"</code>.</p></td>
-    </tr>
-    <tr>
       <th>family</th>
-      <td><p>Not used by the function directly, but meant to ensure
-compatibility with <code>SuperLearner</code>.</p></td>
+      <td><p>A <code><a href='https://rdrr.io/r/stats/family.html'>family</a></code> object (one that is supported
+by <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code>) specifying the error/link family for a
+generalized linear model.</p></td>
     </tr>
     <tr>
       <th>obsWeights</th>
-      <td><p>Not used by the function directly, but meant to ensure
-compatibility with <code>SuperLearner</code>. These are passed to
-<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> through the <code>...</code> argument of
-<code><a href='fit_hal.html'>fit_hal</a></code>.</p></td>
+      <td><p>A <code>numeric</code> vector of observational-level weights.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Placeholder (ignored).</p></td>
+      <td><p>Additional arguments passed to <code>fit_hal</code>. See its
+documentation for more details.</p></td>
     </tr>
     </table>
 

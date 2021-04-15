@@ -173,7 +173,7 @@ function has a single order of differentiability.
 
 \code{num_knots} argument specifies the number of knot points for each
 covariate and for each \code{max_degree}. Fewer knot points can
-significantly decrease run time, but might be overly simplistic. When
+significantly decrease runtime, but might be overly simplistic. When
 considering \code{smoothness_orders = 0}, too few knot points (e.g., < 50)
 can significantly reduce performance. When \code{smoothness_orders = 1} or
 higher, then fewer knot points (e.g., 10-30) is actually better for
@@ -187,7 +187,7 @@ of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
 \eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
 include some other suitable settings for \code{num_knots} below, all of
 which are less complex than default \code{num_knots} and will thus result
-in a faster run time:
+in a faster runtime:
 \itemize{
 \item Some good settings for little to no cost in performance:
 \itemize{
@@ -196,21 +196,21 @@ in a faster run time:
 \item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 \code{num_knots = c(100, 75, 50)}.
 }
-\item Recommended settings for fairly fast run time:
+\item Recommended settings for fairly fast runtime:
 \itemize{
 \item If \code{smoothness_orders = 0} and \code{max_degree = 3},
 \code{num_knots = c(200, 100, 50)}.
 \item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 \code{num_knots = c(50, 25, 15)}.
 }
-\item Recommended settings for fast run time:
+\item Recommended settings for fast runtime:
 \itemize{
 \item If \code{smoothness_orders = 0} and \code{max_degree = 3},
 \code{num_knots = c(100, 50, 25)}.
 \item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 \code{num_knots = c(40, 15, 10)}.
 }
-\item Recommended settings for very fast run time:
+\item Recommended settings for very fast runtime:
 \itemize{
 \item If \code{smoothness_orders = 0} and \code{max_degree = 3},
 \code{num_knots = c(50, 25, 10)}.
@@ -230,7 +230,7 @@ as "lambda_star". Lastly, final selection of \code{smoothness_orders} is
 based on the smoothness whose lambda_star yielded the smallest
 cross-validated risk according to the \code{\link[glmnet]{cv.glmnet}} fit.
 The coefficients, design matrix, etc. from this optimal order of smoothness
-are returned. Note that adaptive smoothing can increase run time by a factor
+are returned. Note that adaptive smoothing can increase runtime by a factor
 of 2-3 depending on the value of \code{smoothness_orders} and the number of
 \code{smoothness_orders} considered. Wen \code{smoothness_orders} is of
 length greater than 1, \code{adaptive_smoothing} is automatically set to

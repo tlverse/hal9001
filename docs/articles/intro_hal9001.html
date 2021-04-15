@@ -82,7 +82,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>
 </h4>
             
-            <h4 class="date">2021-04-13</h4>
+            <h4 class="date">2021-04-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -94,7 +94,7 @@
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>The <em>highly adaptive Lasso</em> (HAL) is a flexible machine learning algorithm that nonparametrically estimates a function based on available data by embedding a set of input observations and covariates in an extremely high-dimensional space (i.e., generating basis functions from the available data). For an input data matrix of <span class="math inline">\(n\)</span> observations and <span class="math inline">\(d\)</span> covariates, the number of basis functions generated is approximately <span class="math inline">\(n \cdot 2^{d - 1}\)</span>. To select a set of basis functions from among the full set generated, the Lasso is employed. The <code>hal9001</code> R package provides an efficient implementation of this routine, relying on the <code>glmnet</code> R package for compatibility with the canonical Lasso implementation while still providing a (faster) custom C++ routine for using the Lasso with an input matrix composed of indicator functions. Consider consulting <span class="citation">Benkeser and van der Laan (2016)</span>, <span class="citation">(<span class="citeproc-not-found" data-reference-id="vdl2015generally"><strong>???</strong></span>)</span>, <span class="citation">van der Laan (2017)</span> for detailed theoretical descriptions of the highly adaptive Lasso and its various optimality properties.</p>
+<p>The <em>highly adaptive Lasso</em> (HAL) is a flexible machine learning algorithm that nonparametrically estimates a function based on available data by embedding a set of input observations and covariates in an extremely high-dimensional space (i.e., generating basis functions from the available data). For an input data matrix of <span class="math inline">\(n\)</span> observations and <span class="math inline">\(d\)</span> covariates, the maximum number of zero-order basis functions generated is approximately <span class="math inline">\(n \cdot 2^{d - 1}\)</span>. To select a set of basis functions from among the (possibly reduced/screener) set that’s generated, the Lasso is employed. The <code>hal9001</code> R package provides an efficient implementation of this routine, relying on the <code>glmnet</code> R package for compatibility with the canonical Lasso implementation, while still providing a (faster) custom C++ routine for using the Lasso with an input matrix composed of basis functions. Consult <span class="citation">Benkeser and van der Laan (2016)</span>, <span class="citation">(<span class="citeproc-not-found" data-reference-id="vdl2015generally"><strong>???</strong></span>)</span>, <span class="citation">van der Laan (2017)</span> for detailed theoretical descriptions of HAL and its various optimality properties.</p>
 <hr>
 </div>
 <div id="preliminaries" class="section level2">
@@ -150,65 +150,53 @@
 <!-- ```{r results-hal-lassi} -->
 <!-- hal_fit1 -->
 <!-- ``` -->
-<div id="fitting-the-model-glmnet" class="section level3">
+<div id="fitting-the-model" class="section level3">
 <h3 class="hasAnchor">
-<a href="#fitting-the-model-glmnet" class="anchor"></a>Fitting the model: <code>glmnet</code>
-</h3>
+<a href="#fitting-the-model" class="anchor"></a>Fitting the model</h3>
 <p>HAL uses the popular <code>glmnet</code> R package for the lasso step:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.015    0.000   0.016          0         0
-## design_matrix         0.048    0.004   0.051          0         0
+## enumerate_basis       0.025    0.002   0.042          0         0
+## design_matrix         0.071    0.008   0.144          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
 ## remove_duplicates     0.000    0.000   0.000          0         0
-## lasso                 1.288    0.086   1.795          0         0
-## total                 1.353    0.090   1.864          0         0</code></pre>
-<p>While the raw output object may be examined, it has (usually large) slots that make quick examination challenging. Instead, we recommend the <code>summary</code> method, which provides an interpretable table of basis functions with non-zero coefficients.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
-<pre><code>##             coef                                                  term
-## 1: -1.7687874362                                             Intercept
-## 2:  0.1726315141                   I(1,2 &gt;= -3.2242)*I(1,3 &gt;= -3.0377)
-## 3:  0.0200119716                   I(1,3 &gt;= -0.6451)*I(2,3 &gt;= -3.2886)
-## 4:  0.0083551475 I(1,2 &gt;= -0.7397)*I(1,3 &gt;= -3.0377)*I(2,3 &gt;= -1.8899)
-## 5:  0.0021217969  I(1,2 &gt;= -3.2242)*I(1,3 &gt;= -0.593)*I(2,3 &gt;= -1.5283)
-## 6: -0.0005975216  I(1,2 &gt;= 0.3049)*I(1,3 &gt;= -1.4075)*I(2,3 &gt;= -3.2886)
-## 7: -0.0245964275  I(1,2 &gt;= -3.2242)*I(1,3 &gt;= 0.4993)*I(2,3 &gt;= -3.2886)</code></pre>
+## lasso                 1.649    0.128   6.819          0         0
+## total                 1.746    0.138   7.006          0         0</code></pre>
 </div>
-<div id="reducing-basis-functions" class="section level3">
+<div id="summarizing-the-model" class="section level3">
 <h3 class="hasAnchor">
-<a href="#reducing-basis-functions" class="anchor"></a>Reducing basis functions</h3>
-<p>As described in <span class="citation">Benkeser and van der Laan (2016)</span>, the HAL algorithm operates by first constructing a set of basis functions and subsequently fitting a Lasso model with this set of basis functions as the design matrix. Several approaches are considered for reducing this set of basis functions: 1. Removing duplicated basis functions (done by default in the <code>fit_hal</code> function), 2. Removing basis functions that correspond to only a small set of observations; a good rule of thumb is to scale with <span class="math inline">\(\frac{1}{\sqrt{n}}\)</span>.</p>
-<p>The second of these two options may be invoked by specifying the <code>reduce_basis</code> argument to the <code>fit_hal</code> function:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                           reduce_basis <span class="op">=</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
-<pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.018    0.001   0.021          0         0
-## design_matrix         0.053    0.005   0.060          0         0
-## reduce_basis          0.000    0.000   0.001          0         0
-## remove_duplicates     0.000    0.000   0.000          0         0
-## lasso                 1.050    0.081   1.225          0         0
-## total                 1.124    0.087   1.310          0         0</code></pre>
-<p>In the above, all basis functions with fewer than 4.472136% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
-<pre><code>##             coef                                                  term
-## 1: -1.7687874362                                             Intercept
-## 2:  0.1726315141                   I(1,2 &gt;= -3.2242)*I(1,3 &gt;= -3.0377)
-## 3:  0.0200119716                   I(1,3 &gt;= -0.6451)*I(2,3 &gt;= -3.2886)
-## 4:  0.0083551475 I(1,2 &gt;= -0.7397)*I(1,3 &gt;= -3.0377)*I(2,3 &gt;= -1.8899)
-## 5:  0.0021217969  I(1,2 &gt;= -3.2242)*I(1,3 &gt;= -0.593)*I(2,3 &gt;= -1.5283)
-## 6: -0.0005975216  I(1,2 &gt;= 0.3049)*I(1,3 &gt;= -1.4075)*I(2,3 &gt;= -3.2886)
-## 7: -0.0245964275  I(1,2 &gt;= -3.2242)*I(1,3 &gt;= 0.4993)*I(2,3 &gt;= -3.2886)</code></pre>
+<a href="#summarizing-the-model" class="anchor"></a>Summarizing the model</h3>
+<p>While the raw output object may be examined, it has (usually large) slots that make quick examination challenging. The <code>summary</code> method provides an interpretable table of basis functions with non-zero coefficients. All terms (i.e., including the terms with zero coefficient) can be included by setting <code>only_nonzero_coefs</code> to <code>FALSE</code> when calling <code>summary</code> on a <code>hal9001</code> model object.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## 
+## 
+## Summary of non-zero coefficients is based on lambda of 0.1099169 
+## 
+##           coef
+##  -1.7687874362
+##   0.1726315141
+##  -0.0245964275
+##   0.0200119716
+##   0.0083551475
+##   0.0021217969
+##  -0.0005975216
+##                                                                                                             term
+##                                                                                                      (Intercept)
+##                                        [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+##    [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= 0.499)*(x2 - 0.499)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                        [ I(x2 &gt;= -0.645)*(x2 - -0.645)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##      [ I(x1 &gt;= -0.74)*(x1 - -0.74)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+##  [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -0.593)*(x2 - -0.593)^1 ] * [ I(x3 &gt;= -1.528)*(x3 - -1.528)^1 ]
+##    [ I(x1 &gt;= 0.305)*(x1 - 0.305)^1 ] * [ I(x2 &gt;= -1.408)*(x2 - -1.408)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]</code></pre>
+<p>Note the length and width of these tables! The R environment might not be the optimal location to view the summary. Tip: Tables can be exported from R to LaTeX with the <code>xtable</code> R package. Here’s an example: <code><a href="https://rdrr.io/r/base/print.html">print(xtable(summary(fit)$table, type = "latex"), file = "~/haltbl_meow.tex")</a></code>.</p>
 </div>
 <div id="obtaining-model-predictions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#obtaining-model-predictions" class="anchor"></a>Obtaining model predictions</h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># training sample prediction for HAL vs HAL9000</span>
 <span class="va">mse</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">preds</span>, <span class="va">y</span><span class="op">)</span> <span class="op">{</span>
     <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">preds</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
@@ -218,18 +206,53 @@
 <span class="va">mse_hal</span> <span class="op">&lt;-</span> <span class="fu">mse</span><span class="op">(</span>preds <span class="op">=</span> <span class="va">preds_hal</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">mse_hal</span></code></pre></div>
 <pre><code>## [1] 0.1940649</code></pre>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">oob_hal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">test_x</span><span class="op">)</span>
 <span class="va">oob_hal_mse</span> <span class="op">&lt;-</span> <span class="fu">mse</span><span class="op">(</span>preds <span class="op">=</span> <span class="va">oob_hal</span>, y <span class="op">=</span> <span class="va">test_y</span><span class="op">)</span>
 <span class="va">oob_hal_mse</span></code></pre></div>
 <pre><code>## [1] 1.540186</code></pre>
 </div>
-<div id="specifying-smoothness-of-fit-and-improving-runtime-with-the-num_knots" class="section level3">
+<div id="reducing-basis-functions" class="section level3">
 <h3 class="hasAnchor">
-<a href="#specifying-smoothness-of-fit-and-improving-runtime-with-the-num_knots" class="anchor"></a>Specifying smoothness of fit and improving runtime with the <code>num_knots</code>
-</h3>
-<p>One might wish to enforce smoothness on the functional form of the HAL fit. This can be done using the “smoothness_orders” argument. Setting <code>smoothness_orders = 0</code> gives a piece-wise constant fit, allowing for discontinuous jumps in the function. This is useful if one does not want to assume any smoothness of the “true” function (not even continuity). Setting <code>smoothness_orders = 1</code> gives a piece-wise linear fit which is continuous and mostly differentiable. In general <code>smoothness_orders = k</code> corresponds to a piece-wise polynomial fit of degree k. Mathematically, <code>smoothness_orders = k</code> corresponds with finding the best fit under the constraint that the total variation of the function’s k-th deriviative is bounded by some constant (chosen by CV).</p>
-<p>Let us see this in action. We will use the num_knots argument to increase the coarseness of the approximation so that the difference between smooth and unsmooth fits is more clear (see next section). Specifically, we set <code>num_knots = 7</code>. The argument num_knots allows one to specify the number of knot points used to generate the basis functions (for each interaction degree). This effectivelly reduces the total number of basis functions generated and can significantly decrease runtime by reducing the size of the optimization problem. One can pass in a vector of length max_degree specifying the number of knot points to use by interaction degree for each basis function. Thus, one can specify that two or three way interaction basis functions should be more coarse, which helps prevent the combinatorical explosion of basis functions that occurs when basis functions are generated for all possible knot points.</p>
+<a href="#reducing-basis-functions" class="anchor"></a>Reducing basis functions</h3>
+<p>As described in <span class="citation">Benkeser and van der Laan (2016)</span>, the HAL algorithm operates by first constructing a set of basis functions and subsequently fitting a Lasso model with this set of basis functions as the design matrix. Several approaches are considered for reducing this set of basis functions: 1. Removing duplicated basis functions (done by default in the <code>fit_hal</code> function), 2. Removing basis functions that correspond to only a small set of observations; a good rule of thumb is to scale with <span class="math inline">\(\frac{1}{\sqrt{n}}\)</span>, and that is the default.</p>
+<p>The second of these two options may be modified by specifying the <code>reduce_basis</code> argument to the <code>fit_hal</code> function:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>
+<span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
+<pre><code>##                   user.self sys.self elapsed user.child sys.child
+## enumerate_basis       0.014    0.000   0.014          0         0
+## design_matrix         0.057    0.005   0.064          0         0
+## reduce_basis          0.000    0.000   0.000          0         0
+## remove_duplicates     0.000    0.000   0.000          0         0
+## lasso                 1.523    0.145   5.250          0         0
+## total                 1.595    0.150   5.328          0         0</code></pre>
+<p>In the above, all basis functions with fewer than 10% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
+<pre><code>##             coef
+## 1: -1.7687874362
+## 2:  0.1726315141
+## 3: -0.0245964275
+## 4:  0.0200119716
+## 5:  0.0083551475
+## 6:  0.0021217969
+## 7: -0.0005975216
+##                                                                                                               term
+## 1:                                                                                                     (Intercept)
+## 2:                                       [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+## 3:   [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= 0.499)*(x2 - 0.499)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 4:                                       [ I(x2 &gt;= -0.645)*(x2 - -0.645)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 5:     [ I(x1 &gt;= -0.74)*(x1 - -0.74)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+## 6: [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -0.593)*(x2 - -0.593)^1 ] * [ I(x3 &gt;= -1.528)*(x3 - -1.528)^1 ]
+## 7:   [ I(x1 &gt;= 0.305)*(x1 - 0.305)^1 ] * [ I(x2 &gt;= -1.408)*(x2 - -1.408)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]</code></pre>
+<p>Other approaches exist for reducing the set of basis functions <em>before</em> they are actually created, which is essential for most real-world applications with HAL. Currently, we provide this “pre-screening” via <code>num_knots</code> argument in <code>hal_fit</code>. The <code>num_knots</code> argument is akin to binning: it increases the coarseness of the approximation. <code>num_knots</code> allows one to specify the number of knot points used to generate the basis functions for each/all interaction degree(s). This reduces the total number of basis functions generated, and thus the size of the optimization problem, and it can dramatically decrease runtime. One can pass in a vector of length <code>max_degree</code> to <code>num_knots</code>, specifying the number of knot points to use by interaction degree for each basis function. Thus, one can specify if interactions of higher degrees (e.g., two- or three- way interactions) should be more coarse. Increasing the coarseness of more complex basis functions helps prevent a combinatorial explosion of basis functions, which can easily occur when basis functions are generated for all possible knot points. We will show an example with <code>num_knots</code> in the section that follows.</p>
+</div>
+<div id="specifying-smoothness-of-the-hal-model" class="section level3">
+<h3 class="hasAnchor">
+<a href="#specifying-smoothness-of-the-hal-model" class="anchor"></a>Specifying smoothness of the HAL model</h3>
+<p>One might wish to enforce smoothness on the functional form of the HAL fit. This can be done using the <code>smoothness_orders</code> argument. Setting <code>smoothness_orders = 0</code> gives a piece-wise constant fit (via zero-order basis functions), allowing for discontinuous jumps in the function. This is useful if one does not want to assume any smoothness or continuity of the “true” function. Setting <code>smoothness_orders = 1</code> gives a piece-wise linear fit (via first-order basis functions), which is continuous and mostly differentiable. In general, <code>smoothness_orders = k</code> corresponds to a piece-wise polynomial fit of degree <span class="math inline">\(k\)</span>. Mathematically, <code>smoothness_orders = k</code> corresponds with finding the best fit under the constraint that the total variation of the function’s <span class="math inline">\(k^{\text{th}}\)</span> derivative is bounded by some constant, which is selected with cross-validation.</p>
+<p>Let’s see this in action.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
 <span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">500</span> <span class="co"># Try changing this value to see what happens.</span>
@@ -239,28 +262,22 @@
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
 <span class="va">ytrue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
 
-<span class="va">hal_fit_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                     smoothness_orders <span class="op">=</span> <span class="fl">0</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span>,
-                     lambda.min.ratio <span class="op">=</span> <span class="fl">1e-4</span><span class="op">)</span>
+<span class="va">hal_fit_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
+  X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, smoothness_orders <span class="op">=</span> <span class="fl">0</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span>
+<span class="op">)</span>
 
-<span class="va">hal_fit_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                            smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-                            num_knots <span class="op">=</span> <span class="va">num_knots</span>,
-                            lambda.min.ratio <span class="op">=</span> <span class="fl">1e-4</span><span class="op">)</span>
+<span class="va">hal_fit_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
+  X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span>
+<span class="op">)</span>
 
-<span class="va">hal_fit_smooth_2_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                                smoothness_orders <span class="op">=</span> <span class="fl">2</span>,
-                                num_knots <span class="op">=</span> <span class="va">num_knots</span>,
-                                adaptive_smoothing <span class="op">=</span> <span class="cn">FALSE</span>,
-                                cv_select <span class="op">=</span> <span class="cn">FALSE</span>,
-                                lambda.min.ratio <span class="op">=</span> <span class="fl">1e-3</span><span class="op">)</span>
+<span class="va">hal_fit_smooth_2_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
+  X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, smoothness_orders <span class="op">=</span> <span class="fl">2</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span>, 
+  fit_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>cv_select <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="op">)</span>
 
-<span class="va">hal_fit_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                           smoothness_orders <span class="op">=</span> <span class="fl">2</span>,
-                           num_knots <span class="op">=</span> <span class="va">num_knots</span>,
-                           adaptive_smoothing <span class="op">=</span> <span class="cn">FALSE</span>,
-                           cv_select <span class="op">=</span> <span class="cn">TRUE</span>,
-                           lambda.min.ratio <span class="op">=</span> <span class="fl">1e-4</span><span class="op">)</span>
+<span class="va">hal_fit_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
+  X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, smoothness_orders <span class="op">=</span> <span class="fl">2</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span>
+<span class="op">)</span>
 
 <span class="va">pred_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_0</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="va">pred_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_1</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
@@ -272,16 +289,16 @@
 <span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt</a></span><span class="op">(</span><span class="va">dt</span>, id <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">value</span>, group <span class="op">=</span> <span class="va">variable</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
-<p>Comparing the mean-squared-error between the predictions and the true (denoised) outcome, we see that the first and second order smoothness HAL is able to recover from the coarseness of the basis functions caused by the small <code>num_knots</code> argument. We see that the second order smoothness HAL is able to fit the true function very well (as expected since sin(x) is a very smooth function). The main benefit of imposing higher order smoothness is that fewer knot points are required for a near optimal fit. Thus one can pass a smaller value to the <code>num_knots</code> argument for a big decrease in runtime.</p>
+<p>Comparing the mean squared error (MSE) between the predictions and the true (denoised) outcome, the first- and second- order smoothed HAL is able to recover from the coarseness of the basis functions caused by the small <code>num_knots</code> argument. Also, the HAL with second-order smoothness is able to fit the true function very well (as expected, since sin(x) is a very smooth function). The main benefit of imposing higher-order smoothness is that fewer knot points are required for a near-optimal fit. Therefore, one can safely pass a smaller value to <code>num_knots</code> for a big decrease in runtime without sacrificing performance.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.003767551</code></pre>
+<pre><code>## [1] 0.003732214</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.0006370113</code></pre>
+<pre><code>## [1] 0.002578282</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.0008864687</code></pre>
+<pre><code>## [1] 0.02500429</code></pre>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
                  ytrue <span class="op">=</span> <span class="va">ytrue</span>,
@@ -301,36 +318,38 @@
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_2</span>, main <span class="op">=</span> <span class="st">"Second order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-4.png" width="700"></p>
-<p>In general, if we do not make the basis functions coarse, the performance for different smoothness orders is similar. Notice how the runtime is a fair bit slower when we generate more knot points. In general, we recommend either zero or first order smoothness. Second order smoothness tends to be less robust and suffers from extrapolation on new data. One can also use cross-validation to data-adaptively choose the optimal smoothness. Interestingly, comparing the following simulation and the previous one, we see that the second order smoothness HAL performed better when there were fewer knot points.</p>
+<p>In general, if the basis functions are not coarse, then the performance for different smoothness orders is similar. Notice how the runtime is a fair bit slower when more knot points are considered. In general, we recommend either zero- or first- order smoothness. Second-order smoothness tends to be less robust and suffers from extrapolation on new data. One can also use cross-validation to data-adaptively choose the optimal smoothness (invoked in <code>fit_hal</code> by setting <code>adaptive_smoothing = TRUE</code>). Comparing the following simulation and the previous one, the HAL with second-order smoothness performed better when there were fewer knot points.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
-<span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">300</span>
 <span class="va">n_covars</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">500</span>
 <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="va">n_covars</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
 <span class="va">ytrue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
 
-<span class="va">hal_fit_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                           smoothness_orders <span class="op">=</span> <span class="fl">0</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span><span class="op">)</span>
-<span class="va">hal_fit_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                           smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span><span class="op">)</span>
+<span class="va">hal_fit_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
+  X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, smoothness_orders <span class="op">=</span> <span class="fl">0</span>, num_knots <span class="op">=</span> <span class="fl">300</span>
+<span class="op">)</span>
+<span class="va">hal_fit_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
+  X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">300</span>
+<span class="op">)</span>
 
-<span class="va">hal_fit_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, fit_type <span class="op">=</span> <span class="st">"glmnet"</span>,
-                           smoothness_orders <span class="op">=</span> <span class="fl">2</span>, num_knots <span class="op">=</span> <span class="va">num_knots</span><span class="op">)</span>
+<span class="va">hal_fit_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
+  X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, smoothness_orders <span class="op">=</span> <span class="fl">2</span>, num_knots <span class="op">=</span> <span class="fl">300</span>
+<span class="op">)</span>
 
 <span class="va">pred_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_0</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="va">pred_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_1</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="va">pred_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_2</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.003474783</code></pre>
+<pre><code>## [1] 0.003650018</code></pre>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.0006508832</code></pre>
+<pre><code>## [1] 0.0006597093</code></pre>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.0008376741</code></pre>
+<pre><code>## [1] 0.0009028049</code></pre>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_0</span>, main <span class="op">=</span> <span class="st">"Zero order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
@@ -340,12 +359,11 @@
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_2</span>, main <span class="op">=</span> <span class="st">"Second order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-3.png" width="700"></p>
-<p>Note for higher dimensional models, one can specify the smoothness in each variable by passing in a vector of smoothness orders of length <code><a href="https://rdrr.io/r/base/nrow.html">ncol(X)</a></code>. See documentation for more details.</p>
 </div>
 <div id="formula-interface" class="section level3">
 <h3 class="hasAnchor">
 <a href="#formula-interface" class="anchor"></a>Formula interface</h3>
-<p>One might wish to specify the functional form of the HAL fit further. This can be done using the formula interface. Specifically, the formula interface allows one to specify monotonicity constraints on components of the HAL fit, as well as specify exactly which basis functions (e.g., interactions) one wishes to model. First, we need to generate a formula object containing the necessary specification information. Later, we will see how to use this formula object to fit HAL. Note any arguments that one wishes to pass to <code>fit_hal</code> should be passed instead to the <code>formula_hal</code> function.</p>
+<p>One might wish to specify the functional form of the HAL fit further. This can be done using the formula interface. Specifically, the formula interface allows one to specify monotonicity constraints on components of the HAL fit. It also allows one to specify exactly which basis functions (e.g., interactions) one wishes to model. The <code>formula_hal</code> function generates a <code>formula</code> object from a user-supplied character string, and this <code>formula</code> object contains the necessary specification information for <code>fit_hal</code> and <code>glmnet</code>. The <code>formula_hal</code> function is intended for use within <code>fit_hal</code>, and the user-supplied character string is inputted into <code>fit_hal</code>. Here, we call <code>formula_hal</code> directly for illustrative purposes.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
 <span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">100</span>
@@ -354,132 +372,199 @@
 <span class="va">x1</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="va">x2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_obs</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
-<span class="va">ytrue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>
-<span class="co"># The formula interface requires us to input a data.frame with all variables</span>
-<span class="co"># including outcome.</span>
-<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="va">x1</span>, x2 <span class="op">=</span> <span class="va">x2</span>, A <span class="op">=</span> <span class="va">A</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span></code></pre></div>
-<p>We can specify an additive model in a number of ways. We can print the formula object obtained by calling <code>formula_hal</code> to see some helpful information about our HAL specification.</p>
+<span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="va">x1</span>, x2 <span class="op">=</span> <span class="va">x2</span>, A <span class="op">=</span> <span class="va">A</span><span class="op">)</span>
+
+<span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> </code></pre></div>
+<p>We can specify an additive model in a number of ways. We can print the <code>formula</code> object obtained by calling <code>print</code>. This will provide some helpful information about our HAL specification.</p>
+<p>The formula below includes the outcome, but <code>formula_hal</code> doesn’t fit a HAL model, and doesn’t need the outcome (actually everything before “<span class="math inline">\(\tilde\)</span>” is ignored in <code>formula_hal</code>). This is why <code>formula_hal</code> takes the input <code>X</code> matrix of covariates, and not <code>X</code> and <code>Y</code>. In what follows, we include formulas with and without “y” in the character string.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1) + h(x2) + h(A)"</span>, <span class="va">data</span>,
-                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ h(x1) + h(x2) + h(A)"</span>, X <span class="op">=</span> <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>     
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Functional specification for hal9001 fit:
 ##  Call: y ~ h(x1) + h(x2) + h(A)
 ##  Formula: y ~ h(x1) + h(x2) + h(A)
-##  Expanded Formula: y ~ h(x1) + h(x2) + h(A)
+##  Expanded Formula: y~ h(x1) + h(x2) + h(A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 300
+##  Number of monotone-increasing basis functions: 0
+##  Number of monotone-decreasing basis functions: 0
+##  Functional specification for hal9001 fit:
+##  Call: y ~ h(x1) + h(x2) + h(A)
+##  Formula: y ~ h(x1) + h(x2) + h(A)
+##  Expanded Formula: y~ h(x1) + h(x2) + h(A)
 ##  Number of smooth variables: 3
 ##  Smoothness range: 1 -&gt; 1 
 ##  Number of basis functions: 300
 ##  Number of monotone-increasing basis functions: 0
 ##  Number of monotone-decreasing basis functions: 0</code></pre>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">" "</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] " "</code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ ."</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ ."</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span> 
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Functional specification for hal9001 fit:
-##  Call: y ~ .
-##  Formula: y ~ .
-##  Expanded Formula: y ~ h(x1) + h(x2) + h(A)
+##  Call: ~ .
+##  Formula:  ~ .
+##  Expanded Formula: ~ h(x1) + h(x2) + h(A)
 ##  Number of smooth variables: 3
 ##  Smoothness range: 1 -&gt; 1 
 ##  Number of basis functions: 300
 ##  Number of monotone-increasing basis functions: 0
 ##  Number of monotone-decreasing basis functions: 0</code></pre>
-<p>We can specify higher order interactions as follows.</p>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># examine same formula expansion with "y"</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ ."</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span> 
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>## Functional specification for hal9001 fit:
+##  Call: y ~ .
+##  Formula: y ~ .
+##  Expanded Formula: y~ h(x1) + h(x2) + h(A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 300
+##  Number of monotone-increasing basis functions: 0
+##  Number of monotone-decreasing basis functions: 0
+##  Functional specification for hal9001 fit:
+##  Call: y ~ .
+##  Formula: y ~ .
+##  Expanded Formula: y~ h(x1) + h(x2) + h(A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 300
+##  Number of monotone-increasing basis functions: 0
+##  Number of monotone-decreasing basis functions: 0</code></pre>
+<p>We can specify interactions as follows.</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
-  <span class="st">"y ~ h(x1) + h(x2) + h(A) + h(x1, x2) + h(x2, A) + h(x1, A) + h(x1, x2, A)"</span>,
-  <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+  <span class="st">"~ h(x1) + h(x2) + h(A) + h(x1, x2) + h(x2, A) + h(x1, A) + h(x1, x2, A)"</span>,
+  X <span class="op">=</span> <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
 <span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x2,A) + h(x1,A) + h(x1,x2,A)"</code></pre>
+<pre><code>## [1] "~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x2,A) + h(x1,A) + h(x1,x2,A)"</code></pre>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ .^2"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ .^2"</span>, X <span class="op">=</span> <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A)"</code></pre>
+<pre><code>## [1] "~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A)"</code></pre>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ .^3"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ .^3"</span>, X <span class="op">=</span> <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A) + h(x1,x2,A)"</code></pre>
-<p>Sometimes, you may want to build an additive model but include all two way interactions with one variable “A” (e.g., treatment). This can be done in a variety of ways as follows.</p>
+<pre><code>## [1] "~ h(x1) + h(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A) + h(x1,x2,A)"</code></pre>
+<p>Sometimes, one might want to build an additive model, but include all two-way interactions with one variable (e.g., treatment “A”). This can be done in a variety of ways.</p>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Write it all out</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1) + h(x2) + h(A) + h(A, x1) + h(A,x2)"</span>, <span class="va">data</span>,
-                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ h(x1) + h(x2) + h(A) + h(A, x1) + h(A,x2)"</span>, <span class="va">X</span>, 
+  smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
+<pre><code>## [1] "y~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"
+## [2] "y~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Use the "." which stands for add all additive terms and then manually add</span>
 <span class="co"># interactions</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ . + h(A,x1) + h(A,x2)"</span>, <span class="va">data</span>,
-                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ . + h(A,x1) + h(A,x2)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
+<pre><code>## [1] "y~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"
+## [2] "y~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Use the "wildcard" feature for when "." is included in the "h()" term. This</span>
 <span class="co"># useful when you have many variables and do not want to write out every term.</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ . + h(A,.)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span><span class="fl">1</span>,
-                       num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ . + h(A,.)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
-<p>Here are some other shortcuts inspired by the glm formula interace.</p>
+<pre><code>## [1] "~ h(x1) + h(x2) + h(A) + h(x1,A) + h(x2,A)"</code></pre>
+<p>Here are some other shortcuts inspired by the <code>glm</code> formula interface.</p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># The "*" operation generates lower order interactions as well.</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1)*h(x2)"</span>, <span class="va">data</span>,
-                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ h(x1)*h(x2)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
+<pre><code>## [1] "~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1) + h(x2) + h(x1,x2)"</span>, <span class="va">data</span>,
-                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ h(x1) + h(x2) + h(x1,x2)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
+<pre><code>## [1] "~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
 <div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># The ":" operator generates an interaction term.</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(x1) + h(x2) + h(x1):h(x2)"</span>, <span class="va">data</span>,
-                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ h(x1) + h(x2) + h(x1):h(x2)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
-<p>Another interesting feature allows one to define custom wildcard symbols analagous to “.” that specifies groups, using the <code>custom_group</code> argument. The custom group argument should be a named list (with one character names) whose elements are character vectors of variable names. This allows one to generate interactions between user supplied groups.</p>
+<pre><code>## [1] "~ h(x1) + h(x2) + h(x1,x2)"</code></pre>
+<p>The <strong><code>custom_group</code></strong> argument, allows one to define custom wildcard symbols that specify groups, analagous to “.”. The <code>custom_group</code> argument should be a named list whose elements are character vectors of variable names in <code>X</code>, and one can define interactions between their groups. Custom group names must be single characters of length one.</p>
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">custom_group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"a"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x1"</span>, <span class="st">"x2"</span><span class="op">)</span>, <span class="st">"b"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">custom_group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"a"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span>, <span class="st">"w"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x1"</span>, <span class="st">"x2"</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ h(w)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>, 
+  custom_group <span class="op">=</span> <span class="va">custom_group</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2)"</code></pre>
+<pre><code>## [1] "~ h(x1) + h(x2)"</code></pre>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a, b)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ h(a, w)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>, 
+  custom_group <span class="op">=</span> <span class="va">custom_group</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1,A) + h(x2,A)"</code></pre>
+<pre><code>## [1] "~ h(x1,A) + h(x2,A)"</code></pre>
 <div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a) + h(a, b)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ h(w) + h(w, a)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>, 
+  custom_group <span class="op">=</span> <span class="va">custom_group</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1) + h(x2) + h(x1,A) + h(x2,A)"</code></pre>
+<pre><code>## [1] "y~ h(x1) + h(x2) + h(x1,A) + h(x2,A)"
+## [2] "y~ h(x1) + h(x2) + h(x1,A) + h(x2,A)"</code></pre>
 <div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a, b, x1)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ h(w, a, x1)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>, 
+  custom_group <span class="op">=</span> <span class="va">custom_group</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1,x2,A)"</code></pre>
+<pre><code>## [1] "~ h(x1,x2,A)"</code></pre>
 <div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ h(a, b, a)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-                       num_knots <span class="op">=</span> <span class="fl">100</span>, custom_group <span class="op">=</span> <span class="va">custom_group</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ h(w, a, w)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>, 
+  custom_group <span class="op">=</span> <span class="va">custom_group</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span><span class="op">$</span><span class="va">formula_expanded</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] "y ~ h(x1,x2,A)"</code></pre>
-<p>So far we have ignored a key feature of the formula interface that is not available in the generic <code>fit_hal</code> function: monotonicity constraints. This is done by replacing the “h” with either “i” (for monotonely increasing) or “d” (for monotonely decreasing). It’s simple.</p>
+<pre><code>## [1] "y~ h(x1,x2,A)" "y~ h(x1,x2,A)"</code></pre>
+<p>A key feature of the HAL formula is <strong>monotonicity constraints</strong>. Specifying these constraints is achieved by simply replacing the “h” with either “i”, for monotonically increasing; or “d”, for monotonically decreasing.</p>
 <div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># An additive monotone increasing model</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ i(.)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-                       num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ i(.)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Functional specification for hal9001 fit:
 ##  Call: y ~ i(.)
 ##  Formula: y ~ i(.)
-##  Expanded Formula: y ~ i(x1) + i(x2) + i(A)
+##  Expanded Formula: y~ i(x1) + i(x2) + i(A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 300
+##  Number of monotone-increasing basis functions: 300
+##  Number of monotone-decreasing basis functions: 0
+##  Functional specification for hal9001 fit:
+##  Call: y ~ i(.)
+##  Formula: y ~ i(.)
+##  Expanded Formula: y~ i(x1) + i(x2) + i(A)
 ##  Number of smooth variables: 3
 ##  Smoothness range: 1 -&gt; 1 
 ##  Number of basis functions: 300
@@ -490,13 +575,14 @@
 <pre><code>## [1] " "</code></pre>
 <div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># A bi-additive monotone decreasing model</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ d(.) + d(.,.)"</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-                       num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"~ d(.) + d(.,.)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Functional specification for hal9001 fit:
-##  Call: y ~ d(.) + d(.,.)
-##  Formula: y ~ d(.) + d(.,.)
-##  Expanded Formula: y ~ d(x1) + d(x2) + d(A) + d(x1,x2) + d(x1,A) + d(x2,A)
+##  Call: ~ d(.) + d(.,.)
+##  Formula:  ~ d(.) + d(.,.)
+##  Expanded Formula: ~ d(x1) + d(x2) + d(A) + d(x1,x2) + d(x1,A) + d(x2,A)
 ##  Number of smooth variables: 3
 ##  Smoothness range: 1 -&gt; 1 
 ##  Number of basis functions: 1779
@@ -507,24 +593,52 @@
 <pre><code>## [1] " "</code></pre>
 <div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># mix it up</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ d(x1) + i(x2) + h(A) + h(.,.)"</span>, <span class="va">data</span>,
-                       smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
+  <span class="st">"y ~ d(x1) + i(x2) + h(A) + h(.,.)"</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, 
+  num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">formula</span>, expand <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Functional specification for hal9001 fit:
 ##  Call: y ~ d(x1) + i(x2) + h(A) + h(.,.)
 ##  Formula: y ~ d(x1) + i(x2) + h(A) + h(.,.)
-##  Expanded Formula: y ~ d(x1) + i(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A)
+##  Expanded Formula: y~ d(x1) + i(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A)
+##  Number of smooth variables: 3
+##  Smoothness range: 1 -&gt; 1 
+##  Number of basis functions: 1779
+##  Number of monotone-increasing basis functions: 100
+##  Number of monotone-decreasing basis functions: 100
+##  Functional specification for hal9001 fit:
+##  Call: y ~ d(x1) + i(x2) + h(A) + h(.,.)
+##  Formula: y ~ d(x1) + i(x2) + h(A) + h(.,.)
+##  Expanded Formula: y~ d(x1) + i(x2) + h(A) + h(x1,x2) + h(x1,A) + h(x2,A)
 ##  Number of smooth variables: 3
 ##  Smoothness range: 1 -&gt; 1 
 ##  Number of basis functions: 1779
 ##  Number of monotone-increasing basis functions: 100
 ##  Number of monotone-decreasing basis functions: 100</code></pre>
-<p>Now, let’s fit some custom HALs. This is easy using the S3-class-based <code>fit_hal</code> function:</p>
+<p>Now, that we’ve illustrated the options with <code>formula_hal</code>, let’s show how to fit a HAL model with the specified formula.</p>
 <div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># get formula object</span>
-<span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span><span class="st">"y ~ ."</span>, <span class="va">data</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
-<span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">fit_hal_formula</a></span><span class="op">(</span><span class="va">formula</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">fit</span>, new_data <span class="op">=</span> <span class="va">formula</span><span class="op">$</span><span class="va">X</span><span class="op">)</span>, <span class="va">formula</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></code></pre></div>
+<span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
+  X <span class="op">=</span> <span class="va">X</span>, Y <span class="op">=</span> <span class="va">Y</span>, formula <span class="op">=</span> <span class="st">"~ ."</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span> <span class="co"># prints top 10 rows, i.e., highest absolute coefs</span></code></pre></div>
+<pre><code>## 
+## Summary of top 10 non-zero coefficients is based on lambda of 0.0006475641 
+## 
+##        coef                                term
+##   0.7346974                         (Intercept)
+##  -0.3594509   [ I(x1 &gt;= 1.188)*(x1 - 1.188)^1 ]
+##  -0.2996942   [ I(A &gt;= -3.978)*(A - -3.978)^1 ]
+##  -0.2920313 [ I(x2 &gt;= -3.992)*(x2 - -3.992)^1 ]
+##  -0.2782884   [ I(x2 &gt;= 1.679)*(x2 - 1.679)^1 ]
+##  -0.2610702     [ I(A &gt;= 1.395)*(A - 1.395)^1 ]
+##  -0.2445026 [ I(x1 &gt;= -3.972)*(x1 - -3.972)^1 ]
+##   0.1909862   [ I(A &gt;= -1.391)*(A - -1.391)^1 ]
+##   0.1768218 [ I(x2 &gt;= -1.254)*(x2 - -1.254)^1 ]
+##   0.1527683 [ I(x1 &gt;= -1.478)*(x1 - -1.478)^1 ]</code></pre>
+<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">fit</span>, new_data <span class="op">=</span> <span class="va">X</span><span class="op">)</span>, <span class="va">Y</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
 </div>
