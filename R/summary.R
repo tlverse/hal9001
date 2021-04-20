@@ -177,8 +177,10 @@ summary.hal9001 <- function(object,
   )
   summ$higher_term <- ifelse(
     summ$col_order == 0, "",
-    paste0("(", summ$col_names, " - ",
-           round(summ$col_cutoff, round_cutoffs), ")")
+    paste0(
+      "(", summ$col_names, " - ",
+      round(summ$col_cutoff, round_cutoffs), ")"
+    )
   )
   summ$higher_term <- ifelse(
     summ$col_order < 1, summ$higher_term,

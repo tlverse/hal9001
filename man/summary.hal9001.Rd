@@ -60,7 +60,7 @@ and interactions of covariates, returned as a single S3 object of class
 
 Due to the nature of the basis function terms, the summary tables can be
 extremely wide. The R environment might not be the optimal location to view
-the summary. As a tip, tables can be exported from R to LaTeX with
-\pkg{xtable} R package. Here's an example:
-\code{print(xtable(summary(fit)$table, type = "latex"), file = "~/dt.tex")}.
+the summary. Tables can be exported from R to LaTeX with \pkg{xtable}
+package (or similar). Here's an example:
+\code{print(xtable(summary(fit)$table, type = "latex"), file = "dt.tex")}.
 }

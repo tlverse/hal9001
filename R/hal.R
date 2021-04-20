@@ -271,13 +271,17 @@ fit_hal <- function(X,
   if (!is.null(X_unpenalized)) {
     assertthat::assert_that(
       all(!is.na(X_unpenalized)),
-      msg = paste("NA detected in `X_unpenalized`, missingness",
-                  "in `X_unpenalized` is not supported.")
+      msg = paste(
+        "NA detected in `X_unpenalized`, missingness",
+        "in `X_unpenalized` is not supported."
+      )
     )
     assertthat::assert_that(
       nrow(X) == nrow(X_unpenalized),
-      msg = paste("Number of rows in `X` and `X_unpenalized`,",
-                  "and length of `Y` must be equal.")
+      msg = paste(
+        "Number of rows in `X` and `X_unpenalized`,",
+        "and length of `Y` must be equal."
+      )
     )
   }
 

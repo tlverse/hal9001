@@ -1,3 +1,24 @@
+# hal9001 0.4.0
+
+As of April 2021:
+* The default of `fit_hal` is now a first order smoothed HAL with binning.
+* Updated documentation for `formula_hal`, `fit_hal` and `predict`; and
+  added `fit_control` and `formula_control` lists for arguments. Moved much of
+  the text to details sections, and shortened the argument descriptions.
+* Updated `summary` to support higher-order HAL fit interpretations.
+* Added checks to `fit_hal` for missingness and dimensionality correspondence
+  between `X`, `Y`, and `X_unpenalized`. These checks lead to quickly-produced
+  errors, opposed to enumerating the basis list and then letting `glmnet` error
+  on something trivial like this.
+* Modified formula interface in `fit_hal`, so `formula` is now provided
+  directly to `fit_hal` and `formula_hal` is run within `fit_hal`. Due to these
+  changes, it no longer made sense for `formula_hal` to accept `data`, so it
+  now takes as input `X`. Also, the `formula_fit_hal` function was removed as
+  it is no longer needed.
+* Support for the custom lasso procedure implemented in `Rcpp` has been
+  discontinued. Accordingly, the `"lassi"` option and argument `fit_type` have
+  been removed from `fit_hal`.
+
 # hal9001 0.3.0
 
 As of February 2021:
@@ -11,20 +32,6 @@ As of February 2021:
   `num_knots` argument is a vector up to `max_degree` controlling the
   degree-specific binning.
 * Adds `formula_hal` which allows a formula specification of a HAL model.
-* The default of `fit_hal` is now a first order smoothed HAL with binning.
-* Updated documentation for `formula_hal`, `fit_hal` and `predict`; and 
-  added `fit_control` and `formula_control` lists for arguments. Moved much of 
-  the text to details sections, and shortened the argument descriptions. 
-* Updated `summary` to support higher-order HAL fit interpretations.
-* Added checks to `fit_hal` for missingness and dimensionality correspondence
-  between `X`, `Y`, and `X_unpenalized`. These checks lead to quickly-produced 
-  errors, opposed to enumerating the basis list and then letting `glmnet` error 
-  on something trivial like this. 
-* Modified formula interface in `fit_hal`, so `formula` is now provided 
-  directly to `fit_hal` and `formula_hal` is run within `fit_hal`. Due to these 
-  changes, it no longer made sense for `formula_hal` to accept `data`, so it  
-  now takes as input `X`. Also, the `formula_fit_hal` function was removed as 
-  it is no longer needed.
 
 # hal9001 0.2.8
 

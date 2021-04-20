@@ -22,7 +22,9 @@ SL.hal9001(
 \arguments{
 \item{Y}{A \code{numeric} vector of observations of the outcome variable.}
 
-\item{X}{A \code{matrix} of predictors/covariates.}
+\item{X}{An input \code{matrix} with dimensions number of observations -by-
+number of covariates that will be used to derive the design matrix of basis
+functions.}
 
 \item{newX}{A matrix of new observations on which to obtain predictions. The
 default of \code{NULL} computes predictions on training inputs \code{X}.}
