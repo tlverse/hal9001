@@ -14,13 +14,12 @@
 #' @param max_degree The highest order of interaction terms for which basis
 #'  functions ought to be generated.
 #' @param smoothness_orders An \code{integer} vector of length 1 or greater,
-#'  specifying the smoothness of the basis functions. See
-#'  \code{smoothness_orders} argument in \code{\link{hal_fit}} for more
-#'  information.
+#'  specifying the smoothness of the basis functions. See the argument
+#'  \code{smoothness_orders} of \code{\link{fit_hal}} for more information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
-#'  specifying the maximum number of knot points (i.e., bins) for each covariate
-#'  for generating basis functions. See \code{num_knots} argument in
-#'  \code{\link{hal_fit}} for more information.
+#'  specifying the maximum number of knot points (i.e., bins) for each
+#'  covariate for generating basis functions. See \code{num_knots} argument in
+#'  \code{\link{fit_hal}} for more information.
 #' @param reduce_basis A \code{numeric} value bounded in the open unit interval
 #'  indicating the minimum proportion of 1's in a basis function column needed
 #'  for the basis function to be included in the procedure to fit the lasso.
@@ -28,8 +27,8 @@
 #'  removed.
 #' @param lambda A user-specified sequence of values of the regularization
 #'  parameter for the lasso L1 regression. If \code{NULL}, the default sequence
-#'  in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated optimal
-#'  value of this regularization parameter will be selected with
+#'  in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated
+#'  optimal value of this regularization parameter will be selected with
 #'  \code{\link[glmnet]{cv.glmnet}}.
 #' @param ... Not used.
 #'
@@ -58,9 +57,10 @@ SL.hal9001 <- function(Y,
 
   # fit hal
   hal_fit <- fit_hal(
-    X = X, Y = Y, family = family$family, fit_control = list(weights = obsWeights),
-    id = id, max_degree = max_degree, smoothness_orders = smoothness_orders,
-    num_knots = num_knots, reduce_basis = reduce_basis, lambda = lambda
+    X = X, Y = Y, family = family$family,
+    fit_control = list(weights = obsWeights), id = id, max_degree = max_degree,
+    smoothness_orders = smoothness_orders, num_knots = num_knots, reduce_basis
+    = reduce_basis, lambda = lambda
   )
 
   # compute predictions based on `newX` or input `X`
@@ -77,7 +77,7 @@ SL.hal9001 <- function(Y,
   return(out)
 }
 
-################################################################################
+###############################################################################
 
 #' predict.SL.hal9001
 #'

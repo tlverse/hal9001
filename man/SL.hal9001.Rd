@@ -39,14 +39,13 @@ generalized linear model.}
 functions ought to be generated.}
 
 \item{smoothness_orders}{An \code{integer} vector of length 1 or greater,
-specifying the smoothness of the basis functions. See
-\code{smoothness_orders} argument in \code{\link{hal_fit}} for more
-information.}
+specifying the smoothness of the basis functions. See the argument
+\code{smoothness_orders} of \code{\link{fit_hal}} for more information.}
 
 \item{num_knots}{An \code{integer} vector of length 1 or \code{max_degree},
-specifying the maximum number of knot points (i.e., bins) for each covariate
-for generating basis functions. See \code{num_knots} argument in
-\code{\link{hal_fit}} for more information.}
+specifying the maximum number of knot points (i.e., bins) for each
+covariate for generating basis functions. See \code{num_knots} argument in
+\code{\link{fit_hal}} for more information.}
 
 \item{reduce_basis}{A \code{numeric} value bounded in the open unit interval
 indicating the minimum proportion of 1's in a basis function column needed
@@ -56,8 +55,8 @@ removed.}
 
 \item{lambda}{A user-specified sequence of values of the regularization
 parameter for the lasso L1 regression. If \code{NULL}, the default sequence
-in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated optimal
-value of this regularization parameter will be selected with
+in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated
+optimal value of this regularization parameter will be selected with
 \code{\link[glmnet]{cv.glmnet}}.}
 
 \item{...}{Not used.}
