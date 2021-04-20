@@ -1,4 +1,5 @@
 utils::globalVariables(c("..redundant"))
+
 #' Summary Method for HAL fit objects
 #'
 #' @details Method for summarizing the coefficients of the Highly Adaptive
@@ -8,9 +9,9 @@ utils::globalVariables(c("..redundant"))
 #'
 #'  Due to the nature of the basis function terms, the summary tables can be
 #'  extremely wide. The R environment might not be the optimal location to view
-#'  the summary. As a tip, tables can be exported from R to LaTeX with
-#'  \pkg{xtable} R package. Here's an example:
-#'  \code{print(xtable(summary(fit)$table, type = "latex"), file = "~/dt.tex")}.
+#'  the summary. Tables can be exported from R to LaTeX with \pkg{xtable}
+#'  package (or similar). Here's an example:
+#'  \code{print(xtable(summary(fit)$table, type = "latex"), file = "dt.tex")}.
 #'
 #' @param object An object of class \code{hal9001}, containing the results of
 #'  fitting the Highly Adaptive Lasso, as produced by \code{\link{fit_hal}}.
@@ -176,7 +177,8 @@ summary.hal9001 <- function(object,
   )
   summ$higher_term <- ifelse(
     summ$col_order == 0, "",
-    paste0("(", summ$col_names, " - ", round(summ$col_cutoff, round_cutoffs), ")")
+    paste0("(", summ$col_names, " - ",
+           round(summ$col_cutoff, round_cutoffs), ")")
   )
   summ$higher_term <- ifelse(
     summ$col_order < 1, summ$higher_term,

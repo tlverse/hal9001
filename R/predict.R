@@ -8,7 +8,7 @@
 #'  fitting the Highly Adaptive Lasso, as produced by \code{\link{fit_hal}}.
 #' @param new_data A \code{matrix} or \code{data.frame} containing new data
 #'  (i.e., observations not used for fitting the \code{hal9001} object that's
-#'  passed in via the \code{object} argument above) for which the \code{hal9001}
+#'  passed in via the \code{object} argument) for which the \code{hal9001}
 #'  object will compute predicted values.
 #' @param new_X_unpenalized If the user supplied \code{X_unpenalized} during
 #'  training, then user should also supply this matrix with the same number of

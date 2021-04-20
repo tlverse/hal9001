@@ -10,14 +10,13 @@
 #'  \eqn{(n * 2^(d-1))}, where where \eqn{n} is the number of observations and
 #'  \eqn{d} is the number of covariates.
 #'
-#'  For \code{smoothness_orders = 0}, only zero-order splines
-#'  (piece-wise constant) are generated, which assume the true regression
-#'  function has no smoothness or continuity. When \code{smoothness_orders = 1},
-#'  first-order splines (piece-wise linear) are generated, which assume
-#'  continuity of the true regression function. When
-#'  \code{smoothness_orders = 2}, second-order splines (piece-wise quadratic
-#'  and linear terms) are generated, which assume a the true regression
-#'  function has a single order of differentiability.
+#'  For \code{smoothness_orders = 0}, only zero-order splines (piece-wise
+#'  constant) are generated, which assume the true regression function has no
+#'  smoothness or continuity. When \code{smoothness_orders = 1}, first-order
+#'  splines (piece-wise linear) are generated, which assume continuity of the
+#'  true regression function. When \code{smoothness_orders = 2}, second-order
+#'  splines (piece-wise quadratic and linear terms) are generated, which assume
+#'  a the true regression function has a single order of differentiability.
 #'
 #'  \code{num_knots} argument specifies the number of knot points for each
 #'  covariate and for each \code{max_degree}. Fewer knot points can
@@ -29,7 +28,7 @@
 #'  \code{smoothness_orders}, and as a vector of length \code{max_degree} with
 #'  values decreasing exponentially. This prevents combinatorial explosions in
 #'  the number of higher-degree basis functions generated. The default behavior
-#'  of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
+#'  of \code{num_knots} follows this logic -- for \code{smoothness_orders = 0},
 #'  \code{num_knots} is set to \eqn{500 / 2^{j-1}}, and for
 #'  \code{smoothness_orders = 1} or higher, \code{num_knots} is set to
 #'  \eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
@@ -97,15 +96,15 @@
 #'  \code{smoothness_orders}, and the \code{adaptive_smoothing} argument for
 #'  more information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
-#'  specifying the maximum number of knot points (i.e., bins) for each covariate
-#'  for generating basis functions. If \code{num_knots} is a vector of length 1,
-#'  then the same \code{num_knots} are used for each degree (this is not
-#'  recommended). The default settings for \code{num_knots} are recommended,
-#'  and these defaults decrease \code{num_knots} with increasing
-#'  \code{max_degree} and \code{smoothness_orders}, which prevents combinatorial
-#'  explosions in the number of higher-degree and higher-order basis functions
-#'  generated. This allows the complexity of the optimization problem to grow
-#'  scalably. See details for \code{num_knots} more information.
+#'  specifying the maximum number of knot points (i.e., bins) for any covariate
+#'  for generating basis functions. If \code{num_knots} is a unit-length
+#'  vector, then the same \code{num_knots} are used for each degree (this is
+#'  not recommended). The default settings for \code{num_knots} are
+#'  recommended, and these defaults decrease \code{num_knots} with increasing
+#'  \code{max_degree} and \code{smoothness_orders}, which prevents (expensive)
+#'  combinatorial explosions in the number of higher-degree and higher-order
+#'  basis functions generated. This allows the complexity of the optimization
+#'  problem to grow scalably. See details of \code{num_knots} more information.
 #' @param reduce_basis A \code{numeric} value bounded in the open unit interval
 #'  indicating the minimum proportion of 1's in a basis function column needed
 #'  for the basis function to be included in the procedure to fit the lasso.
@@ -127,19 +126,19 @@
 #'  calling \code{fit_hal}.
 #' @param lambda User-specified sequence of values of the regularization
 #'  parameter for the lasso L1 regression. If \code{NULL}, the default sequence
-#'  in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated optimal
-#'  value of this regularization parameter will be selected with
+#'  in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated
+#'  optimal value of this regularization parameter will be selected with
 #'  \code{\link[glmnet]{cv.glmnet}}. If \code{fit_control}'s \code{cv_select}
 #'  argument is set to \code{FALSE}, then the lasso model will be fit via
 #'  \code{\link[glmnet]{glmnet}}, and regularized coefficient values for each
 #'  lambda in the input array will be returned.
-#' @param id a vector of ID values that is used to generate cross-validation
-#'  folds for \code{\link[glmnet]{cv.glmnet}}, and is ignored when
+#' @param id A vector of ID values that is used to generate cross-validation
+#'  folds for \code{\link[glmnet]{cv.glmnet}}. This argument is ignored when
 #'  \code{fit_control}'s \code{cv_select} argument is \code{FALSE}.
 #' @param offset a vector of offset values, used in fitting.
 #' @param fit_control List of arguments for fitting. Includes the following
-#'  arguments, and others to be passed to \code{\link[glmnet]{cv.glmnet}}
-#'  and \code{\link[glmnet]{glmnet}}.
+#'  arguments, and any others to be passed to \code{\link[glmnet]{cv.glmnet}}
+#'  or \code{\link[glmnet]{glmnet}}.
 #'  - \code{cv_select}: A \code{logical} specifying if the sequence of
 #'    specified \code{lambda} values should be passed to
 #'    \code{\link[glmnet]{cv.glmnet}} in order for a single, optimal value of
@@ -154,9 +153,10 @@
 #'    assigned. If supplied, \code{n_folds} can be missing. In such a case,
 #'    this vector is passed directly to \code{\link[glmnet]{cv.glmnet}}. Only
 #'    used when \code{cv_select = TRUE}.
-#' - \code{use_min}: Specify lambda selected by \code{\link[glmnet]{cv.glmnet}}.
-#'   When \code{TRUE}, \code{"lambda.min"} is used; otherwise,
-#'   \code{"lambda.1se"}. Only used when \code{cv_select = TRUE}.
+#' - \code{use_min}: Specify the choice of lambda to be selected by
+#'   \code{\link[glmnet]{cv.glmnet}}. When \code{TRUE}, \code{"lambda.min"} is
+#'   used; otherwise, \code{"lambda.1se"}. Only used when
+#'   \code{cv_select = TRUE}.
 #' - \code{prediction_bounds}: A vector of size two that provides the lower and
 #'   upper bounds for predictions. When \code{prediction_bounds = "default"},
 #'   the predictions are bounded between \code{min(Y) - sd(Y)} and
@@ -247,7 +247,8 @@ fit_hal <- function(X,
   )
   if (any(!names(defaults) %in% names(formula_control))) {
     formula_control <- c(
-      defaults[which(!names(defaults) %in% names(formula_control))], formula_control
+      defaults[which(!names(defaults) %in% names(formula_control))],
+      formula_control
     )
   }
 
@@ -270,11 +271,13 @@ fit_hal <- function(X,
   if (!is.null(X_unpenalized)) {
     assertthat::assert_that(
       all(!is.na(X_unpenalized)),
-      msg = "NA detected in `X_unpenalized`, missingness in `X_unpenalized` is not supported"
+      msg = paste("NA detected in `X_unpenalized`, missingness",
+                  "in `X_unpenalized` is not supported.")
     )
     assertthat::assert_that(
       nrow(X) == nrow(X_unpenalized),
-      msg = "Number of rows in `X` and `X_unpenalized`, and length of `Y` must be equal"
+      msg = paste("Number of rows in `X` and `X_unpenalized`,",
+                  "and length of `Y` must be equal.")
     )
   }
 
