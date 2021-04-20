@@ -227,10 +227,7 @@ fit_hal <- function(X,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     yolo = FALSE) {
-
-  ##### TODO: revisit temporary fixes to avoid test errors
-  # binomial() crashes in match.arg
-  if (length(family) == 4) {
+  if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
 
@@ -254,7 +251,6 @@ fit_hal <- function(X,
     )
   }
 
-
   if (!is.matrix(X)) X <- as.matrix(X)
 
   # check for missingness and ensure dimensionality matches
@@ -271,6 +267,17 @@ fit_hal <- function(X,
     msg = "Number of rows in `X` and length of `Y` must be equal"
   )
 
+  if (!is.null(X_unpenalized)) {
+    assertthat::assert_that(
+      all(!is.na(X_unpenalized)),
+      msg = "NA detected in `X_unpenalized`, missingness in `X_unpenalized` is not supported"
+    )
+    assertthat::assert_that(
+      nrow(X) == nrow(X_unpenalized),
+      msg = "Number of rows in `X` and `X_unpenalized`, and length of `Y` must be equal"
+    )
+  }
+
   if (!is.null(formula)) {
     formula <- formula_hal(
       formula = formula, X = X, smoothness_orders = smoothness_orders,
@@ -281,17 +288,6 @@ fit_hal <- function(X,
     basis_list <- formula$basis_list
     fit_control$upper.limits <- formula$upper.limits
     fit_control$lower.limits <- formula$lower.limits
-  }
-
-  if (!is.null(X_unpenalized)) {
-    assertthat::assert_that(
-      all(!is.na(X_unpenalized)),
-      msg = "NA detected in `X_unpenalized`, missingness in `X_unpenalized` is not supported"
-    )
-    assertthat::assert_that(
-      nrow(X) == nrow(X_unpenalized),
-      msg = "Number of rows in `X` and `X_unpenalized`, and length of `Y` must be equal"
-    )
   }
 
   # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
@@ -367,7 +363,6 @@ fit_hal <- function(X,
   if (!is.null(colnames(X))) {
     X_colnames <- colnames(X)
   } else {
-    # TODO: add warning
     X_colnames <- paste0("x", 1:ncol(X))
   }
 
