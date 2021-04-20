@@ -11,6 +11,11 @@ SL.hal9001(
   family = stats::gaussian(),
   obsWeights = rep(1, length(Y)),
   id = NULL,
+  max_degree = ifelse(ncol(X) >= 20, 2, 3),
+  smoothness_orders = 1,
+  num_knots = ifelse(smoothness_orders >= 1, 25, 50),
+  reduce_basis = 1/sqrt(length(Y)),
+  lambda = NULL,
   ...
 )
 }
@@ -30,8 +35,32 @@ generalized linear model.}
 
 \item{id}{A \code{numeric} vector of IDs.}
 
-\item{...}{Additional arguments passed to \code{fit_hal}. See its
-documentation for more details.}
+\item{max_degree}{The highest order of interaction terms for which basis
+functions ought to be generated.}
+
+\item{smoothness_orders}{An \code{integer} vector of length 1 or greater,
+specifying the smoothness of the basis functions. See
+\code{smoothness_orders} argument in \code{\link{hal_fit}} for more
+information.}
+
+\item{num_knots}{An \code{integer} vector of length 1 or \code{max_degree},
+specifying the maximum number of knot points (i.e., bins) for each covariate
+for generating basis functions. See \code{num_knots} argument in
+\code{\link{hal_fit}} for more information.}
+
+\item{reduce_basis}{A \code{numeric} value bounded in the open unit interval
+indicating the minimum proportion of 1's in a basis function column needed
+for the basis function to be included in the procedure to fit the lasso.
+Any basis functions with a lower proportion of 1's than the cutoff will be
+removed.}
+
+\item{lambda}{A user-specified sequence of values of the regularization
+parameter for the lasso L1 regression. If \code{NULL}, the default sequence
+in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated optimal
+value of this regularization parameter will be selected with
+\code{\link[glmnet]{cv.glmnet}}.}
+
+\item{...}{Not used.}
 }
 \value{
 An object of class \code{SL.hal9001} with a fitted \code{hal9001}
