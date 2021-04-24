@@ -207,7 +207,7 @@ fit_hal <- function(X,
                       base_num_knots_1 = 200
                     ),
                     adaptive_smoothing = FALSE,
-                    reduce_basis = NULL,
+                    reduce_basis = 1 / sqrt(length(Y)),
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
                     id = NULL,
