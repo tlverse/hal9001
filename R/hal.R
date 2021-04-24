@@ -207,7 +207,7 @@ fit_hal <- function(X,
                       base_num_knots_1 = 200
                     ),
                     adaptive_smoothing = FALSE,
-                    reduce_basis = 1 / sqrt(length(Y)),
+                    reduce_basis = NULL,
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
                     id = NULL,
@@ -421,6 +421,7 @@ fit_hal <- function(X,
   fit_control$family <- family
   fit_control$lambda <- lambda
   fit_control$penalty.factor <- penalty_factor
+  fit_control$offset <- offset
 
   if (!fit_control$cv_select) {
     hal_lasso <- do.call(glmnet::glmnet, fit_control)
@@ -458,7 +459,7 @@ fit_hal <- function(X,
   if (!inherits(Y, "Surv") & fit_control$prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
     fit_control$prediction_bounds <- c(
-      min(Y) - stats::sd(Y) / 2, max(Y) + stats::sd(Y) / 2
+      min(Y) - 2*stats::sd(Y) , max(Y) + 2*stats::sd(Y) 
     )
   } else if (inherits(Y, "Surv") & fit_control$prediction_bounds == "default") {
     fit_control$prediction_bounds <- NULL
