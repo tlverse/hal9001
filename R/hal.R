@@ -56,6 +56,25 @@
 #'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(25, 10, 5)}.
 #'
+#'  \code{adaptive_smoothing} is easiest to explain with an example. Consider
+#'  \code{smoothness_orders = 2} and \code{adaptive_smoothing = TRUE}. First,
+#'  basis functions of \code{smoothness_orders} 0, 1 and 2 are generated and
+#'  lasso models are fit to the three corresponding design matrices via
+#'  \code{\link[glmnet]{cv.glmnet}}. For each of the three lasso fits, which
+#'  correspond to the three \code{smoothness_orders}, the optimal lambda value
+#'  is selected. Let's refer to the optimal lambda value from each lasso model
+#'  as "lambda_star". Lastly, final selection of \code{smoothness_orders} is
+#'  based on the smoothness whose lambda_star yielded the smallest
+#'  cross-validated risk according to the \code{\link[glmnet]{cv.glmnet}} fit.
+#'  The coefficients, design matrix, etc. from this optimal order of smoothness
+#'  are returned. Note that adaptive smoothing can increase runtime by a factor
+#'  of 2-3 depending on the value of \code{smoothness_orders} and the number of
+#'  \code{smoothness_orders} considered. Wen \code{smoothness_orders} is of
+#'  length greater than 1, \code{adaptive_smoothing} is automatically set to
+#'  \code{TRUE} and performed over the vector of supplied
+#'  \code{smoothness_orders}. For example, to only consider
+#'  \code{adaptive_smoothing} over \code{smoothness_orders} of 1 and 2, but not
+#'  0, one would need to specify \code{smoothness_orders = c(1,2)}.
 #'
 #' @param X An input \code{matrix} with dimensions number of observations -by-
 #'  number of covariates that will be used to derive the design matrix of basis
@@ -69,9 +88,12 @@
 #'  expansion is performed on \code{X_unpenalized}.
 #' @param max_degree The highest order of interaction terms for which basis
 #'  functions ought to be generated.
-#' @param smoothness_orders An \code{integer}
-#'  specifying the smoothness of the basis functions. See details for
-#'  \code{smoothness_orders} argument for
+#' @param smoothness_orders An \code{integer} vector of length 1 or greater,
+#'  specifying the smoothness of the basis functions. If
+#'  \code{smoothness_orders} is a vector of length greater than 1, then all
+#'  \code{smoothness_orders} in the vector will be considered in the
+#'  \code{adaptive_smoothing} procedure. See details for
+#'  \code{smoothness_orders}, and the \code{adaptive_smoothing} argument for
 #'  more information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
 #'  specifying the maximum number of knot points (i.e., bins) for any covariate
@@ -89,6 +111,9 @@
 #'  Any basis functions with a lower proportion of 1's than the cutoff will be
 #'  removed. When \code{reduce_basis} is set to \code{NULL}, all basis
 #'  functions are used in the lasso-fitting stage of \code{fit_hal}.
+#' @param adaptive_smoothing A \code{logical} indicating whether to perform
+#'  adaptive smoothing up to the maximum order of \code{smoothness_orders}. See
+#'  details on \code{adaptive_smoothing} for more information.
 #' @param family A \code{character} or a \code{\link[stats]{family}} object
 #'  (supported by \code{\link[glmnet]{glmnet}}) specifying the error/link
 #'  family for a generalized linear model. \code{character} options are limited
@@ -174,13 +199,14 @@ fit_hal <- function(X,
                     formula = NULL,
                     X_unpenalized = NULL,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
-                    smoothness_orders = 1,
+                    smoothness_orders = rep(1, ncol(X)),
                     num_knots = sapply(seq_len(max_degree),
                       num_knots_generator,
                       smoothness_orders = smoothness_orders,
                       base_num_knots_0 = 500,
-                      base_num_knots_1 = 75
+                      base_num_knots_1 = 200
                     ),
+                    adaptive_smoothing = FALSE,
                     reduce_basis = 1 / sqrt(length(Y)),
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
@@ -191,8 +217,7 @@ fit_hal <- function(X,
                       n_folds = 10,
                       foldid = NULL,
                       use_min = TRUE,
-                      prediction_bounds = "default",
-                      lambda.min.ratio = 1e-5
+                      prediction_bounds = "default"
                     ),
                     formula_control = list(
                       exclusive_dot = FALSE,
@@ -202,9 +227,6 @@ fit_hal <- function(X,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     yolo = FALSE) {
-  
-  # For now set to F. Later maybe remove internal functionality altogether.
-  adaptive_smoothing <- FALSE
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
@@ -212,7 +234,7 @@ fit_hal <- function(X,
   # errors when a supplied control list is missing arguments
   defaults <- list(
     cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
-    prediction_bounds = "default", lambda.min.ratio = 1e-5
+    prediction_bounds = "default"
   )
   if (any(!names(defaults) %in% names(fit_control))) {
     fit_control <- c(
