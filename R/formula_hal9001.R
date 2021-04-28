@@ -125,8 +125,6 @@
 #'  from the \code{formula}. See its documentation in \code{\link{fit_hal}}.
 #' @param num_knots Necessary argument for generating basis functions from the
 #'  \code{formula}. See its documentation in \code{\link{fit_hal}}.
-#' @param adaptive_smoothing Necessary argument for generating basis functions
-#'  from the \code{formula}. See its documentation in \code{\link{fit_hal}}.
 #'
 #' @importFrom stringr str_match str_split str_detect str_remove str_replace str_extract
 #' @importFrom assertthat assert_that
@@ -135,10 +133,9 @@
 #'
 #' @export
 formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
-                        smoothness_orders = NULL, num_knots = NULL,
-                        adaptive_smoothing = FALSE) {
-  generate_lower_degrees <- adaptive_smoothing
-  include_zero_order <- adaptive_smoothing
+                        smoothness_orders = NULL, num_knots = NULL) {
+  generate_lower_degrees <- FALSE
+  include_zero_order <- FALSE
   remove <- NULL
   if (any(sapply(names(custom_group), function(name) {
     nchar(name) != 1

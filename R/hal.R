@@ -28,7 +28,7 @@
 #'  \code{smoothness_orders}, and as a vector of length \code{max_degree} with
 #'  values decreasing exponentially. This prevents combinatorial explosions in
 #'  the number of higher-degree basis functions generated. The default behavior
-#'  of \code{num_knots} follows this logic -- for \code{smoothness_orders = 0},
+#'  of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
 #'  \code{num_knots} is set to \eqn{500 / 2^{j-1}}, and for
 #'  \code{smoothness_orders = 1} or higher, \code{num_knots} is set to
 #'  \eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
@@ -56,26 +56,6 @@
 #'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(25, 10, 5)}.
 #'
-#'  \code{adaptive_smoothing} is easiest to explain with an example. Consider
-#'  \code{smoothness_orders = 2} and \code{adaptive_smoothing = TRUE}. First,
-#'  basis functions of \code{smoothness_orders} 0, 1 and 2 are generated and
-#'  lasso models are fit to the three corresponding design matrices via
-#'  \code{\link[glmnet]{cv.glmnet}}. For each of the three lasso fits, which
-#'  correspond to the three \code{smoothness_orders}, the optimal lambda value
-#'  is selected. Let's refer to the optimal lambda value from each lasso model
-#'  as "lambda_star". Lastly, final selection of \code{smoothness_orders} is
-#'  based on the smoothness whose lambda_star yielded the smallest
-#'  cross-validated risk according to the \code{\link[glmnet]{cv.glmnet}} fit.
-#'  The coefficients, design matrix, etc. from this optimal order of smoothness
-#'  are returned. Note that adaptive smoothing can increase runtime by a factor
-#'  of 2-3 depending on the value of \code{smoothness_orders} and the number of
-#'  \code{smoothness_orders} considered. Wen \code{smoothness_orders} is of
-#'  length greater than 1, \code{adaptive_smoothing} is automatically set to
-#'  \code{TRUE} and performed over the vector of supplied
-#'  \code{smoothness_orders}. For example, to only consider
-#'  \code{adaptive_smoothing} over \code{smoothness_orders} of 1 and 2, but not
-#'  0, one would need to specify \code{smoothness_orders = c(1,2)}.
-#'
 #' @param X An input \code{matrix} with dimensions number of observations -by-
 #'  number of covariates that will be used to derive the design matrix of basis
 #'  functions.
@@ -88,13 +68,9 @@
 #'  expansion is performed on \code{X_unpenalized}.
 #' @param max_degree The highest order of interaction terms for which basis
 #'  functions ought to be generated.
-#' @param smoothness_orders An \code{integer} vector of length 1 or greater,
-#'  specifying the smoothness of the basis functions. If
-#'  \code{smoothness_orders} is a vector of length greater than 1, then all
-#'  \code{smoothness_orders} in the vector will be considered in the
-#'  \code{adaptive_smoothing} procedure. See details for
-#'  \code{smoothness_orders}, and the \code{adaptive_smoothing} argument for
-#'  more information.
+#' @param smoothness_orders An \code{integer}, specifying the smoothness of the 
+#'  basis functions. See details for \code{smoothness_orders} for more 
+#'  information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
 #'  specifying the maximum number of knot points (i.e., bins) for any covariate
 #'  for generating basis functions. If \code{num_knots} is a unit-length
@@ -111,9 +87,6 @@
 #'  Any basis functions with a lower proportion of 1's than the cutoff will be
 #'  removed. When \code{reduce_basis} is set to \code{NULL}, all basis
 #'  functions are used in the lasso-fitting stage of \code{fit_hal}.
-#' @param adaptive_smoothing A \code{logical} indicating whether to perform
-#'  adaptive smoothing up to the maximum order of \code{smoothness_orders}. See
-#'  details on \code{adaptive_smoothing} for more information.
 #' @param family A \code{character} or a \code{\link[stats]{family}} object
 #'  (supported by \code{\link[glmnet]{glmnet}}) specifying the error/link
 #'  family for a generalized linear model. \code{character} options are limited
@@ -199,14 +172,13 @@ fit_hal <- function(X,
                     formula = NULL,
                     X_unpenalized = NULL,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
-                    smoothness_orders = rep(1, ncol(X)),
+                    smoothness_orders = 1,
                     num_knots = sapply(seq_len(max_degree),
                       num_knots_generator,
                       smoothness_orders = smoothness_orders,
                       base_num_knots_0 = 500,
                       base_num_knots_1 = 200
                     ),
-                    adaptive_smoothing = FALSE,
                     reduce_basis = 1 / sqrt(length(Y)),
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
@@ -288,8 +260,7 @@ fit_hal <- function(X,
   if (!is.null(formula)) {
     formula <- formula_hal(
       formula = formula, X = X, smoothness_orders = smoothness_orders,
-      num_knots = num_knots, adaptive_smoothing = adaptive_smoothing,
-      exclusive_dot = formula_control$exclusive_dot,
+      num_knots = num_knots, exclusive_dot = formula_control$exclusive_dot,
       custom_group = formula_control$custom_group
     )
     basis_list <- formula$basis_list
@@ -313,23 +284,13 @@ fit_hal <- function(X,
 
   # enumerate basis functions for making HAL design matrix
   if (is.null(basis_list)) {
-    # Generates all basis functions of smoothness less than or equal to the
-    # smoothness specified in smoothness_order
-    # This allows the lasso algorithm to data-adaptively choose the smoothness.
-    if (adaptive_smoothing && all(smoothness_orders != 0)) {
-      include_lower_order <- TRUE
-      include_zero_order <- TRUE
-    } else {
-      include_zero_order <- FALSE
-      include_lower_order <- FALSE
-    }
     basis_list <- enumerate_basis(
       X,
       max_degree = max_degree,
       smoothness_orders = smoothness_orders,
       num_knots = num_knots,
-      include_lower_order = include_lower_order,
-      include_zero_order = include_zero_order
+      include_lower_order = FALSE,
+      include_zero_order = FALSE
     )
   }
 
