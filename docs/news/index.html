@@ -136,6 +136,7 @@
 <li>Added checks to <code>fit_hal</code> for missingness and dimensionality correspondence between <code>X</code>, <code>Y</code>, and <code>X_unpenalized</code>. These checks lead to quickly-produced errors, opposed to enumerating the basis list and then letting <code>glmnet</code> error on something trivial like this.</li>
 <li>Modified formula interface in <code>fit_hal</code>, so <code>formula</code> is now provided directly to <code>fit_hal</code> and <code>formula_hal</code> is run within <code>fit_hal</code>. Due to these changes, it no longer made sense for <code>formula_hal</code> to accept <code>data</code>, so it now takes as input <code>X</code>. Also, the <code>formula_fit_hal</code> function was removed as it is no longer needed.</li>
 <li>Support for the custom lasso procedure implemented in <code>Rcpp</code> has been discontinued. Accordingly, the <code>"lassi"</code> option and argument <code>fit_type</code> have been removed from <code>fit_hal</code>.</li>
+<li>Re-added <code>lamdba.min.ratio</code> as a <code>fit_control</code> argument to <code>fit_hal</code>. We’ve seen that not setting <code>lambda.min.ratio</code> in <code>glmnet</code> can lead to no <code>lambda</code> values that fit the data sufficiently well, so it seems appropriate to override the <code>glmnet</code> default.</li>
 </ul>
 </div>
     <div id="hal9001-030" class="section level1">
