@@ -136,10 +136,9 @@
   formula <span class='op'>=</span> <span class='cn'>NULL</span>,
   X_unpenalized <span class='op'>=</span> <span class='cn'>NULL</span>,
   max_degree <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span> <span class='op'>&gt;=</span> <span class='fl'>20</span>, <span class='fl'>2</span>, <span class='fl'>3</span><span class='op'>)</span>,
-  smoothness_orders <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span>,
+  smoothness_orders <span class='op'>=</span> <span class='fl'>1</span>,
   num_knots <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>max_degree</span><span class='op'>)</span>, <span class='va'>num_knots_generator</span>, smoothness_orders <span class='op'>=</span>
     <span class='va'>smoothness_orders</span>, base_num_knots_0 <span class='op'>=</span> <span class='fl'>500</span>, base_num_knots_1 <span class='op'>=</span> <span class='fl'>200</span><span class='op'>)</span>,
-  adaptive_smoothing <span class='op'>=</span> <span class='cn'>FALSE</span>,
   reduce_basis <span class='op'>=</span> <span class='fl'>1</span><span class='op'>/</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
   family <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>, <span class='st'>"poisson"</span>, <span class='st'>"cox"</span><span class='op'>)</span>,
   lambda <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -186,32 +185,22 @@ functions ought to be generated.</p></td>
     </tr>
     <tr>
       <th>smoothness_orders</th>
-      <td><p>An <code>integer</code> vector of length 1 or greater,
-specifying the smoothness of the basis functions. If
-<code>smoothness_orders</code> is a vector of length greater than 1, then all
-<code>smoothness_orders</code> in the vector will be considered in the
-<code>adaptive_smoothing</code> procedure. See details for
-<code>smoothness_orders</code>, and the <code>adaptive_smoothing</code> argument for
-more information.</p></td>
+      <td><p>An <code>integer</code>, specifying the smoothness of the
+basis functions. See details for <code>smoothness_orders</code> for more
+information.</p></td>
     </tr>
     <tr>
       <th>num_knots</th>
       <td><p>An <code>integer</code> vector of length 1 or <code>max_degree</code>,
-specifying the maximum number of knot points (i.e., bins) for each covariate
-for generating basis functions. If <code>num_knots</code> is a vector of length 1,
-then the same <code>num_knots</code> are used for each degree (this is not
-recommended). The default settings for <code>num_knots</code> are recommended,
-and these defaults decrease <code>num_knots</code> with increasing
-<code>max_degree</code> and <code>smoothness_orders</code>, which prevents combinatorial
-explosions in the number of higher-degree and higher-order basis functions
-generated. This allows the complexity of the optimization problem to grow
-scalably. See details for <code>num_knots</code> more information.</p></td>
-    </tr>
-    <tr>
-      <th>adaptive_smoothing</th>
-      <td><p>A <code>logical</code> indicating whether to perform
-adaptive smoothing up to the maximum order of <code>smoothness_orders</code>. See
-details on <code>adaptive_smoothing</code> for more information.</p></td>
+specifying the maximum number of knot points (i.e., bins) for any covariate
+for generating basis functions. If <code>num_knots</code> is a unit-length
+vector, then the same <code>num_knots</code> are used for each degree (this is
+not recommended). The default settings for <code>num_knots</code> are
+recommended, and these defaults decrease <code>num_knots</code> with increasing
+<code>max_degree</code> and <code>smoothness_orders</code>, which prevents (expensive)
+combinatorial explosions in the number of higher-degree and higher-order
+basis functions generated. This allows the complexity of the optimization
+problem to grow scalably. See details of <code>num_knots</code> more information.</p></td>
     </tr>
     <tr>
       <th>reduce_basis</th>
@@ -239,8 +228,8 @@ calling <code>fit_hal</code>.</p></td>
       <th>lambda</th>
       <td><p>User-specified sequence of values of the regularization
 parameter for the lasso L1 regression. If <code>NULL</code>, the default sequence
-in <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> will be used. The cross-validated optimal
-value of this regularization parameter will be selected with
+in <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> will be used. The cross-validated
+optimal value of this regularization parameter will be selected with
 <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. If <code>fit_control</code>'s <code>cv_select</code>
 argument is set to <code>FALSE</code>, then the lasso model will be fit via
 <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code>, and regularized coefficient values for each
@@ -248,8 +237,8 @@ lambda in the input array will be returned.</p></td>
     </tr>
     <tr>
       <th>id</th>
-      <td><p>a vector of ID values that is used to generate cross-validation
-folds for <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>, and is ignored when
+      <td><p>A vector of ID values that is used to generate cross-validation
+folds for <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. This argument is ignored when
 <code>fit_control</code>'s <code>cv_select</code> argument is <code>FALSE</code>.</p></td>
     </tr>
     <tr>
@@ -259,8 +248,8 @@ folds for <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>c
     <tr>
       <th>fit_control</th>
       <td><p>List of arguments for fitting. Includes the following
-arguments, and others to be passed to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>
-and <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code>.</p><ul>
+arguments, and any others to be passed to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>
+or <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code>.</p><ul>
 <li><p><code>cv_select</code>: A <code>logical</code> specifying if the sequence of
 specified <code>lambda</code> values should be passed to
 <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> in order for a single, optimal value of
@@ -275,9 +264,10 @@ the data for V-fold cross-validation. Only used when
 assigned. If supplied, <code>n_folds</code> can be missing. In such a case,
 this vector is passed directly to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. Only
 used when <code>cv_select = TRUE</code>.</p></li>
-<li><p><code>use_min</code>: Specify lambda selected by <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>.
-When <code>TRUE</code>, <code>"lambda.min"</code> is used; otherwise,
-<code>"lambda.1se"</code>. Only used when <code>cv_select = TRUE</code>.</p></li>
+<li><p><code>use_min</code>: Specify the choice of lambda to be selected by
+<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. When <code>TRUE</code>, <code>"lambda.min"</code> is
+used; otherwise, <code>"lambda.1se"</code>. Only used when
+<code>cv_select = TRUE</code>.</p></li>
 <li><p><code>prediction_bounds</code>: A vector of size two that provides the lower and
 upper bounds for predictions. When <code>prediction_bounds = "default"</code>,
 the predictions are bounded between <code>min(Y) - sd(Y)</code> and
@@ -326,14 +316,13 @@ covariates. The lasso regression is fit to this design matrix via
 <span class="pkg">origami</span>. The maximum dimension of the design matrix is \(n\) -by-
 \((n * 2^(d-1))\), where where \(n\) is the number of observations and
 \(d\) is the number of covariates.</p>
-<p>For <code>smoothness_orders = 0</code>, only zero-order splines
-(piece-wise constant) are generated, which assume the true regression
-function has no smoothness or continuity. When <code>smoothness_orders = 1</code>,
-first-order splines (piece-wise linear) are generated, which assume
-continuity of the true regression function. When
-<code>smoothness_orders = 2</code>, second-order splines (piece-wise quadratic
-and linear terms) are generated, which assume a the true regression
-function has a single order of differentiability.</p>
+<p>For <code>smoothness_orders = 0</code>, only zero-order splines (piece-wise
+constant) are generated, which assume the true regression function has no
+smoothness or continuity. When <code>smoothness_orders = 1</code>, first-order
+splines (piece-wise linear) are generated, which assume continuity of the
+true regression function. When <code>smoothness_orders = 2</code>, second-order
+splines (piece-wise quadratic and linear terms) are generated, which assume
+a the true regression function has a single order of differentiability.</p>
 <p><code>num_knots</code> argument specifies the number of knot points for each
 covariate and for each <code>max_degree</code>. Fewer knot points can
 significantly decrease runtime, but might be overly simplistic. When
@@ -377,25 +366,6 @@ in a faster runtime:</p><ul>
 </ul></li>
 </ul>
 
-<p><code>adaptive_smoothing</code> is easiest to explain with an example. Consider
-<code>smoothness_orders = 2</code> and <code>adaptive_smoothing = TRUE</code>. First,
-basis functions of <code>smoothness_orders</code> 0, 1 and 2 are generated and
-lasso models are fit to the three corresponding design matrices via
-<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. For each of the three lasso fits, which
-correspond to the three <code>smoothness_orders</code>, the optimal lambda value
-is selected. Let's refer to the optimal lambda value from each lasso model
-as "lambda_star". Lastly, final selection of <code>smoothness_orders</code> is
-based on the smoothness whose lambda_star yielded the smallest
-cross-validated risk according to the <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> fit.
-The coefficients, design matrix, etc. from this optimal order of smoothness
-are returned. Note that adaptive smoothing can increase runtime by a factor
-of 2-3 depending on the value of <code>smoothness_orders</code> and the number of
-<code>smoothness_orders</code> considered. Wen <code>smoothness_orders</code> is of
-length greater than 1, <code>adaptive_smoothing</code> is automatically set to
-<code>TRUE</code> and performed over the vector of supplied
-<code>smoothness_orders</code>. For example, to only consider
-<code>adaptive_smoothing</code> over <code>smoothness_orders</code> of 1 and 2, but not
-0, one would need to specify <code>smoothness_orders = c(1,2)</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>

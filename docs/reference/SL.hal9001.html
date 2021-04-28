@@ -154,7 +154,9 @@
     </tr>
     <tr>
       <th>X</th>
-      <td><p>A <code>matrix</code> of predictors/covariates.</p></td>
+      <td><p>An input <code>matrix</code> with dimensions number of observations -by-
+number of covariates that will be used to derive the design matrix of basis
+functions.</p></td>
     </tr>
     <tr>
       <th>newX</th>
@@ -183,16 +185,15 @@ functions ought to be generated.</p></td>
     <tr>
       <th>smoothness_orders</th>
       <td><p>An <code>integer</code> vector of length 1 or greater,
-specifying the smoothness of the basis functions. See
-<code>smoothness_orders</code> argument in <code>hal_fit</code> for more
-information.</p></td>
+specifying the smoothness of the basis functions. See the argument
+<code>smoothness_orders</code> of <code><a href='fit_hal.html'>fit_hal</a></code> for more information.</p></td>
     </tr>
     <tr>
       <th>num_knots</th>
       <td><p>An <code>integer</code> vector of length 1 or <code>max_degree</code>,
-specifying the maximum number of knot points (i.e., bins) for each covariate
-for generating basis functions. See <code>num_knots</code> argument in
-<code>hal_fit</code> for more information.</p></td>
+specifying the maximum number of knot points (i.e., bins) for each
+covariate for generating basis functions. See <code>num_knots</code> argument in
+<code><a href='fit_hal.html'>fit_hal</a></code> for more information.</p></td>
     </tr>
     <tr>
       <th>reduce_basis</th>
@@ -206,8 +207,8 @@ removed.</p></td>
       <th>lambda</th>
       <td><p>A user-specified sequence of values of the regularization
 parameter for the lasso L1 regression. If <code>NULL</code>, the default sequence
-in <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> will be used. The cross-validated optimal
-value of this regularization parameter will be selected with
+in <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> will be used. The cross-validated
+optimal value of this regularization parameter will be selected with
 <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>.</p></td>
     </tr>
     <tr>

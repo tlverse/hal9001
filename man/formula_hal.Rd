@@ -10,8 +10,7 @@ formula_hal(
   exclusive_dot = FALSE,
   custom_group = NULL,
   smoothness_orders = NULL,
-  num_knots = NULL,
-  adaptive_smoothing = FALSE
+  num_knots = NULL
 )
 }
 \arguments{
@@ -51,9 +50,6 @@ from the \code{formula}. See its documentation in \code{\link{fit_hal}}.}
 
 \item{num_knots}{Necessary argument for generating basis functions from the
 \code{formula}. See its documentation in \code{\link{fit_hal}}.}
-
-\item{adaptive_smoothing}{Necessary argument for generating basis functions
-from the \code{formula}. See its documentation in \code{\link{fit_hal}}.}
 }
 \value{
 A \code{formula} object.

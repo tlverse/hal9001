@@ -68,8 +68,8 @@
 #'  expansion is performed on \code{X_unpenalized}.
 #' @param max_degree The highest order of interaction terms for which basis
 #'  functions ought to be generated.
-#' @param smoothness_orders An \code{integer}, specifying the smoothness of the 
-#'  basis functions. See details for \code{smoothness_orders} for more 
+#' @param smoothness_orders An \code{integer}, specifying the smoothness of the
+#'  basis functions. See details for \code{smoothness_orders} for more
 #'  information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
 #'  specifying the maximum number of knot points (i.e., bins) for any covariate
@@ -420,7 +420,7 @@ fit_hal <- function(X,
   if (!inherits(Y, "Surv") & fit_control$prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
     fit_control$prediction_bounds <- c(
-      min(Y) - 2*stats::sd(Y) , max(Y) + 2*stats::sd(Y) 
+      min(Y) - 2 * stats::sd(Y), max(Y) + 2 * stats::sd(Y)
     )
   } else if (inherits(Y, "Surv") & fit_control$prediction_bounds == "default") {
     fit_control$prediction_bounds <- NULL

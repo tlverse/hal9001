@@ -124,6 +124,20 @@
       <small>Source: <a href='https://github.com/tlverse/hal9001/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="hal9001-040" class="section level1">
+<h1 class="page-header" data-toc-text="0.4.0">
+<a href="#hal9001-040" class="anchor"></a>hal9001 0.4.0<small> Unreleased </small>
+</h1>
+<p>As of April 2021:</p>
+<ul>
+<li>The default of <code>fit_hal</code> is now a first order smoothed HAL with binning.</li>
+<li>Updated documentation for <code>formula_hal</code>, <code>fit_hal</code> and <code>predict</code>; and added <code>fit_control</code> and <code>formula_control</code> lists for arguments. Moved much of the text to details sections, and shortened the argument descriptions.</li>
+<li>Updated <code>summary</code> to support higher-order HAL fit interpretations.</li>
+<li>Added checks to <code>fit_hal</code> for missingness and dimensionality correspondence between <code>X</code>, <code>Y</code>, and <code>X_unpenalized</code>. These checks lead to quickly-produced errors, opposed to enumerating the basis list and then letting <code>glmnet</code> error on something trivial like this.</li>
+<li>Modified formula interface in <code>fit_hal</code>, so <code>formula</code> is now provided directly to <code>fit_hal</code> and <code>formula_hal</code> is run within <code>fit_hal</code>. Due to these changes, it no longer made sense for <code>formula_hal</code> to accept <code>data</code>, so it now takes as input <code>X</code>. Also, the <code>formula_fit_hal</code> function was removed as it is no longer needed.</li>
+<li>Support for the custom lasso procedure implemented in <code>Rcpp</code> has been discontinued. Accordingly, the <code>"lassi"</code> option and argument <code>fit_type</code> have been removed from <code>fit_hal</code>.</li>
+</ul>
+</div>
     <div id="hal9001-030" class="section level1">
 <h1 class="page-header" data-toc-text="0.3.0">
 <a href="#hal9001-030" class="anchor"></a>hal9001 0.3.0<small> Unreleased </small>
@@ -140,12 +154,6 @@
 </li>
 <li>Degree-dependant binning. Higher order terms are binned more coarsely; the <code>num_knots</code> argument is a vector up to <code>max_degree</code> controlling the degree-specific binning.</li>
 <li>Adds <code>formula_hal</code> which allows a formula specification of a HAL model.</li>
-<li>The default of <code>fit_hal</code> is now a first order smoothed HAL with binning.</li>
-<li>Updated documentation for <code>formula_hal</code>, <code>fit_hal</code> and <code>predict</code>; and added <code>fit_control</code> and <code>formula_control</code> lists for arguments. Moved much of the text to details sections, and shortened the argument descriptions.</li>
-<li>Updated <code>summary</code> to support higher-order HAL fit interpretations.</li>
-<li>Added checks to <code>fit_hal</code> for missingness and dimensionality correspondence between <code>X</code>, <code>Y</code>, and <code>X_unpenalized</code>. These checks lead to quickly-produced errors, opposed to enumerating the basis list and then letting <code>glmnet</code> error on something trivial like this.</li>
-<li>Modified formula interface in <code>fit_hal</code>, so <code>formula</code> is now provided directly to <code>fit_hal</code> and <code>formula_hal</code> is run within <code>fit_hal</code>. Due to these changes, it no longer made sense for <code>formula_hal</code> to accept <code>data</code>, so it<br>
-now takes as input <code>X</code>. Also, the <code>formula_fit_hal</code> function was removed as it is no longer needed.</li>
 </ul>
 </div>
     <div id="hal9001-028" class="section level1">
