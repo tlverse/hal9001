@@ -1,166 +1,141 @@
 #' Formula Interface for HAL Fitting Procedure
 #'
-#' @param formula A character string specifying the hal9001 model. The format
-#'  should be of the form "y ~ h(x) + h(w,x) + h(x,w) + h(x,w,z) ", where "y"
-#'  is the outcome and "w,x,y,z" are variables in \code{data}. Each term
-#'  represents a main-term/interaction to be included in the model. h(x)
-#'  signifies that all one-way/main terms basis functions of the variable x
-#'  should be included. h(x,w) specifies that all interaction (two-way) basis
-#'  functions between x and w should be included in the model. Similarly,
-#'  h(x,w,z) specifies that all interaction (three-way) basis functions between
-#'  x,w,z should be included in the model. Note that "y ~ h(x,y,z)" will only
-#'  construct three-way basis functions for x, y, z and not the two-way and
-#'  one-way basis functions. Additionally, a formula of the form `"y ~ ."` will
-#'  generate all one-way main term basis functions for variables in
-#'  \code{data}. Similarly, `"y ~ .^2"` will generate all basis functions up to
-#'  degree 2 for all variables in \code{data}. More generally,
-#'  `"y ~ .^max_degree"` will construct all basis functions up to degree
-#'  \code{max_degree}. One can combine all the notions above. For example,
-#'  `"y ~ h(x,w,z) + ."` and `"y ~ h(x,w,z) + .^2"` will generate all one-way
-#'  (respectively, up to two-way) basis functions and additionally all the
-#'  three-way interaction basis functions between variables w, x, z. One can
-#'  also specify monotonicity constraints by replacing the letter `h` with `d`
-#'  (for decreasing) or `i` (for increasing), e.g., formulas like
-#'  `"y ~ i(x) + i(y) + i(x, y)"`, `"y ~ d(x) + d(y) + d(x, y)"`, or
-#'  `"y ~ d(x) + i(y) + h(x, y)"`. The letters h, i, d specify functional
-#'  restrictions of each term:
-#'  - `h` specifies no constraints on the term,
-#'  - `i` specifies the term should be enforced to be monotonely increasing,
-#'  - `d` specifies the term should be enforced to be monotonely decreasing.
-#'  Ambiguous operations like `"y ~ i(x) + ."` will use the first specification
-#'  of the term in the formula (generally from left to right). That is,
-#'  `"y ~ i(x) + ."` is interpreted as `"y ~ i(x) + h(z) + h(w)"` while
-#'  `"y ~ h(x) + i(x)"` is interpreted as `"y ~ h(x)"`. NOTE that `"."` and
-#'  `".^max_degree"` have the lowest importance and are evaluated last,
-#'  regardless of their location in the formula. As a result, `"y ~ . + i(x)"`
-#'  will be interpreted as `"y ~ i(x) + h(w) + h(z)"`, contrary to the previous
-#'  case. Familiar operations such as the `:`, `*` , `-` are also supported:
-#'  - `:` is a concatnation operator which maps `h(x):h(w)` into `h(x,w)` or
-#'    `h(x):h(w):h(z)` into `h(x,w,z)`.
-#'  - `*` concatenates and then generates all lower order terms/interactions.
-#'    For example, `h(x)*h(w)` into `h(x) + h(w) + h(x,w)` or `h(x)*h(w)*h(z)`
-#'    into `h(x) + h(w) + h(z) + h(x,w) + h(x,z) + h(z,w) + h(x,w,z)`.
-#'  - `-` subtracts/removes the term from the formula. For example, `h(x) +
-#'    h(w) - h(w)` becomes `h(x)`.
-#'  Note that the above operations are sensitive to the constraint prefix (`h`,
-#'  `i`, and `d`). For ambigious operations like `i(x):h(w)`, the unconstrained
-#'  prefix `h` will be used unless all prefixes in the term are the same. So,
-#'  `i(x):h(w)` becomes `h(x,w)` and `i(x):i(w):d(z)` becomes `h(x,w,z)`, and
-#'  `i(x):i(w)` becomes `i(x,w)`. The above logic will be applied recursively
-#'  to `*` so that `i(x) * h(w) * i(z)` is interpreted as `i(x) + h(w) + i(z) +
-#'  h(x,w) + i(x,z) + h(w,z) + h(x,w,z)`. Another useful operation is the
-#'  wildcard `.` operator, which when used in a specified term will generate
-#'  all valid terms where the value of `.` is iterated over the non-outcome
-#'  columns in the data matrix. For example, `h(x,.)` is `h(x,w) + h(x,z)` and
-#'  `h(.,.)` is `h(x,w) + h(x,z) + h(w,z)`, and `h(x,w,.` is `h(x,w,z)`,
-#'  assuming the covariates are only (x, w, z). All operations are compatible
-#'  with one another, e.g., `h(.)*h(x)`, `h(.):h(x)`  and `h(x) - h(.)` are
-#'  valid and behave as expected.
-#' @param data A \code{data.frame} or named matrix containing the outcome and
-#'  covariates specified in the argument \code{formula}.
-#' @param smoothness_orders An \code{integer} vector of length 1 or length
-#'  \code{ncol(X)}. If \code{smoothness_orders} is of length 1, then its values
-#'  are recycled to form a vector of length length \code{ncol(X)}. Given such a
-#'  vector of length \code{ncol(X)}, the ith element specifies the level of
-#'  smoothness for the variable corresponding with the ith column in \code{X}.
-#'  A value of "0" corresponds with 0-order splines (piece-wise constant) which
-#'  assumes no smoothness or continuity of true regression function. A value of
-#'  "1" corresponds with 1-order splines (piece-wise linear) which only assumes
-#'  continuity of true regression function. A value of "2" corresponds with
-#'  2-order splines (piece-wise quadratic and linear terms) which assumes one
-#'  order of differentiability for the true regression function. WARNING: if
-#'  \code{smoothness_orders} has length less than \code{ncol(X)}, then values
-#'  are recycled as needed.
-#' @param num_knots An \code{integer} vector of length 1 or length
-#'  \code{max_degree}. If \code{num_knots} is a vector of length 1 then its
-#'  values are recycled to produce a vector of length \code{max_degree}. Given
-#'  a possibly recycled vector of length \code{max_degree}, \code{num_knots[i]}
-#'  specifies the maximum number of knot points used when generating basis
-#'  functions of degree i for each covariate. For example, \code{num_knots[1]}
-#'  specifies how many knot points to use when generating main-term additive
-#'  basis functions. \code{num_knots[2]} specifies how many knot points should
-#'  be used when generating each univariate basis function in the 2-tensor
-#'  product basis functions. A smaller number of knot points gives rise to a
-#'  less smooth function. However, fewer knot points can significantly decrease
-#'  runtime. If smoothness_orders is 1 or higher then few knot points (10-30)
-#'  are needed to maintain near-optimal performance. When considering setting
-#'  \code{smoothness_orders = 0}, too few knot points (<50) can significantly
-#'  reduce performance; thus, we recommend specifying a vector of length
-#'  \code{max_degree} that decreases exponentially, preventing combinatorial
-#'  explosions in the number of higher-degree basis functions generated.
-#'  Default: For zero order smoothness (any(\code{smoothness_orders}==0)), the
-#'  number of knots by interaction degree d decays as \eqn{500/2^{d-1}}. For
-#'  first or higher-order smoothness (all(\code{smoothness_orders}>0)), the
-#'  number of knots by interaction degree d decays as \eqn{75/2^{d-1}}. These
-#'  defaults ensure that the number of basis functions and thus the complexity
-#'  of the optimization problem grows scalably in \code{max_degree}.
-#'  - Some good settings for little to no cost in performance:
-#'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(400, 200, 100).
-#'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(100, 75, 50).
-#'  - Recommended settings for fairly fast runtime and great performance:
-#'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(200, 100, 50).
-#'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(50, 25, 15).
-#'  - Recommended settings for fast runtime and good/great performance:
-#'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(100, 50, 25).
-#'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(40, 15, 10).
-#'  - Recommended settings for very fast runtime and good performance:
-#'    - If smoothness_orders = 0, max_degree = 3, num_knots = c(50, 25, 10).
-#'    - If smoothness_orders = 1+, max_degree = 3, num_knots = c(25, 10, 5).
-#' @param exclusive_dot A \code{logical} indicator for whether the ``. and
-#'  `.^max_degree` arguments in the formula should be treated as exclusive or
-#'  inclusive with respect to the variables already specified in the formula.
-#'  For example, in `y ~ h(x,w) + .`, should the `.` operator be interpreted as
-#'  - add all one-way basis functions for variables remaining in \code{data}
-#'    not yet specified in the formula (i.e., excluding x, w); or,
-#'  - add all one-way basis functions for all variables in the data (including
-#'    x, w).
-#'  As an example, if \code{exclusive_dot} is set to \code{FALSE}, then `y ~
-#'  h(x) + .^2` and `y ~ .^2` specify the same formula, i.e., generating all
-#'  basis functions up to degree 2; however, if \code{exclusive_dot} is set to
-#'  \code{TRUE}, then `y ~ h(x) + .^2`  encodes a different formula than
-#'  `y ~ .^2`. Specifically, it means to generate one-way basis functions for
-#'  the variable "x" and then all basis functions up to degree 2 for other
-#'  variables excluding "x" in \code{data}. As a result, no interactions will
-#'  be added for the variable "x".
-#' @param custom_group A named \code{list} with single character names that
-#'  represent a group, with its elements being a \code{character} vector of
-#'  variable names. This allows the user to specify their own wildcard symbols
-#'  (e.g., `.`); however, the value of the symbol will be iterated over all
-#'  variables specified in the user-supplied group. For example, if one sets
-#'  `custom_group = list("1" = c("x", "w"), "2" = c("t","r"))`, then the
-#'  following formula is mapped from `y ~ h(1,2)` to `y ~ h(x,t) + h(x,r) +
-#'  h(w,t) + h(w,r)`, so that all two-way interactions using one variable for
-#'  each group are generated. Similarly, `y ~ h(1,r)` would be mapped to `y ~
-#'  h(x,r) + h(w,r)`. Thus, the custom groups operate exactly as `.`, except
-#'  the possible values are restricted to a specific group.
-#' @param adaptive_smoothing A \code{logical}, which, if \code{TRUE}, HAL will
-#'  perform adaptive smoothing up until the maximum order of smoothness
-#'  specified by \code{smoothness_orders}. For example, if
-#'  \code{smoothness_orders = 2} and \code{adaptive_smoothing = TRUE}, then HAL
-#'  will generate all basis functions of smoothness order 0, 1, and 2, and
-#'  data-adaptively select the basis functions to use. WARNING: This can
-#'  increase runtime by a factor of 2-3+ depending on value of
-#'  \code{smoothness_orders}.
-#' @param ... Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
-#'  consult its documentation for a full list of options.
-#'
-#' @details The function allows users to specify the functional form/model of
-#'  hal9001 similar to in \code{\link[stats]{glm}}. The user can specify which
+#' @details This function allows users to specify the functional form/model of
+#'  hal9001, similar to \code{\link[stats]{glm}}. The user can specify which
 #'  interactions to include, monotonicity constraints, and smoothness
-#'  constraints. The returned \code{formula} object can be fed directly into
-#'  \code{fit_hal} and the fit can be run with minimal (no) user input.
+#'  constraints. The function is intended for use within \code{\link{fit_hal}},
+#'  and it is called when \code{formula} is supplied to \code{\link{fit_hal}}.
+#'  This function returns a \code{formula} object, which includes parameters
+#'  for subsequent use in \code{\link{fit_hal}}. In particular, HAL's
+#'  \code{formula} object contains the \code{basis_list}, which is used to
+#'  create the design matrix of basis functions for lasso fitting, and other
+#'  parameters that are used in the lasso regression.
 #'
-#' @importFrom stringr str_match str_split
+#'  A \code{formula} of "`h(x)`" signifies that all main-term (i.e., one-way)
+#'  basis functions of the variable `x` (in input matrix \code{X}) should be
+#'  included in the model. A \code{formula} of "`h(x,w)`" specifies that all
+#'  two-way interaction basis functions between `x` and `w` should be included
+#'  in the model. Similarly, a \code{formula} of "`h(x,w,z)`" specifies that all
+#'  three-way interaction basis functions between `x`, `w`, and `z` should be
+#'  included in the model. Note that \code{formula = "h(x,y,z)"} will only
+#'  construct three-way basis functions for `x`, `y`, and `z`, and not the
+#'  two- and one- way basis functions. Input of the form `~ .` will generate all
+#'  one-term basis functions for variables in \code{X}. Similarly, `~ .^2` will
+#'  generate all basis functions up to degree 2 (i.e., all one- and two- way
+#'  interaction basis functions) for all variables in \code{X}. One can combine
+#'  all of the notions above. For example, `~ h(x,w,z) + .^2` will generate all
+#'  one- and two- way interaction basis functions for all variables in \code{X},
+#'  and additionally all the three-way interaction basis functions between
+#'  variables `w`, `x`, and `z`.
 #'
-#' @rdname fit_hal
+#'  In \code{formula}, one can also specify monotonicity constraints by
+#'  replacing the letter `h` with `d` (for decreasing) or `i` (for increasing).
+#'  For example, the \code{formula} could look like "`~ i(x) + i(y) + i(x, y)`",
+#'  "`~ d(x) + d(y) + d(x, y)`", or "`~ d(x) + i(y) + h(x, y)`". The letters
+#'  `h`, `i`, and `d` specify functional restrictions of each term:
+#'   - `h` specifies no constraints on the term.
+#'   - `i` specifies the term should be enforced to be monotonically increasing.
+#'   - `d` specifies the term should be enforced to be monotonically decreasing.
+#'
+#'  In \code{formula}, ambiguous operations like `~ i(x) + .` will use the first
+#'  specification of the term in the formula (generally from left to right).
+#'  That is, `~ i(x) + .` is interpreted as `~ i(x) + h(z) + h(w)`, while
+#'  `~ h(x) + i(x)` is interpreted as `~ h(x)`. Note that `.` and `.^degree`
+#'  have the lowest importance and are evaluated last, regardless of their
+#'  location in the formula. As a result, ` ~ . + i(x)` will be interpreted as
+#'  `~ i(x) + h(w) + h(z)`, contrary to the previous case.
+#'
+#'  In \code{formula}, familiar operations such as the `:`, `*` , and `-` are
+#'  also supported:
+#'   - `:` is a concatenation operator which maps `h(x):h(w)` into `h(x,w)`, or
+#'    `h(x):h(w):h(z)` into `h(x,w,z)`.
+#'   - `*` concatenates and then generates all lower order terms/interactions.
+#'     For example, `h(x) * h(w)` is mapped into `h(x) + h(w) + h(x,w)`, and
+#'     `h(x) * h(w) * h(z)` into
+#'     `h(x) + h(w) + h(z) + h(x,w) + h(x,z) + h(z,w) + h(x,w,z)`.
+#'   - `-` subtracts/removes the term from the formula. For example,
+#'     `h(x) + h(w) - h(w)` becomes `h(x)`.
+#'  Note that the above operations are sensitive to the constraint prefix (`h`,
+#'  `i`, and `d`). For ambiguous operations like `i(x):h(w)`, the unconstrained
+#'  prefix `h` will be used unless all prefixes in the term are the same. Thus,
+#'  `i(x):h(w)` becomes `h(x,w)`, `i(x):i(w):d(z)` becomes `h(x,w,z)`, and
+#'  `i(x):i(w)` becomes `i(x,w)`. The above logic is be applied recursively to
+#'  `*`, so that something like `i(x) * h(w) * i(z)` is interpreted as
+#'  `i(x) + h(w) + i(z) + h(x,w) + i(x,z) + h(w,z) + h(x,w,z)`.
+#'
+#'  Another useful operation in \code{formula} is the wildcard `.` operator.
+#'  When it's used in a specified term, it will generate all valid terms where
+#'  the value of `.` is iterated over all variables in \code{X}. As an example,
+#'  consider \code{X} with 3 columns `x`, `w`, and `z`. In this scenario,
+#'  `h(x,.)` is interpreted as `h(x,w) + h(x,z)`, `h(.,.)` as
+#'  `h(x,w) + h(x,z) + h(w,z)`, and `h(x,w,.)` as `h(x,w,z)`. Also, in
+#'  \code{formula}, all operations are compatible with one another. For
+#'  example, `h(.)*h(x)`, `h(.):h(x)`, and `h(x) - h(.)` are all valid and
+#'  behave as expected.
+#'
+#'  Note that, if \code{exclusive_dot} is {FALSE}, then differently-appearing
+#'  formulas can actually be identical. For example,  `~ h(x) + .^2` and
+#'  `~ .^2` specify the same formula (i.e., generating all basis functions up
+#'  to degree 2) when \code{exclusive_dot} is {FALSE}. However, if
+#'  \code{exclusive_dot} was set to \code{TRUE}, then `~ h(x) + .^2` encodes a
+#'  different formula than `~ .^2`; specifically, `~ h(x) + .^2` means to
+#'  generate one-way basis functions for the variable `x`, and all basis
+#'  functions up to degree 2 for all other variables in \code{X} (i.e.,
+#'  excluding `x`).
+#'
+#'  The \code{custom_group} allows the user to specify their own wildcard
+#'  symbols (e.g., `.`); however, the value of the symbol will be iterated over
+#'  all variables specified in the user-supplied group. For example, if one sets
+#'  `custom_group = list("group1" = c("x", "w"), "group2" = c("t","r"))`, then
+#'  the formula would be mapped from `~ h(group1, group2)` to
+#'  `~ h(x,t) + h(x,r) + h(w,t) + h(w,r)`, so that all two-way interactions
+#'  using one variable from each group are generated. Similarly, `~ h(1,r)`
+#'  would be mapped to `~ h(x,r) + h(w,r)`. Thus, the custom groups operate
+#'  exactly as `.`, except the possible values are restricted to a specific
+#'  group.
+#'
+#' @param formula A character string specifying the \code{fit_hal} model. The
+#'  format should be of the form "`~ h(x) + h(w,x) + h(x,w) + h(x,w,z)`" or
+#'  "`y ~ h(x) + h(w,x) + h(x,w) + h(x,w,z)`", where `w`, `x`, `z` are column
+#'  names in the input matrix \code{X} and `y` is an (optionally-supplied)
+#'  outcome. That is, the `~` is required in the formula, but anything before
+#'  `~` is omitted. Each term in the formula represents main-term(s) and/or
+#'  interaction(s) to be included in the model. See \code{formula} details for
+#'  more information.
+#' @param X An input \code{matrix} with dimensions number of observations -by-
+#'  number of covariates that will be used with the \code{formula} and other
+#'  arguments defined in \code{\link{fit_hal}} to derive the design matrix of
+#'  basis functions.
+#' @param exclusive_dot A \code{logical} indicator for whether the `.` and
+#'  `.^degree` arguments in the formula should be treated as exclusive or
+#'  with respect to the variables already specified in the formula. See details
+#'  on \code{exclusive_dot} for more information. As an example, consider the
+#'  formula `~ h(x,w) + .`. When \code{exclusive_dot} is {TRUE}, the `.`
+#'  operator adds all one-way basis functions for variables that are remaining
+#'  in \code{X} and not yet specified in the formula (i.e., excluding `x` and
+#'  `w`). When \code{exclusive_dot} is \code{FALSE}, the `.` operator adds all
+#'  one-way basis functions for *all* variables in \code{X} (i.e., including
+#'  `x`, `w`).
+#' @param custom_group A named \code{list} that represents a grouping of
+#'  variables in \code{X}. Each group in the \code{custom_group} list contains
+#'  a character vector of column names in \code{X} that belong to that group.
+#'  The names of the \code{custom_group} must be single characters of length 1.
+#'  See \code{custom_group} details for more information.
+#' @param smoothness_orders Necessary argument for generating basis functions
+#'  from the \code{formula}. See its documentation in \code{\link{fit_hal}}.
+#' @param num_knots Necessary argument for generating basis functions from the
+#'  \code{formula}. See its documentation in \code{\link{fit_hal}}.
+#'
+#' @importFrom stringr str_match str_split str_detect str_remove str_replace str_extract
+#' @importFrom assertthat assert_that
+#'
+#' @return A \code{formula} object.
 #'
 #' @export
-formula_hal <- function(formula, data, smoothness_orders = NULL,
-                        num_knots = NULL, exclusive_dot = FALSE,
-                        custom_group = NULL, adaptive_smoothing = FALSE, ...) {
-  other_args <- list(...)
-  generate_lower_degrees <- adaptive_smoothing
-  include_zero_order <- adaptive_smoothing
+formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
+                        smoothness_orders = NULL, num_knots = NULL) {
+  generate_lower_degrees <- FALSE
+  include_zero_order <- FALSE
   remove <- NULL
   if (any(sapply(names(custom_group), function(name) {
     nchar(name) != 1
@@ -168,27 +143,27 @@ formula_hal <- function(formula, data, smoothness_orders = NULL,
     stop("Custom group names must be single characters of length one.")
   }
   if (any(sapply(names(custom_group), function(name) {
-    name %in% unlist(sapply(colnames(data), function(a) {
+    name %in% unlist(sapply(colnames(X), function(a) {
       strsplit(a, "")
     }))
   }))) {
-    stop("Custom group names cannot be characters found in data variables.")
+    stop("Custom group names cannot be characters found in X variables.")
   }
   if (any(sapply(names(custom_group), function(name) {
     name == "."
   }))) {
     stop("Group name '.' is not allowed.")
   }
-  data <- as.matrix(data)
+
   form <- formula
   if (is.null(smoothness_orders) | !is.numeric(smoothness_orders)) {
-    smoothness_orders <- round(rep(0, ncol(data) - 1))
+    smoothness_orders <- round(rep(0, ncol(X)))
   } else {
     # recycle vector if needed.
     smoothness_orders[smoothness_orders < 0] <- 0
     smoothness_orders[smoothness_orders > 10] <- 10
     smoothness_orders <- suppressWarnings(
-      round(smoothness_orders) + rep(0, ncol(data) - 1)
+      round(smoothness_orders) + rep(0, ncol(X))
     )
   }
   order_map <- smoothness_orders
@@ -262,22 +237,18 @@ formula_hal <- function(formula, data, smoothness_orders = NULL,
     }
   }
   form <- stringr::str_replace_all(form, "\\)[:*][ihd]\\(", ",")
-  reg <- "([^\\s])~([idh]\\(([^\\s()+]+)\\)|\\.(\\^[0-9])?)(?:[+-][ihd]\\(([^\\s()]+)\\)|[+]\\.(\\^[0-9])?)*(\\+\\.(\\^[0-9])?)?$"
+  reg <- "~([idh]\\(([^\\s()+]+)\\)|\\.(\\^[0-9])?)(?:[+-][ihd]\\(([^\\s()]+)\\)|[+]\\.(\\^[0-9])?)*(\\+\\.(\\^[0-9])?)?$"
   assertthat::assert_that(
     stringr::str_detect(form, reg),
     msg = "Incorrect format for formula."
   )
   outcome <- stringr::str_match(form, "([^\\s]+)~")
+  outcome <- gsub("~", "", outcome)
+  outcome <- gsub(" ", "", outcome)
 
-  outcome <- outcome[, 2]
-  if (!(outcome %in% colnames(data))) {
-    stop("Outcome not found in data.")
-  }
-  X <- data[, -which(colnames(data) == outcome), drop = FALSE]
   X_orig <- X
   # X = quantizer(X, num_knots)
 
-  Y <- data[, outcome]
   names <- colnames(X)
   remove <- match(remove, colnames(X))
   # process the variables specified in each term and the monotonicity
@@ -571,15 +542,13 @@ formula_hal <- function(formula, data, smoothness_orders = NULL,
   # Get expanded formula
   if (length(total_terms) != 0) {
     formula_expanded <- paste0(
-      outcome, " ~ ",
-      paste0(sapply(
-        1:length(total_terms),
-        expand_term
-      ), collapse = " + ")
+      "~ ", paste0(sapply(1:length(total_terms), expand_term), collapse = " + ")
     )
+  } else {
+    formula_expanded <- paste0("~ 1")
   }
-  else {
-    formula_expanded <- paste0(outcome, " ~ 1")
+  if (!all(is.na(outcome))) {
+    formula_expanded <- paste0(outcome, formula_expanded)
   }
 
   lower.limits <- c()
@@ -654,7 +623,6 @@ formula_hal <- function(formula, data, smoothness_orders = NULL,
   } else {
     basis_listrest <- c()
   }
-  Y <- as.vector(Y)
 
   # Prepare formula_hal9001 object to return
   form <- stringr::str_replace_all(form, "[+]", " + ")
@@ -673,15 +641,10 @@ formula_hal <- function(formula, data, smoothness_orders = NULL,
   form_obj$upper.limits <- upper.limits
   form_obj$lower.limits <- lower.limits
   form_obj$smoothness_orders <- smoothness_orders
-  form_obj$outcome <- outcome
   form_obj$X <- as.matrix(X_orig)
-  form_obj$Y <- (Y)
   form_obj$num_knots <- num_knots
   form_obj$include_zero_order <- include_zero_order
-  form_obj$other_args <- other_args
   class(form_obj) <- "formula_hal9001"
-
-  form_obj
   return(form_obj)
 }
 
@@ -733,27 +696,4 @@ print.formula_hal9001 <- function(x, ...) {
   }
 
   return(invisible(NULL))
-}
-
-###############################################################################
-
-#' Formula method for HAL fitting procedure
-#'
-#' @rdname fit_hal
-#'
-#' @export
-fit_hal_formula <- function(formula, ...) {
-  other_args <- formula$other_args
-
-  do.call(function(...) {
-    fit_hal(
-      X = formula$X, Y = formula$Y,
-      lower.limits = formula$lower.limits,
-      upper.limits = formula$upper.limits,
-      smoothness_orders = formula$smoothness_orders,
-      num_knots = formula$num_knots,
-      basis_list = formula$basis_list,
-      yolo = FALSE, ...
-    )
-  }, other_args)
 }

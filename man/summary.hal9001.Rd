@@ -8,8 +8,8 @@
   object,
   lambda = NULL,
   only_nonzero_coefs = TRUE,
-  remove_redundant_duplicates = TRUE,
-  round_cutoffs = 4,
+  include_redundant_terms = FALSE,
+  round_cutoffs = 3,
   ...
 )
 }
@@ -18,28 +18,33 @@
 fitting the Highly Adaptive Lasso, as produced by \code{\link{fit_hal}}.}
 
 \item{lambda}{Optional \code{numeric} value of the lambda tuning
-parameter, for which corresponding coefficient values to be summarized.
-Defaults to CV-optimal value \code{lambda_star}, or the minimum value of
-\code{lambda_star}.}
+parameter, for which corresponding coefficient values will be summarized.
+Defaults to \code{\link{fit_hal}}'s optimal value, \code{lambda_star}, or
+the minimum value of \code{lambda_star}.}
 
 \item{only_nonzero_coefs}{A \code{logical} specifying whether the summary
-should include only non-zero coefficients.}
+should include only terms with non-zero coefficients.}
 
-\item{remove_redundant_duplicates}{A \code{logical} specifying whether the
-summary should remove redundant indicator basis function duplicates. If
-basis functions are duplicated, then one coefficient will correspond to all
-of the duplicates. If \code{remove_redundant_duplicates} is \code{TRUE},
-then the shorter basis function is retained. For example, the same
-coefficient may correspond to terms "I(age >= 50)*I(bmi >= 18)",
-"I(age >= 50)", and "I(education >= 16)", which means these basis functions
-all yield the same result. When \code{remove_redundant_duplicates} is
-\code{TRUE}, the second basis function is omitted due to the duplicated
-term "I(age >= 50)".}
+\item{include_redundant_terms}{A \code{logical} specifying whether the
+summary should remove so-called "redundant terms". We define a redundant
+term (say x1) as a term (1) with basis function corresponding to an
+existing basis function, a duplicate; and (2) the duplicate contains the
+x1 term as part of its term, so that x1 terms inclusion would be redundant.
+For example, say the same coefficient corresponds to these three terms:
+(1) "I(age >= 50)*I(bmi >= 18)", (2) "I(age >= 50)", and (3)
+"I(education >= 16)". When \code{include_redundant_terms} is
+\code{FALSE} (default), the second basis function is omitted.}
 
 \item{round_cutoffs}{An \code{integer} indicating the number of decimal
-places to be used for rounding term cutoff values.}
+places to be used for rounding cutoff values in the term. For example, if
+"bmi" was numeric that was rounded to the third decimal, in the example
+above we would have needed to specify \code{round_cutoffs = 0} in order to
+yield a term like "I(bmi >= 18)" opposed to something like
+"I(bmi >= 18.111)". This rounding is intended to simplify the term-wise
+part of the output and only rounds the basis cutoffs, the \code{hal9001}
+model's coefficients are not rounded.}
 
-\item{...}{Additional arguments passed to \code{summary} as necessary.}
+\item{...}{Additional arguments passed to \code{summary}, not supported.}
 }
 \value{
 A list summarizing a \code{hal9001} object's coefficients.
@@ -52,4 +57,10 @@ Method for summarizing the coefficients of the Highly Adaptive
 Lasso estimator in terms of the basis functions corresponding to covariates
 and interactions of covariates, returned as a single S3 object of class
 \code{hal9001}.
+
+Due to the nature of the basis function terms, the summary tables can be
+extremely wide. The R environment might not be the optimal location to view
+the summary. Tables can be exported from R to LaTeX with \pkg{xtable}
+package (or similar). Here's an example:
+\code{print(xtable(summary(fit)$table, type = "latex"), file = "dt.tex")}.
 }

@@ -1,7 +1,7 @@
 ---
 title: "Fitting the Highly Adaptive Lasso with `hal9001`"
-author: "[Nima Hejazi](https://nimahejazi.org) and [Jeremy
-  Coyle](https://github.com/jeremyrcoyle)"
+author: "[Nima Hejazi](https://nimahejazi.org), [Jeremy
+  Coyle](https://github.com/jeremyrcoyle), Rachael Phillips, Lars van der Laan"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
@@ -17,15 +17,16 @@ The _highly adaptive Lasso_ (HAL) is a flexible machine learning algorithm that
 nonparametrically estimates a function based on available data by embedding a
 set of input observations and covariates in an extremely high-dimensional space
 (i.e., generating basis functions from the available data). For an input data
-matrix of $n$ observations and $d$ covariates, the number of basis functions
-generated is approximately $n \cdot 2^{d - 1}$. To select a set of basis
-functions from among the full set generated, the Lasso is employed. The
-`hal9001` R package provides an efficient implementation of this routine,
-relying on the `glmnet` R package for compatibility with the canonical Lasso
-implementation while still providing a (faster) custom C++ routine for using the
-Lasso with an input matrix composed of indicator functions. Consider consulting
-@benkeser2016hal, @vdl2015generally, @vdl2017finite for detailed theoretical
-descriptions of the highly adaptive Lasso and its various optimality properties.
+matrix of $n$ observations and $d$ covariates, the maximum number of zero-order
+basis functions generated is approximately $n \cdot 2^{d - 1}$. To select a set
+of basis functions from among the (possibly reduced/screener) set that's
+generated, the lasso is employed. The `hal9001` R package [@hejazi2020hal9001;
+@coyle-gh-hal9001] provides an efficient implementation of this routine, relying
+on the `glmnet` R package [@friedman2010glmnet] for compatibility with the
+canonical Lasso implementation and using lasso regression with an input matrix
+composed of basis functions. Consult @benkeser2016hal, @vdl2015generally,
+@vdl2017finite for detailed theoretical descriptions of HAL and its various
+optimality properties.
 
 ---
 
@@ -55,74 +56,38 @@ head(x)
 head(y)
 ```
 
----
-
 ## Using the Highly Adaptive Lasso
 
 ```{r}
 library(hal9001)
 ```
 
-<!-- ### Fitting the HAL model: "lassi" -->
-
-<!-- Our custom implementation of the Lasso has been dubbed _lassi_. For the purposes -->
-<!-- of HAL, it is faster than using the standard `glmnet` approach, but it is not -->
-<!-- yet available for generalized linear models (i.e., iteratively re-weighted least -->
-<!-- squares has not yet been implemented). -->
-
-<!-- ```{r fit-hal-lassi} -->
-<!-- hal_fit1 <- fit_hal(X = x, Y = y, fit_type = "lassi") -->
-<!-- hal_fit1$times -->
-<!-- ``` -->
-
-<!-- ```{r results-hal-lassi} -->
-<!-- hal_fit1 -->
-<!-- ``` -->
-
-### Fitting the model: `glmnet`
+### Fitting the model
 
 HAL uses the popular `glmnet` R package for the lasso step:
 
 ```{r fit-hal-glmnet}
-hal_fit <- fit_hal(X = x, Y = y, fit_type = "glmnet")
+hal_fit <- fit_hal(X = x, Y = y)
 hal_fit$times
 ```
 
+### Summarizing the model
+
 While the raw output object may be examined, it has (usually large) slots that
-make quick examination challenging. Instead, we recommend the `summary` method,
-which provides an interpretable table of basis functions with non-zero
-coefficients.
+make quick examination challenging. The `summary` method provides an
+interpretable table of basis functions with non-zero coefficients. All terms
+(i.e., including the terms with zero coefficient) can be included by setting
+`only_nonzero_coefs` to `FALSE` when calling `summary` on a `hal9001` model
+object.
+
 ```{r results-hal-glmnet}
-summary(hal_fit)$table
+print(summary(hal_fit))
 ```
 
-### Reducing basis functions
-
-As described in @benkeser2016hal, the HAL algorithm operates by first
-constructing a set of basis functions and subsequently fitting a Lasso model
-with this set of basis functions as the design matrix. Several approaches are
-considered for reducing this set of basis functions:
-1. Removing duplicated basis functions (done by default in the `fit_hal`
-   function),
-2. Removing basis functions that correspond to only a small set of observations;
-   a good rule of thumb is to scale with $\frac{1}{\sqrt{n}}$.
-
-The second of these two options may be invoked by specifying the `reduce_basis`
-argument to the `fit_hal` function:
-
-```{r fit-hal-reduced}
-hal_fit_reduced <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                           reduce_basis = 1 / sqrt(length(y)))
-hal_fit_reduced$times
-```
-
-In the above, all basis functions with fewer than `r 1/sqrt(length(y)) * 100`%
-of observations meeting the criterion imposed are automatically removed prior
-to the Lasso step of fitting the HAL regression. The results appear below
-
-```{r results-hal-reduced}
-summary(hal_fit_reduced)$table
-```
+Note the length and width of these tables! The R environment might not be the
+optimal location to view the summary. Tip: Tables can be exported from R to
+LaTeX with the `xtable` R package. Here's an example:
+`print(xtable(summary(fit)$table, type = "latex"), file = "haltbl_meow.tex")`.
 
 ### Obtaining model predictions
 
@@ -143,32 +108,67 @@ oob_hal_mse <- mse(preds = oob_hal, y = test_y)
 oob_hal_mse
 ```
 
+### Reducing basis functions
 
-### Specifying smoothness of fit and improving runtime with the `num_knots`
+As described in @benkeser2016hal, the HAL algorithm operates by first
+constructing a set of basis functions and subsequently fitting a Lasso model
+with this set of basis functions as the design matrix. Several approaches are
+considered for reducing this set of basis functions:
+1. Removing duplicated basis functions (done by default in the `fit_hal`
+   function),
+2. Removing basis functions that correspond to only a small set of observations;
+   a good rule of thumb is to scale with $\frac{1}{\sqrt{n}}$, and that is the
+   default.
 
-One might wish to enforce smoothness on the functional form of the HAL fit. This
-can be done using the "smoothness_orders" argument. Setting `smoothness_orders
-= 0` gives a piece-wise constant fit, allowing for discontinuous jumps in the
-function. This is useful if one does not want to assume any smoothness of the
-"true" function (not even continuity). Setting `smoothness_orders = 1` gives a
-piece-wise linear fit which is continuous and mostly differentiable. In general
-`smoothness_orders = k` corresponds to a piece-wise polynomial fit of degree k.
-Mathematically, `smoothness_orders = k` corresponds with finding the best fit
-under the constraint that the total variation of the function's k-th deriviative
-is bounded by some constant (chosen by CV).
+The second of these two options may be modified by specifying the `reduce_basis`
+argument to the `fit_hal` function:
 
-Let us see this in action. We will use the num_knots argument to increase the
-coarseness of the approximation so that the difference between smooth and
-unsmooth fits is more clear (see next section). Specifically, we set `num_knots
-= 7`. The argument num_knots allows one to specify the number of knot points
-used to generate the basis functions (for each interaction degree). This
-effectivelly reduces the total number of basis functions generated and can
-significantly decrease runtime by reducing the size of the optimization problem.
-One can pass in a vector of length max_degree specifying the number of knot
-points to use by interaction degree for each basis function. Thus, one can
-specify that two or three way interaction basis functions should be more coarse,
-which helps prevent the combinatorical explosion of basis functions that occurs
-when basis functions are generated for all possible knot points.
+```{r fit-hal-reduced}
+hal_fit_reduced <- fit_hal(X = x, Y = y, reduce_basis = 0.1)
+hal_fit_reduced$times
+```
+
+In the above, all basis functions with fewer than 10% of observations meeting
+the criterion imposed are automatically removed prior to the Lasso step of
+fitting the HAL regression. The results appear below
+
+```{r results-hal-reduced}
+summary(hal_fit_reduced)$table
+```
+
+Other approaches exist for reducing the set of basis functions *before* they are
+actually created, which is essential for most real-world applications with HAL.
+Currently, we provide this "pre-screening" via `num_knots` argument in
+`hal_fit`. The `num_knots` argument is akin to binning: it increases the
+coarseness of the approximation. `num_knots` allows one to specify the number of
+knot points used to generate the basis functions for each/all interaction
+degree(s). This reduces the total number of basis functions generated, and thus
+the size of the optimization problem, and it can dramatically decrease runtime.
+One can pass in a vector of length `max_degree` to `num_knots`, specifying the
+number of knot points to use by interaction degree for each basis function.
+Thus, one can specify if interactions of higher degrees (e.g., two- or three-
+way interactions) should be more coarse.  Increasing the coarseness of more
+complex basis functions helps prevent a combinatorial explosion of basis
+functions, which can easily occur when basis functions are generated for all
+possible knot points. We will show an example with `num_knots` in the section
+that follows.
+
+### Specifying smoothness of the HAL model
+
+One might wish to enforce smoothness on the functional form of the HAL fit.
+This can be done using the `smoothness_orders` argument. Setting
+`smoothness_orders = 0` gives a piece-wise constant fit (via zero-order basis
+functions), allowing for discontinuous jumps in the function. This is useful if
+one does not want to assume any smoothness or continuity of the "true" function.
+Setting `smoothness_orders = 1` gives a piece-wise linear fit (via first-order
+basis functions), which is continuous and mostly differentiable. In general,
+`smoothness_orders = k` corresponds to a piece-wise polynomial fit of degree
+$k$. Mathematically, `smoothness_orders = k` corresponds with finding the best
+fit under the constraint that the total variation of the function's
+$k^{\text{th}}$ derivative is bounded by some constant, which is selected with
+cross-validation.
+
+Let's see this in action.
 
 ```{r}
 set.seed(98109)
@@ -179,28 +179,22 @@ x <- replicate(n_covars, runif(n_obs, min = -4, max = 4))
 y <- sin(x[, 1]) + rnorm(n_obs, mean = 0, sd = 0.2)
 ytrue <- sin(x[, 1])
 
-hal_fit_0 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                     smoothness_orders = 0, num_knots = num_knots,
-                     lambda.min.ratio = 1e-4)
+hal_fit_0 <- fit_hal(
+  X = x, Y = y, smoothness_orders = 0, num_knots = num_knots
+)
 
-hal_fit_smooth_1 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                            smoothness_orders = 1,
-                            num_knots = num_knots,
-                            lambda.min.ratio = 1e-4)
+hal_fit_smooth_1 <- fit_hal(
+  X = x, Y = y, smoothness_orders = 1, num_knots = num_knots
+)
 
-hal_fit_smooth_2_all <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                                smoothness_orders = 2,
-                                num_knots = num_knots,
-                                adaptive_smoothing = FALSE,
-                                cv_select = FALSE,
-                                lambda.min.ratio = 1e-3)
+hal_fit_smooth_2_all <- fit_hal(
+  X = x, Y = y, smoothness_orders = 2, num_knots = num_knots, 
+  fit_control = list(cv_select = FALSE)
+)
 
-hal_fit_smooth_2 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                           smoothness_orders = 2,
-                           num_knots = num_knots,
-                           adaptive_smoothing = FALSE,
-                           cv_select = TRUE,
-                           lambda.min.ratio = 1e-4)
+hal_fit_smooth_2 <- fit_hal(
+  X = x, Y = y, smoothness_orders = 2, num_knots = num_knots
+)
 
 pred_0 <- predict(hal_fit_0, new_data = x)
 pred_smooth_1 <- predict(hal_fit_smooth_1, new_data = x)
@@ -213,14 +207,14 @@ long <- melt(dt, id = "x")
 ggplot(long, aes(x = x, y = value, group = variable)) + geom_line()
 ```
 
-Comparing the mean-squared-error between the predictions and the true (denoised)
-outcome, we see that the first and second order smoothness HAL is able to
-recover from the coarseness of the basis functions caused by the small
-`num_knots` argument. We see that the second order smoothness HAL is able to fit
-the true function very well (as expected since sin(x) is a very smooth
-function). The main benefit of imposing higher order smoothness is that fewer
-knot points are required for a near optimal fit. Thus one can pass a smaller
-value to the `num_knots` argument for a big decrease in runtime.
+Comparing the mean squared error (MSE) between the predictions and the true
+(denoised) outcome, the first- and second- order smoothed HAL is able to recover
+from the coarseness of the basis functions caused by the small `num_knots`
+argument. Also, the HAL with second-order smoothness is able to fit the true
+function very well (as expected, since sin(x) is a very smooth function). The
+main benefit of imposing higher-order smoothness is that fewer knot points are
+required for a near-optimal fit. Therefore, one can safely pass a smaller value
+to `num_knots` for a big decrease in runtime without sacrificing performance.
 
 ```{r}
 mean((pred_0 - ytrue)^2)
@@ -240,31 +234,34 @@ plot(x, pred_smooth_1, main = "First order smoothness fit")
 plot(x, pred_smooth_2, main = "Second order smoothness fit")
 ```
 
-In general, if we do not make the basis functions coarse, the performance for
+In general, if the basis functions are not coarse, then the performance for
 different smoothness orders is similar. Notice how the runtime is a fair bit
-slower when we generate more knot points. In general, we recommend either zero
-or first order smoothness. Second order smoothness tends to be less robust and
-suffers from extrapolation on new data. One can also use cross-validation to
-data-adaptively choose the optimal smoothness. Interestingly, comparing the
-following simulation and the previous one, we see that the second order
-smoothness HAL performed better when there were fewer knot points.
+slower when more knot points are considered. In general, we recommend either
+zero- or first- order smoothness. Second-order smoothness tends to be less
+robust and suffers from extrapolation on new data. One can also use
+cross-validation to data-adaptively choose the optimal smoothness (invoked in
+`fit_hal` by setting `adaptive_smoothing = TRUE`). Comparing the following
+simulation and the previous one, the HAL with second-order smoothness performed
+better when there were fewer knot points.
 
 ```{r}
 set.seed(98109)
-num_knots <- 300
 n_covars <- 1
 n_obs <- 500
 x <- replicate(n_covars, runif(n_obs, min = -4, max = 4))
 y <- sin(x[, 1]) + rnorm(n_obs, mean = 0, sd = 0.2)
 ytrue <- sin(x[, 1])
 
-hal_fit_0 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                           smoothness_orders = 0, num_knots = num_knots)
-hal_fit_smooth_1 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                           smoothness_orders = 1, num_knots = num_knots)
+hal_fit_0 <- fit_hal(
+  X = x, Y = y, smoothness_orders = 0, num_knots = 300
+)
+hal_fit_smooth_1 <- fit_hal(
+  X = x, Y = y, smoothness_orders = 1, num_knots = 300
+)
 
-hal_fit_smooth_2 <- fit_hal(X = x, Y = y, fit_type = "glmnet",
-                           smoothness_orders = 2, num_knots = num_knots)
+hal_fit_smooth_2 <- fit_hal(
+  X = x, Y = y, smoothness_orders = 2, num_knots = 300
+)
 
 pred_0 <- predict(hal_fit_0, new_data = x)
 pred_smooth_1 <- predict(hal_fit_smooth_1, new_data = x)
@@ -280,20 +277,18 @@ plot(x, pred_smooth_1, main = "First order smoothness fit")
 plot(x, pred_smooth_2, main = "Second order smoothness fit")
 ```
 
-Note for higher dimensional models, one can specify the smoothness in each
-variable by passing in a vector of smoothness orders of length `ncol(X)`. See
-documentation for more details.
-
 ### Formula interface
 
 One might wish to specify the functional form of the HAL fit further. This can
 be done using the formula interface. Specifically, the formula interface allows
-one to specify monotonicity constraints on components of the HAL fit, as well as
-specify exactly which basis functions (e.g., interactions) one wishes to model.
-First, we need to generate a formula object containing the necessary
-specification information. Later, we will see how to use this formula object to
-fit HAL. Note any arguments that one wishes to pass to `fit_hal` should be
-passed instead to the `formula_hal` function.
+one to specify monotonicity constraints on components of the HAL fit. It also
+allows one to specify exactly which basis functions (e.g., interactions) one
+wishes to model. The `formula_hal` function generates a `formula` object from a
+user-supplied character string, and this `formula` object contains the necessary
+specification information for `fit_hal` and `glmnet`.  The `formula_hal`
+function is intended for use within `fit_hal`, and the user-supplied character
+string is inputted into `fit_hal`. Here, we call `formula_hal` directly for
+illustrative purposes.
 
 ```{r}
 set.seed(98109)
@@ -303,133 +298,180 @@ n_obs <- 500
 x1 <-  runif(n_obs, min = -4, max = 4)
 x2 <- runif(n_obs, min = -4, max = 4)
 A <- runif(n_obs, min = -4, max = 4)
-y <- rowMeans(sin(x)) + rnorm(n_obs, mean = 0, sd = 0.2)
-ytrue <- rowMeans(sin(x))
-# The formula interface requires us to input a data.frame with all variables
-# including outcome.
-data <- data.frame(x1 = x1, x2 = x2, A = A, y = y)
+X <- data.frame(x1 = x1, x2 = x2, A = A)
+Y <- rowMeans(sin(X)) + rnorm(n_obs, mean = 0, sd = 0.2)
 ```
 
-We can specify an additive model in a number of ways. We can print the formula
-object obtained by calling `formula_hal` to see some helpful information about
-our HAL specification.
+We can specify an additive model in a number of ways. We can print the `formula`
+object obtained by calling `print`. This will provide some helpful information
+about our HAL specification.
 
-```{r}
-formula <- formula_hal("y ~ h(x1) + h(x2) + h(A)", data,
-                       smoothness_orders = 1, num_knots = 100)
-print(formula, expand = TRUE)
-print(" ")
-formula <- formula_hal("y ~ .", data, smoothness_orders = 1, num_knots = 100)
-print(formula, expand = TRUE)
-```
+The formula below includes the outcome, but `formula_hal` doesn't fit a HAL
+model, and doesn't need the outcome (actually everything before "$\tilde$" is
+ignored in `formula_hal`). This is why `formula_hal` takes the input `X` matrix
+of covariates, and not `X` and `Y`. In what follows, we include formulas with
+and without "y" in the character string.
 
-We can specify higher order interactions as follows.
 ```{r}
 formula <- formula_hal(
-  "y ~ h(x1) + h(x2) + h(A) + h(x1, x2) + h(x2, A) + h(x1, A) + h(x1, x2, A)",
-  data, smoothness_orders = 1, num_knots = 100
+  "y ~ h(x1) + h(x2) + h(A)", X = X, smoothness_orders = 1, num_knots = 100
+)
+print(formula, expand = TRUE)
+
+formula <- formula_hal(
+  "~ .", X, smoothness_orders = 1, num_knots = 100
+)
+print(formula, expand = TRUE)
+
+# examine same formula expansion with "y"
+formula <- formula_hal(
+  "y ~ .", X, smoothness_orders = 1, num_knots = 100
+)
+print(formula, expand = TRUE)
+```
+
+We can specify interactions as follows.
+```{r}
+formula <- formula_hal(
+  "~ h(x1) + h(x2) + h(A) + h(x1, x2) + h(x2, A) + h(x1, A) + h(x1, x2, A)",
+  X = X, smoothness_orders = 1, num_knots = 100
 )
 print(formula$formula_expanded)
 
-formula <- formula_hal("y ~ .^2", data, smoothness_orders = 1, num_knots = 100)
+formula <- formula_hal(
+  "~ .^2", X = X, smoothness_orders = 1, num_knots = 100
+)
 print(formula$formula_expanded)
 
-formula <- formula_hal("y ~ .^3", data, smoothness_orders = 1, num_knots = 100)
+formula <- formula_hal(
+  "~ .^3", X = X, smoothness_orders = 1, num_knots = 100
+)
 print(formula$formula_expanded)
 ```
 
-Sometimes, you may want to build an additive model but include all two way
-interactions with one variable "A" (e.g., treatment). This can be done in a
-variety of ways as follows.
+Sometimes, one might want to build an additive model, but include all two-way
+interactions with one variable (e.g., treatment "A"). This can be done in a
+variety of ways.
 
 ```{r}
 # Write it all out
-formula <- formula_hal("y ~ h(x1) + h(x2) + h(A) + h(A, x1) + h(A,x2)", data,
-                       smoothness_orders = 1, num_knots = 100)
+formula <- formula_hal(
+  "y ~ h(x1) + h(x2) + h(A) + h(A, x1) + h(A,x2)", X,
+  smoothness_orders = 1, num_knots = 100
+)
 print(formula$formula_expanded)
+
 # Use the "." which stands for add all additive terms and then manually add
 # interactions
-formula <- formula_hal("y ~ . + h(A,x1) + h(A,x2)", data,
-                       smoothness_orders = 1, num_knots = 100)
+formula <- formula_hal(
+  "y ~ . + h(A,x1) + h(A,x2)", X, smoothness_orders = 1, num_knots = 100
+)
 print(formula$formula_expanded)
+
 # Use the "wildcard" feature for when "." is included in the "h()" term. This
 # useful when you have many variables and do not want to write out every term.
-formula <- formula_hal("y ~ . + h(A,.)", data, smoothness_orders =1,
-                       num_knots = 100)
+formula <- formula_hal(
+  "~ . + h(A,.)", X, smoothness_orders = 1, num_knots = 100
+)
 print(formula$formula_expanded)
 ```
 
-Here are some other shortcuts inspired by the glm formula interace.
+Here are some other shortcuts inspired by the `glm` formula interface.
 ```{r}
 # The "*" operation generates lower order interactions as well.
-formula <- formula_hal("y ~ h(x1)*h(x2)", data,
-                       smoothness_orders = 1, num_knots = 100)
+formula <- formula_hal(
+  "~ h(x1)*h(x2)", X, smoothness_orders = 1, num_knots = 100
+)
 print(formula$formula_expanded)
-formula <- formula_hal("y ~ h(x1) + h(x2) + h(x1,x2)", data,
-                       smoothness_orders = 1, num_knots = 100)
+
+formula <- formula_hal(
+  "~ h(x1) + h(x2) + h(x1,x2)", X, smoothness_orders = 1, num_knots = 100
+)
 print(formula$formula_expanded)
+
 # The ":" operator generates an interaction term.
-formula <- formula_hal("y ~ h(x1) + h(x2) + h(x1):h(x2)", data,
-                       smoothness_orders = 1, num_knots = 100)
+formula <- formula_hal(
+  "~ h(x1) + h(x2) + h(x1):h(x2)", X, smoothness_orders = 1, num_knots = 100
+)
 print(formula$formula_expanded)
 ```
 
-Another interesting feature allows one to define custom wildcard symbols
-analagous to "." that specifies groups, using the `custom_group` argument. The
-custom group argument should be a named list (with one character names) whose
-elements are character vectors of variable names. This allows one to generate
-interactions between user supplied groups.
+The **`custom_group`** argument, allows one to define custom wildcard symbols
+that specify groups, analagous to ".". The `custom_group` argument should be a
+named list whose elements are character vectors of variable names in `X`, and
+one can define interactions between their groups. Custom group names must be
+single characters of length one.
 
 ```{r}
-custom_group <- list("a" = c("x1", "x2"), "b" = c("A"))
-formula <- formula_hal("y ~ h(a)", data, smoothness_orders = 1,
-                       num_knots = 100, custom_group = custom_group)
-print(formula$formula_expanded)
-formula <- formula_hal("y ~ h(a, b)", data, smoothness_orders = 1,
-                       num_knots = 100, custom_group = custom_group)
-print(formula$formula_expanded)
-formula <- formula_hal("y ~ h(a) + h(a, b)", data, smoothness_orders = 1,
-                       num_knots = 100, custom_group = custom_group)
+custom_group <- list("a" = c("A"), "w" = c("x1", "x2"))
+
+formula <- formula_hal(
+  "~ h(w)", X, smoothness_orders = 1, num_knots = 100,
+  custom_group = custom_group
+)
 print(formula$formula_expanded)
 
-formula <- formula_hal("y ~ h(a, b, x1)", data, smoothness_orders = 1,
-                       num_knots = 100, custom_group = custom_group)
+formula <- formula_hal(
+  "~ h(a, w)", X, smoothness_orders = 1, num_knots = 100,
+  custom_group = custom_group
+)
 print(formula$formula_expanded)
-formula <- formula_hal("y ~ h(a, b, a)", data, smoothness_orders = 1,
-                       num_knots = 100, custom_group = custom_group)
+
+formula <- formula_hal(
+  "y ~ h(w) + h(w, a)", X, smoothness_orders = 1, num_knots = 100,
+  custom_group = custom_group
+)
+print(formula$formula_expanded)
+
+formula <- formula_hal(
+  "~ h(w, a, x1)", X, smoothness_orders = 1, num_knots = 100,
+  custom_group = custom_group
+)
+print(formula$formula_expanded)
+
+formula <- formula_hal(
+  "y ~ h(w, a, w)", X, smoothness_orders = 1, num_knots = 100,
+  custom_group = custom_group
+)
 print(formula$formula_expanded)
 ```
 
-So far we have ignored a key feature of the formula interface that is not
-available in the generic `fit_hal` function: monotonicity constraints. This is
-done by replacing the "h" with either "i" (for monotonely increasing) or "d"
-(for monotonely decreasing). It's simple.
+A key feature of the HAL formula is **monotonicity constraints**. Specifying
+these constraints is achieved by simply replacing the "h" with either "i",
+for monotonically increasing; or "d", for monotonically decreasing.
 
 ```{r}
 # An additive monotone increasing model
-formula <- formula_hal("y ~ i(.)", data, smoothness_orders = 1,
-                       num_knots = 100)
+formula <- formula_hal(
+  "y ~ i(.)", X, smoothness_orders = 1, num_knots = 100
+)
 print(formula, expand = TRUE)
 print(" ")
+
 # A bi-additive monotone decreasing model
-formula <- formula_hal("y ~ d(.) + d(.,.)", data, smoothness_orders = 1,
-                       num_knots = 100)
+formula <- formula_hal(
+  "~ d(.) + d(.,.)", X, smoothness_orders = 1, num_knots = 100
+)
 print(formula, expand = TRUE)
 print(" ")
 
 # mix it up
-formula <- formula_hal("y ~ d(x1) + i(x2) + h(A) + h(.,.)", data,
-                       smoothness_orders = 1, num_knots = 100)
+formula <- formula_hal(
+  "y ~ d(x1) + i(x2) + h(A) + h(.,.)", X, smoothness_orders = 1,
+  num_knots = 100
+)
 print(formula, expand = TRUE)
 ```
 
-Now, let's fit some custom HALs. This is easy using the S3-class-based
-`fit_hal` function:
+Now, that we've illustrated the options with `formula_hal`, let's show how to
+fit a HAL model with the specified formula.
 ```{r}
 # get formula object
-formula <- formula_hal("y ~ .", data, smoothness_orders = 1, num_knots = 100)
-fit <- fit_hal_formula(formula)
-plot(predict(fit, new_data = formula$X), formula$Y)
+fit <- fit_hal(
+  X = X, Y = Y, formula = "~ .", smoothness_orders = 1, num_knots = 100
+)
+print(summary(fit), 10) # prints top 10 rows, i.e., highest absolute coefs
+plot(predict(fit, new_data = X), Y)
 ```
 
 ## References

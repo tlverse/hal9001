@@ -11,7 +11,7 @@
 
 \item{newdata}{A matrix of new observations on which to obtain predictions.}
 
-\item{...}{Placeholder (ignored).}
+\item{...}{Not used.}
 }
 \value{
 A \code{numeric} vector of predictions from a \code{SL.hal9001}
