@@ -12,6 +12,8 @@ Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](htt
 [![CRAN](https://www.r-pkg.org/badges/version/hal9001)](https://www.r-pkg.org/pkg/hal9001)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
+[![CRAN total
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/hal9001)](https://CRAN.R-project.org/package=hal9001)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -84,7 +86,7 @@ predictions via Highly Adaptive Lasso regression:
 # load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
-#> hal9001 v0.3.0: The Scalable Highly Adaptive Lasso
+#> hal9001 v0.4.0: The Scalable Highly Adaptive Lasso
 #> note: fit_hal defaults have changed. See ?fit_hal for details
 set.seed(385971)
 
@@ -99,12 +101,12 @@ hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.006    0.000   0.007          0         0
-#> design_matrix         0.003    0.000   0.003          0         0
-#> reduce_basis          0.000    0.000   0.000          0         0
+#> enumerate_basis       0.009    0.000   0.010          0         0
+#> design_matrix         0.004    0.000   0.004          0         0
+#> reduce_basis          0.000    0.000   0.001          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 0.450    0.023   0.494          0         0
-#> total                 0.460    0.023   0.504          0         0
+#> lasso                 0.566    0.012   0.579          0         0
+#> total                 0.580    0.012   0.594          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -165,7 +167,7 @@ See file `LICENSE` for details.
 
 ## References
 
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references">
 
 <div id="ref-benkeser2016hal">
 
