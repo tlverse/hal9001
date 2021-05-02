@@ -73,7 +73,7 @@
 
       
 
-      </header><script src="intro_hal9001_files/header-attrs-2.7.2/header-attrs.js"></script><script src="intro_hal9001_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Fitting the Highly Adaptive Lasso with <code>hal9001</code>
@@ -81,7 +81,7 @@
                         <h4 class="author">
 <a href="https://nimahejazi.org">Nima Hejazi</a>, <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>, Rachael Phillips, Lars van der Laan</h4>
             
-            <h4 class="date">2021-04-28</h4>
+            <h4 class="date">2021-05-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -144,12 +144,12 @@
 <code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.015    0.001   0.016          0         0
-## design_matrix         0.047    0.003   0.052          0         0
+## enumerate_basis       0.019    0.000   0.019          0         0
+## design_matrix         0.131    0.000   0.130          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
-## remove_duplicates     0.000    0.000   0.001          0         0
-## lasso                 3.022    0.143   3.357          0         0
-## total                 3.084    0.147   3.426          0         0</code></pre>
+## remove_duplicates     0.000    0.000   0.000          0         0
+## lasso                 3.518    0.007   3.526          0         0
+## total                 3.668    0.007   3.676          0         0</code></pre>
 </div>
 <div id="summarizing-the-model" class="section level3">
 <h3 class="hasAnchor">
@@ -329,12 +329,12 @@
 <code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>
 <span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.011    0.000   0.012          0         0
-## design_matrix         0.044    0.003   0.047          0         0
+## enumerate_basis       0.017    0.000   0.017          0         0
+## design_matrix         0.124    0.000   0.124          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
 ## remove_duplicates     0.000    0.000   0.000          0         0
-## lasso                 2.762    0.106   2.909          0         0
-## total                 2.818    0.109   2.968          0         0</code></pre>
+## lasso                 3.549    0.003   3.553          0         0
+## total                 3.690    0.003   3.694          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 10% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
@@ -530,7 +530,7 @@
 <p>Comparing the mean squared error (MSE) between the predictions and the true (denoised) outcome, the first- and second- order smoothed HAL is able to recover from the coarseness of the basis functions caused by the small <code>num_knots</code> argument. Also, the HAL with second-order smoothness is able to fit the true function very well (as expected, since sin(x) is a very smooth function). The main benefit of imposing higher-order smoothness is that fewer knot points are required for a near-optimal fit. Therefore, one can safely pass a smaller value to <code>num_knots</code> for a big decrease in runtime without sacrificing performance.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.004684819</code></pre>
+<pre><code>## [1] 0.004428306</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.0006370113</code></pre>
@@ -581,7 +581,7 @@
 <span class="va">pred_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_2</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.003650018</code></pre>
+<pre><code>## [1] 0.003619666</code></pre>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.0006597093</code></pre>
@@ -882,7 +882,7 @@
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references">
 <div id="ref-benkeser2016hal">
 <p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
 </div>
