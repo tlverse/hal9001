@@ -73,7 +73,7 @@
 
       
 
-      </header><script src="intro_hal9001_files/header-attrs-2.7.2/header-attrs.js"></script><script src="intro_hal9001_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Fitting the Highly Adaptive Lasso with <code>hal9001</code>
@@ -81,7 +81,7 @@
                         <h4 class="author">
 <a href="https://nimahejazi.org">Nima Hejazi</a>, <a href="https://github.com/jeremyrcoyle">Jeremy Coyle</a>, Rachael Phillips, Lars van der Laan</h4>
             
-            <h4 class="date">2021-04-27</h4>
+            <h4 class="date">2021-05-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/master/vignettes/intro_hal9001.Rmd"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -144,12 +144,12 @@
 <code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.014    0.001   0.015          0         0
-## design_matrix         0.045    0.003   0.048          0         0
+## enumerate_basis       0.019    0.000   0.019          0         0
+## design_matrix         0.131    0.000   0.130          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
 ## remove_duplicates     0.000    0.000   0.000          0         0
-## lasso                 0.954    0.046   1.015          0         0
-## total                 1.014    0.050   1.078          0         0</code></pre>
+## lasso                 3.518    0.007   3.526          0         0
+## total                 3.668    0.007   3.676          0         0</code></pre>
 </div>
 <div id="summarizing-the-model" class="section level3">
 <h3 class="hasAnchor">
@@ -159,24 +159,146 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ## 
-## Summary of non-zero coefficients is based on lambda of 0.1099169 
+## Summary of non-zero coefficients is based on lambda of 0.001594705 
 ## 
 ##           coef
-##  -1.7687874362
-##   0.1726315141
-##  -0.0245964275
-##   0.0200119716
-##   0.0083551475
-##   0.0021217969
-##  -0.0005975216
+##  -1.655065e+00
+##   2.686910e-01
+##  -2.633250e-01
+##  -2.476011e-01
+##   2.152953e-01
+##  -2.092530e-01
+##   1.635205e-01
+##   1.481338e-01
+##   1.462832e-01
+##   1.363432e-01
+##  -1.334611e-01
+##  -1.314937e-01
+##  -1.255557e-01
+##   1.120810e-01
+##   1.035978e-01
+##   9.978439e-02
+##   8.393924e-02
+##  -8.366952e-02
+##   7.804283e-02
+##   7.625507e-02
+##   6.836546e-02
+##  -6.110219e-02
+##  -6.015911e-02
+##   5.901064e-02
+##   5.864947e-02
+##   5.590722e-02
+##   5.152110e-02
+##  -4.887809e-02
+##  -4.323546e-02
+##  -3.558693e-02
+##  -3.448953e-02
+##   3.197637e-02
+##  -3.164933e-02
+##   3.099047e-02
+##   3.086602e-02
+##   2.875856e-02
+##  -2.780304e-02
+##   2.653091e-02
+##   2.440558e-02
+##  -2.191952e-02
+##  -2.187154e-02
+##   2.034783e-02
+##   1.735601e-02
+##   1.727268e-02
+##   1.669986e-02
+##   1.647693e-02
+##  -1.370501e-02
+##   1.179312e-02
+##   1.038842e-02
+##   1.025500e-02
+##   9.004675e-03
+##   8.990461e-03
+##  -8.613993e-03
+##   6.573167e-03
+##  -5.993819e-03
+##  -5.309992e-03
+##   5.068098e-03
+##   4.629355e-03
+##  -2.811073e-03
+##   9.860008e-04
+##  -7.698615e-04
+##   5.382611e-04
+##   3.558014e-04
+##  -2.005169e-04
+##   3.023814e-05
+##   1.063815e-05
+##   3.767101e-06
+##           coef
 ##                                                                                                             term
 ##                                                                                                      (Intercept)
+##                                                                              [ I(x2 &gt;= -1.738)*(x2 - -1.738)^1 ]
+##                                          [ I(x2 &gt;= 1.951)*(x2 - 1.951)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                          [ I(x1 &gt;= 1.057)*(x1 - 1.057)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                                                              [ I(x1 &gt;= -1.472)*(x1 - -1.472)^1 ]
+##                                          [ I(x1 &gt;= 1.512)*(x1 - 1.512)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+##                                                                              [ I(x1 &gt;= -1.432)*(x1 - -1.432)^1 ]
+##                                                                              [ I(x1 &gt;= -1.395)*(x1 - -1.395)^1 ]
+##                                                                              [ I(x1 &gt;= -1.525)*(x1 - -1.525)^1 ]
+##                                                                              [ I(x2 &gt;= -1.656)*(x2 - -1.656)^1 ]
+##    [ I(x1 &gt;= -0.143)*(x1 - -0.143)^1 ] * [ I(x2 &gt;= -0.483)*(x2 - -0.483)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+##                                                                                [ I(x2 &gt;= 0.822)*(x2 - 0.822)^1 ]
+##                                          [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= 1.402)*(x2 - 1.402)^1 ]
+##                                                                              [ I(x2 &gt;= -1.299)*(x2 - -1.299)^1 ]
+##                                        [ I(x2 &gt;= -1.366)*(x2 - -1.366)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                                                              [ I(x2 &gt;= -1.604)*(x2 - -1.604)^1 ]
+##                                        [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -0.612)*(x2 - -0.612)^1 ]
 ##                                        [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
-##    [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= 0.499)*(x2 - 0.499)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
-##                                        [ I(x2 &gt;= -0.645)*(x2 - -0.645)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                        [ I(x1 &gt;= -0.702)*(x1 - -0.702)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+##                                                                              [ I(x1 &gt;= -1.321)*(x1 - -1.321)^1 ]
+##      [ I(x1 &gt;= 1.46)*(x1 - 1.46)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -0.053)*(x3 - -0.053)^1 ]
+##                                                                                [ I(x2 &gt;= 0.849)*(x2 - 0.849)^1 ]
+##                                          [ I(x2 &gt;= 0.524)*(x2 - 0.524)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##          [ I(x1 &gt;= 0.952)*(x1 - 0.952)^1 ] * [ I(x2 &gt;= 0.191)*(x2 - 0.191)^1 ] * [ I(x3 &gt;= -1.7)*(x3 - -1.7)^1 ]
+##                                        [ I(x1 &gt;= -0.948)*(x1 - -0.948)^1 ] * [ I(x3 &gt;= -2.129)*(x3 - -2.129)^1 ]
+##    [ I(x1 &gt;= -0.206)*(x1 - -0.206)^1 ] * [ I(x2 &gt;= 0.165)*(x2 - 0.165)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##    [ I(x1 &gt;= 0.952)*(x1 - 0.952)^1 ] * [ I(x2 &gt;= -0.706)*(x2 - -0.706)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                                                                [ I(x2 &gt;= 0.836)*(x2 - 0.836)^1 ]
+##                                                                                [ I(x2 &gt;= 0.855)*(x2 - 0.855)^1 ]
+##      [ I(x1 &gt;= 0.369)*(x1 - 0.369)^1 ] * [ I(x2 &gt;= -0.483)*(x2 - -0.483)^1 ] * [ I(x3 &gt;= -0.64)*(x3 - -0.64)^1 ]
+##                                              [ I(x1 &gt;= 0.6)*(x1 - 0.6)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+##    [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= 1.359)*(x2 - 1.359)^1 ] * [ I(x3 &gt;= -0.287)*(x3 - -0.287)^1 ]
+##                                                                                [ I(x2 &gt;= 0.858)*(x2 - 0.858)^1 ]
+##  [ I(x1 &gt;= -1.234)*(x1 - -1.234)^1 ] * [ I(x2 &gt;= -1.936)*(x2 - -1.936)^1 ] * [ I(x3 &gt;= -0.762)*(x3 - -0.762)^1 ]
+##                                        [ I(x1 &gt;= -2.165)*(x1 - -2.165)^1 ] * [ I(x2 &gt;= -0.879)*(x2 - -0.879)^1 ]
 ##      [ I(x1 &gt;= -0.74)*(x1 - -0.74)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+##  [ I(x1 &gt;= -0.693)*(x1 - -0.693)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -0.027)*(x3 - -0.027)^1 ]
+##                                                                                [ I(x2 &gt;= -1.28)*(x2 - -1.28)^1 ]
+##                                                                              [ I(x2 &gt;= -0.906)*(x2 - -0.906)^1 ]
+##                                        [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##  [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                          [ I(x2 &gt;= -1.939)*(x2 - -1.939)^1 ] * [ I(x3 &gt;= 0.469)*(x3 - 0.469)^1 ]
+##                                        [ I(x1 &gt;= -0.138)*(x1 - -0.138)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                                                              [ I(x1 &gt;= -1.565)*(x1 - -1.565)^1 ]
+##                                                                              [ I(x2 &gt;= -1.141)*(x2 - -1.141)^1 ]
+##                                                                              [ I(x2 &gt;= -1.179)*(x2 - -1.179)^1 ]
+##                                          [ I(x1 &gt;= 0.433)*(x1 - 0.433)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+##                                                                              [ I(x2 &gt;= -0.941)*(x2 - -0.941)^1 ]
+##                                                                              [ I(x2 &gt;= -1.259)*(x2 - -1.259)^1 ]
+##    [ I(x1 &gt;= -0.097)*(x1 - -0.097)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+##    [ I(x1 &gt;= -2.163)*(x1 - -2.163)^1 ] * [ I(x2 &gt;= -1.583)*(x2 - -1.583)^1 ] * [ I(x3 &gt;= 0.416)*(x3 - 0.416)^1 ]
+##                                                                              [ I(x1 &gt;= -1.599)*(x1 - -1.599)^1 ]
+##                                          [ I(x1 &gt;= 0.331)*(x1 - 0.331)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                                                                [ I(x2 &gt;= -1.12)*(x2 - -1.12)^1 ]
+##  [ I(x1 &gt;= -2.163)*(x1 - -2.163)^1 ] * [ I(x2 &gt;= -1.936)*(x2 - -1.936)^1 ] * [ I(x3 &gt;= -0.349)*(x3 - -0.349)^1 ]
+##    [ I(x1 &gt;= -0.966)*(x1 - -0.966)^1 ] * [ I(x2 &gt;= 0.468)*(x2 - 0.468)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##                                        [ I(x1 &gt;= -1.849)*(x1 - -1.849)^1 ] * [ I(x2 &gt;= -0.786)*(x2 - -0.786)^1 ]
+##      [ I(x1 &gt;= -2.163)*(x1 - -2.163)^1 ] * [ I(x2 &gt;= -0.189)*(x2 - -0.189)^1 ] * [ I(x3 &gt;= -1.7)*(x3 - -1.7)^1 ]
+##    [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -1.408)*(x2 - -1.408)^1 ] * [ I(x3 &gt;= 1.151)*(x3 - 1.151)^1 ]
+##                                        [ I(x1 &gt;= -1.686)*(x1 - -1.686)^1 ] * [ I(x2 &gt;= -1.326)*(x2 - -1.326)^1 ]
+##      [ I(x1 &gt;= -0.795)*(x1 - -0.795)^1 ] * [ I(x2 &gt;= -0.32)*(x2 - -0.32)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+##                                                                                  [ I(x2 &gt;= -1.2)*(x2 - -1.2)^1 ]
+##                                        [ I(x1 &gt;= -2.165)*(x1 - -2.165)^1 ] * [ I(x2 &gt;= -1.653)*(x2 - -1.653)^1 ]
 ##  [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -0.593)*(x2 - -0.593)^1 ] * [ I(x3 &gt;= -1.528)*(x3 - -1.528)^1 ]
-##    [ I(x1 &gt;= 0.305)*(x1 - 0.305)^1 ] * [ I(x2 &gt;= -1.408)*(x2 - -1.408)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]</code></pre>
+##                                        [ I(x1 &gt;= -2.352)*(x1 - -2.352)^1 ] * [ I(x2 &gt;= -1.232)*(x2 - -1.232)^1 ]
+##                                        [ I(x1 &gt;= -2.352)*(x1 - -2.352)^1 ] * [ I(x2 &gt;= -1.409)*(x2 - -1.409)^1 ]
+##                                        [ I(x1 &gt;= -2.352)*(x1 - -2.352)^1 ] * [ I(x2 &gt;= -1.053)*(x2 - -1.053)^1 ]
+##                                                                                                             term</code></pre>
 <p>Note the length and width of these tables! The R environment might not be the optimal location to view the summary. Tip: Tables can be exported from R to LaTeX with the <code>xtable</code> R package. Here’s an example: <code><a href="https://rdrr.io/r/base/print.html">print(xtable(summary(fit)$table, type = "latex"), file = "haltbl_meow.tex")</a></code>.</p>
 </div>
 <div id="obtaining-model-predictions" class="section level3">
@@ -191,12 +313,12 @@
 <span class="va">preds_hal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="va">mse_hal</span> <span class="op">&lt;-</span> <span class="fu">mse</span><span class="op">(</span>preds <span class="op">=</span> <span class="va">preds_hal</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">mse_hal</span></code></pre></div>
-<pre><code>## [1] 0.1940649</code></pre>
+<pre><code>## [1] 0.042334</code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">oob_hal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">test_x</span><span class="op">)</span>
 <span class="va">oob_hal_mse</span> <span class="op">&lt;-</span> <span class="fu">mse</span><span class="op">(</span>preds <span class="op">=</span> <span class="va">oob_hal</span>, y <span class="op">=</span> <span class="va">test_y</span><span class="op">)</span>
 <span class="va">oob_hal_mse</span></code></pre></div>
-<pre><code>## [1] 1.54089</code></pre>
+<pre><code>## [1] 1.814015</code></pre>
 </div>
 <div id="reducing-basis-functions" class="section level3">
 <h3 class="hasAnchor">
@@ -207,31 +329,161 @@
 <code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>
 <span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code>##                   user.self sys.self elapsed user.child sys.child
-## enumerate_basis       0.011    0.000   0.011          0         0
-## design_matrix         0.050    0.003   0.053          0         0
+## enumerate_basis       0.017    0.000   0.017          0         0
+## design_matrix         0.124    0.000   0.124          0         0
 ## reduce_basis          0.000    0.000   0.000          0         0
 ## remove_duplicates     0.000    0.000   0.000          0         0
-## lasso                 0.841    0.056   0.901          0         0
-## total                 0.902    0.059   0.965          0         0</code></pre>
+## lasso                 3.549    0.003   3.553          0         0
+## total                 3.690    0.003   3.694          0         0</code></pre>
 <p>In the above, all basis functions with fewer than 10% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
-<pre><code>##             coef
-## 1: -1.7687874362
-## 2:  0.1726315141
-## 3: -0.0245964275
-## 4:  0.0200119716
-## 5:  0.0083551475
-## 6:  0.0021217969
-## 7: -0.0005975216
-##                                                                                                               term
-## 1:                                                                                                     (Intercept)
-## 2:                                       [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
-## 3:   [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= 0.499)*(x2 - 0.499)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
-## 4:                                       [ I(x2 &gt;= -0.645)*(x2 - -0.645)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
-## 5:     [ I(x1 &gt;= -0.74)*(x1 - -0.74)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
-## 6: [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -0.593)*(x2 - -0.593)^1 ] * [ I(x3 &gt;= -1.528)*(x3 - -1.528)^1 ]
-## 7:   [ I(x1 &gt;= 0.305)*(x1 - 0.305)^1 ] * [ I(x2 &gt;= -1.408)*(x2 - -1.408)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]</code></pre>
+<pre><code>##              coef
+##  1: -1.660400e+00
+##  2:  2.868519e-01
+##  3: -2.671013e-01
+##  4: -2.487249e-01
+##  5:  2.182740e-01
+##  6: -2.112773e-01
+##  7:  1.670157e-01
+##  8: -1.556537e-01
+##  9:  1.518698e-01
+## 10:  1.490026e-01
+## 11: -1.396534e-01
+## 12:  1.369245e-01
+## 13:  1.194560e-01
+## 14: -1.179605e-01
+## 15:  1.026831e-01
+## 16:  9.585680e-02
+## 17: -9.420499e-02
+## 18:  8.542004e-02
+## 19:  8.129511e-02
+## 20:  7.783342e-02
+## 21:  7.091008e-02
+## 22:  7.081414e-02
+## 23: -6.417802e-02
+## 24:  6.127625e-02
+## 25:  5.311972e-02
+## 26: -5.260900e-02
+## 27: -4.930686e-02
+## 28:  4.799609e-02
+## 29: -4.778122e-02
+## 30: -4.766840e-02
+## 31:  3.678412e-02
+## 32: -3.644614e-02
+## 33:  3.637605e-02
+## 34: -3.561348e-02
+## 35:  3.310005e-02
+## 36:  2.938035e-02
+## 37:  2.935238e-02
+## 38:  2.838820e-02
+## 39: -2.729316e-02
+## 40:  2.510271e-02
+## 41: -2.062154e-02
+## 42: -2.058008e-02
+## 43:  1.875275e-02
+## 44:  1.692870e-02
+## 45:  1.650713e-02
+## 46:  1.532583e-02
+## 47: -1.225887e-02
+## 48:  1.216093e-02
+## 49:  1.044713e-02
+## 50: -1.010747e-02
+## 51: -1.006226e-02
+## 52: -9.765854e-03
+## 53:  8.980986e-03
+## 54:  8.403466e-03
+## 55:  5.986238e-03
+## 56:  5.234255e-03
+## 57:  4.981492e-03
+## 58: -4.482854e-03
+## 59:  4.241221e-03
+## 60:  3.564309e-03
+## 61:  3.555335e-03
+## 62:  2.935366e-03
+## 63: -2.025490e-03
+## 64: -1.569052e-03
+## 65:  8.764754e-04
+## 66:  5.862482e-04
+## 67:  5.306246e-04
+## 68:  2.555456e-04
+## 69: -2.367168e-04
+## 70:  2.628055e-06
+## 71:  2.715654e-07
+##              coef
+##                                                                                                                term
+##  1:                                                                                                     (Intercept)
+##  2:                                                                             [ I(x2 &gt;= -1.738)*(x2 - -1.738)^1 ]
+##  3:                                         [ I(x2 &gt;= 1.951)*(x2 - 1.951)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##  4:                                         [ I(x1 &gt;= 1.057)*(x1 - 1.057)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+##  5:                                                                             [ I(x1 &gt;= -1.472)*(x1 - -1.472)^1 ]
+##  6:                                         [ I(x1 &gt;= 1.512)*(x1 - 1.512)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+##  7:                                                                             [ I(x1 &gt;= -1.432)*(x1 - -1.432)^1 ]
+##  8:                                                                               [ I(x2 &gt;= 0.822)*(x2 - 0.822)^1 ]
+##  9:                                                                             [ I(x1 &gt;= -1.395)*(x1 - -1.395)^1 ]
+## 10:                                                                             [ I(x1 &gt;= -1.525)*(x1 - -1.525)^1 ]
+## 11:   [ I(x1 &gt;= -0.143)*(x1 - -0.143)^1 ] * [ I(x2 &gt;= -0.483)*(x2 - -0.483)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+## 12:                                                                             [ I(x2 &gt;= -1.656)*(x2 - -1.656)^1 ]
+## 13:                                                                             [ I(x2 &gt;= -1.299)*(x2 - -1.299)^1 ]
+## 14:                                         [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= 1.402)*(x2 - 1.402)^1 ]
+## 15:                                                                             [ I(x2 &gt;= -1.604)*(x2 - -1.604)^1 ]
+## 16:                                       [ I(x2 &gt;= -1.366)*(x2 - -1.366)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 17:                                       [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+## 18:                                       [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -0.612)*(x2 - -0.612)^1 ]
+## 19:                                                                             [ I(x1 &gt;= -1.321)*(x1 - -1.321)^1 ]
+## 20:                                       [ I(x1 &gt;= -0.702)*(x1 - -0.702)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+## 21:         [ I(x1 &gt;= 0.952)*(x1 - 0.952)^1 ] * [ I(x2 &gt;= 0.191)*(x2 - 0.191)^1 ] * [ I(x3 &gt;= -1.7)*(x3 - -1.7)^1 ]
+## 22:     [ I(x1 &gt;= 1.46)*(x1 - 1.46)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -0.053)*(x3 - -0.053)^1 ]
+## 23:                                                                               [ I(x2 &gt;= 0.849)*(x2 - 0.849)^1 ]
+## 24:   [ I(x1 &gt;= -0.206)*(x1 - -0.206)^1 ] * [ I(x2 &gt;= 0.165)*(x2 - 0.165)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 25:   [ I(x1 &gt;= 0.952)*(x1 - 0.952)^1 ] * [ I(x2 &gt;= -0.706)*(x2 - -0.706)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 26:                                         [ I(x2 &gt;= 0.524)*(x2 - 0.524)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 27:                                                                               [ I(x2 &gt;= 0.836)*(x2 - 0.836)^1 ]
+## 28:                                       [ I(x1 &gt;= -0.948)*(x1 - -0.948)^1 ] * [ I(x3 &gt;= -2.129)*(x3 - -2.129)^1 ]
+## 29:                                                                               [ I(x2 &gt;= 0.855)*(x2 - 0.855)^1 ]
+## 30:     [ I(x1 &gt;= 0.369)*(x1 - 0.369)^1 ] * [ I(x2 &gt;= -0.483)*(x2 - -0.483)^1 ] * [ I(x3 &gt;= -0.64)*(x3 - -0.64)^1 ]
+## 31: [ I(x1 &gt;= -1.234)*(x1 - -1.234)^1 ] * [ I(x2 &gt;= -1.936)*(x2 - -1.936)^1 ] * [ I(x3 &gt;= -0.762)*(x3 - -0.762)^1 ]
+## 32:                                             [ I(x1 &gt;= 0.6)*(x1 - 0.6)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+## 33:                                       [ I(x1 &gt;= -2.165)*(x1 - -2.165)^1 ] * [ I(x2 &gt;= -0.879)*(x2 - -0.879)^1 ]
+## 34:                                                                               [ I(x2 &gt;= 0.858)*(x2 - 0.858)^1 ]
+## 35:   [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= 1.359)*(x2 - 1.359)^1 ] * [ I(x3 &gt;= -0.287)*(x3 - -0.287)^1 ]
+## 36:                                                                             [ I(x2 &gt;= -0.906)*(x2 - -0.906)^1 ]
+## 37:     [ I(x1 &gt;= -0.74)*(x1 - -0.74)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+## 38:                                                                               [ I(x2 &gt;= -1.28)*(x2 - -1.28)^1 ]
+## 39: [ I(x1 &gt;= -0.693)*(x1 - -0.693)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -0.027)*(x3 - -0.027)^1 ]
+## 40:                                         [ I(x2 &gt;= -1.939)*(x2 - -1.939)^1 ] * [ I(x3 &gt;= 0.469)*(x3 - 0.469)^1 ]
+## 41:                                       [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 42: [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 43:                                                                             [ I(x1 &gt;= -1.565)*(x1 - -1.565)^1 ]
+## 44:                                       [ I(x1 &gt;= -0.138)*(x1 - -0.138)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 45:                                                                             [ I(x2 &gt;= -1.141)*(x2 - -1.141)^1 ]
+## 46:                                                                             [ I(x1 &gt;= -1.599)*(x1 - -1.599)^1 ]
+## 47:                                         [ I(x1 &gt;= 0.433)*(x1 - 0.433)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ]
+## 48:   [ I(x1 &gt;= -0.097)*(x1 - -0.097)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+## 49:                                                                             [ I(x2 &gt;= -1.179)*(x2 - -1.179)^1 ]
+## 50:   [ I(x1 &gt;= -0.966)*(x1 - -0.966)^1 ] * [ I(x2 &gt;= 0.468)*(x2 - 0.468)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 51: [ I(x1 &gt;= -2.163)*(x1 - -2.163)^1 ] * [ I(x2 &gt;= -1.936)*(x2 - -1.936)^1 ] * [ I(x3 &gt;= -0.349)*(x3 - -0.349)^1 ]
+## 52:                                         [ I(x1 &gt;= 0.331)*(x1 - 0.331)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]
+## 53:   [ I(x1 &gt;= -2.163)*(x1 - -2.163)^1 ] * [ I(x2 &gt;= -1.583)*(x2 - -1.583)^1 ] * [ I(x3 &gt;= 0.416)*(x3 - 0.416)^1 ]
+## 54:                                                                             [ I(x2 &gt;= -0.941)*(x2 - -0.941)^1 ]
+## 55:                                                                               [ I(x2 &gt;= -1.12)*(x2 - -1.12)^1 ]
+## 56:     [ I(x1 &gt;= -2.163)*(x1 - -2.163)^1 ] * [ I(x2 &gt;= -0.189)*(x2 - -0.189)^1 ] * [ I(x3 &gt;= -1.7)*(x3 - -1.7)^1 ]
+## 57:                                                                             [ I(x2 &gt;= -1.941)*(x2 - -1.941)^1 ]
+## 58:   [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -1.408)*(x2 - -1.408)^1 ] * [ I(x3 &gt;= 1.151)*(x3 - 1.151)^1 ]
+## 59:                                       [ I(x1 &gt;= -1.849)*(x1 - -1.849)^1 ] * [ I(x2 &gt;= -0.786)*(x2 - -0.786)^1 ]
+## 60:                                                                             [ I(x2 &gt;= -1.259)*(x2 - -1.259)^1 ]
+## 61:                                                                                 [ I(x2 &gt;= -1.2)*(x2 - -1.2)^1 ]
+## 62:                                                                             [ I(x1 &gt;= -1.648)*(x1 - -1.648)^1 ]
+## 63:     [ I(x1 &gt;= -0.795)*(x1 - -0.795)^1 ] * [ I(x2 &gt;= -0.32)*(x2 - -0.32)^1 ] * [ I(x3 &gt;= -1.89)*(x3 - -1.89)^1 ]
+## 64:   [ I(x1 &gt;= -0.873)*(x1 - -0.873)^1 ] * [ I(x2 &gt;= -1.936)*(x2 - -1.936)^1 ] * [ I(x3 &gt;= 0.906)*(x3 - 0.906)^1 ]
+## 65: [ I(x1 &gt;= -0.097)*(x1 - -0.097)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= -0.457)*(x3 - -0.457)^1 ]
+## 66:                                       [ I(x1 &gt;= -2.165)*(x1 - -2.165)^1 ] * [ I(x2 &gt;= -1.653)*(x2 - -1.653)^1 ]
+## 67:                                       [ I(x1 &gt;= -2.352)*(x1 - -2.352)^1 ] * [ I(x2 &gt;= -1.409)*(x2 - -1.409)^1 ]
+## 68:                                       [ I(x1 &gt;= -2.352)*(x1 - -2.352)^1 ] * [ I(x2 &gt;= -1.232)*(x2 - -1.232)^1 ]
+## 69: [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -0.593)*(x2 - -0.593)^1 ] * [ I(x3 &gt;= -1.528)*(x3 - -1.528)^1 ]
+## 70:                                                                             [ I(x2 &gt;= -1.328)*(x2 - -1.328)^1 ]
+## 71:                                       [ I(x1 &gt;= -2.352)*(x1 - -2.352)^1 ] * [ I(x2 &gt;= -1.053)*(x2 - -1.053)^1 ]
+##                                                                                                                term</code></pre>
 <p>Other approaches exist for reducing the set of basis functions <em>before</em> they are actually created, which is essential for most real-world applications with HAL. Currently, we provide this “pre-screening” via <code>num_knots</code> argument in <code>hal_fit</code>. The <code>num_knots</code> argument is akin to binning: it increases the coarseness of the approximation. <code>num_knots</code> allows one to specify the number of knot points used to generate the basis functions for each/all interaction degree(s). This reduces the total number of basis functions generated, and thus the size of the optimization problem, and it can dramatically decrease runtime. One can pass in a vector of length <code>max_degree</code> to <code>num_knots</code>, specifying the number of knot points to use by interaction degree for each basis function. Thus, one can specify if interactions of higher degrees (e.g., two- or three- way interactions) should be more coarse. Increasing the coarseness of more complex basis functions helps prevent a combinatorial explosion of basis functions, which can easily occur when basis functions are generated for all possible knot points. We will show an example with <code>num_knots</code> in the section that follows.</p>
 </div>
 <div id="specifying-smoothness-of-the-hal-model" class="section level3">
@@ -278,13 +530,13 @@
 <p>Comparing the mean squared error (MSE) between the predictions and the true (denoised) outcome, the first- and second- order smoothed HAL is able to recover from the coarseness of the basis functions caused by the small <code>num_knots</code> argument. Also, the HAL with second-order smoothness is able to fit the true function very well (as expected, since sin(x) is a very smooth function). The main benefit of imposing higher-order smoothness is that fewer knot points are required for a near-optimal fit. Therefore, one can safely pass a smaller value to <code>num_knots</code> for a big decrease in runtime without sacrificing performance.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.003732214</code></pre>
+<pre><code>## [1] 0.004428306</code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.002578282</code></pre>
+<pre><code>## [1] 0.0006370113</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.02500429</code></pre>
+<pre><code>## [1] 0.001036271</code></pre>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">as.vector</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
                  ytrue <span class="op">=</span> <span class="va">ytrue</span>,
@@ -329,7 +581,7 @@
 <span class="va">pred_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_2</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0.003650018</code></pre>
+<pre><code>## [1] 0.003619666</code></pre>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] 0.0006597093</code></pre>
@@ -630,7 +882,7 @@
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references">
 <div id="ref-benkeser2016hal">
 <p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
 </div>

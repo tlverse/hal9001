@@ -18,6 +18,10 @@ As of April 2021:
 * Support for the custom lasso procedure implemented in `Rcpp` has been
   discontinued. Accordingly, the `"lassi"` option and argument `fit_type` have
   been removed from `fit_hal`.
+* Re-added `lambda.min.ratio` as a `fit_control` argument to `fit_hal`. We've
+  seen that not setting `lambda.min.ratio` in `glmnet` can lead to no `lambda`
+  values that fit the data sufficiently well, so it seems appropriate to
+  override the `glmnet` default.
 
 # hal9001 0.3.0
 

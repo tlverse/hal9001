@@ -11,7 +11,7 @@ fit_hal(
   X_unpenalized = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
   smoothness_orders = 1,
-  num_knots = sapply(seq_len(max_degree), num_knots_generator, smoothness_orders =
+  num_knots = num_knots_generator(max_degree = max_degree, smoothness_orders =
     smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
   reduce_basis = 1/sqrt(length(Y)),
   family = c("gaussian", "binomial", "poisson", "cox"),
@@ -19,7 +19,7 @@ fit_hal(
   id = NULL,
   offset = NULL,
   fit_control = list(cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
-    prediction_bounds = "default"),
+    lambda.min.ratio = 1e-04, prediction_bounds = "default"),
   formula_control = list(exclusive_dot = FALSE, custom_group = NULL),
   basis_list = NULL,
   return_lasso = TRUE,
@@ -115,6 +115,11 @@ used when \code{cv_select = TRUE}.
 \code{\link[glmnet]{cv.glmnet}}. When \code{TRUE}, \code{"lambda.min"} is
 used; otherwise, \code{"lambda.1se"}. Only used when
 \code{cv_select = TRUE}.
+\item \code{lambda.min.ratio}: A \code{\link[glmnet]{glmnet}} argument specifying
+the smallest value for \code{lambda}, as a fraction of \code{lambda.max},
+the (data derived) entry value (i.e. the smallest value for which all
+coefficients are zero). We've seen that not setting \code{lambda.min.ratio}
+can lead to no \code{lambda} values that fit the data sufficiently well.
 \item \code{prediction_bounds}: A vector of size two that provides the lower and
 upper bounds for predictions. When \code{prediction_bounds = "default"},
 the predictions are bounded between \code{min(Y) - sd(Y)} and

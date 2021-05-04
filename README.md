@@ -101,17 +101,17 @@ hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.009    0.000   0.010          0         0
-#> design_matrix         0.004    0.000   0.004          0         0
-#> reduce_basis          0.000    0.000   0.001          0         0
+#> enumerate_basis       0.006    0.000   0.005          0         0
+#> design_matrix         0.002    0.000   0.003          0         0
+#> reduce_basis          0.000    0.000   0.000          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 0.566    0.012   0.579          0         0
-#> total                 0.580    0.012   0.594          0         0
+#> lasso                 5.586    0.032   5.653          0         0
+#> total                 5.595    0.032   5.661          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
-#> [1] 0.0357806
+#> [1] 0.03481173
 ```
 
 -----
