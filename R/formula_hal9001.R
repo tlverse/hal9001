@@ -571,9 +571,9 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
       n <- num_knots[length(col_index)]
     }
     
-    X <- hal9001:::quantizer(X, n)
+    X <- quantizer(X, n)
     
-    new_basis <- hal9001:::basis_list_cols(
+    new_basis <- basis_list_cols(
       col_index, X, order_map,
       include_zero_order, FALSE
     )
@@ -582,7 +582,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     if(max_order > 0) {
       X_sub <- matrix(apply(X, 2, min), nrow = 1)
       for(order in 0:(max_order)) {
-        edge_basis <- hal9001:::basis_list_cols(
+        edge_basis <- basis_list_cols(
           col_index, X_sub, rep(order, ncol(X)),
           T, T
         )
@@ -627,14 +627,14 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
           } else {
             n <- num_knots[length(combo)]
           }
-          X <- hal9001:::quantizer(X, n)
-          blist <- hal9001:::basis_list_cols(combo, X, order_map, include_zero_order, FALSE)
+          X <- quantizer(X, n)
+          blist <- basis_list_cols(combo, X, order_map, include_zero_order, FALSE)
           max_order <- max(order_map)
           edge_basis_all <- list()
           if(max_order > 0) {
             X_sub <- matrix(apply(X, 2, min), nrow = 1)
             for(order in 0:(max_order)) {
-              edge_basis <- hal9001:::basis_list_cols(
+              edge_basis <- basis_list_cols(
                 col_index, X_sub, rep(order, ncol(X)),
                 T, T
               )
