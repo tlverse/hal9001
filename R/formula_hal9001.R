@@ -132,6 +132,7 @@
 #' @return A \code{formula} object.
 #'
 #' @export
+
 formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
                         smoothness_orders = NULL, num_knots = NULL) {
   generate_lower_degrees <- FALSE
@@ -154,7 +155,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   }))) {
     stop("Group name '.' is not allowed.")
   }
-
+  
   form <- formula
   if (is.null(smoothness_orders) | !is.numeric(smoothness_orders)) {
     smoothness_orders <- round(rep(0, ncol(X)))
@@ -168,7 +169,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   }
   order_map <- smoothness_orders
   form <- stringr::str_replace_all(form, " ", "")
-
+  
   term_star <- stringr::str_match_all(
     form, "([ihd]\\([^)]+\\)[*][ihd]\\([^+]+\\))"
   )[[1]]
@@ -176,18 +177,18 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   # handle/expand the '*' operation if present, similar to formula in glm()
   process_star <- function(term) {
     pieces <- str_split(term, "[*]")[[1]]
-
+    
     combs <- lapply(1:(length(pieces) - 1), function(i) {
       combos <- combn(pieces, i)
       combos <- lapply(1:ncol(combos), function(j) {
         combos[, j]
       })
-
+      
       return(combos)
     })
-
+    
     combs <- unlist(combs, recursive = F)
-
+    
     combs <- sapply(combs, function(term) {
       paste0(term, collapse = ":")
     })
@@ -198,11 +199,11 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     form <- paste0(form, "+", paste0(term_star, collapse = "+"))
   }
   form <- stringr::str_replace_all(form, "[*]", ":")
-
+  
   term_concat <- stringr::str_match_all(
     form, "([ihd]\\([^)]+\\)[:][ihd]\\([^+]+\\))"
   )[[1]]
-
+  
   if (length(term_concat) > 0) {
     form <- stringr::str_remove_all(
       form, "([ihd]\\([^)]+\\)[:][ihd]\\([^+]+\\))[+]"
@@ -213,16 +214,16 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     form <- stringr::str_remove_all(
       form, "([ihd]\\([^)]+\\)[:][ihd]\\([^+]+\\))"
     )
-
+    
     term_concat <- term_concat[, -1]
     term_concat <- sapply(term_concat, function(term) {
       pieces <- stringr::str_split(term, "[:]")
-
+      
       type <- sapply(pieces, function(piece) {
         str_match(piece, "([ihd])\\(")[, 2]
       })
-
-
+      
+      
       if (length(unique(type)) != 1) {
         term <- stringr::str_replace_all(term, "[id]\\(", "h\\(")
       }
@@ -245,10 +246,10 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   outcome <- stringr::str_match(form, "([^\\s]+)~")
   outcome <- gsub("~", "", outcome)
   outcome <- gsub(" ", "", outcome)
-
+  
   X_orig <- X
-  # X = quantizer(X, num_knots)
-
+  # X = hal9001:::quantizer(X, num_knots)
+  
   names <- colnames(X)
   remove <- match(remove, colnames(X))
   # process the variables specified in each term and the monotonicity
@@ -257,22 +258,22 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     form, "[^-][ihd]\\(([^\\s()]+)\\)"
   )[[1]]
   interactions <- interactions[, 2]
-
+  
   monotone_type <- stringr::str_match_all(
     form, "[^-]([[a-z]])\\([^\\s()]+\\)"
   )[[1]]
   monotone_type <- monotone_type[, 2]
-
+  
   interactions_minus <- stringr::str_match_all(
     form, "[-][ihd]\\(([^\\s()]+)\\)"
   )[[1]]
   interactions_minus <- interactions_minus[, 2]
-
+  
   monotone_type_minus <- stringr::str_match_all(
     form, "[-]([[a-z]])\\([^\\s()]+\\)"
   )[[1]]
   monotone_type_minus <- monotone_type_minus[, 2]
-
+  
   if (stringr::str_detect(form, "[~+]\\.")) {
     degree_rest <- (stringr::str_match_all(form, "[~+]\\.\\^([0-9]+)")[[1]])
     degree_rest <- as.numeric(degree_rest[, -1])
@@ -291,9 +292,9 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   } else {
     num_knots <- num_knots
   }
-
+  
   monotone_type
-
+  
   # if dots are included in formula term (e.g., h(.,.) or h(x,.)) then treat
   # this as wild card and generate all possible versions of this term. NOTE:
   # this leaves "+ ." and " .^max_degree" alone.
@@ -309,24 +310,24 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     inter <- lapply(1:length(interactions), function(i) {
       term <- interactions[[i]]
       cols <- unlist(stringr::str_extract_all(term, "[^,]+"))
-
+      
       index_of_dot <- which(cols == dot)
-
+      
       if (length(index_of_dot) == 0) {
         monotone_type_new <<- c(monotone_type_new, monotone_type[i])
         return(term)
       }
       cols_left <- setdiff(group, cols[-index_of_dot])
-
+      
       type <- monotone_type[i]
       monotone_type_new <<- c(
         monotone_type_new,
         rep(type, length(cols_left))
       )
-
+      
       return(stringr::str_replace(term, paste0("[", dot, "]"), cols_left))
     })
-
+    
     return(sub_dots(
       unlist(inter, recursive = FALSE),
       monotone_type_new, dot, group, count - 1
@@ -335,7 +336,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   }
   if (!(length(interactions) == 0)) {
     new_inter <- sub_dots(interactions, monotone_type,
-      group = names, count = 5
+                          group = names, count = 5
     )
     monotone_type <- new_inter[[1]]
     interactions <- new_inter[[2]]
@@ -344,7 +345,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
         custom_dot <- name
         group <- custom_group[[name]]
         new_inter <- sub_dots(interactions, monotone_type,
-          dot = custom_dot, group = group, count = 5
+                              dot = custom_dot, group = group, count = 5
         )
         monotone_type <- new_inter[[1]]
         interactions <- new_inter[[2]]
@@ -353,7 +354,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   }
   if (!(length(interactions_minus) == 0)) {
     new_inter_minus <- sub_dots(interactions_minus, monotone_type_minus,
-      group = names, count = 5
+                                group = names, count = 5
     )
     monotone_type_minus <- new_inter_minus[[1]]
     interactions_minus <- new_inter_minus[[2]]
@@ -361,13 +362,13 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
       custom_dot <- names(custom_group)[[1]]
       group <- custom_group[[1]]
       new_inter <- sub_dots(interactions_minus, monotone_type,
-        dot = custom_dot, group = group, count = 5
+                            dot = custom_dot, group = group, count = 5
       )
       monotone_type_minus <- new_inter[[1]]
       interactions_minus <- new_inter[[2]]
     }
   }
-
+  
   # count = 0
   # while(count <=5){
   #   if(length(interactions_minus)==0){
@@ -385,38 +386,38 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   #
   #   count = count +1
   # }
-
+  
   # Convert each term to a column index vector (i.e. cols)
   get_index <- function(term) {
     cols <- unlist(stringr::str_extract_all(term, "[^,]+"))
-
+    
     valid <- cols %in% names
     if (any(!valid)) {
       stop(paste0("Unknown variable(s) in formula: ", cols[!valid]))
     }
-
+    
     ind <- unlist(lapply(as.vector(cols), function(x) {
       (which(names == x))
     }))
     keep <- unlist(lapply(ind, function(v) {
       length(v) != 0
     }))
-
+    
     ind <- ind[keep]
     ind <- sort(unique(ind))
-
+    
     return((ind))
   }
-
+  
   interactions_index <- lapply(interactions, get_index)
-
+  
   interactions_index <- interactions_index[unlist(lapply(
     interactions_index,
     function(v) {
       length(v) != 0
     }
   ))]
-
+  
   interactions_index_minus <- lapply(interactions_minus, get_index)
   interactions_index_minus <-
     interactions_index_minus[unlist(lapply(
@@ -425,7 +426,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
         length(v) != 0
       }
     ))]
-
+  
   # generate all lower degree combinations for each term if specified
   if (generate_lower_degrees & (length(interactions) != 0)) {
     monotone_type_new <- c()
@@ -433,7 +434,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
       1:length(interactions_index),
       function(i) {
         term <- interactions_index[[i]]
-
+        
         lst <- lapply(1:length(term), function(m) {
           combn(term, m)
         })
@@ -452,45 +453,45 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     monotone_type <- monotone_type_new
     interactions_index <- unlist(interactions_index_list, recursive = FALSE)
   }
-
+  
   not_dupes_index <- which(!duplicated(interactions_index))
   interactions_index <- interactions_index[not_dupes_index]
   monotone_type <- monotone_type[not_dupes_index]
-
+  
   if (exclusive_dot) {
     variables_specified <- unlist(unique(interactions_index))
   } else {
     variables_specified <- c()
   }
-
+  
   # Get all combinations of variables (possibly restricted to those not
   # included in model formula already)
   get_combos <- function(deg) {
     set_inds <- setdiff(1:length(names), variables_specified)
-
+    
     if (length(set_inds) == 0) {
       return(list())
     }
     if (length(set_inds) == 1) {
       return(list(c(set_inds)))
     }
-
+    
     x <- combn(set_inds, deg)
-
+    
     all_combinations <- lapply(seq_len(ncol(x)), function(i) {
       x[, i]
     })
   }
-
+  
   if (is.null(degree_rest)) {
     all_combinations <- list()
   }
   else {
     all_combinations <- unlist(lapply(1:degree_rest, get_combos),
-      recursive = FALSE
+                               recursive = FALSE
     )
   }
-
+  
   # Get remaining combiniations as specified by the .^max_degree term.
   dot_argument_combos <- setdiff(all_combinations, interactions_index)
   dot_argument_combos <-
@@ -498,10 +499,10 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
       dot_argument_combos,
       interactions_index_minus[which(monotone_type_minus == "h")]
     )
-
+  
   # Remove any basis functions/combinations as specified by " - ..." terms.
   index_to_remove <- match(interactions_index_minus, interactions_index)
-
+  
   if (length(index_to_remove) != 0) {
     final_index_to_remove <- c()
     for (i in 1:length(index_to_remove)) {
@@ -517,17 +518,17 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
       monotone_type <- monotone_type[-final_index_to_remove]
     }
   }
-
+  
   # expand formula
   # Sort indices by length
   total_terms <- c(interactions_index, dot_argument_combos)
-
+  
   total_type <- c(monotone_type, rep("h", length(dot_argument_combos)))
   lens <- sapply(total_terms, length)
   sort_by_len <- order(lens)
   total_terms <- total_terms[sort_by_len]
   total_type <- total_type[sort_by_len]
-
+  
   # Function to expand a single interaction index/col vector to formula term
   expand_term <- function(i) {
     cols <- total_terms[[i]]
@@ -536,7 +537,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     })
     cols <- paste0(cols, collapse = ",")
     type <- total_type[i]
-
+    
     return(paste0(type, "(", cols, ")"))
   }
   # Get expanded formula
@@ -550,11 +551,11 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   if (!all(is.na(outcome))) {
     formula_expanded <- paste0(outcome, formula_expanded)
   }
-
+  
   lower.limits <- c()
   upper.limits <- c()
   basis_list <- list()
-
+  
   # Generate basis functions
   add_basis <- function(i) {
     if (length(interactions_index) == 0) {
@@ -569,28 +570,40 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     } else {
       n <- num_knots[length(col_index)]
     }
-
-    X <- quantizer(X, n)
-
-    new_basis <- basis_list_cols(
+    
+    X <- hal9001:::quantizer(X, n)
+    
+    new_basis <- hal9001:::basis_list_cols(
       col_index, X, order_map,
       include_zero_order, FALSE
     )
+    max_order <- max(order_map)
+    edge_basis_all <- list()
+    if(max_order > 0) {
+      X_sub <- matrix(apply(X, 2, min), nrow = 1)
+      for(order in 0:(max_order)) {
+        edge_basis <- hal9001:::basis_list_cols(
+          col_index, X_sub, rep(order, ncol(X)),
+          T, T
+        )
+        edge_basis_all <- union(edge_basis_all, edge_basis)
+      }
+    }
     if (monotone_type[i] == "i") {
-      lower.limits <<- c(lower.limits, rep(0, length(new_basis)))
-      upper.limits <<- c(upper.limits, rep(Inf, length(new_basis)))
+      lower.limits <<- c(lower.limits, rep(0, length(new_basis)), rep(-Inf, length(edge_basis_all)))
+      upper.limits <<- c(upper.limits, rep(Inf, length(new_basis)), rep(Inf, length(edge_basis_all)))
     }
     else if (monotone_type[i] == "d") {
-      lower.limits <<- c(lower.limits, rep(-Inf, length(new_basis)))
-      upper.limits <<- c(upper.limits, rep(0, length(new_basis)))
+      lower.limits <<- c(lower.limits, rep(-Inf, length(new_basis)), rep(-Inf, length(edge_basis_all)))
+      upper.limits <<- c(upper.limits, rep(0, length(new_basis)), rep(Inf, length(edge_basis_all)))
     }
     else {
-      lower.limits <<- c(lower.limits, rep(-Inf, length(new_basis)))
-      upper.limits <<- c(upper.limits, rep(Inf, length(new_basis)))
+      lower.limits <<- c(lower.limits, rep(-Inf, length(new_basis)), rep(-Inf, length(edge_basis_all)))
+      upper.limits <<- c(upper.limits, rep(Inf, length(new_basis)), rep(Inf, length(edge_basis_all)))
     }
-    basis_list <<- c(basis_list, new_basis)
+    basis_list <<- c(basis_list, new_basis, edge_basis_all)
   }
-
+  
   lapply(1:length(interactions_index), add_basis)
   keep_dot_arg <- function(combo) {
     if (any(remove %in% combo)) {
@@ -603,7 +616,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
       dot_argument_combos,
       keep_dot_arg
     )]
-
+    
     # add the . and .^max_degree basis functions
     basis_listrest <- unlist(
       lapply(
@@ -614,8 +627,21 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
           } else {
             n <- num_knots[length(combo)]
           }
-          X <- quantizer(X, n)
-          basis_list_cols(combo, X, order_map, include_zero_order, FALSE)
+          X <- hal9001:::quantizer(X, n)
+          blist <- hal9001:::basis_list_cols(combo, X, order_map, include_zero_order, FALSE)
+          max_order <- max(order_map)
+          edge_basis_all <- list()
+          if(max_order > 0) {
+            X_sub <- matrix(apply(X, 2, min), nrow = 1)
+            for(order in 0:(max_order)) {
+              edge_basis <- hal9001:::basis_list_cols(
+                col_index, X_sub, rep(order, ncol(X)),
+                T, T
+              )
+              edge_basis_all <- union(edge_basis_all, edge_basis)
+            }
+          }
+          return(c(blist, edge_basis_all))
         }
       ),
       recursive = FALSE
@@ -623,7 +649,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   } else {
     basis_listrest <- c()
   }
-
+  
   # Prepare formula_hal9001 object to return
   form <- stringr::str_replace_all(form, "[+]", " + ")
   form <- stringr::str_replace_all(form, "[~]", " ~ ")
@@ -658,7 +684,7 @@ print.formula_hal9001 <- function(x, ...) {
     expand <- FALSE
   }
   formula <- x
-
+  
   if (expand) {
     cat(paste0(
       "Functional specification for hal9001 fit:",
@@ -694,6 +720,7 @@ print.formula_hal9001 <- function(x, ...) {
       "\n"
     ))
   }
-
+  
   return(invisible(NULL))
 }
+
