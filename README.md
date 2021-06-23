@@ -12,6 +12,8 @@ Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](htt
 [![CRAN](https://www.r-pkg.org/badges/version/hal9001)](https://www.r-pkg.org/pkg/hal9001)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
+[![CRAN total
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/hal9001)](https://CRAN.R-project.org/package=hal9001)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -111,7 +113,7 @@ hal_fit$times
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
-#> [1] 0.0357806
+#> [1] 0.03481173
 ```
 
 -----
@@ -167,7 +169,7 @@ See file `LICENSE` for details.
 
 ## References
 
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references">
 
 <div id="ref-benkeser2016hal">
 

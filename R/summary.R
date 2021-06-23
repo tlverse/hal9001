@@ -62,7 +62,7 @@ summary.hal9001 <- function(object,
     if (lambda != object$lambda_star) {
       if (is.null(object$lasso_fit)) {
         stop(
-          "Coefficients for specified lamdba do not exist, or are not ",
+          "Coefficients for specified lambda do not exist, or are not ",
           "accessible since the fit of the lasso model was not returned ",
           "(i.e., return_lasso was set to FALSE in `hal_fit()`)."
         )
@@ -85,7 +85,7 @@ summary.hal9001 <- function(object,
     coefs <- object$coefs
     if (length(lambda) > 1) {
       warning(
-        "Coefficients for many lamdba exist --\n",
+        "Coefficients for many lambda exist --\n",
         "Summarizing coefficients corresponding to minimum lambda."
       )
       lambda_idx <- which.min(lambda)

@@ -136,7 +136,7 @@ interactions and the smoothness orders.</p>
     </div>
 
     <pre class="usage"><span class='fu'>num_knots_generator</span><span class='op'>(</span>
-  <span class='va'>d</span>,
+  <span class='va'>max_degree</span>,
   <span class='va'>smoothness_orders</span>,
   base_num_knots_0 <span class='op'>=</span> <span class='fl'>500</span>,
   base_num_knots_1 <span class='op'>=</span> <span class='fl'>200</span>
@@ -145,10 +145,6 @@ interactions and the smoothness orders.</p>
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>d</th>
-      <td><p>interaction degree.</p></td>
-    </tr>
     <tr>
       <th>smoothness_orders</th>
       <td><p>see <code><a href='fit_hal.html'>fit_hal</a></code>.</p></td>
@@ -166,6 +162,10 @@ function.</p></td>
 smoothness basis functions. The number of knots by degree interaction
 decays as <code>base_num_knots_1/2^(d-1)</code> where <code>d</code> is the interaction degree of
 the basis function.</p></td>
+    </tr>
+    <tr>
+      <th>d</th>
+      <td><p>interaction degree.</p></td>
     </tr>
     </table>
 
