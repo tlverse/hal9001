@@ -34,7 +34,8 @@ class Lassi {
   NumericVector safe_lambda;
   double lambda_max;
 public:
-  Lassi(const MSpMat X_init, NumericVector y, int nlambda, double lambda_min_ratio, bool center):
+  Lassi(const MSpMat X_init, NumericVector y, int nlambda,
+      double lambda_min_ratio, bool center):
   X(X_init),
   n(X_init.rows()),
   p(X_init.cols()),
@@ -266,7 +267,6 @@ public:
 
       ratio = (last_rss - rss) / last_rss;
 
-      // Rcout << "Step " << step_num << ", updates " << updated << ", mse " << mse << ", ratio " << ratio << std::endl;
       if (ratio < 1e-2) {
         break;
       }
@@ -421,6 +421,12 @@ RCPP_MODULE(lassi_module) {
   ;
 }
 
+//' Prediction from a Lassi Model
+//'
+//' @param X A sparse matrix of HAL basis functions.
+//' @param beta A vector of coefficient values for the HAL basis functions.
+//' @param intercept A numeric value giving the intercept of the HAL model.
+//'
 // [[Rcpp::export]]
 NumericVector lassi_predict(const MSpMat X, const NumericVector beta,
                            double intercept) {

@@ -30,7 +30,8 @@ SEXP as_dgCMatrix( SEXP XX_ ) {
 
 //------------------------------------------------------------------------------
 
-// [[Rcpp::export]]
+
+// Find Nonzero Entries
 IntegerVector non_zeros(const MSpMat& X) {
   int p = X.cols();
   int j;
@@ -50,6 +51,10 @@ IntegerVector non_zeros(const MSpMat& X) {
 
 //------------------------------------------------------------------------------
 
+//' Calculate Proportion of Nonzero Entries
+//'
+//' @keywords internal
+//'
 // [[Rcpp::export]]
 NumericVector calc_pnz(const MSpMat& X) {
   IntegerVector nz = non_zeros(X);
@@ -59,15 +64,9 @@ NumericVector calc_pnz(const MSpMat& X) {
   return(pnz);
 }
 
-// [[Rcpp::export]]
-NumericVector get_pnz(const MSpMat& X) {
-  IntegerVector nz = non_zeros(X);
-  int n = X.rows();
-  NumericVector pnz = as<NumericVector>(nz)/n;
-
-  return(pnz);
-}
 //------------------------------------------------------------------------------
+
+// Safer Square Root
 NumericVector not_dumb_sqrt(const NumericVector& x){
   NumericVector res(x.length());
   for(int i=0; i<x.length(); i++){
@@ -77,10 +76,19 @@ NumericVector not_dumb_sqrt(const NumericVector& x){
   return(res);
 }
 
+//------------------------------------------------------------------------------
+
+//' Calculating Centered and Scaled Matrices
+//'
+//' @param X A sparse matrix, to be centered.
+//' @param xcenter A vector of column means to be used for centering X. 
+//'
+//' @keywords internal
+//'
 // [[Rcpp::export]]
 NumericVector calc_xscale(const MSpMat& X, const NumericVector& xcenter) {
  int n = X.rows();
- NumericVector pnz = get_pnz(X);
+ NumericVector pnz = calc_pnz(X);
  NumericVector xscale = not_dumb_sqrt(pnz);
  double minx = std::sqrt(1.0 / n);
 
@@ -90,25 +98,16 @@ NumericVector calc_xscale(const MSpMat& X, const NumericVector& xcenter) {
  return(xscale);
 }
 
-// [[Rcpp::export]]
-NumericVector get_xscale(const MSpMat& X, const NumericVector& xcenter) {
-  int n = X.rows();
-  NumericVector pnz = get_pnz(X);
-  NumericVector xscale = not_dumb_sqrt(pnz);
-  double minx = std::sqrt(1.0 / n);
+//------------------------------------------------------------------------------
 
-  xscale = not_dumb_sqrt(xscale * xscale - (xcenter * xcenter));
-  xscale[xscale == 0 ] = minx;
-
-  return(xscale);
-}
-
-
-// [[Rcpp::export]]
+// Check Equality of Two Numerics
 bool equal_double(double x, double y){
   return(std::abs(x - y) < 1e-16);
 }
 
+//------------------------------------------------------------------------------
+
+// Soft Max Thresholding
 double soft_max(double beta, double lambda){
   if (beta > lambda) {
     beta -= lambda;

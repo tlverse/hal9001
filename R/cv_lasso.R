@@ -48,7 +48,7 @@ lassi_origami <- function(fold, data, lambdas, center = FALSE) {
   return(out)
 }
 
-################################################################################
+###############################################################################
 
 #' Cross-validated Lasso on Indicator Bases
 #'

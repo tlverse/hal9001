@@ -20,8 +20,8 @@ HAL algorithm.}
 }
 \value{
 A binary \code{numeric} vector indicating which columns of the
- matrix of basis functions to keep (given a one) and which to discard (given
- a zero).
+matrix of basis functions to keep (given a one) and which to discard (given
+a zero).
 }
 \description{
 A helper function that finds which basis functions to keep (and equivalently
