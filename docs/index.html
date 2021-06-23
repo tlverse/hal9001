@@ -93,7 +93,7 @@
 <blockquote>
 <p>The <em>Scalable</em> Highly Adaptive Lasso</p>
 </blockquote>
-<p><strong>Authors:</strong> <a href="https://github.com/tlverse">Jeremy Coyle</a>, <a href="https://nimahejazi.org">Nima Hejazi</a>, and <a href="https://vanderlaan-lab.org/">Mark van der Laan</a></p>
+<p><strong>Authors:</strong> <a href="https://github.com/tlverse">Jeremy Coyle</a>, <a href="https://nimahejazi.org">Nima Hejazi</a>, <a href="https://github.com/rachaelvp">Rachael Phillips</a>, <a href="https://github.com/Larsvanderlaan">Lars van der Laan</a>, and <a href="https://vanderlaan-lab.org/">Mark van der Laan</a></p>
 <hr>
 <div id="whats-hal9001" class="section level2">
 <h2 class="hasAnchor">
@@ -126,7 +126,7 @@
 <code class="sourceCode R"><span class="co"># load the package and set a seed</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tlverse/hal9001">hal9001</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: Rcpp</span>
-<span class="co">#&gt; hal9001 v0.3.0: The Scalable Highly Adaptive Lasso</span>
+<span class="co">#&gt; hal9001 v0.4.0: The Scalable Highly Adaptive Lasso</span>
 <span class="co">#&gt; note: fit_hal defaults have changed. See ?fit_hal for details</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">385971</span><span class="op">)</span>
 
@@ -142,11 +142,11 @@
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
 <span class="co">#&gt; enumerate_basis       0.006    0.000   0.007          0         0</span>
-<span class="co">#&gt; design_matrix         0.003    0.000   0.003          0         0</span>
+<span class="co">#&gt; design_matrix         0.003    0.001   0.003          0         0</span>
 <span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">#&gt; remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">#&gt; lasso                 0.450    0.023   0.494          0         0</span>
-<span class="co">#&gt; total                 0.460    0.023   0.504          0         0</span>
+<span class="co">#&gt; lasso                 0.472    0.021   0.520          0         0</span>
+<span class="co">#&gt; total                 0.482    0.022   0.531          0         0</span>
 
 <span class="co"># training sample prediction</span>
 <span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
@@ -164,14 +164,14 @@
 <h2 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h2>
 <p>After using the <code>hal9001</code> R package, please cite both of the following:</p>
-<pre><code>    @software{coyle2020hal9001-rpkg,
-      author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
-        J},
+<pre><code>    @software{coyle2021hal9001-rpkg,
+      author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
+        and {van der Laan}, Lars and {van der Laan}, Mark J},
       title = {{hal9001}: The scalable highly adaptive lasso},
-      year  = {2020},
+      year  = {2021},
       url = {https://doi.org/10.5281/zenodo.3558313},
       doi = {10.5281/zenodo.3558313}
-      note = {{R} package version 0.2.7}
+      note = {{R} package version 0.4.0}
     }
 
     @article{hejazi2020hal9001-joss,
@@ -259,6 +259,8 @@
 <ul class="list-unstyled">
 <li>Jeremy Coyle <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-9874-6649" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Nima Hejazi <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7127-2789" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Rachael Phillips <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-8474-591X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Lars van der Laan <br><small class="roles"> Author </small>  </li>
 <li>Mark van der Laan <br><small class="roles"> Author, copyright holder, thesis advisor </small> <a href="https://orcid.org/0000-0003-1432-5511" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
@@ -283,7 +285,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Jeremy Coyle, Nima Hejazi, Mark van der Laan.</p>
+  <p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">

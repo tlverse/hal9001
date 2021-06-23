@@ -29,7 +29,9 @@ knitr::opts_chunk$set(
 > The _Scalable_ Highly Adaptive Lasso
 
 __Authors:__ [Jeremy Coyle](https://github.com/tlverse), [Nima
-Hejazi](https://nimahejazi.org), and [Mark van der
+Hejazi](https://nimahejazi.org), [Rachael 
+Phillips](https://github.com/rachaelvp), [Lars van der 
+Laan](https://github.com/Larsvanderlaan), and [Mark van der
 Laan](https://vanderlaan-lab.org/)
 
 ---
@@ -118,14 +120,14 @@ prior to submitting a pull request.
 
 After using the `hal9001` R package, please cite both of the following:
 
-        @software{coyle2020hal9001-rpkg,
-          author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
-            J},
+        @software{coyle2021hal9001-rpkg,
+          author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
+            and {van der Laan}, Lars and {van der Laan}, Mark J},
           title = {{hal9001}: The scalable highly adaptive lasso},
-          year  = {2020},
+          year  = {2021},
           url = {https://doi.org/10.5281/zenodo.3558313},
           doi = {10.5281/zenodo.3558313}
-          note = {{R} package version 0.2.7}
+          note = {{R} package version 0.4.0}
         }
 
         @article{hejazi2020hal9001-joss,

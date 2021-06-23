@@ -23,7 +23,9 @@ v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/
 > The *Scalable* Highly Adaptive Lasso
 
 **Authors:** [Jeremy Coyle](https://github.com/tlverse), [Nima
-Hejazi](https://nimahejazi.org), and [Mark van der
+Hejazi](https://nimahejazi.org), [Rachael
+Phillips](https://github.com/rachaelvp), [Lars van der
+Laan](https://github.com/Larsvanderlaan), and [Mark van der
 Laan](https://vanderlaan-lab.org/)
 
 -----
@@ -84,7 +86,7 @@ predictions via Highly Adaptive Lasso regression:
 # load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
-#> hal9001 v0.3.0: The Scalable Highly Adaptive Lasso
+#> hal9001 v0.4.0: The Scalable Highly Adaptive Lasso
 #> note: fit_hal defaults have changed. See ?fit_hal for details
 set.seed(385971)
 
@@ -100,11 +102,11 @@ hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
 #> enumerate_basis       0.006    0.000   0.007          0         0
-#> design_matrix         0.003    0.000   0.003          0         0
+#> design_matrix         0.003    0.001   0.003          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 0.450    0.023   0.494          0         0
-#> total                 0.460    0.023   0.504          0         0
+#> lasso                 0.472    0.021   0.520          0         0
+#> total                 0.482    0.022   0.531          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -128,14 +130,14 @@ prior to submitting a pull request.
 After using the `hal9001` R package, please cite both of the following:
 
 ``` 
-    @software{coyle2020hal9001-rpkg,
-      author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
-        J},
+    @software{coyle2021hal9001-rpkg,
+      author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
+        and {van der Laan}, Lars and {van der Laan}, Mark J},
       title = {{hal9001}: The scalable highly adaptive lasso},
-      year  = {2020},
+      year  = {2021},
       url = {https://doi.org/10.5281/zenodo.3558313},
       doi = {10.5281/zenodo.3558313}
-      note = {{R} package version 0.2.7}
+      note = {{R} package version 0.4.0}
     }
 
     @article{hejazi2020hal9001-joss,
