@@ -325,6 +325,7 @@ quantizer <- function(X, bins) {
     if (bins == 1) {
       return(rep(min(x), length(x)))
     }
+    
     p <- max(1 - (20 / nrow(X)), 0.98)
     quants <- seq(0, p, length.out = bins)
     q <- stats::quantile(x, quants)
