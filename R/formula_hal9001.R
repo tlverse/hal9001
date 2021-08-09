@@ -1,5 +1,5 @@
 #' Formula Interface for HAL Fitting Procedure
-#'
+#' 
 #' @details This function allows users to specify the functional form/model of
 #'  hal9001, similar to \code{\link[stats]{glm}}. The user can specify which
 #'  interactions to include, monotonicity constraints, and smoothness
