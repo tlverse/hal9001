@@ -323,12 +323,11 @@ quantizer <- function(X, bins) {
       return(rep(0, length(x)))
     }
     if (bins == 1) {
-      return(rep(stats::median(x), length(x)))
+      return(rep(min(x), length(x)))
     }
-    p <- max(1 - (25 / nrow(X)), 0.98)
-    quants <- seq(0, 0.98, length.out = bins)
+    p <- max(1 - (20 / nrow(X)), 0.98)
+    quants <- seq(0, p, length.out = bins)
     q <- stats::quantile(x, quants)
-
     nearest <- findInterval(x, q)
     x <- q[nearest]
     return(x)
