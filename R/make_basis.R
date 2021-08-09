@@ -337,4 +337,4 @@ quantizer <- function(X, bins) {
     as.matrix(apply(X, MARGIN = 2, FUN = convertColumn))
   }
   return(quantizer(X))
-}
+} 
