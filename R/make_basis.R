@@ -1,5 +1,5 @@
 #' List Basis Functions
-#'
+#' 
 #' Build a list of basis functions from a set of columns
 #'
 #' @param cols Index or indices (as \code{numeric}) of covariates (columns) of
