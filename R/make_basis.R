@@ -26,7 +26,7 @@
 #'  specified via \code{smoothness_orders}.
 #'
 #' @return A \code{list} containing the basis functions generated from a set of
-#'  input columns.
+#'  input columns. 
 basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order,
                             include_lower_order = FALSE) {
   # first, subset only to columns of interest
