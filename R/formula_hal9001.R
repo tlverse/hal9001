@@ -635,7 +635,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
             X_sub <- matrix(apply(X, 2, min), nrow = 1)
             for(order in 0:(max_order)) {
               edge_basis <- basis_list_cols(
-                col_index, X_sub, rep(order, ncol(X)),
+                combo, X_sub, rep(order, ncol(X)),
                 T, T
               )
               edge_basis_all <- union(edge_basis_all, edge_basis)
