@@ -45,5 +45,5 @@ A \code{list} containing the basis functions generated from a set of
 input columns.
 }
 \description{
-Build a list of basis functions from a set of columns
+List Basis Functions
 }

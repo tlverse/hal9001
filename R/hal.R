@@ -484,8 +484,7 @@ num_knots_generator <- function(max_degree, smoothness_orders, base_num_knots_0 
     return(sapply(seq_len(max_degree), function(d) {
       round(base_num_knots_1 / 2^(d - 1))
     }))
-  }
-  else {
+  } else {
     return(sapply(seq_len(max_degree), function(d) {
       round(base_num_knots_0 / 2^(d - 1))
     }))

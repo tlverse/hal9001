@@ -132,6 +132,7 @@
 #' @return A \code{formula} object.
 #'
 #' @export
+
 formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
                         smoothness_orders = NULL, num_knots = NULL) {
   generate_lower_degrees <- FALSE
@@ -231,8 +232,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     term_concat <- paste0(term_concat, collapse = "+")
     if (form == "y~") {
       form <- paste0(form, term_concat)
-    }
-    else {
+    } else {
       form <- paste0(form, "+", term_concat)
     }
   }
@@ -247,7 +247,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
   outcome <- gsub(" ", "", outcome)
 
   X_orig <- X
-  # X = quantizer(X, num_knots)
+  # X = hal9001:::quantizer(X, num_knots)
 
   names <- colnames(X)
   remove <- match(remove, colnames(X))
@@ -278,12 +278,10 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
     degree_rest <- as.numeric(degree_rest[, -1])
     if (length(degree_rest) == 0) {
       degree_rest <- 1
-    }
-    else {
+    } else {
       degree_rest <- max(degree_rest)
     }
-  }
-  else {
+  } else {
     degree_rest <- NULL
   }
   if (!is.null(degree_rest)) {
@@ -484,8 +482,7 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
 
   if (is.null(degree_rest)) {
     all_combinations <- list()
-  }
-  else {
+  } else {
     all_combinations <- unlist(lapply(1:degree_rest, get_combos),
       recursive = FALSE
     )
@@ -576,19 +573,29 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
       col_index, X, order_map,
       include_zero_order, FALSE
     )
+    max_order <- max(order_map)
+    edge_basis_all <- list()
+    if (max_order > 0) {
+      X_sub <- matrix(apply(X, 2, min), nrow = 1)
+      for (order in 0:(max_order)) {
+        edge_basis <- basis_list_cols(
+          col_index, X_sub, rep(order, ncol(X)),
+          T, T
+        )
+        edge_basis_all <- union(edge_basis_all, edge_basis)
+      }
+    }
     if (monotone_type[i] == "i") {
-      lower.limits <<- c(lower.limits, rep(0, length(new_basis)))
-      upper.limits <<- c(upper.limits, rep(Inf, length(new_basis)))
+      lower.limits <<- c(lower.limits, rep(0, length(new_basis)), rep(-Inf, length(edge_basis_all)))
+      upper.limits <<- c(upper.limits, rep(Inf, length(new_basis)), rep(Inf, length(edge_basis_all)))
+    } else if (monotone_type[i] == "d") {
+      lower.limits <<- c(lower.limits, rep(-Inf, length(new_basis)), rep(-Inf, length(edge_basis_all)))
+      upper.limits <<- c(upper.limits, rep(0, length(new_basis)), rep(Inf, length(edge_basis_all)))
+    } else {
+      lower.limits <<- c(lower.limits, rep(-Inf, length(new_basis)), rep(-Inf, length(edge_basis_all)))
+      upper.limits <<- c(upper.limits, rep(Inf, length(new_basis)), rep(Inf, length(edge_basis_all)))
     }
-    else if (monotone_type[i] == "d") {
-      lower.limits <<- c(lower.limits, rep(-Inf, length(new_basis)))
-      upper.limits <<- c(upper.limits, rep(0, length(new_basis)))
-    }
-    else {
-      lower.limits <<- c(lower.limits, rep(-Inf, length(new_basis)))
-      upper.limits <<- c(upper.limits, rep(Inf, length(new_basis)))
-    }
-    basis_list <<- c(basis_list, new_basis)
+    basis_list <<- c(basis_list, new_basis, edge_basis_all)
   }
 
   lapply(1:length(interactions_index), add_basis)
@@ -615,7 +622,20 @@ formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
             n <- num_knots[length(combo)]
           }
           X <- quantizer(X, n)
-          basis_list_cols(combo, X, order_map, include_zero_order, FALSE)
+          blist <- basis_list_cols(combo, X, order_map, include_zero_order, FALSE)
+          max_order <- max(order_map)
+          edge_basis_all <- list()
+          if (max_order > 0) {
+            X_sub <- matrix(apply(X, 2, min), nrow = 1)
+            for (order in 0:(max_order)) {
+              edge_basis <- basis_list_cols(
+                combo, X_sub, rep(order, ncol(X)),
+                T, T
+              )
+              edge_basis_all <- union(edge_basis_all, edge_basis)
+            }
+          }
+          return(c(blist, edge_basis_all))
         }
       ),
       recursive = FALSE
@@ -676,8 +696,7 @@ print.formula_hal9001 <- function(x, ...) {
       sum(formula$upper.limits == 0),
       "\n"
     ))
-  }
-  else {
+  } else {
     cat(paste0(
       "Functional specification for hal9001 fit:",
       "\n Call: ", formula$call,
