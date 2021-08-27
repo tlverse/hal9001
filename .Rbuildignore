@@ -1,6 +1,7 @@
 # Rproj and version control.
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.github$
 ^\.gitignore$
 
 # Related to using README Rmd.
