@@ -95,7 +95,7 @@ double meets_basis(const NumericMatrix& X, const int row_num,
     double obs = X(row_num,cols[i] - 1); // using 1-indexing for basis columns
     int order =  orders[i];
     double cutoff = cutoffs[i];
-    if(!(obs > cutoff)) {
+    if(!(obs >= cutoff)) {
       return(0);
     }
     if(order!=0){
