@@ -125,7 +125,7 @@ system.time({
     return_lasso = TRUE,
     max_degree = 3,
     num_knots = length(y),
-    smoothness_orders = 0,
+    smoothness_order = 0,
     yolo = FALSE
   )
 })
@@ -142,7 +142,7 @@ hal_fit_reduced <- fit_hal(
   reduce_basis = 1 / sqrt(n),
   max_degree = 3,
   num_knots = length(y),
-  smoothness_orders = 0,
+  smoothness_order = 0,
   yolo = FALSE
 )
 hal_fit_reduced$times
