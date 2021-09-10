@@ -145,6 +145,7 @@ hal_fit_reduced <- fit_hal(
   smoothness_order = 0,
   yolo = FALSE
 )
+
 hal_fit_reduced$times
 hal_pred_reduced <- predict(hal_fit_reduced, new_data = x)
 mse_hal_reduced <- mean((y - hal_pred_reduced)^2)
