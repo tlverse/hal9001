@@ -15,9 +15,9 @@
 #' @param id A \code{numeric} vector of IDs.
 #' @param max_degree The highest order of interaction terms for which basis
 #'  functions ought to be generated.
-#' @param smoothness_orders An \code{integer} vector of length 1 or greater,
+#' @param smoothness_order An \code{integer} vector of length 1 or greater,
 #'  specifying the smoothness of the basis functions. See the argument
-#'  \code{smoothness_orders} of \code{\link{fit_hal}} for more information.
+#'  \code{smoothness_order} of \code{\link{fit_hal}} for more information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
 #'  specifying the maximum number of knot points (i.e., bins) for each
 #'  covariate for generating basis functions. See \code{num_knots} argument in
@@ -47,8 +47,8 @@ SL.hal9001 <- function(Y,
                        obsWeights = rep(1, length(Y)),
                        id = NULL,
                        max_degree = ifelse(ncol(X) >= 20, 2, 3),
-                       smoothness_orders = 1,
-                       num_knots = ifelse(smoothness_orders >= 1, 25, 50),
+                       smoothness_order = 1,
+                       num_knots = ifelse(smoothness_order >= 1, 25, 50),
                        reduce_basis = 1 / sqrt(length(Y)),
                        lambda = NULL,
                        ...) {
@@ -61,7 +61,7 @@ SL.hal9001 <- function(Y,
   hal_fit <- fit_hal(
     X = X, Y = Y, family = family$family,
     fit_control = list(weights = obsWeights), id = id, max_degree = max_degree,
-    smoothness_orders = smoothness_orders, num_knots = num_knots, reduce_basis
+    smoothness_order = smoothness_order, num_knots = num_knots, reduce_basis
     = reduce_basis, lambda = lambda
   )
 

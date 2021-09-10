@@ -2,7 +2,9 @@
 % Please edit documentation in R/make_basis.R
 \name{basis_list_cols}
 \alias{basis_list_cols}
-\title{List Basis Functions}
+\title{List Basis Functions
+
+Build a list of basis functions from a set of columns}
 \usage{
 basis_list_cols(
   cols,
@@ -45,5 +47,7 @@ A \code{list} containing the basis functions generated from a set of
 input columns.
 }
 \description{
+List Basis Functions
+
 Build a list of basis functions from a set of columns
 }

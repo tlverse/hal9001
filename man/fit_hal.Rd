@@ -10,9 +10,9 @@ fit_hal(
   formula = NULL,
   X_unpenalized = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
-  smoothness_orders = 1,
-  num_knots = num_knots_generator(max_degree = max_degree, smoothness_orders =
-    smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
+  smoothness_order = 1,
+  num_knots = num_knots_generator(max_degree = max_degree, smoothness_order =
+    smoothness_order, base_num_knots_0 = 200, base_num_knots_1 = 50),
   reduce_basis = 1/sqrt(length(Y)),
   family = c("gaussian", "binomial", "poisson", "cox"),
   lambda = NULL,
@@ -20,7 +20,6 @@ fit_hal(
   offset = NULL,
   fit_control = list(cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
     lambda.min.ratio = 1e-04, prediction_bounds = "default"),
-  formula_control = list(exclusive_dot = FALSE, custom_group = NULL),
   basis_list = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,
@@ -45,8 +44,8 @@ expansion is performed on \code{X_unpenalized}.}
 \item{max_degree}{The highest order of interaction terms for which basis
 functions ought to be generated.}
 
-\item{smoothness_orders}{An \code{integer}, specifying the smoothness of the
-basis functions. See details for \code{smoothness_orders} for more
+\item{smoothness_order}{An \code{integer}, specifying the smoothness of the
+basis functions. See details for \code{smoothness_order} for more
 information.}
 
 \item{num_knots}{An \code{integer} vector of length 1 or \code{max_degree},
@@ -55,7 +54,7 @@ for generating basis functions. If \code{num_knots} is a unit-length
 vector, then the same \code{num_knots} are used for each degree (this is
 not recommended). The default settings for \code{num_knots} are
 recommended, and these defaults decrease \code{num_knots} with increasing
-\code{max_degree} and \code{smoothness_orders}, which prevents (expensive)
+\code{max_degree} and \code{smoothness_order}, which prevents (expensive)
 combinatorial explosions in the number of higher-degree and higher-order
 basis functions generated. This allows the complexity of the optimization
 problem to grow scalably. See details of \code{num_knots} more information.}
@@ -127,9 +126,6 @@ the predictions are bounded between \code{min(Y) - sd(Y)} and
 and it is necessary for cross-validation selection and/or Super Learning.
 }}
 
-\item{formula_control}{List of arguments for \code{\link{formula_hal}}. See
-its documentation for details.}
-
 \item{basis_list}{The full set of basis functions generated from \code{X}.}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
@@ -159,27 +155,27 @@ covariates. The lasso regression is fit to this design matrix via
 \eqn{(n * 2^(d-1))}, where where \eqn{n} is the number of observations and
 \eqn{d} is the number of covariates.
 
-For \code{smoothness_orders = 0}, only zero-order splines (piece-wise
+For \code{smoothness_order = 0}, only zero-order splines (piece-wise
 constant) are generated, which assume the true regression function has no
-smoothness or continuity. When \code{smoothness_orders = 1}, first-order
+smoothness or continuity. When \code{smoothness_order = 1}, first-order
 splines (piece-wise linear) are generated, which assume continuity of the
-true regression function. When \code{smoothness_orders = 2}, second-order
+true regression function. When \code{smoothness_order = 2}, second-order
 splines (piece-wise quadratic and linear terms) are generated, which assume
 a the true regression function has a single order of differentiability.
 
 \code{num_knots} argument specifies the number of knot points for each
 covariate and for each \code{max_degree}. Fewer knot points can
 significantly decrease runtime, but might be overly simplistic. When
-considering \code{smoothness_orders = 0}, too few knot points (e.g., < 50)
-can significantly reduce performance. When \code{smoothness_orders = 1} or
+considering \code{smoothness_order = 0}, too few knot points (e.g., < 50)
+can significantly reduce performance. When \code{smoothness_order = 1} or
 higher, then fewer knot points (e.g., 10-30) is actually better for
 performance. We recommend specifying \code{num_knots} with respect to
-\code{smoothness_orders}, and as a vector of length \code{max_degree} with
+\code{smoothness_order}, and as a vector of length \code{max_degree} with
 values decreasing exponentially. This prevents combinatorial explosions in
 the number of higher-degree basis functions generated. The default behavior
-of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
+of \code{num_knots} follows this logic --- for \code{smoothness_order = 0},
 \code{num_knots} is set to \eqn{500 / 2^{j-1}}, and for
-\code{smoothness_orders = 1} or higher, \code{num_knots} is set to
+\code{smoothness_order = 1} or higher, \code{num_knots} is set to
 \eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
 include some other suitable settings for \code{num_knots} below, all of
 which are less complex than default \code{num_knots} and will thus result
@@ -187,30 +183,30 @@ in a faster runtime:
 \itemize{
 \item Some good settings for little to no cost in performance:
 \itemize{
-\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
+\item If \code{smoothness_order = 0} and \code{max_degree = 3},
 \code{num_knots = c(400, 200, 100)}.
-\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
+\item If \code{smoothness_order = 1+} and \code{max_degree = 3},
 \code{num_knots = c(100, 75, 50)}.
 }
 \item Recommended settings for fairly fast runtime:
 \itemize{
-\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
+\item If \code{smoothness_order = 0} and \code{max_degree = 3},
 \code{num_knots = c(200, 100, 50)}.
-\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
+\item If \code{smoothness_order = 1+} and \code{max_degree = 3},
 \code{num_knots = c(50, 25, 15)}.
 }
 \item Recommended settings for fast runtime:
 \itemize{
-\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
+\item If \code{smoothness_order = 0} and \code{max_degree = 3},
 \code{num_knots = c(100, 50, 25)}.
-\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
+\item If \code{smoothness_order = 1+} and \code{max_degree = 3},
 \code{num_knots = c(40, 15, 10)}.
 }
 \item Recommended settings for very fast runtime:
 \itemize{
-\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
+\item If \code{smoothness_order = 0} and \code{max_degree = 3},
 \code{num_knots = c(50, 25, 10)}.
-\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
+\item If \code{smoothness_order = 1+} and \code{max_degree = 3},
 \code{num_knots = c(25, 10, 5)}.
 }
 }
