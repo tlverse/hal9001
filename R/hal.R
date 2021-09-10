@@ -260,7 +260,7 @@ fit_hal <- function(X,
     #   custom_group = formula_control$custom_group
     # )
     if(!inherits(formula, "formula_hal")) {
-      formula <- formula(formula_hal, X = X, smoothness_order = smoothness_order, num_knots = num_knots)
+      formula <- formula_hal(formula, X = X, smoothness_order = smoothness_order, num_knots = num_knots)
     }
     basis_list <- formula$basis_list
     fit_control$upper.limits <- formula$upper.limits

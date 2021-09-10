@@ -1,4 +1,5 @@
 
+
 #' HAL Formula: Convert formula or string to `formula_HAL`` object.
 #' @param formula A `formula_hal9001` object as outputted by \code{h}.
 #' @param smoothness_order A default value for \code{s} if not provided explicitely to the function \code{h}.
@@ -10,11 +11,11 @@ formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
     X <- get("X", envir = parent.frame())
   }
 
-  if(get0("smoothness_order", envir = parent.frame()) && missing(smoothness_order)) {
+  if(!is.null(get0("smoothness_order", envir = parent.frame()))&& missing(smoothness_order)) {
     smoothness_order <- get("smoothness_order", envir = parent.frame())
   }
 
-  if(get0("num_knots", envir = parent.frame()) && missing(num_knots)) {
+  if(!is.null(get0("num_knots", envir = parent.frame())) && missing(num_knots)) {
     num_knots <-  get("num_knots", envir = parent.frame())
   }
   num_knots <- num_knots
@@ -31,11 +32,14 @@ formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
 #' @param y A `formula_hal9001` object as outputted by \code{h}.
 #' @export
 `+.formula_hal9001` <- function(x, y) {
-  list(
-    basis_list = c(x$basis_list, y$basis_list),
-    penalty.factors  = c(x$penalty.factors, y$penalty.factors),
-    lower.limits= c(x$lower.limits, y$lower.limits),
-    upper.limits = c(x$upper.limits, y$upper.limits))
+  keep <- !duplicated(c(x$basis_list, y$basis_list))
+  out <-list(
+    basis_list = c(x$basis_list, y$basis_list)[keep],
+    penalty.factors  = c(x$penalty.factors, y$penalty.factors)[keep],
+    lower.limits= c(x$lower.limits, y$lower.limits)[keep],
+    upper.limits = c(x$upper.limits, y$upper.limits)[keep])
+   return(out)
+
 
 }
 
@@ -93,6 +97,10 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
 
   if("." %in% var_names) {
     var_names_filled <- fill_dots(var_names, . = .)
+    if(!is.list(var_names_filled)) {
+      var_names_filled <- list(var_names_filled)
+    }
+
     all_items <- lapply(var_names_filled, function(var) {
       h(var,  k = k , s = s,  pf = pf, monotone = monotone, . = ., dot_args_as_string = TRUE)
     })
@@ -170,6 +178,69 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
 }
 
 
+
+
+
+#' helpers
+fill_dots_helper <- function(var_names, .) {
+  index <- which(var_names == ".")
+  if(length(index)==0){
+
+    return(sort(var_names))
+  }
+  len <- length(index)
+  index <- min(which(var_names == "."))
+  all_items <- lapply(., function(var) {
+    new_var_names <- var_names
+    new_var_names[index] <- var
+    out <- fill_dots_helper(new_var_names, .)
+
+    if(is.list(out[[1]])) {
+      out <- unlist(out, recursive = FALSE)
+    }
+    return(out)
+  })
+
+
+  return(unique(all_items))
+}
+#' helpers
+fill_dots <- function(var_names, .) {
+  x <- unique(unlist(fill_dots_helper(var_names, . = .), recursive = F) )
+  keep <- sapply(x, function(item) {
+    if(any(duplicated(item))) {
+      return(FALSE)
+    }
+    return(TRUE)
+  })
+  return(x[keep])
+}
+
+
+#' #' @export
+#' print.formula_hal9001 <- function(x) {
+#'
+#'     cat(paste0(
+#'       "Functional specification for hal9001 fit:",
+#'       "\n Call: ", formula$call,
+#'       "\n Formula: ", formula$formula,
+#'       "\n Expanded Formula: ", formula$formula_expanded,
+#'       "\n Number of smooth variables: ", sum(formula$smoothness_orders > 0),
+#'       "\n Smoothness range: ", ifelse(
+#'         formula$include_zero_order | any(formula$smoothness_orders == 0), 0, 1
+#'       ), " -> ", max(formula$smoothness_orders),
+#'       " \n Number of basis functions: ", length(formula$basis_list),
+#'       "\n Number of monotone-increasing basis functions: ",
+#'       sum(formula$lower.limits == 0),
+#'       "\n Number of monotone-decreasing basis functions: ",
+#'       sum(formula$upper.limits == 0),
+#'       "\n"
+#'     ))
+#'
+#'
+#'
+#'   return(invisible(NULL))
+#' }
 
 
 

@@ -12,8 +12,8 @@ SL.hal9001(
   obsWeights = rep(1, length(Y)),
   id = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
-  smoothness_orders = 1,
-  num_knots = ifelse(smoothness_orders >= 1, 25, 50),
+  smoothness_order = 1,
+  num_knots = ifelse(smoothness_order >= 1, 25, 50),
   reduce_basis = 1/sqrt(length(Y)),
   lambda = NULL,
   ...
@@ -40,9 +40,9 @@ generalized linear model.}
 \item{max_degree}{The highest order of interaction terms for which basis
 functions ought to be generated.}
 
-\item{smoothness_orders}{An \code{integer} vector of length 1 or greater,
+\item{smoothness_order}{An \code{integer} vector of length 1 or greater,
 specifying the smoothness of the basis functions. See the argument
-\code{smoothness_orders} of \code{\link{fit_hal}} for more information.}
+\code{smoothness_order} of \code{\link{fit_hal}} for more information.}
 
 \item{num_knots}{An \code{integer} vector of length 1 or \code{max_degree},
 specifying the maximum number of knot points (i.e., bins) for each
