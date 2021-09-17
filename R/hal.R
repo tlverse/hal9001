@@ -259,7 +259,7 @@ fit_hal <- function(X,
     #   num_knots = num_knots, exclusive_dot = formula_control$exclusive_dot,
     #   custom_group = formula_control$custom_group
     # )
-    if(!inherits(formula, "formula_hal")) {
+    if (!inherits(formula, "formula_hal")) {
       formula <- formula_hal(formula, X = X, smoothness_order = smoothness_order, num_knots = num_knots)
     }
     basis_list <- formula$basis_list
@@ -337,7 +337,7 @@ fit_hal <- function(X,
   }
 
   # the HAL basis are subject to L1 penalty
-  if(is.null(penalty_factor)) {
+  if (is.null(penalty_factor)) {
     penalty_factor <- rep(1, ncol(x_basis))
   }
 

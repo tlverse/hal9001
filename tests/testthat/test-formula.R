@@ -10,29 +10,24 @@ colnames(X) <- c("X1", "X2", "X3")
 smoothness_order <- 1
 num_knots <- 3
 
- test_that("Check formula", {
- expect_true(length(h(X1)$basis_list)==num_knots)
- expect_true(h(X1)$basis_list[[1]]$orders==1)
- expect_true(all(h(X1)$penalty.factors == 1))
- out <- h(X1, pf = 0)
- expect_true(all(out$penalty.factors == 0))
- out <- h(X1,X2, k=5)
+test_that("Check formula", {
+  expect_true(length(h(X1)$basis_list) == num_knots)
+  expect_true(h(X1)$basis_list[[1]]$orders == 1)
+  expect_true(all(h(X1)$penalty.factors == 1))
+  out <- h(X1, pf = 0)
+  expect_true(all(out$penalty.factors == 0))
+  out <- h(X1, X2, k = 5)
 
- expect_true(length(out$basis_list )== 25)
- out <- h(X1,X2, k=5, monotone = "i")
- expect_true(all(out$lower.limits==0 ))
- expect_true(length((h(X1) + h(X2))$basis_list) == 6)
- formula <- ~ h(X1) + h(X2)
- expect_true(length(setdiff(formula_hal(formula )$basis_list,  (h(X1) + h(X2))$basis_list))==0)
- formula <- "~ h(X1) + h(X2)"
- expect_true(length(setdiff(formula_hal(formula)$basis_list,  (h(X1) + h(X2))$basis_list))==0)
- expect_true(length(formula_hal(formula, num_knots = 3)$basis_list)  == length(formula_hal(formula )$basis_list)
-)
- expect_true(length(formula_hal(formula, num_knots = 10)$basis_list)  != length(formula_hal(formula )$basis_list)
-)
-
-
-
+  expect_true(length(out$basis_list) == 25)
+  out <- h(X1, X2, k = 5, monotone = "i")
+  expect_true(all(out$lower.limits == 0))
+  expect_true(length((h(X1) + h(X2))$basis_list) == 6)
+  formula <- ~ h(X1) + h(X2)
+  expect_true(length(setdiff(formula_hal(formula)$basis_list, (h(X1) + h(X2))$basis_list)) == 0)
+  formula <- "~ h(X1) + h(X2)"
+  expect_true(length(setdiff(formula_hal(formula)$basis_list, (h(X1) + h(X2))$basis_list)) == 0)
+  expect_true(length(formula_hal(formula, num_knots = 3)$basis_list) == length(formula_hal(formula)$basis_list))
+  expect_true(length(formula_hal(formula, num_knots = 10)$basis_list) != length(formula_hal(formula)$basis_list))
 })
 
 

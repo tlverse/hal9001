@@ -5,22 +5,21 @@
 #' @param smoothness_order A default value for \code{s} if not provided explicitely to the function \code{h}.
 #' @param num_knots A default value for \code{k} if not provided explicitely to the function \code{h}.
 #' @export
-formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
-
-  if(is.null(X)) {
+formula_hal <- function(formula, smoothness_order, num_knots, X = NULL) {
+  if (is.null(X)) {
     X <- get("X", envir = parent.frame())
   }
 
-  if(!is.null(get0("smoothness_order", envir = parent.frame()))&& missing(smoothness_order)) {
+  if (!is.null(get0("smoothness_order", envir = parent.frame())) && missing(smoothness_order)) {
     smoothness_order <- get("smoothness_order", envir = parent.frame())
   }
 
-  if(!is.null(get0("num_knots", envir = parent.frame())) && missing(num_knots)) {
-    num_knots <-  get("num_knots", envir = parent.frame())
+  if (!is.null(get0("num_knots", envir = parent.frame())) && missing(num_knots)) {
+    num_knots <- get("num_knots", envir = parent.frame())
   }
   num_knots <- num_knots
   smoothness_order <- smoothness_order
-    print(num_knots)
+  print(num_knots)
   terms <- as.character(as.formula(formula))
   terms <- terms[length(terms)] # TODO CHECK
   output <- eval(parse(text = terms))
@@ -33,14 +32,13 @@ formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
 #' @export
 `+.formula_hal9001` <- function(x, y) {
   keep <- !duplicated(c(x$basis_list, y$basis_list))
-  out <-list(
+  out <- list(
     basis_list = c(x$basis_list, y$basis_list)[keep],
-    penalty.factors  = c(x$penalty.factors, y$penalty.factors)[keep],
-    lower.limits= c(x$lower.limits, y$lower.limits)[keep],
-    upper.limits = c(x$upper.limits, y$upper.limits)[keep])
-   return(out)
-
-
+    penalty.factors = c(x$penalty.factors, y$penalty.factors)[keep],
+    lower.limits = c(x$lower.limits, y$lower.limits)[keep],
+    upper.limits = c(x$upper.limits, y$upper.limits)[keep]
+  )
+  return(out)
 }
 
 
@@ -69,21 +67,20 @@ formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
 #' @param X An optional design matrix where the variables given in \code{...} can be found. Otherwise, `X` is taken from the parent environment.
 #' @importFrom stringr str_match str_split str_detect str_remove str_replace str_extract str_match_all
 #' @importFrom assertthat assert_that
-#'@export
-h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"), . = NULL , dot_args_as_string = FALSE, X = NULL) {
-
+#' @export
+h <- function(..., k = NULL, s = NULL, pf = 1, monotone = c("none", "i", "d"), . = NULL, dot_args_as_string = FALSE, X = NULL) {
   monotone <- match.arg(monotone)
-  if(is.null( X)) {
+  if (is.null(X)) {
     X <- as.matrix(get("X", envir = parent.frame())) # Get design matrix from parent environment
   }
-  if(is.null(.)) {
+  if (is.null(.)) {
     . <- colnames(X)
   }
 
-  if(!dot_args_as_string) {
+  if (!dot_args_as_string) {
     str <- (deparse(substitute(c(...)))) # Extract names of possibly nonexisting environment variables (e.g. like formula)
     str <- stringr::str_replace_all(str, " ", "")
-    str <- str_match_all(str,"[,(]([^()]+)[,)]")[[1]][,-1]
+    str <- str_match_all(str, "[,(]([^()]+)[,)]")[[1]][, -1]
     var_names <- str_split(str, ",")[[1]]
     # print(str)
     # var_names <- str_match_all(str,"[,(]([^(,]+)[,)]")[[1]][,-1]
@@ -95,14 +92,14 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
     var_names <- unlist(list(...))
   }
 
-  if("." %in% var_names) {
+  if ("." %in% var_names) {
     var_names_filled <- fill_dots(var_names, . = .)
-    if(!is.list(var_names_filled)) {
+    if (!is.list(var_names_filled)) {
       var_names_filled <- list(var_names_filled)
     }
 
     all_items <- lapply(var_names_filled, function(var) {
-      h(var,  k = k , s = s,  pf = pf, monotone = monotone, . = ., dot_args_as_string = TRUE)
+      h(var, k = k, s = s, pf = pf, monotone = monotone, . = ., dot_args_as_string = TRUE)
     })
     basis_all <- unlist(lapply(all_items, function(item) {
       item$basis_list
@@ -116,61 +113,62 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
     upper.limits_all <- unlist(lapply(all_items, function(item) {
       item$upper.limits
     }))
-    all_items <- list(basis_list = basis_all,  penalty.factors = penalty.factors_all, lower.limits = lower.limits_all, upper.limits = upper.limits_all)
+    all_items <- list(basis_list = basis_all, penalty.factors = penalty.factors_all, lower.limits = lower.limits_all, upper.limits = upper.limits_all)
     class(all_items) <- "formula_hal9001"
     return(all_items)
   }
 
 
-  if(is.null(k)){
-
+  if (is.null(k)) {
     k <- get("num_knots", envir = parent.frame())
 
-    k <- suppressWarnings(k + rep(0, length(var_names))) #recycle
+    k <- suppressWarnings(k + rep(0, length(var_names))) # recycle
     k <- k[length(var_names)]
   }
-  if(is.null(s)){
+  if (is.null(s)) {
     s <- get("smoothness_order", envir = parent.frame())[1]
   }
 
 
   col_index <- match(var_names, colnames(X)) # Get corresponding column indices
-  lapply(seq_along(col_index), function(i){
+  lapply(seq_along(col_index), function(i) {
     var <- var_names[i]
     j <- col_index[i]
 
-    if(!(length(k) == 1)) {
-      tryCatch({
+    if (!(length(k) == 1)) {
+      tryCatch(
+        {
+          if (var %in% names(k)) {
+            k <- unlist(k[var])
+          } else {
+            k <- unlist(k["."])
+          }
 
-        if(var %in% names(k)) {
-          k <- unlist(k[var])
-        } else {
-          k <- unlist(k["."])
+          print(k)
+        },
+        error = function() {
+          stop("k must be a variable named list or vector.")
         }
-
-        print(k)
-      }, error = function(){
-        stop("k must be a variable named list or vector.")
-      })
+      )
     }
-    x <- X[,j]
-    bins <- quantile(x, seq(0,1, length.out = k+1))
+    x <- X[, j]
+    bins <- quantile(x, seq(0, 1, length.out = k + 1))
     x <- bins[findInterval(x, bins, all.inside = TRUE)]
-    X[,j] <<- x
+    X[, j] <<- x
   })
 
 
-  basis_list_item <- hal9001:::make_basis_list(X[,col_index, drop = F], col_index,  rep(s,  ncol(X)) )
-  penalty.factors <- rep(pf,length(basis_list_item))
-  if(monotone == "i"){
-    lower.limits <- rep(0,length(basis_list_item))
-    upper.limits <- rep(Inf,length(basis_list_item))
-  } else if(monotone == "d"){
-    lower.limits <- rep(-Inf,length(basis_list_item))
-    upper.limits <- rep(0,length(basis_list_item))
+  basis_list_item <- hal9001:::make_basis_list(X[, col_index, drop = F], col_index, rep(s, ncol(X)))
+  penalty.factors <- rep(pf, length(basis_list_item))
+  if (monotone == "i") {
+    lower.limits <- rep(0, length(basis_list_item))
+    upper.limits <- rep(Inf, length(basis_list_item))
+  } else if (monotone == "d") {
+    lower.limits <- rep(-Inf, length(basis_list_item))
+    upper.limits <- rep(0, length(basis_list_item))
   } else {
-    lower.limits <- rep(-Inf,length(basis_list_item))
-    upper.limits <- rep(Inf,length(basis_list_item))
+    lower.limits <- rep(-Inf, length(basis_list_item))
+    upper.limits <- rep(Inf, length(basis_list_item))
   }
   out <- list(basis_list = basis_list_item, penalty.factors = penalty.factors, lower.limits = lower.limits, upper.limits = upper.limits)
   class(out) <- "formula_hal9001"
@@ -184,8 +182,7 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
 #' helpers
 fill_dots_helper <- function(var_names, .) {
   index <- which(var_names == ".")
-  if(length(index)==0){
-
+  if (length(index) == 0) {
     return(sort(var_names))
   }
   len <- length(index)
@@ -195,7 +192,7 @@ fill_dots_helper <- function(var_names, .) {
     new_var_names[index] <- var
     out <- fill_dots_helper(new_var_names, .)
 
-    if(is.list(out[[1]])) {
+    if (is.list(out[[1]])) {
       out <- unlist(out, recursive = FALSE)
     }
     return(out)
@@ -206,9 +203,9 @@ fill_dots_helper <- function(var_names, .) {
 }
 #' helpers
 fill_dots <- function(var_names, .) {
-  x <- unique(unlist(fill_dots_helper(var_names, . = .), recursive = F) )
+  x <- unique(unlist(fill_dots_helper(var_names, . = .), recursive = F))
   keep <- sapply(x, function(item) {
-    if(any(duplicated(item))) {
+    if (any(duplicated(item))) {
       return(FALSE)
     }
     return(TRUE)
