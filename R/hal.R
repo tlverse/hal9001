@@ -260,7 +260,7 @@ fit_hal <- function(X,
     #   custom_group = formula_control$custom_group
     # )
 
-    if(!inherits(formula, "formula_hal")) {
+    if (!inherits(formula, "formula_hal")) {
       formula <- formula_hal(formula, X = X, smoothness_orders = smoothness_orders, num_knots = num_knots)
     }
     basis_list <- formula$basis_list
@@ -308,7 +308,7 @@ fit_hal <- function(X,
 
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
   if (!is.null(reduce_basis) && is.numeric(reduce_basis) &&
-      all(smoothness_orders == 0)) {
+    all(smoothness_orders == 0)) {
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]

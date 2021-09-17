@@ -33,7 +33,7 @@ system.time({
     # lambda_min_index <- which.min(screen_glmnet$cvm)
     # cvm_min <- min(screen_glmnet$cvm)
     # preds <- screen_glmnet$fit.preval[,lambda_min_index]
-    
+
     b1 <- enumerate_basis(x[new_i, , drop = FALSE], 1:3)
     x_basis <- make_design_matrix(x, b1)
     screen_glmnet <- cv.glmnet(
@@ -45,7 +45,7 @@ system.time({
     lambda_min_index <- which.min(screen_glmnet$cvm)
     cvm_min <- min(screen_glmnet$cvm)
     preds <- screen_glmnet$fit.preval[, lambda_min_index] + offset
-    
+
     se <- (preds - y)^2
     mse <- mean(se)
     se[c(current_i, new_i)] <- 0
@@ -61,7 +61,7 @@ system.time({
       print(length(old_basis))
       old_basis <- unique(c(old_basis, b1))
     }
-    
+
     mses <- c(mses, old_mse)
     recent_mses <- mses[(max(length(mses) - 10, 0) + 1):length(mses)]
     r <- lm.fit(

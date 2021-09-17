@@ -20,7 +20,7 @@ formula_hal <-function(formula, smoothness_orders , num_knots, X = NULL) {
   }
   num_knots <- num_knots
   smoothness_orders <- smoothness_orders
-  print(num_knots)
+
   terms <- as.character(as.formula(formula))
   terms <- terms[length(terms)] # TODO CHECK
   output <- eval(parse(text = terms))
@@ -148,7 +148,7 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
           k <- unlist(k["."])
         }
 
-        print(k)
+
       }, error = function(){
         stop("k must be a variable named list or vector.")
       })

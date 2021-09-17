@@ -52,11 +52,11 @@ SL.hal9001 <- function(Y,
                        reduce_basis = 1 / sqrt(length(Y)),
                        lambda = NULL,
                        ...) {
-  
+
   # create matrix version of X and newX for use with hal9001::fit_hal
   if (!is.matrix(X)) X <- as.matrix(X)
   if (!is.null(newX) & !is.matrix(newX)) newX <- as.matrix(newX)
-  
+
   # fit hal
   hal_fit <- fit_hal(
     X = X, Y = Y, family = family$family,
@@ -64,14 +64,14 @@ SL.hal9001 <- function(Y,
     smoothness_orders = smoothness_orders, num_knots = num_knots, reduce_basis
     = reduce_basis, lambda = lambda
   )
-  
+
   # compute predictions based on `newX` or input `X`
   if (!is.null(newX)) {
     pred <- stats::predict(hal_fit, new_data = newX)
   } else {
     pred <- stats::predict(hal_fit, new_data = X)
   }
-  
+
   # build output object
   fit <- list(object = hal_fit)
   class(fit) <- "SL.hal9001"
@@ -98,7 +98,7 @@ SL.hal9001 <- function(Y,
 predict.SL.hal9001 <- function(object, newdata, ...) {
   # coerce newdata to matrix if not already so
   if (!is.matrix(newdata)) newdata <- as.matrix(newdata)
-  
+
   # generate predictions and return
   pred <- stats::predict(object$object, new_data = newdata)
   return(pred)
