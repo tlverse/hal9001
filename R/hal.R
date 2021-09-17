@@ -10,50 +10,50 @@
 #'  \eqn{(n * 2^(d-1))}, where where \eqn{n} is the number of observations and
 #'  \eqn{d} is the number of covariates.
 #'
-#'  For \code{smoothness_order = 0}, only zero-order splines (piece-wise
+#'  For \code{smoothness_orders = 0}, only zero-order splines (piece-wise
 #'  constant) are generated, which assume the true regression function has no
-#'  smoothness or continuity. When \code{smoothness_order = 1}, first-order
+#'  smoothness or continuity. When \code{smoothness_orders = 1}, first-order
 #'  splines (piece-wise linear) are generated, which assume continuity of the
-#'  true regression function. When \code{smoothness_order = 2}, second-order
+#'  true regression function. When \code{smoothness_orders = 2}, second-order
 #'  splines (piece-wise quadratic and linear terms) are generated, which assume
 #'  a the true regression function has a single order of differentiability.
 #'
 #'  \code{num_knots} argument specifies the number of knot points for each
 #'  covariate and for each \code{max_degree}. Fewer knot points can
 #'  significantly decrease runtime, but might be overly simplistic. When
-#'  considering \code{smoothness_order = 0}, too few knot points (e.g., < 50)
-#'  can significantly reduce performance. When \code{smoothness_order = 1} or
+#'  considering \code{smoothness_orders = 0}, too few knot points (e.g., < 50)
+#'  can significantly reduce performance. When \code{smoothness_orders = 1} or
 #'  higher, then fewer knot points (e.g., 10-30) is actually better for
 #'  performance. We recommend specifying \code{num_knots} with respect to
-#'  \code{smoothness_order}, and as a vector of length \code{max_degree} with
+#'  \code{smoothness_orders}, and as a vector of length \code{max_degree} with
 #'  values decreasing exponentially. This prevents combinatorial explosions in
 #'  the number of higher-degree basis functions generated. The default behavior
-#'  of \code{num_knots} follows this logic --- for \code{smoothness_order = 0},
+#'  of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
 #'  \code{num_knots} is set to \eqn{500 / 2^{j-1}}, and for
-#'  \code{smoothness_order = 1} or higher, \code{num_knots} is set to
+#'  \code{smoothness_orders = 1} or higher, \code{num_knots} is set to
 #'  \eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
 #'  include some other suitable settings for \code{num_knots} below, all of
 #'  which are less complex than default \code{num_knots} and will thus result
 #'  in a faster runtime:
 #'  - Some good settings for little to no cost in performance:
-#'    - If \code{smoothness_order = 0} and \code{max_degree = 3},
+#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
 #'      \code{num_knots = c(400, 200, 100)}.
-#'    - If \code{smoothness_order = 1+} and \code{max_degree = 3},
+#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(100, 75, 50)}.
 #'  - Recommended settings for fairly fast runtime:
-#'    - If \code{smoothness_order = 0} and \code{max_degree = 3},
+#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
 #'      \code{num_knots = c(200, 100, 50)}.
-#'    - If \code{smoothness_order = 1+} and \code{max_degree = 3},
+#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(50, 25, 15)}.
 #'  - Recommended settings for fast runtime:
-#'    - If \code{smoothness_order = 0} and \code{max_degree = 3},
+#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
 #'      \code{num_knots = c(100, 50, 25)}.
-#'    - If \code{smoothness_order = 1+} and \code{max_degree = 3},
+#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(40, 15, 10)}.
 #'  - Recommended settings for very fast runtime:
-#'    - If \code{smoothness_order = 0} and \code{max_degree = 3},
+#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
 #'      \code{num_knots = c(50, 25, 10)}.
-#'    - If \code{smoothness_order = 1+} and \code{max_degree = 3},
+#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(25, 10, 5)}.
 #'
 #' @param X An input \code{matrix} with dimensions number of observations -by-
@@ -68,8 +68,8 @@
 #'  expansion is performed on \code{X_unpenalized}.
 #' @param max_degree The highest order of interaction terms for which basis
 #'  functions ought to be generated.
-#' @param smoothness_order An \code{integer}, specifying the smoothness of the
-#'  basis functions. See details for \code{smoothness_order} for more
+#' @param smoothness_orders An \code{integer}, specifying the smoothness of the
+#'  basis functions. See details for \code{smoothness_orders} for more
 #'  information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
 #'  specifying the maximum number of knot points (i.e., bins) for any covariate
@@ -77,7 +77,7 @@
 #'  vector, then the same \code{num_knots} are used for each degree (this is
 #'  not recommended). The default settings for \code{num_knots} are
 #'  recommended, and these defaults decrease \code{num_knots} with increasing
-#'  \code{max_degree} and \code{smoothness_order}, which prevents (expensive)
+#'  \code{max_degree} and \code{smoothness_orders}, which prevents (expensive)
 #'  combinatorial explosions in the number of higher-degree and higher-order
 #'  basis functions generated. This allows the complexity of the optimization
 #'  problem to grow scalably. See details of \code{num_knots} more information.
@@ -175,10 +175,10 @@ fit_hal <- function(X,
                     formula = NULL,
                     X_unpenalized = NULL,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
-                    smoothness_order = 1,
+                    smoothness_orders = 1,
                     num_knots = num_knots_generator(
                       max_degree = max_degree,
-                      smoothness_order = smoothness_order,
+                      smoothness_orders = smoothness_orders,
                       base_num_knots_0 = 200,
                       base_num_knots_1 = 50
                     ),
@@ -195,7 +195,7 @@ fit_hal <- function(X,
                       lambda.min.ratio = 1e-4,
                       prediction_bounds = "default"
                     ),
-
+                    
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
@@ -203,7 +203,7 @@ fit_hal <- function(X,
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
-
+  
   # errors when a supplied control list is missing arguments
   defaults <- list(
     cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
@@ -218,10 +218,10 @@ fit_hal <- function(X,
   defaults <- list(
     exclusive_dot = FALSE, custom_group = NULL
   )
-
-
+  
+  
   if (!is.matrix(X)) X <- as.matrix(X)
-
+  
   # check for missingness and ensure dimensionality matches
   assertthat::assert_that(
     all(!is.na(X)),
@@ -235,7 +235,7 @@ fit_hal <- function(X,
     nrow(X) == length(Y),
     msg = "Number of rows in `X` and length of `Y` must be equal"
   )
-
+  
   if (!is.null(X_unpenalized)) {
     assertthat::assert_that(
       all(!is.na(X_unpenalized)),
@@ -252,15 +252,15 @@ fit_hal <- function(X,
       )
     )
   }
-
+  
   if (!is.null(formula)) {
     # formula <- formula_hal(
-    #   formula = formula, X = X, smoothness_orders = smoothness_orders,
+    #   formula = formula, X = X, smoothness_orderss = smoothness_orderss,
     #   num_knots = num_knots, exclusive_dot = formula_control$exclusive_dot,
     #   custom_group = formula_control$custom_group
     # )
     if(!inherits(formula, "formula_hal")) {
-      formula <- formula_hal(formula, X = X, smoothness_order = smoothness_order, num_knots = num_knots)
+      formula <- formula_hal(formula, X = X, smoothness_orders = smoothness_orders, num_knots = num_knots)
     }
     basis_list <- formula$basis_list
     fit_control$upper.limits <- formula$upper.limits
@@ -269,10 +269,10 @@ fit_hal <- function(X,
   } else {
     penalty_factor <- NULL
   }
-
+  
   # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
   if (yolo) hal9000()
-
+  
   # Generate fold_ids that respect id
   if (is.null(fit_control$foldid)) {
     folds <- origami::make_folds(
@@ -280,44 +280,44 @@ fit_hal <- function(X,
     )
     foldid <- origami::folds2foldvec(folds)
   }
-
+  
   # bookkeeping: get start time of enumerate basis procedure
   time_start <- proc.time()
-
+  
   # enumerate basis functions for making HAL design matrix
   if (is.null(basis_list)) {
     basis_list <- enumerate_basis(
       X,
       max_degree = max_degree,
-      smoothness_orders = smoothness_order,
+      smoothness_orderss = smoothness_orders,
       num_knots = num_knots,
       include_lower_order = FALSE,
       include_zero_order = FALSE
     )
   }
-
+  
   # bookkeeping: get end time of enumerate basis procedure
   time_enumerate_basis <- proc.time()
-
+  
   # make design matrix for HAL from basis functions
   x_basis <- make_design_matrix(X, basis_list)
-
+  
   # bookkeeping: get end time of design matrix procedure
   time_design_matrix <- proc.time()
-
+  
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
   if (!is.null(reduce_basis) && is.numeric(reduce_basis) &&
-    all(smoothness_order == 0)) {
+      all(smoothness_orders == 0)) {
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
   }
   time_reduce_basis <- proc.time()
-
+  
   # catalog and eliminate duplicates
   # Lars's change: copy_map is not needed but to preserve functionality (e.g.,
   # summary), pass in a trivial copy_map.
-  if (all(smoothness_order == 0)) {
+  if (all(smoothness_orders == 0)) {
     copy_map <- make_copy_map(x_basis)
     unique_columns <- as.numeric(names(copy_map))
     x_basis <- x_basis[, unique_columns]
@@ -325,22 +325,22 @@ fit_hal <- function(X,
   }
   copy_map <- seq_along(basis_list)
   names(copy_map) <- seq_along(basis_list)
-
+  
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
-
+  
   # generate a vector of col names
   if (!is.null(colnames(X))) {
     X_colnames <- colnames(X)
   } else {
     X_colnames <- paste0("x", 1:ncol(X))
   }
-
+  
   # the HAL basis are subject to L1 penalty
   if(is.null(penalty_factor)) {
     penalty_factor <- rep(1, ncol(x_basis))
   }
-
+  
   unpenalized_covariates <- ifelse(
     test = is.null(X_unpenalized),
     yes = 0,
@@ -354,7 +354,7 @@ fit_hal <- function(X,
     x_basis <- cbind(x_basis, X_unpenalized)
     penalty_factor <- c(penalty_factor, rep(0, ncol(X_unpenalized)))
   }
-
+  
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
   #       casting to a regular (dense) matrix has a large memory cost :(
   # General families throws warnings if you pass in sparse matrix and does not
@@ -363,14 +363,14 @@ fit_hal <- function(X,
   # if (inherits(family, "family") || family == "cox") {
   #   x_basis <- as.matrix(x_basis)
   # }
-
+  
   if (!inherits(family, "family") && family == "cox") {
     x_basis <- as.matrix(x_basis)
   }
-
+  
   # bookkeeping: get start time of lasso
   time_start_lasso <- proc.time()
-
+  
   # fit lasso regression
   # If the standardize argument is passed to glmnet through "...", simply
   # note that it will be discarded and set to FALSE.
@@ -379,7 +379,7 @@ fit_hal <- function(X,
       "Argument `standardize` to `glmnet` detected, overriding to `FALSE`."
     )
   }
-
+  
   # just use the standard implementation available in glmnet
   fit_control$x <- x_basis
   fit_control$y <- Y
@@ -388,7 +388,7 @@ fit_hal <- function(X,
   fit_control$lambda <- lambda
   fit_control$penalty.factor <- penalty_factor
   fit_control$offset <- offset
-
+  
   if (!fit_control$cv_select) {
     hal_lasso <- do.call(glmnet::glmnet, fit_control)
     lambda_star <- hal_lasso$lambda
@@ -404,13 +404,13 @@ fit_hal <- function(X,
     }
     coefs <- stats::coef(hal_lasso, lambda_type)
   }
-
+  
   # bookkeeping: get time for computation of the lasso regression
   time_lasso <- proc.time()
-
+  
   # bookkeeping: get time for the whole procedure
   time_final <- proc.time()
-
+  
   # bookkeeping: construct table for viewing procedure times
   times <- rbind(
     enumerate_basis = time_enumerate_basis - time_start,
@@ -420,7 +420,7 @@ fit_hal <- function(X,
     lasso = time_lasso - time_start_lasso,
     total = time_final - time_start
   )
-
+  
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (!inherits(Y, "Surv") & fit_control$prediction_bounds == "default") {
     # This would break if Y was a survival object as in coxnet
@@ -430,7 +430,7 @@ fit_hal <- function(X,
   } else if (inherits(Y, "Surv") & fit_control$prediction_bounds == "default") {
     fit_control$prediction_bounds <- NULL
   }
-
+  
   # construct output object via lazy S3 list
   fit <- list(
     x_basis =
@@ -466,7 +466,7 @@ fit_hal <- function(X,
 #' interactions and the smoothness orders.
 #'
 #' @param d interaction degree.
-#' @param smoothness_order see \code{\link{fit_hal}}.
+#' @param smoothness_orders see \code{\link{fit_hal}}.
 #' @param base_num_knots_0 The base number of knots for zeroth-order smoothness
 #'  basis functions. The number of knots by degree interaction decays as
 #'  `base_num_knots_0/2^(d-1)` where `d` is the interaction degree of the basis
@@ -477,9 +477,9 @@ fit_hal <- function(X,
 #'  the basis function.
 #'
 #' @keywords internal
-num_knots_generator <- function(max_degree, smoothness_order, base_num_knots_0 = 500,
+num_knots_generator <- function(max_degree, smoothness_orders, base_num_knots_0 = 500,
                                 base_num_knots_1 = 200) {
-  if (all(smoothness_order > 0)) {
+  if (all(smoothness_orders > 0)) {
     return(sapply(seq_len(max_degree), function(d) {
       round(base_num_knots_1 / 2^(d - 1))
     }))
