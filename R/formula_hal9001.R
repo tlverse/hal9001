@@ -2,25 +2,25 @@
 
 #' HAL Formula: Convert formula or string to `formula_HAL`` object.
 #' @param formula A `formula_hal9001` object as outputted by \code{h}.
-#' @param smoothness_order A default value for \code{s} if not provided explicitely to the function \code{h}.
+#' @param smoothness_orders A default value for \code{s} if not provided explicitely to the function \code{h}.
 #' @param num_knots A default value for \code{k} if not provided explicitely to the function \code{h}.
 #' @export
-formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
-
+formula_hal <-function(formula, smoothness_orders , num_knots, X = NULL) {
+  
   if(is.null(X)) {
     X <- get("X", envir = parent.frame())
   }
-
-  if(!is.null(get0("smoothness_order", envir = parent.frame()))&& missing(smoothness_order)) {
-    smoothness_order <- get("smoothness_order", envir = parent.frame())
+  
+  if(!is.null(get0("smoothness_orders", envir = parent.frame()))&& missing(smoothness_orders)) {
+    smoothness_orders <- get("smoothness_orders", envir = parent.frame())
   }
-
+  
   if(!is.null(get0("num_knots", envir = parent.frame())) && missing(num_knots)) {
     num_knots <-  get("num_knots", envir = parent.frame())
   }
   num_knots <- num_knots
-  smoothness_order <- smoothness_order
-    print(num_knots)
+  smoothness_orders <- smoothness_orders
+  print(num_knots)
   terms <- as.character(as.formula(formula))
   terms <- terms[length(terms)] # TODO CHECK
   output <- eval(parse(text = terms))
@@ -38,9 +38,9 @@ formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
     penalty.factors  = c(x$penalty.factors, y$penalty.factors)[keep],
     lower.limits= c(x$lower.limits, y$lower.limits)[keep],
     upper.limits = c(x$upper.limits, y$upper.limits)[keep])
-   return(out)
-
-
+  return(out)
+  
+  
 }
 
 
@@ -54,8 +54,8 @@ formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
 #' `h(W1,W2,W3, k = list(W1 = 3, W2 = 2, W3=1))` is equivalent to first binning the variables `W1`, `W2` and `W3` into `3`, `2` and `1` unique values and then calling `h(W1,W2,W3)`.
 #' This coarsening of the data ensures that less basis functions are generated, which can lead to substantial computational speed-ups.
 #' If not provided and the variable \code{num_knots} is in the parent environment, then \code{s} will be set to \code{num_knots}`.
-#' @param s The \code{smoothness_order} for the basis functions. The possible values are `0` for piece-wise constant zero-order splines or `1` for piece-wise linear first-order splines.
-#' If not provided and the variable \code{smoothness_order} is in the parent environment, then \code{s} will be set to \code{smoothness_order}.
+#' @param s The \code{smoothness_orders} for the basis functions. The possible values are `0` for piece-wise constant zero-order splines or `1` for piece-wise linear first-order splines.
+#' If not provided and the variable \code{smoothness_orders} is in the parent environment, then \code{s} will be set to \code{smoothness_orders}.
 #' @param pf A penalty.factor value the generated basis functions that is used by \code{glmnet} in the LASSO penalization procedure.
 #' `pf` = 1 (default) is the standard penalization factor used by \code{glmnet} and `pf`= 0 means the generated basis functions are unpenalized.
 #' @param monotone Whether the basis functions should enforce monotonicity of the interaction term.
@@ -71,7 +71,7 @@ formula_hal <-function(formula, smoothness_order , num_knots, X = NULL) {
 #' @importFrom assertthat assert_that
 #'@export
 h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"), . = NULL , dot_args_as_string = FALSE, X = NULL) {
-
+  
   monotone <- match.arg(monotone)
   if(is.null( X)) {
     X <- as.matrix(get("X", envir = parent.frame())) # Get design matrix from parent environment
@@ -79,7 +79,7 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
   if(is.null(.)) {
     . <- colnames(X)
   }
-
+  
   if(!dot_args_as_string) {
     str <- (deparse(substitute(c(...)))) # Extract names of possibly nonexisting environment variables (e.g. like formula)
     str <- stringr::str_replace_all(str, " ", "")
@@ -94,13 +94,13 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
   } else {
     var_names <- unlist(list(...))
   }
-
+  
   if("." %in% var_names) {
     var_names_filled <- fill_dots(var_names, . = .)
     if(!is.list(var_names_filled)) {
       var_names_filled <- list(var_names_filled)
     }
-
+    
     all_items <- lapply(var_names_filled, function(var) {
       h(var,  k = k , s = s,  pf = pf, monotone = monotone, . = ., dot_args_as_string = TRUE)
     })
@@ -120,34 +120,34 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
     class(all_items) <- "formula_hal9001"
     return(all_items)
   }
-
-
+  
+  
   if(is.null(k)){
-
+    
     k <- get("num_knots", envir = parent.frame())
-
+    
     k <- suppressWarnings(k + rep(0, length(var_names))) #recycle
     k <- k[length(var_names)]
   }
   if(is.null(s)){
-    s <- get("smoothness_order", envir = parent.frame())[1]
+    s <- get("smoothness_orders", envir = parent.frame())[1]
   }
-
-
+  
+  
   col_index <- match(var_names, colnames(X)) # Get corresponding column indices
   lapply(seq_along(col_index), function(i){
     var <- var_names[i]
     j <- col_index[i]
-
+    
     if(!(length(k) == 1)) {
       tryCatch({
-
+        
         if(var %in% names(k)) {
           k <- unlist(k[var])
         } else {
           k <- unlist(k["."])
         }
-
+        
         print(k)
       }, error = function(){
         stop("k must be a variable named list or vector.")
@@ -158,8 +158,8 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
     x <- bins[findInterval(x, bins, all.inside = TRUE)]
     X[,j] <<- x
   })
-
-
+  
+  
   basis_list_item <- hal9001:::make_basis_list(X[,col_index, drop = F], col_index,  rep(s,  ncol(X)) )
   penalty.factors <- rep(pf,length(basis_list_item))
   if(monotone == "i"){
@@ -185,7 +185,7 @@ h <- function(...,  k = NULL , s = NULL, pf = 1, monotone = c("none", "i", "d"),
 fill_dots_helper <- function(var_names, .) {
   index <- which(var_names == ".")
   if(length(index)==0){
-
+    
     return(sort(var_names))
   }
   len <- length(index)
@@ -194,14 +194,14 @@ fill_dots_helper <- function(var_names, .) {
     new_var_names <- var_names
     new_var_names[index] <- var
     out <- fill_dots_helper(new_var_names, .)
-
+    
     if(is.list(out[[1]])) {
       out <- unlist(out, recursive = FALSE)
     }
     return(out)
   })
-
-
+  
+  
   return(unique(all_items))
 }
 #' helpers
@@ -225,10 +225,10 @@ fill_dots <- function(var_names, .) {
 #'       "\n Call: ", formula$call,
 #'       "\n Formula: ", formula$formula,
 #'       "\n Expanded Formula: ", formula$formula_expanded,
-#'       "\n Number of smooth variables: ", sum(formula$smoothness_orders > 0),
+#'       "\n Number of smooth variables: ", sum(formula$smoothness_orderss > 0),
 #'       "\n Smoothness range: ", ifelse(
-#'         formula$include_zero_order | any(formula$smoothness_orders == 0), 0, 1
-#'       ), " -> ", max(formula$smoothness_orders),
+#'         formula$include_zero_order | any(formula$smoothness_orderss == 0), 0, 1
+#'       ), " -> ", max(formula$smoothness_orderss),
 #'       " \n Number of basis functions: ", length(formula$basis_list),
 #'       "\n Number of monotone-increasing basis functions: ",
 #'       sum(formula$lower.limits == 0),
@@ -369,7 +369,7 @@ fill_dots <- function(var_names, .) {
 #' #'  a character vector of column names in \code{X} that belong to that group.
 #' #'  The names of the \code{custom_group} must be single characters of length 1.
 #' #'  See \code{custom_group} details for more information.
-#' #' @param smoothness_orders Necessary argument for generating basis functions
+#' #' @param smoothness_orderss Necessary argument for generating basis functions
 #' #'  from the \code{formula}. See its documentation in \code{\link{fit_hal}}.
 #' #' @param num_knots Necessary argument for generating basis functions from the
 #' #'  \code{formula}. See its documentation in \code{\link{fit_hal}}.
@@ -381,7 +381,7 @@ fill_dots <- function(var_names, .) {
 #' #'
 #' #' @export
 #' formula_hal <- function(formula, X, exclusive_dot = FALSE, custom_group = NULL,
-#'                         smoothness_orders = NULL, num_knots = NULL) {
+#'                         smoothness_orderss = NULL, num_knots = NULL) {
 #'   generate_lower_degrees <- FALSE
 #'   include_zero_order <- FALSE
 #'   remove <- NULL
@@ -404,17 +404,17 @@ fill_dots <- function(var_names, .) {
 #'   }
 #'
 #'   form <- formula
-#'   if (is.null(smoothness_orders) | !is.numeric(smoothness_orders)) {
-#'     smoothness_orders <- round(rep(0, ncol(X)))
+#'   if (is.null(smoothness_orderss) | !is.numeric(smoothness_orderss)) {
+#'     smoothness_orderss <- round(rep(0, ncol(X)))
 #'   } else {
 #'     # recycle vector if needed.
-#'     smoothness_orders[smoothness_orders < 0] <- 0
-#'     smoothness_orders[smoothness_orders > 10] <- 10
-#'     smoothness_orders <- suppressWarnings(
-#'       round(smoothness_orders) + rep(0, ncol(X))
+#'     smoothness_orderss[smoothness_orderss < 0] <- 0
+#'     smoothness_orderss[smoothness_orderss > 10] <- 10
+#'     smoothness_orderss <- suppressWarnings(
+#'       round(smoothness_orderss) + rep(0, ncol(X))
 #'     )
 #'   }
-#'   order_map <- smoothness_orders
+#'   order_map <- smoothness_orderss
 #'   form <- stringr::str_replace_all(form, " ", "")
 #'
 #'   term_star <- stringr::str_match_all(
@@ -880,7 +880,7 @@ fill_dots <- function(var_names, .) {
 #'   upper.limits <- c(upper.limits, rep(Inf, len))
 #'   lower.limits <- c(lower.limits, rep(-Inf, len))
 #'   basis_list <- c(basis_list, basis_listrest)
-#'   names(smoothness_orders) <- colnames(X_orig)
+#'   names(smoothness_orderss) <- colnames(X_orig)
 #'   form_obj <- list()
 #'   form_obj$formula <- form
 #'   form_obj$formula_expanded <- formula_expanded
@@ -888,7 +888,7 @@ fill_dots <- function(var_names, .) {
 #'   form_obj$basis_list <- basis_list
 #'   form_obj$upper.limits <- upper.limits
 #'   form_obj$lower.limits <- lower.limits
-#'   form_obj$smoothness_orders <- smoothness_orders
+#'   form_obj$smoothness_orderss <- smoothness_orderss
 #'   form_obj$X <- as.matrix(X_orig)
 #'   form_obj$num_knots <- num_knots
 #'   form_obj$include_zero_order <- include_zero_order
@@ -913,10 +913,10 @@ fill_dots <- function(var_names, .) {
 #'       "\n Call: ", formula$call,
 #'       "\n Formula: ", formula$formula,
 #'       "\n Expanded Formula: ", formula$formula_expanded,
-#'       "\n Number of smooth variables: ", sum(formula$smoothness_orders > 0),
+#'       "\n Number of smooth variables: ", sum(formula$smoothness_orderss > 0),
 #'       "\n Smoothness range: ", ifelse(
-#'         formula$include_zero_order | any(formula$smoothness_orders == 0), 0, 1
-#'       ), " -> ", max(formula$smoothness_orders),
+#'         formula$include_zero_order | any(formula$smoothness_orderss == 0), 0, 1
+#'       ), " -> ", max(formula$smoothness_orderss),
 #'       " \n Number of basis functions: ", length(formula$basis_list),
 #'       "\n Number of monotone-increasing basis functions: ",
 #'       sum(formula$lower.limits == 0),
@@ -930,10 +930,10 @@ fill_dots <- function(var_names, .) {
 #'       "Functional specification for hal9001 fit:",
 #'       "\n Call: ", formula$call,
 #'       "\n Formula: ", formula$formula,
-#'       "\n Number of smooth variables: ", sum(formula$smoothness_orders > 0),
+#'       "\n Number of smooth variables: ", sum(formula$smoothness_orderss > 0),
 #'       "\n Smoothness range: ", ifelse(
-#'         formula$include_zero_order | any(formula$smoothness_orders == 0), 0, 1
-#'       ), " -> ", max(formula$smoothness_orders),
+#'         formula$include_zero_order | any(formula$smoothness_orderss == 0), 0, 1
+#'       ), " -> ", max(formula$smoothness_orderss),
 #'       " \n Number of basis functions: ", length(formula$basis_list),
 #'       "\n Number of monotone-increasing basis functions: ",
 #'       sum(formula$lower.limits == 0),
