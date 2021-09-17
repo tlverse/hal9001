@@ -27,8 +27,8 @@ Otherwise, this should be a variable named list that specifies for each variable
 This coarsening of the data ensures that less basis functions are generated, which can lead to substantial computational speed-ups.
 If not provided and the variable \code{num_knots} is in the parent environment, then \code{s} will be set to \code{num_knots}`.}
 
-\item{s}{The \code{smoothness_order} for the basis functions. The possible values are \code{0} for piece-wise constant zero-order splines or \code{1} for piece-wise linear first-order splines.
-If not provided and the variable \code{smoothness_order} is in the parent environment, then \code{s} will be set to \code{smoothness_order}.}
+\item{s}{The \code{smoothness_orders} for the basis functions. The possible values are \code{0} for piece-wise constant zero-order splines or \code{1} for piece-wise linear first-order splines.
+If not provided and the variable \code{smoothness_orders} is in the parent environment, then \code{s} will be set to \code{smoothness_orders}.}
 
 \item{pf}{A penalty.factor value the generated basis functions that is used by \code{glmnet} in the LASSO penalization procedure.
 \code{pf} = 1 (default) is the standard penalization factor used by \code{glmnet} and \code{pf}= 0 means the generated basis functions are unpenalized.}

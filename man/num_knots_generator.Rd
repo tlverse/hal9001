@@ -7,13 +7,13 @@ interactions and the smoothness orders.}
 \usage{
 num_knots_generator(
   max_degree,
-  smoothness_order,
+  smoothness_orders,
   base_num_knots_0 = 500,
   base_num_knots_1 = 200
 )
 }
 \arguments{
-\item{smoothness_order}{see \code{\link{fit_hal}}.}
+\item{smoothness_orders}{see \code{\link{fit_hal}}.}
 
 \item{base_num_knots_0}{The base number of knots for zeroth-order smoothness
 basis functions. The number of knots by degree interaction decays as

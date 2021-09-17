@@ -4,12 +4,12 @@
 \alias{formula_hal}
 \title{HAL Formula: Convert formula or string to `formula_HAL`` object.}
 \usage{
-formula_hal(formula, smoothness_order, num_knots, X = NULL)
+formula_hal(formula, smoothness_orders, num_knots, X = NULL)
 }
 \arguments{
 \item{formula}{A \code{formula_hal9001} object as outputted by \code{h}.}
 
-\item{smoothness_order}{A default value for \code{s} if not provided explicitely to the function \code{h}.}
+\item{smoothness_orders}{A default value for \code{s} if not provided explicitely to the function \code{h}.}
 
 \item{num_knots}{A default value for \code{k} if not provided explicitely to the function \code{h}.}
 }

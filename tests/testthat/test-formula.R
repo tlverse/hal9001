@@ -7,7 +7,7 @@ p <- 3
 X <- xmat <- matrix(rnorm(n * p), n, p)
 colnames(X) <- c("X1", "X2", "X3")
 
-smoothness_order <- 1
+smoothness_orders <- 1
 num_knots <- 3
 
 test_that("Check formula", {
@@ -38,7 +38,7 @@ test_that("Check formula", {
 # p <- 3
 # X <- xmat <- matrix(rnorm(n * p), n, p)
 # colnames(X) <- c("X1", "X2", "X3")
-# smoothness_order <- 1
+# smoothness_orders <- 1
 # num_knots <- 1
 # length(h(W1)$basis_list)
 #
