@@ -15,9 +15,9 @@
 #' @param id A \code{numeric} vector of IDs.
 #' @param max_degree The highest order of interaction terms for which basis
 #'  functions ought to be generated.
-#' @param smoothness_order An \code{integer} vector of length 1 or greater,
+#' @param smoothness_orders An \code{integer} vector of length 1 or greater,
 #'  specifying the smoothness of the basis functions. See the argument
-#'  \code{smoothness_order} of \code{\link{fit_hal}} for more information.
+#'  \code{smoothness_orders} of \code{\link{fit_hal}} for more information.
 #' @param num_knots An \code{integer} vector of length 1 or \code{max_degree},
 #'  specifying the maximum number of knot points (i.e., bins) for each
 #'  covariate for generating basis functions. See \code{num_knots} argument in
@@ -47,31 +47,31 @@ SL.hal9001 <- function(Y,
                        obsWeights = rep(1, length(Y)),
                        id = NULL,
                        max_degree = ifelse(ncol(X) >= 20, 2, 3),
-                       smoothness_order = 1,
-                       num_knots = ifelse(smoothness_order >= 1, 25, 50),
+                       smoothness_orders = 1,
+                       num_knots = ifelse(smoothness_orders >= 1, 25, 50),
                        reduce_basis = 1 / sqrt(length(Y)),
                        lambda = NULL,
                        ...) {
-
+  
   # create matrix version of X and newX for use with hal9001::fit_hal
   if (!is.matrix(X)) X <- as.matrix(X)
   if (!is.null(newX) & !is.matrix(newX)) newX <- as.matrix(newX)
-
+  
   # fit hal
   hal_fit <- fit_hal(
     X = X, Y = Y, family = family$family,
     fit_control = list(weights = obsWeights), id = id, max_degree = max_degree,
-    smoothness_order = smoothness_order, num_knots = num_knots, reduce_basis
+    smoothness_orders = smoothness_orders, num_knots = num_knots, reduce_basis
     = reduce_basis, lambda = lambda
   )
-
+  
   # compute predictions based on `newX` or input `X`
   if (!is.null(newX)) {
     pred <- stats::predict(hal_fit, new_data = newX)
   } else {
     pred <- stats::predict(hal_fit, new_data = X)
   }
-
+  
   # build output object
   fit <- list(object = hal_fit)
   class(fit) <- "SL.hal9001"
@@ -98,7 +98,7 @@ SL.hal9001 <- function(Y,
 predict.SL.hal9001 <- function(object, newdata, ...) {
   # coerce newdata to matrix if not already so
   if (!is.matrix(newdata)) newdata <- as.matrix(newdata)
-
+  
   # generate predictions and return
   pred <- stats::predict(object$object, new_data = newdata)
   return(pred)
