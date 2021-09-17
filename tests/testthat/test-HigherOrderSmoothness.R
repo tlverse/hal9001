@@ -15,9 +15,9 @@ test_y <- sin(test_x[, 1]) #* sin(test_x[, 2])
 #   sd = 0.2
 # )
 
-fit0 <- fit_hal(x, y, max_degree = 1, smoothness_order = 0, num_knots = 5)
-fit1 <- fit_hal(x, y, max_degree = 1, smoothness_order = 1, num_knots = 5)
-fit2 <- fit_hal(x, y, max_degree = 1, smoothness_order = 2, num_knots = 5)
+fit0 <- fit_hal(x, y, max_degree = 1, smoothness_orders = 0, num_knots = 5)
+fit1 <- fit_hal(x, y, max_degree = 1, smoothness_orders = 1, num_knots = 5)
+fit2 <- fit_hal(x, y, max_degree = 1, smoothness_orders = 2, num_knots = 5)
 
 # Visual check
 plot(predict(fit0, new_data = test_x), test_y)
