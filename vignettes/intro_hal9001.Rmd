@@ -172,9 +172,9 @@ Let's see this in action.
 
 ```{r}
 set.seed(98109)
-num_knots <- 500 # Try changing this value to see what happens.
+num_knots <- 100 # Try changing this value to see what happens.
 n_covars <- 1
-n_obs <- 500
+n_obs <- 250
 x <- replicate(n_covars, runif(n_obs, min = -4, max = 4))
 y <- sin(x[, 1]) + rnorm(n_obs, mean = 0, sd = 0.2)
 ytrue <- sin(x[, 1])
@@ -247,20 +247,20 @@ better when there were fewer knot points.
 ```{r}
 set.seed(98109)
 n_covars <- 1
-n_obs <- 500
+n_obs <- 250
 x <- replicate(n_covars, runif(n_obs, min = -4, max = 4))
 y <- sin(x[, 1]) + rnorm(n_obs, mean = 0, sd = 0.2)
 ytrue <- sin(x[, 1])
 
 hal_fit_0 <- fit_hal(
-  X = x, Y = y, smoothness_orders = 0, num_knots = 300
+  X = x, Y = y, smoothness_orders = 0, num_knots = 100
 )
 hal_fit_smooth_1 <- fit_hal(
-  X = x, Y = y, smoothness_orders = 1, num_knots = 300
+  X = x, Y = y, smoothness_orders = 1, num_knots = 100
 )
 
 hal_fit_smooth_2 <- fit_hal(
-  X = x, Y = y, smoothness_orders = 2, num_knots = 300
+  X = x, Y = y, smoothness_orders = 2, num_knots = 100
 )
 
 pred_0 <- predict(hal_fit_0, new_data = x)
@@ -465,7 +465,7 @@ fit a HAL model with the specified formula.
 ```{r}
 # get formula object
 fit <- fit_hal(
-  X = X, Y = Y, formula = ~ h(.), smoothness_orderss = 1, num_knots = 100
+  X = X, Y = Y, formula = ~ h(.), smoothness_orders = 1, num_knots = 100
 )
 print(summary(fit), 10) # prints top 10 rows, i.e., highest absolute coefs
 plot(predict(fit, new_data = X), Y)

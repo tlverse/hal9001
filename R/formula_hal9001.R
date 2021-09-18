@@ -168,7 +168,7 @@ h <- function(..., k = NULL, s = NULL, pf = 1, monotone = c("none", "i", "d"), .
     lower.limits <- rep(-Inf, length(basis_list_item))
     upper.limits <- rep(Inf, length(basis_list_item))
   }
-  out <- list(basis_list = basis_list_item, penalty.factors = penalty.factors, lower.limits = lower.limits, upper.limits = upper.limits)
+  out <- list(basis_list = basis_list_item, penalty.factors = penalty.factors, lower.limits = lower.limits, upper.limits = upper.limits, covariates = colnames(X))
   class(out) <- "formula_hal9001"
   return(out)
 }
