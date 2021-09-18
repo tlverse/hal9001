@@ -3,6 +3,7 @@
 S3method("+",formula_hal9001)
 S3method(predict,SL.hal9001)
 S3method(predict,hal9001)
+S3method(print,formula_hal9001)
 S3method(print,summary.hal9001)
 S3method(summary,hal9001)
 export(SL.hal9001)

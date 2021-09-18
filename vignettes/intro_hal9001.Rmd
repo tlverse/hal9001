@@ -337,7 +337,7 @@ formula <- formula_hal(
 )
 # Note that the arguments smoothness_orders and/or num_knots will not be used if `s` and/or `k` are specified in `h`.
 formula <- formula_hal(
-  ~ h(x1, k=1) + h(x2,  k=1) + h(A, k=1), X = X, smoothness_orders = 1, num_knots = 10
+  Y ~ h(x1, k=1) + h(x2,  k=1) + h(A, k=1), X = X, smoothness_orders = 1, num_knots = 10
 )
  
  

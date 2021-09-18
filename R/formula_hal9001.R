@@ -31,13 +31,19 @@ formula_hal <- function(formula, smoothness_orders, num_knots, X = NULL) {
 #' @param y A `formula_hal9001` object as outputted by \code{h}.
 #' @export
 `+.formula_hal9001` <- function(x, y) {
+  if(length(x$covariates) != length(y$covariates) || length(setdiff(x$covariates, y$covariates))!=0) {
+    stop("Order of colnames of data `X` needs to be same for both terms in formula.")
+  }
   keep <- !duplicated(c(x$basis_list, y$basis_list))
-  out <- list(
+  formula_term <- paste0(x$formula_term, " + ", y$formula_term)
+  out <- list(formula_term = formula_term,
     basis_list = c(x$basis_list, y$basis_list)[keep],
     penalty.factors = c(x$penalty.factors, y$penalty.factors)[keep],
     lower.limits = c(x$lower.limits, y$lower.limits)[keep],
-    upper.limits = c(x$upper.limits, y$upper.limits)[keep]
+    upper.limits = c(x$upper.limits, y$upper.limits)[keep],
+    covariates = x$covariates
   )
+  class(out) <- "formula_hal9001"
   return(out)
 }
 
@@ -91,7 +97,7 @@ h <- function(..., k = NULL, s = NULL, pf = 1, monotone = c("none", "i", "d"), .
   } else {
     var_names <- unlist(list(...))
   }
-
+  formula_term <- paste0("h(", paste0(var_names, collapse = ", "), ")")
   if ("." %in% var_names) {
     var_names_filled <- fill_dots(var_names, . = .)
     if (!is.list(var_names_filled)) {
@@ -113,7 +119,7 @@ h <- function(..., k = NULL, s = NULL, pf = 1, monotone = c("none", "i", "d"), .
     upper.limits_all <- unlist(lapply(all_items, function(item) {
       item$upper.limits
     }))
-    all_items <- list(basis_list = basis_all, penalty.factors = penalty.factors_all, lower.limits = lower.limits_all, upper.limits = upper.limits_all)
+    all_items <- list(formula_term = formula_term, basis_list = basis_all, penalty.factors = penalty.factors_all, lower.limits = lower.limits_all, upper.limits = upper.limits_all, covariates = colnames(X))
     class(all_items) <- "formula_hal9001"
     return(all_items)
   }
@@ -168,12 +174,17 @@ h <- function(..., k = NULL, s = NULL, pf = 1, monotone = c("none", "i", "d"), .
     lower.limits <- rep(-Inf, length(basis_list_item))
     upper.limits <- rep(Inf, length(basis_list_item))
   }
-  out <- list(basis_list = basis_list_item, penalty.factors = penalty.factors, lower.limits = lower.limits, upper.limits = upper.limits, covariates = colnames(X))
+  out <- list(formula_term = formula_term, basis_list = basis_list_item, penalty.factors = penalty.factors, lower.limits = lower.limits, upper.limits = upper.limits, covariates = colnames(X))
   class(out) <- "formula_hal9001"
   return(out)
 }
+#` Print formula_hal9001 object
+#' @param x A formula_hal9001 object
+#' @export
+print.formula_hal9001 <- function(x, ...) {
+  cat(paste0("A hal9001 formula object of the form: ~ ", x$formula_term))
 
-
+}
 
 
 
@@ -210,6 +221,8 @@ fill_dots <- function(var_names, .) {
   })
   return(x[keep])
 }
+
+
 
 
 #' #' @export
