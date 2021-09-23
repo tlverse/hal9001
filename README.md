@@ -3,12 +3,9 @@
 
 # R/`hal9001`
 
-[![Travis-CI Build
-Status](https://travis-ci.com/tlverse/hal9001.svg?branch=master)](https://travis-ci.com/tlverse/hal9001)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/tlverse/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/tlverse/hal9001)
+[![R-CMD-check](https://github.com/tlverse/hal9001/workflows/R-CMD-check/badge.svg)](https://github.com/tlverse/hal9001/actions)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
+Status](https://codecov.io/gh/tlverse/hal9001/branch/master/graph/badge.svg)](https://codecov.io/gh/tlverse/hal9001)
 [![CRAN](https://www.r-pkg.org/badges/version/hal9001)](https://www.r-pkg.org/pkg/hal9001)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
@@ -103,13 +100,12 @@ hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.006    0.000   0.007          0         0
+#> enumerate_basis       0.006    0.000   0.006          0         0
 #> design_matrix         0.003    0.001   0.003          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 0.472    0.021   0.520          0         0
-#> total                 0.482    0.022   0.531          0         0
-
+#> lasso                 2.083    0.008   2.091          0         0
+#> total                 2.092    0.009   2.100          0         0
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)

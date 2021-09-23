@@ -46,6 +46,12 @@
     <loc>https://tlverse.org/hal9001/reference/formula_hal.html</loc>
   </url>
   <url>
+    <loc>https://tlverse.org/hal9001/reference/formula_helpers.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/reference/h.html</loc>
+  </url>
+  <url>
     <loc>https://tlverse.org/hal9001/reference/hal9000.html</loc>
   </url>
   <url>
@@ -88,6 +94,9 @@
     <loc>https://tlverse.org/hal9001/reference/num_knots_generator.html</loc>
   </url>
   <url>
+    <loc>https://tlverse.org/hal9001/reference/plus-.formula_hal9001.html</loc>
+  </url>
+  <url>
     <loc>https://tlverse.org/hal9001/reference/predict.SL.hal9001.html</loc>
   </url>
   <url>
@@ -95,6 +104,9 @@
   </url>
   <url>
     <loc>https://tlverse.org/hal9001/reference/predict.lassi.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/reference/print.formula_hal9001.html</loc>
   </url>
   <url>
     <loc>https://tlverse.org/hal9001/reference/print.summary.hal9001.html</loc>

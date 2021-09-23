@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>predict.SL.hal9001 — predict.SL.hal9001 • hal9001</title>
+<title>HAL Formula term: Generate a single term of the HAL basis — h • hal9001</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="predict.SL.hal9001 — predict.SL.hal9001" />
-<meta property="og:description" content="Predict method for objects of class SL.hal9001" />
+<meta property="og:title" content="HAL Formula term: Generate a single term of the HAL basis — h" />
+<meta property="og:description" content="HAL Formula term: Generate a single term of the HAL basis" />
 
 
 
@@ -121,39 +121,103 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>predict.SL.hal9001</h1>
-    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/sl_hal9001.R'><code>R/sl_hal9001.R</code></a></small>
-    <div class="hidden name"><code>predict.SL.hal9001.Rd</code></div>
+    <h1>HAL Formula term: Generate a single term of the HAL basis</h1>
+    <small class="dont-index">Source: <a href='https://github.com/tlverse/hal9001/blob/master/R/formula_hal9001.R'><code>R/formula_hal9001.R</code></a></small>
+    <div class="hidden name"><code>h.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Predict method for objects of class <code>SL.hal9001</code></p>
+    <p>HAL Formula term: Generate a single term of the HAL basis</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for SL.hal9001</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>newdata</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>h</span><span class='op'>(</span>
+  <span class='va'>...</span>,
+  k <span class='op'>=</span> <span class='cn'>NULL</span>,
+  s <span class='op'>=</span> <span class='cn'>NULL</span>,
+  pf <span class='op'>=</span> <span class='fl'>1</span>,
+  monotone <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"none"</span>, <span class='st'>"i"</span>, <span class='st'>"d"</span><span class='op'>)</span>,
+  . <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dot_args_as_string <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  X <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>A fitted object of class <code>hal9001</code>.</p></td>
-    </tr>
-    <tr>
-      <th>newdata</th>
-      <td><p>A matrix of new observations on which to obtain predictions.</p></td>
-    </tr>
-    <tr>
       <th>...</th>
-      <td><p>Not used.</p></td>
+      <td><p>Variables for which to generate multivariate interaction basis
+function where the variables can be found in a matrix <code>X</code> in a parent
+environment/frame. Note, just like standard <code>formula</code> objects, the
+variables should not be characters (e.g. do h(W1,W2) not h("W1", "W2"))
+h(W1,W2,W3) will generate three-way HAL basis functions between W1, W2, and
+W3. It will <code>not</code> generate the lower dimensional basis functions.</p></td>
+    </tr>
+    <tr>
+      <th>k</th>
+      <td><p>The number of knots for each univariate basis function used to
+generate the tensor product basis functions. If a single value then this
+value is used for the univariate basis functions for each variable.
+Otherwise, this should be a variable named list that specifies for each
+variable how many knots points should be used.
+<code>h(W1,W2,W3, k = list(W1 = 3, W2 = 2, W3=1))</code> is equivalent to first
+binning the variables <code>W1</code>, <code>W2</code> and <code>W3</code> into <code>3</code>, <code>2</code> and <code>1</code> unique
+values and then calling <code>h(W1,W2,W3)</code>. This coarsening of the data ensures
+that fewer basis functions are generated, which can lead to substantial
+computational speed-ups. If not provided and the variable <code>num_knots</code>
+is in the parent environment, then <code>s</code> will be set to
+<code>num_knots</code>`.</p></td>
+    </tr>
+    <tr>
+      <th>s</th>
+      <td><p>The <code>smoothness_orders</code> for the basis functions. The possible
+values are <code>0</code> for piece-wise constant zero-order splines or <code>1</code> for
+piece-wise linear first-order splines. If not provided and the variable
+<code>smoothness_orders</code> is in the parent environment, then <code>s</code> will
+be set to <code>smoothness_orders</code>.</p></td>
+    </tr>
+    <tr>
+      <th>pf</th>
+      <td><p>A <code>penalty.factor</code> value the generated basis functions that is
+used by <code>glmnet</code> in the LASSO penalization procedure. <code>pf = 1</code>
+(default) is the standard penalization factor used by <code>glmnet</code> and
+<code>pf = 0</code> means the generated basis functions are unpenalized.</p></td>
+    </tr>
+    <tr>
+      <th>monotone</th>
+      <td><p>Whether the basis functions should enforce monotonicity of
+the interaction term. If <code>\code{s} = 0</code>, this is monotonicity of the
+function, and, if <code>\code{s} = 1</code>, this is monotonicity of its derivative
+(e.g., enforcing a convex fit). Set <code>"none"</code> for no constraints, <code>"i"</code> for
+a monotone increasing constraint, and <code>"d"</code> for a monotone decreasing
+constraint. Using <code>"i"</code> constrains the basis functions to have positive
+coefficients in the fit, and <code>"d"</code> constrains the basis functions to have
+negative coefficients.</p></td>
+    </tr>
+    <tr>
+      <th>.</th>
+      <td><p>Just like with <code>formula</code>, <code>.</code> as in <code>h(.)</code> or <code>h(.,.)</code> is
+treated as a wildcard variable that generates terms using all variables in
+the data. The argument <code>.</code> should be a character vector of variable
+names that <code>.</code> iterates over. Specifically,
+<code>h(., k=1, . = c("W1", "W2", "W3"))</code> is equivalent to
+<code>h(W1, k=1) + h(W2, k=1) + h(W3, k=1)</code>, and
+<code>h(., .,  k=1, . = c("W1", "W2", "W3"))</code> is equivalent to
+<code>h(W1,W2, k=1) + h(W2,W3, k=1) + h(W1, W3, k=1)</code></p></td>
+    </tr>
+    <tr>
+      <th>dot_args_as_string</th>
+      <td><p>Whether the arguments <code>...</code> are characters or
+character vectors and should thus be evaluated directly. When <code>TRUE</code>, the
+expression h("W1", "W2") can be used.</p></td>
+    </tr>
+    <tr>
+      <th>X</th>
+      <td><p>An optional design matrix where the variables given in <code>...</code>
+can be found. Otherwise, <code>X</code> is taken from the parent environment.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A <code>numeric</code> vector of predictions from a <code>SL.hal9001</code>
-object based on the provide <code>newdata</code>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

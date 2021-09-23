@@ -69,7 +69,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/tlverse/hal9001">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -141,13 +141,12 @@
 <span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">#&gt; enumerate_basis       0.006    0.000   0.007          0         0</span>
+<span class="co">#&gt; enumerate_basis       0.006    0.000   0.006          0         0</span>
 <span class="co">#&gt; design_matrix         0.003    0.001   0.003          0         0</span>
 <span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">#&gt; remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">#&gt; lasso                 0.472    0.021   0.520          0         0</span>
-<span class="co">#&gt; total                 0.482    0.022   0.531          0         0</span>
-
+<span class="co">#&gt; lasso                 2.083    0.008   2.091          0         0</span>
+<span class="co">#&gt; total                 2.092    0.009   2.100          0         0</span>
 <span class="co"># training sample prediction</span>
 <span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">hal_mse</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">preds</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
@@ -269,9 +268,8 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.com/tlverse/hal9001"><img src="https://travis-ci.com/tlverse/hal9001.svg?branch=master" alt="Travis-CI Build Status"></a></li>
-<li><a href="https://ci.appveyor.com/project/tlverse/hal9001"><img src="https://ci.appveyor.com/api/projects/status/github/tlverse/hal9001?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
-<li><a href="https://codecov.io/github/tlverse/hal9001?branch=master"><img src="https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg" alt="Coverage Status"></a></li>
+<li><a href="https://github.com/tlverse/hal9001/actions"><img src="https://github.com/tlverse/hal9001/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/tlverse/hal9001"><img src="https://codecov.io/gh/tlverse/hal9001/branch/master/graph/badge.svg" alt="Coverage Status"></a></li>
 <li><a href="https://www.r-pkg.org/pkg/hal9001"><img src="https://www.r-pkg.org/badges/version/hal9001" alt="CRAN"></a></li>
 <li><a href="https://CRAN.R-project.org/package=hal9001"><img src="https://cranlogs.r-pkg.org/badges/hal9001" alt="CRAN downloads"></a></li>
 <li><a href="https://CRAN.R-project.org/package=hal9001"><img src="http://cranlogs.r-pkg.org/badges/grand-total/hal9001" alt="CRAN total downloads"></a></li>

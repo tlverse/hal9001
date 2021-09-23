@@ -103,7 +103,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/tlverse/hal9001">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -128,6 +128,11 @@
 <h1 class="page-header" data-toc-text="0.4.0">
 <a href="#hal9001-040" class="anchor"></a>hal9001 0.4.0<small> Unreleased </small>
 </h1>
+<p>As of September 2021:</p>
+<ul>
+<li>Minor change to how binning is performed when <code>num_knots = 1</code>, ensuring that the minimal number of knots is chosen when <code>num_knots = 1</code>. This results in HAL agreeing with (main terms) <code>glmnet</code> when <code>smoothness_orders = 1</code> and <code>num_knots = 1</code>.</li>
+<li>Revised formula interface with enhanced capabilities, allowing specifciation of penalization factors, smoothness_orders, and the number of knots for each variable, for every single term separately using the new <code>h</code> function. It is possible to specify, e.g., <code>h(X) + h(W)</code> which will generate and concatenate the two basis function terms.</li>
+</ul>
 <p>As of April 2021:</p>
 <ul>
 <li>The default of <code>fit_hal</code> is now a first order smoothed HAL with binning.</li>
