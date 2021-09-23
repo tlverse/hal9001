@@ -41,8 +41,7 @@ basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order,
   if (include_lower_order) {
     if (include_zero_order) {
       k_deg <- 0
-    }
-    else {
+    } else {
       k_deg <- 1
     }
     higher_order_cols <- cols[smoothness_orders[cols] > k_deg]

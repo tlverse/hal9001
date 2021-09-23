@@ -1,5 +1,16 @@
 # hal9001 0.4.0
 
+As of September 2021:
+* Minor change to how binning is performed when `num_knots = 1`, ensuring that
+  the minimal number of knots is chosen when `num_knots = 1`. This results in
+  HAL agreeing with (main terms) `glmnet` when `smoothness_orders = 1` and
+  `num_knots = 1`.
+* Revised formula interface with enhanced capabilities, allowing specifciation
+  of penalization factors, smoothness_orders, and the number of knots for each
+  variable, for every single term separately using the new `h` function. It is
+  possible to specify, e.g., `h(X) + h(W)` which will generate and concatenate
+  the two basis function terms.
+
 As of April 2021:
 * The default of `fit_hal` is now a first order smoothed HAL with binning.
 * Updated documentation for `formula_hal`, `fit_hal` and `predict`; and

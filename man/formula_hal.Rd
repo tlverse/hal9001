@@ -2,17 +2,22 @@
 % Please edit documentation in R/formula_hal9001.R
 \name{formula_hal}
 \alias{formula_hal}
-\title{HAL Formula: Convert formula or string to `formula_HAL`` object.}
+\title{HAL Formula: Convert formula or string to \code{formula_HAL} object.}
 \usage{
 formula_hal(formula, smoothness_orders, num_knots, X = NULL)
 }
 \arguments{
 \item{formula}{A \code{formula_hal9001} object as outputted by \code{h}.}
 
-\item{smoothness_orders}{A default value for \code{s} if not provided explicitely to the function \code{h}.}
+\item{smoothness_orders}{A default value for \code{s} if not provided
+explicitly to the function \code{h}.}
 
-\item{num_knots}{A default value for \code{k} if not provided explicitely to the function \code{h}.}
+\item{num_knots}{A default value for \code{k} if not provided explicitly to
+the function \code{h}.}
+
+\item{X}{Controls inheritance of the variable \code{X} from parent environment.
+When \code{NULL} (the default), such a variable is inherited.}
 }
 \description{
-HAL Formula: Convert formula or string to `formula_HAL`` object.
+HAL Formula: Convert formula or string to \code{formula_HAL} object.
 }

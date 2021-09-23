@@ -68,5 +68,5 @@ LinkingTo:
   Rcpp,
   RcppEigen
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1.9001
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
