@@ -51,6 +51,12 @@ apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
 
+#' Prediction from a Lassi Model
+#'
+#' @param X A sparse matrix of HAL basis functions.
+#' @param beta A vector of coefficient values for the HAL basis functions.
+#' @param intercept A numeric value giving the intercept of the HAL model.
+#'
 lassi_predict <- function(X, beta, intercept) {
     .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta, intercept)
 }
@@ -65,22 +71,24 @@ lassi_predict <- function(X, beta, intercept) {
 #'
 #' @param X_sub A subset of the columns of X, the original design matrix.
 #' @param cols An index of the columns that were reduced to by sub-setting.
-make_basis_list <- function(X_sub, cols) {
-    .Call('_hal9001_make_basis_list', PACKAGE = 'hal9001', X_sub, cols)
+#' @param order_map A vector with length the original unsubsetted matrix X which specifies the smoothness of the function in each covariate.
+make_basis_list <- function(X_sub, cols, order_map) {
+    .Call('_hal9001_make_basis_list', PACKAGE = 'hal9001', X_sub, cols, order_map)
 }
 
 #' Compute Values of Basis Functions
 #'
 #' Computes and returns the indicator value for the basis described by
-#' cols and cutoffs for a given row of X (X[row_num, ])
+#' cols and cutoffs for a given row of X
 #'
 #' @param X The design matrix, containing the original data.
 #' @param row_num Numeri for  a row index over which to evaluate.
 #' @param cols Numeric for the column indices of the basis function.
 #' @param cutoffs Numeric providing thresholds.
+#' @param orders Numeric providing smoothness orders
 #'
-meets_basis <- function(X, row_num, cols, cutoffs) {
-    .Call('_hal9001_meets_basis', PACKAGE = 'hal9001', X, row_num, cols, cutoffs)
+meets_basis <- function(X, row_num, cols, cutoffs, orders) {
+    .Call('_hal9001_meets_basis', PACKAGE = 'hal9001', X, row_num, cols, cutoffs, orders)
 }
 
 #' Generate Basis Functions
@@ -103,7 +111,8 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'
 #' @param X Matrix of covariates containing observed data in the columns.
 #' @param blist List of basis functions with which to build HAL design matrix.
-#'
+#' @param p_reserve Sparse matrix pre-allocation proportion. Default value is 0.5. 
+#' If one expects a dense HAL design matrix, it is useful to set p_reserve to a higher value.
 #' @export
 #'
 #' @examples
@@ -129,8 +138,8 @@ evaluate_basis <- function(basis, X, x_basis, basis_col) {
 #'
 #' @return A \code{dgCMatrix} sparse matrix of indicator basis functions
 #'  corresponding to the design matrix in a zero-order highly adaptive lasso.
-make_design_matrix <- function(X, blist) {
-    .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist)
+make_design_matrix <- function(X, blist, p_reserve = 0.5) {
+    .Call('_hal9001_make_design_matrix', PACKAGE = 'hal9001', X, blist, p_reserve)
 }
 
 #' Fast Coercion to Sparse Matrix
@@ -148,27 +157,22 @@ as_dgCMatrix <- function(XX_) {
     .Call('_hal9001_as_dgCMatrix', PACKAGE = 'hal9001', XX_)
 }
 
-non_zeros <- function(X) {
-    .Call('_hal9001_non_zeros', PACKAGE = 'hal9001', X)
-}
-
+#' Calculate Proportion of Nonzero Entries
+#'
+#' @keywords internal
+#'
 calc_pnz <- function(X) {
     .Call('_hal9001_calc_pnz', PACKAGE = 'hal9001', X)
 }
 
-get_pnz <- function(X) {
-    .Call('_hal9001_get_pnz', PACKAGE = 'hal9001', X)
-}
-
+#' Calculating Centered and Scaled Matrices
+#'
+#' @param X A sparse matrix, to be centered.
+#' @param xcenter A vector of column means to be used for centering X. 
+#'
+#' @keywords internal
+#'
 calc_xscale <- function(X, xcenter) {
     .Call('_hal9001_calc_xscale', PACKAGE = 'hal9001', X, xcenter)
-}
-
-get_xscale <- function(X, xcenter) {
-    .Call('_hal9001_get_xscale', PACKAGE = 'hal9001', X, xcenter)
-}
-
-equal_double <- function(x, y) {
-    .Call('_hal9001_equal_double', PACKAGE = 'hal9001', x, y)
 }
 

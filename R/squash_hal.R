@@ -8,6 +8,10 @@
 #' @importFrom methods is
 #' @importFrom assertthat assert_that
 #'
+#' @return Object of class \code{hal9001}, similar to the input object but
+#'  reduced such that coefficients belonging to bases with coefficients equal
+#'  to zero removed.
+#'
 #' @export
 #'
 #' @examples
@@ -22,16 +26,12 @@
 #' hal_fit <- fit_hal(X = x, Y = y, yolo = FALSE)
 #' squashed <- squash_hal_fit(hal_fit)
 #' }
-#'
-#' @return Object of class \code{hal9001}, similar to the input object but
-#'  reduced such that coefficients belonging to bases with coefficients equal
-#'  to zero removed.
 squash_hal_fit <- function(object) {
   assertthat::assert_that(is(object, "hal9001"))
 
   # find indices for basis functions with non-zero coefficients
   nz_coefs <- which(as.vector(object$coefs)[-1] != 0)
-  new_coefs <- object$coefs[c(1, nz_coefs)]
+  new_coefs <- object$coefs[c(1, nz_coefs + 1)]
 
   # extract all basis functions belonging to any group with nonzero coefficient
   nz_basis_groups <- object$copy_map[nz_coefs]
@@ -47,9 +47,13 @@ squash_hal_fit <- function(object) {
   fit <- list(
     basis_list = new_basis,
     copy_map = new_copy_map,
-    coefs = new_coefs,
+    coefs = as.matrix(new_coefs),
     times = object$times,
-    lambda_star = object$lambda_star
+    lambda_star = object$lambda_star,
+    prediction_bounds = object$prediction_bounds,
+    family = object$family,
+    unpenalized_covariates = object$unpenalized_covariates,
+    p_reserve = object$p_reserve
   )
   class(fit) <- "hal9001"
   return(fit)

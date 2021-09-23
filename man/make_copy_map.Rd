@@ -12,7 +12,7 @@ covariates (X) and terms for interactions thereof.}
 }
 \value{
 A \code{list} of \code{numeric} vectors indicating indices of basis
- functions that are identical in the training set.
+functions that are identical in the training set.
 }
 \description{
 Build Copy Maps

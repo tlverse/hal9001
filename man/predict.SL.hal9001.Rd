@@ -11,11 +11,11 @@
 
 \item{newdata}{A matrix of new observations on which to obtain predictions.}
 
-\item{...}{Placeholder (ignored).}
+\item{...}{Not used.}
 }
 \value{
 A \code{numeric} vector of predictions from a \code{SL.hal9001}
- object based on the provide \code{newdata}.
+object based on the provide \code{newdata}.
 }
 \description{
 Predict method for objects of class \code{SL.hal9001}

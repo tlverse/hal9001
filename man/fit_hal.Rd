@@ -7,101 +7,132 @@
 fit_hal(
   X,
   Y,
+  formula = NULL,
   X_unpenalized = NULL,
-  max_degree = 3,
-  fit_type = c("glmnet", "lassi"),
-  n_folds = 10,
-  foldid = NULL,
-  use_min = TRUE,
-  reduce_basis = NULL,
-  family = c("gaussian", "binomial", "cox"),
-  return_lasso = TRUE,
-  return_x_basis = FALSE,
-  basis_list = NULL,
+  max_degree = ifelse(ncol(X) >= 20, 2, 3),
+  smoothness_orders = 1,
+  num_knots = num_knots_generator(max_degree = max_degree, smoothness_orders =
+    smoothness_orders, base_num_knots_0 = 200, base_num_knots_1 = 50),
+  reduce_basis = 1/sqrt(length(Y)),
+  family = c("gaussian", "binomial", "poisson", "cox"),
   lambda = NULL,
   id = NULL,
   offset = NULL,
-  cv_select = TRUE,
-  ...,
-  yolo = TRUE
+  fit_control = list(cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
+    lambda.min.ratio = 1e-04, prediction_bounds = "default"),
+  basis_list = NULL,
+  return_lasso = TRUE,
+  return_x_basis = FALSE,
+  yolo = FALSE
 )
 }
 \arguments{
-\item{X}{An input \code{matrix} containing observations and covariates.}
+\item{X}{An input \code{matrix} with dimensions number of observations -by-
+number of covariates that will be used to derive the design matrix of basis
+functions.}
 
-\item{Y}{A \code{numeric} vector of obervations of the outcome variable.}
+\item{Y}{A \code{numeric} vector of observations of the outcome variable.}
 
-\item{X_unpenalized}{An input \code{matrix} with the same format as X, that
-directly get appended into the design matrix (no basis expansion). No L-1
-penalization is performed on these covariates.}
+\item{formula}{A character string formula to be used in
+\code{\link{formula_hal}}. See its documentation for details.}
 
-\item{max_degree}{The highest order of interaction terms for which the basis
-functions ought to be generated. The default (\code{NULL}) corresponds to
-generating basis functions for the full dimensionality of the input matrix.}
+\item{X_unpenalized}{An input \code{matrix} with the same number of rows as
+\code{X}, for which no L1 penalization will be performed. Note that
+\code{X_unpenalized} is directly appended to the design matrix; no basis
+expansion is performed on \code{X_unpenalized}.}
 
-\item{fit_type}{The specific routine to be called when fitting the Lasso
-regression in a cross-validated manner. Choosing the \code{glmnet} option
-will result in a call to \code{\link[glmnet]{cv.glmnet}} while \code{lassi}
-will produce a (faster) call to a custom Lasso routine.}
+\item{max_degree}{The highest order of interaction terms for which basis
+functions ought to be generated.}
 
-\item{n_folds}{Integer for the number of folds to be used when splitting the
-data for V-fold cross-validation. This defaults to 10.}
+\item{smoothness_orders}{An \code{integer}, specifying the smoothness of the
+basis functions. See details for \code{smoothness_orders} for more
+information.}
 
-\item{foldid}{An optional vector of values between 1 and \code{n_folds}
-identifying what fold each observation is in. If supplied, \code{n_folds}
-can be missing. When supplied, this is passed to
-\code{\link[glmnet]{cv.glmnet}}.}
+\item{num_knots}{An \code{integer} vector of length 1 or \code{max_degree},
+specifying the maximum number of knot points (i.e., bins) for any covariate
+for generating basis functions. If \code{num_knots} is a unit-length
+vector, then the same \code{num_knots} are used for each degree (this is
+not recommended). The default settings for \code{num_knots} are
+recommended, and these defaults decrease \code{num_knots} with increasing
+\code{max_degree} and \code{smoothness_orders}, which prevents (expensive)
+combinatorial explosions in the number of higher-degree and higher-order
+basis functions generated. This allows the complexity of the optimization
+problem to grow scalably. See details of \code{num_knots} more information.}
 
-\item{use_min}{Determines which lambda is selected from
-\code{\link[glmnet]{cv.glmnet}}. \code{TRUE} corresponds to
-\code{"lambda.min"} and \code{FALSE} corresponds to \code{"lambda.1se"}.}
+\item{reduce_basis}{A \code{numeric} value bounded in the open unit interval
+indicating the minimum proportion of 1's in a basis function column needed
+for the basis function to be included in the procedure to fit the lasso.
+Any basis functions with a lower proportion of 1's than the cutoff will be
+removed. When \code{reduce_basis} is set to \code{NULL}, all basis
+functions are used in the lasso-fitting stage of \code{fit_hal}.}
 
-\item{reduce_basis}{A \code{numeric} value bounded in the open interval
-(0,1) indicating the minimum proportion of 1's in a basis function column
-needed for the basis function to be included in the procedure to fit the
-Lasso. Any basis functions with a lower proportion of 1's than the cutoff
-will be removed. This argument defaults to \code{NULL}, in which case all
-basis functions are used in the lasso-fitting stage of the HAL algorithm.}
+\item{family}{A \code{character} or a \code{\link[stats]{family}} object
+(supported by \code{\link[glmnet]{glmnet}}) specifying the error/link
+family for a generalized linear model. \code{character} options are limited
+to "gaussian" for fitting a standard penalized linear model, "binomial" for
+penalized logistic regression, "poisson" for penalized Poisson regression,
+and "cox" for a penalized proportional hazards model. Note that passing in
+family objects leads to slower performance relative to passing in a
+character family (if supported). For example, one should set
+\code{family = "binomial"} instead of \code{family = binomial()} when
+calling \code{fit_hal}.}
 
-\item{family}{A \code{character} corresponding to the error family for a
-generalized linear model. Options are limited to "gaussian" for fitting a
-standard linear model, "binomial" for penalized logistic regression,
-"cox" for a penalized proportional hazards model. Note that in the case of
-"binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
-documentation of the glmnet package should be consulted for any errors
-resulting from the Lasso fitting step in these cases.}
+\item{lambda}{User-specified sequence of values of the regularization
+parameter for the lasso L1 regression. If \code{NULL}, the default sequence
+in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated
+optimal value of this regularization parameter will be selected with
+\code{\link[glmnet]{cv.glmnet}}. If \code{fit_control}'s \code{cv_select}
+argument is set to \code{FALSE}, then the lasso model will be fit via
+\code{\link[glmnet]{glmnet}}, and regularized coefficient values for each
+lambda in the input array will be returned.}
 
-\item{return_lasso}{A \code{logical} indicating whether or not to return
-the \code{glmnet} fit of the lasso model.}
-
-\item{return_x_basis}{A \code{logical} indicating whether or not to return
-the matrix of (possibly reduced) basis functions used in the HAL lasso fit.}
-
-\item{basis_list}{The full set of basis functions generated from the input
-data X (via a call to \code{enumerate_basis}). The dimensionality of this
-structure is dim = (n * 2^(d - 1)), where n is the number of observations
-and d is the number of columns in X.}
-
-\item{lambda}{User-specified array of values of the lambda tuning parameter
-of the Lasso L1 regression. If \code{NULL}, \code{\link[glmnet]{cv.glmnet}}
-will be used to automatically select a CV-optimal value of this
-regularization parameter. If specified, the Lasso L1 regression model will
-be fit via \code{glmnet}, returning regularized coefficient values for each
-value in the input array.}
-
-\item{id}{a vector of ID values, used to generate cross-validation folds for
-cross-validated selection of the regularization parameter lambda.}
+\item{id}{A vector of ID values that is used to generate cross-validation
+folds for \code{\link[glmnet]{cv.glmnet}}. This argument is ignored when
+\code{fit_control}'s \code{cv_select} argument is \code{FALSE}.}
 
 \item{offset}{a vector of offset values, used in fitting.}
 
-\item{cv_select}{A \code{logical} specifying whether the array of values
-specified should be passed to \code{\link[glmnet]{cv.glmnet}} in order to
-pick the optimal value (based on cross-validation) (when set to
-\code{TRUE}) or to simply fit along the sequence of values (or single
-value) using \code{\link[glmnet]{glmnet}} (when set to \code{FALSE}).}
+\item{fit_control}{List of arguments for fitting. Includes the following
+arguments, and any others to be passed to \code{\link[glmnet]{cv.glmnet}}
+or \code{\link[glmnet]{glmnet}}.
+\itemize{
+\item \code{cv_select}: A \code{logical} specifying if the sequence of
+specified \code{lambda} values should be passed to
+\code{\link[glmnet]{cv.glmnet}} in order for a single, optimal value of
+\code{lambda} to be selected according to cross-validation. When
+\code{cv_select = FALSE}, a \code{\link[glmnet]{glmnet}} model will be
+used to fit the sequence of (or single) \code{lambda}.
+\item \code{n_folds}: Integer for the number of folds to be used when splitting
+the data for V-fold cross-validation. Only used when
+\code{cv_select = TRUE}.
+\item \code{foldid}: An optional \code{numeric} containing values between 1 and
+\code{n_folds}, identifying the fold to which each observation is
+assigned. If supplied, \code{n_folds} can be missing. In such a case,
+this vector is passed directly to \code{\link[glmnet]{cv.glmnet}}. Only
+used when \code{cv_select = TRUE}.
+\item \code{use_min}: Specify the choice of lambda to be selected by
+\code{\link[glmnet]{cv.glmnet}}. When \code{TRUE}, \code{"lambda.min"} is
+used; otherwise, \code{"lambda.1se"}. Only used when
+\code{cv_select = TRUE}.
+\item \code{lambda.min.ratio}: A \code{\link[glmnet]{glmnet}} argument specifying
+the smallest value for \code{lambda}, as a fraction of \code{lambda.max},
+the (data derived) entry value (i.e. the smallest value for which all
+coefficients are zero). We've seen that not setting \code{lambda.min.ratio}
+can lead to no \code{lambda} values that fit the data sufficiently well.
+\item \code{prediction_bounds}: A vector of size two that provides the lower and
+upper bounds for predictions. When \code{prediction_bounds = "default"},
+the predictions are bounded between \code{min(Y) - sd(Y)} and
+\code{max(Y) + sd(Y)}. Bounding ensures that there is no extrapolation,
+and it is necessary for cross-validation selection and/or Super Learning.
+}}
 
-\item{...}{Other arguments passed to \code{\link[glmnet]{cv.glmnet}}. Please
-consult its documentation for a full list of options.}
+\item{basis_list}{The full set of basis functions generated from \code{X}.}
+
+\item{return_lasso}{A \code{logical} indicating whether or not to return
+the \code{\link[glmnet]{glmnet}} fit object of the lasso model.}
+
+\item{return_x_basis}{A \code{logical} indicating whether or not to return
+the matrix of (possibly reduced) basis functions used in \code{fit_hal}.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically
@@ -109,29 +140,83 @@ acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).}
 }
 \value{
 Object of class \code{hal9001}, containing a list of basis
- functions, a copy map, coefficients estimated for basis functions, and
- timing results (for assessing computational efficiency).
+functions, a copy map, coefficients estimated for basis functions, and
+timing results (for assessing computational efficiency).
 }
 \description{
 Estimation procedure for HAL, the Highly Adaptive Lasso
 }
 \details{
 The procedure uses a custom C++ implementation to generate a design
- matrix consisting of basis functions corresponding to covariates and
- interactions of covariates and to remove duplicate columns of indicators.
- The Lasso regression is fit to this (usually) very wide matrix using either
- a custom implementation (based on \pkg{origami}) or by a call to
- \code{\link[glmnet]{cv.glmnet}}.
+matrix of spline basis functions of covariates and interactions of
+covariates. The lasso regression is fit to this design matrix via
+\code{\link[glmnet]{cv.glmnet}} or a custom implementation derived from
+\pkg{origami}. The maximum dimension of the design matrix is \eqn{n} -by-
+\eqn{(n * 2^(d-1))}, where where \eqn{n} is the number of observations and
+\eqn{d} is the number of covariates.
+
+For \code{smoothness_orders = 0}, only zero-order splines (piece-wise
+constant) are generated, which assume the true regression function has no
+smoothness or continuity. When \code{smoothness_orders = 1}, first-order
+splines (piece-wise linear) are generated, which assume continuity of the
+true regression function. When \code{smoothness_orders = 2}, second-order
+splines (piece-wise quadratic and linear terms) are generated, which assume
+a the true regression function has a single order of differentiability.
+
+\code{num_knots} argument specifies the number of knot points for each
+covariate and for each \code{max_degree}. Fewer knot points can
+significantly decrease runtime, but might be overly simplistic. When
+considering \code{smoothness_orders = 0}, too few knot points (e.g., < 50)
+can significantly reduce performance. When \code{smoothness_orders = 1} or
+higher, then fewer knot points (e.g., 10-30) is actually better for
+performance. We recommend specifying \code{num_knots} with respect to
+\code{smoothness_orders}, and as a vector of length \code{max_degree} with
+values decreasing exponentially. This prevents combinatorial explosions in
+the number of higher-degree basis functions generated. The default behavior
+of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
+\code{num_knots} is set to \eqn{500 / 2^{j-1}}, and for
+\code{smoothness_orders = 1} or higher, \code{num_knots} is set to
+\eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
+include some other suitable settings for \code{num_knots} below, all of
+which are less complex than default \code{num_knots} and will thus result
+in a faster runtime:
+\itemize{
+\item Some good settings for little to no cost in performance:
+\itemize{
+\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
+\code{num_knots = c(400, 200, 100)}.
+\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
+\code{num_knots = c(100, 75, 50)}.
+}
+\item Recommended settings for fairly fast runtime:
+\itemize{
+\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
+\code{num_knots = c(200, 100, 50)}.
+\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
+\code{num_knots = c(50, 25, 15)}.
+}
+\item Recommended settings for fast runtime:
+\itemize{
+\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
+\code{num_knots = c(100, 50, 25)}.
+\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
+\code{num_knots = c(40, 15, 10)}.
+}
+\item Recommended settings for very fast runtime:
+\itemize{
+\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
+\code{num_knots = c(50, 25, 10)}.
+\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
+\code{num_knots = c(25, 10, 5)}.
+}
+}
 }
 \examples{
-\donttest{
 n <- 100
 p <- 3
 x <- xmat <- matrix(rnorm(n * p), n, p)
 y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
 y <- rbinom(n = n, size = 1, prob = y_prob)
-ml_hal_fit <- fit_hal(X = x, Y = y, family = "binomial", yolo = FALSE)
-preds <- predict(ml_hal_fit, new_data = x)
-}
-
+hal_fit <- fit_hal(X = x, Y = y, family = "binomial")
+preds <- predict(hal_fit, new_data = x)
 }

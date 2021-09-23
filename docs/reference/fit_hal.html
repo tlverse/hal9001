@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -104,7 +104,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/tlverse/hal9001">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -133,23 +133,23 @@
     <pre class="usage"><span class='fu'>fit_hal</span><span class='op'>(</span>
   <span class='va'>X</span>,
   <span class='va'>Y</span>,
+  formula <span class='op'>=</span> <span class='cn'>NULL</span>,
   X_unpenalized <span class='op'>=</span> <span class='cn'>NULL</span>,
-  max_degree <span class='op'>=</span> <span class='fl'>3</span>,
-  fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"glmnet"</span>, <span class='st'>"lassi"</span><span class='op'>)</span>,
-  n_folds <span class='op'>=</span> <span class='fl'>10</span>,
-  foldid <span class='op'>=</span> <span class='cn'>NULL</span>,
-  use_min <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  reduce_basis <span class='op'>=</span> <span class='cn'>NULL</span>,
-  family <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>, <span class='st'>"cox"</span><span class='op'>)</span>,
-  return_lasso <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  return_x_basis <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  basis_list <span class='op'>=</span> <span class='cn'>NULL</span>,
+  max_degree <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span> <span class='op'>&gt;=</span> <span class='fl'>20</span>, <span class='fl'>2</span>, <span class='fl'>3</span><span class='op'>)</span>,
+  smoothness_orders <span class='op'>=</span> <span class='fl'>1</span>,
+  num_knots <span class='op'>=</span> <span class='fu'><a href='num_knots_generator.html'>num_knots_generator</a></span><span class='op'>(</span>max_degree <span class='op'>=</span> <span class='va'>max_degree</span>, smoothness_orders <span class='op'>=</span>
+    <span class='va'>smoothness_orders</span>, base_num_knots_0 <span class='op'>=</span> <span class='fl'>200</span>, base_num_knots_1 <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>,
+  reduce_basis <span class='op'>=</span> <span class='fl'>1</span><span class='op'>/</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
+  family <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gaussian"</span>, <span class='st'>"binomial"</span>, <span class='st'>"poisson"</span>, <span class='st'>"cox"</span><span class='op'>)</span>,
   lambda <span class='op'>=</span> <span class='cn'>NULL</span>,
   id <span class='op'>=</span> <span class='cn'>NULL</span>,
   offset <span class='op'>=</span> <span class='cn'>NULL</span>,
-  cv_select <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  <span class='va'>...</span>,
-  yolo <span class='op'>=</span> <span class='cn'>TRUE</span>
+  fit_control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>cv_select <span class='op'>=</span> <span class='cn'>TRUE</span>, n_folds <span class='op'>=</span> <span class='fl'>10</span>, foldid <span class='op'>=</span> <span class='cn'>NULL</span>, use_min <span class='op'>=</span> <span class='cn'>TRUE</span>,
+    lambda.min.ratio <span class='op'>=</span> <span class='fl'>1e-04</span>, prediction_bounds <span class='op'>=</span> <span class='st'>"default"</span><span class='op'>)</span>,
+  basis_list <span class='op'>=</span> <span class='cn'>NULL</span>,
+  return_lasso <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  return_x_basis <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  yolo <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -157,115 +157,141 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>X</th>
-      <td><p>An input <code>matrix</code> containing observations and covariates.</p></td>
+      <td><p>An input <code>matrix</code> with dimensions number of observations -by-
+number of covariates that will be used to derive the design matrix of basis
+functions.</p></td>
     </tr>
     <tr>
       <th>Y</th>
-      <td><p>A <code>numeric</code> vector of obervations of the outcome variable.</p></td>
+      <td><p>A <code>numeric</code> vector of observations of the outcome variable.</p></td>
+    </tr>
+    <tr>
+      <th>formula</th>
+      <td><p>A character string formula to be used in
+<code><a href='formula_hal.html'>formula_hal</a></code>. See its documentation for details.</p></td>
     </tr>
     <tr>
       <th>X_unpenalized</th>
-      <td><p>An input <code>matrix</code> with the same format as X, that
-directly get appended into the design matrix (no basis expansion). No L-1
-penalization is performed on these covariates.</p></td>
+      <td><p>An input <code>matrix</code> with the same number of rows as
+<code>X</code>, for which no L1 penalization will be performed. Note that
+<code>X_unpenalized</code> is directly appended to the design matrix; no basis
+expansion is performed on <code>X_unpenalized</code>.</p></td>
     </tr>
     <tr>
       <th>max_degree</th>
-      <td><p>The highest order of interaction terms for which the basis
-functions ought to be generated. The default (<code>NULL</code>) corresponds to
-generating basis functions for the full dimensionality of the input matrix.</p></td>
+      <td><p>The highest order of interaction terms for which basis
+functions ought to be generated.</p></td>
     </tr>
     <tr>
-      <th>fit_type</th>
-      <td><p>The specific routine to be called when fitting the Lasso
-regression in a cross-validated manner. Choosing the <code>glmnet</code> option
-will result in a call to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> while <code>lassi</code>
-will produce a (faster) call to a custom Lasso routine.</p></td>
+      <th>smoothness_orders</th>
+      <td><p>An <code>integer</code>, specifying the smoothness of the
+basis functions. See details for <code>smoothness_orders</code> for more
+information.</p></td>
     </tr>
     <tr>
-      <th>n_folds</th>
-      <td><p>Integer for the number of folds to be used when splitting the
-data for V-fold cross-validation. This defaults to 10.</p></td>
-    </tr>
-    <tr>
-      <th>foldid</th>
-      <td><p>An optional vector of values between 1 and <code>n_folds</code>
-identifying what fold each observation is in. If supplied, <code>n_folds</code>
-can be missing. When supplied, this is passed to
-<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>use_min</th>
-      <td><p>Determines which lambda is selected from
-<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. <code>TRUE</code> corresponds to
-<code>"lambda.min"</code> and <code>FALSE</code> corresponds to <code>"lambda.1se"</code>.</p></td>
+      <th>num_knots</th>
+      <td><p>An <code>integer</code> vector of length 1 or <code>max_degree</code>,
+specifying the maximum number of knot points (i.e., bins) for any covariate
+for generating basis functions. If <code>num_knots</code> is a unit-length
+vector, then the same <code>num_knots</code> are used for each degree (this is
+not recommended). The default settings for <code>num_knots</code> are
+recommended, and these defaults decrease <code>num_knots</code> with increasing
+<code>max_degree</code> and <code>smoothness_orders</code>, which prevents (expensive)
+combinatorial explosions in the number of higher-degree and higher-order
+basis functions generated. This allows the complexity of the optimization
+problem to grow scalably. See details of <code>num_knots</code> more information.</p></td>
     </tr>
     <tr>
       <th>reduce_basis</th>
-      <td><p>A <code>numeric</code> value bounded in the open interval
-(0,1) indicating the minimum proportion of 1's in a basis function column
-needed for the basis function to be included in the procedure to fit the
-Lasso. Any basis functions with a lower proportion of 1's than the cutoff
-will be removed. This argument defaults to <code>NULL</code>, in which case all
-basis functions are used in the lasso-fitting stage of the HAL algorithm.</p></td>
+      <td><p>A <code>numeric</code> value bounded in the open unit interval
+indicating the minimum proportion of 1's in a basis function column needed
+for the basis function to be included in the procedure to fit the lasso.
+Any basis functions with a lower proportion of 1's than the cutoff will be
+removed. When <code>reduce_basis</code> is set to <code>NULL</code>, all basis
+functions are used in the lasso-fitting stage of <code>fit_hal</code>.</p></td>
     </tr>
     <tr>
       <th>family</th>
-      <td><p>A <code>character</code> corresponding to the error family for a
-generalized linear model. Options are limited to "gaussian" for fitting a
-standard linear model, "binomial" for penalized logistic regression,
-"cox" for a penalized proportional hazards model. Note that in the case of
-"binomial" and "cox" the argument fit_type is limited to "glmnet"; thus,
-documentation of the glmnet package should be consulted for any errors
-resulting from the Lasso fitting step in these cases.</p></td>
-    </tr>
-    <tr>
-      <th>return_lasso</th>
-      <td><p>A <code>logical</code> indicating whether or not to return
-the <code>glmnet</code> fit of the lasso model.</p></td>
-    </tr>
-    <tr>
-      <th>return_x_basis</th>
-      <td><p>A <code>logical</code> indicating whether or not to return
-the matrix of (possibly reduced) basis functions used in the HAL lasso fit.</p></td>
-    </tr>
-    <tr>
-      <th>basis_list</th>
-      <td><p>The full set of basis functions generated from the input
-data X (via a call to <code>enumerate_basis</code>). The dimensionality of this
-structure is dim = (n * 2^(d - 1)), where n is the number of observations
-and d is the number of columns in X.</p></td>
+      <td><p>A <code>character</code> or a <code><a href='https://rdrr.io/r/stats/family.html'>family</a></code> object
+(supported by <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code>) specifying the error/link
+family for a generalized linear model. <code>character</code> options are limited
+to "gaussian" for fitting a standard penalized linear model, "binomial" for
+penalized logistic regression, "poisson" for penalized Poisson regression,
+and "cox" for a penalized proportional hazards model. Note that passing in
+family objects leads to slower performance relative to passing in a
+character family (if supported). For example, one should set
+<code>family = "binomial"</code> instead of <code>family = binomial()</code> when
+calling <code>fit_hal</code>.</p></td>
     </tr>
     <tr>
       <th>lambda</th>
-      <td><p>User-specified array of values of the lambda tuning parameter
-of the Lasso L1 regression. If <code>NULL</code>, <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>
-will be used to automatically select a CV-optimal value of this
-regularization parameter. If specified, the Lasso L1 regression model will
-be fit via <code>glmnet</code>, returning regularized coefficient values for each
-value in the input array.</p></td>
+      <td><p>User-specified sequence of values of the regularization
+parameter for the lasso L1 regression. If <code>NULL</code>, the default sequence
+in <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> will be used. The cross-validated
+optimal value of this regularization parameter will be selected with
+<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. If <code>fit_control</code>'s <code>cv_select</code>
+argument is set to <code>FALSE</code>, then the lasso model will be fit via
+<code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code>, and regularized coefficient values for each
+lambda in the input array will be returned.</p></td>
     </tr>
     <tr>
       <th>id</th>
-      <td><p>a vector of ID values, used to generate cross-validation folds for
-cross-validated selection of the regularization parameter lambda.</p></td>
+      <td><p>A vector of ID values that is used to generate cross-validation
+folds for <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. This argument is ignored when
+<code>fit_control</code>'s <code>cv_select</code> argument is <code>FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>offset</th>
       <td><p>a vector of offset values, used in fitting.</p></td>
     </tr>
     <tr>
-      <th>cv_select</th>
-      <td><p>A <code>logical</code> specifying whether the array of values
-specified should be passed to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> in order to
-pick the optimal value (based on cross-validation) (when set to
-<code>TRUE</code>) or to simply fit along the sequence of values (or single
-value) using <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code> (when set to <code>FALSE</code>).</p></td>
+      <th>fit_control</th>
+      <td><p>List of arguments for fitting. Includes the following
+arguments, and any others to be passed to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>
+or <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code>.</p><ul>
+<li><p><code>cv_select</code>: A <code>logical</code> specifying if the sequence of
+specified <code>lambda</code> values should be passed to
+<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> in order for a single, optimal value of
+<code>lambda</code> to be selected according to cross-validation. When
+<code>cv_select = FALSE</code>, a <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code> model will be
+used to fit the sequence of (or single) <code>lambda</code>.</p></li>
+<li><p><code>n_folds</code>: Integer for the number of folds to be used when splitting
+the data for V-fold cross-validation. Only used when
+<code>cv_select = TRUE</code>.</p></li>
+<li><p><code>foldid</code>: An optional <code>numeric</code> containing values between 1 and
+<code>n_folds</code>, identifying the fold to which each observation is
+assigned. If supplied, <code>n_folds</code> can be missing. In such a case,
+this vector is passed directly to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. Only
+used when <code>cv_select = TRUE</code>.</p></li>
+<li><p><code>use_min</code>: Specify the choice of lambda to be selected by
+<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. When <code>TRUE</code>, <code>"lambda.min"</code> is
+used; otherwise, <code>"lambda.1se"</code>. Only used when
+<code>cv_select = TRUE</code>.</p></li>
+<li><p><code>lambda.min.ratio</code>: A <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code> argument specifying
+the smallest value for <code>lambda</code>, as a fraction of <code>lambda.max</code>,
+the (data derived) entry value (i.e. the smallest value for which all
+coefficients are zero). We've seen that not setting <code>lambda.min.ratio</code>
+can lead to no <code>lambda</code> values that fit the data sufficiently well.</p></li>
+<li><p><code>prediction_bounds</code>: A vector of size two that provides the lower and
+upper bounds for predictions. When <code>prediction_bounds = "default"</code>,
+the predictions are bounded between <code>min(Y) - sd(Y)</code> and
+<code>max(Y) + sd(Y)</code>. Bounding ensures that there is no extrapolation,
+and it is necessary for cross-validation selection and/or Super Learning.</p></li>
+</ul></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Other arguments passed to <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>. Please
-consult its documentation for a full list of options.</p></td>
+      <th>basis_list</th>
+      <td><p>The full set of basis functions generated from <code>X</code>.</p></td>
+    </tr>
+    <tr>
+      <th>return_lasso</th>
+      <td><p>A <code>logical</code> indicating whether or not to return
+the <code><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></code> fit object of the lasso model.</p></td>
+    </tr>
+    <tr>
+      <th>return_x_basis</th>
+      <td><p>A <code>logical</code> indicating whether or not to return
+the matrix of (possibly reduced) basis functions used in <code>fit_hal</code>.</p></td>
     </tr>
     <tr>
       <th>yolo</th>
@@ -278,28 +304,76 @@ acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Object of class <code>hal9001</code>, containing a list of basis
- functions, a copy map, coefficients estimated for basis functions, and
- timing results (for assessing computational efficiency).</p>
+functions, a copy map, coefficients estimated for basis functions, and
+timing results (for assessing computational efficiency).</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The procedure uses a custom C++ implementation to generate a design
- matrix consisting of basis functions corresponding to covariates and
- interactions of covariates and to remove duplicate columns of indicators.
- The Lasso regression is fit to this (usually) very wide matrix using either
- a custom implementation (based on <span class="pkg">origami</span>) or by a call to
- <code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code>.</p>
+matrix of spline basis functions of covariates and interactions of
+covariates. The lasso regression is fit to this design matrix via
+<code><a href='https://glmnet.stanford.edu/reference/cv.glmnet.html'>cv.glmnet</a></code> or a custom implementation derived from
+<span class="pkg">origami</span>. The maximum dimension of the design matrix is \(n\) -by-
+\((n * 2^(d-1))\), where where \(n\) is the number of observations and
+\(d\) is the number of covariates.</p>
+<p>For <code>smoothness_orders = 0</code>, only zero-order splines (piece-wise
+constant) are generated, which assume the true regression function has no
+smoothness or continuity. When <code>smoothness_orders = 1</code>, first-order
+splines (piece-wise linear) are generated, which assume continuity of the
+true regression function. When <code>smoothness_orders = 2</code>, second-order
+splines (piece-wise quadratic and linear terms) are generated, which assume
+a the true regression function has a single order of differentiability.</p>
+<p><code>num_knots</code> argument specifies the number of knot points for each
+covariate and for each <code>max_degree</code>. Fewer knot points can
+significantly decrease runtime, but might be overly simplistic. When
+considering <code>smoothness_orders = 0</code>, too few knot points (e.g., &lt; 50)
+can significantly reduce performance. When <code>smoothness_orders = 1</code> or
+higher, then fewer knot points (e.g., 10-30) is actually better for
+performance. We recommend specifying <code>num_knots</code> with respect to
+<code>smoothness_orders</code>, and as a vector of length <code>max_degree</code> with
+values decreasing exponentially. This prevents combinatorial explosions in
+the number of higher-degree basis functions generated. The default behavior
+of <code>num_knots</code> follows this logic --- for <code>smoothness_orders = 0</code>,
+<code>num_knots</code> is set to \(500 / 2^{j-1}\), and for
+<code>smoothness_orders = 1</code> or higher, <code>num_knots</code> is set to
+\(200 / 2^{j-1}\), where \(j\) is the interaction degree. We also
+include some other suitable settings for <code>num_knots</code> below, all of
+which are less complex than default <code>num_knots</code> and will thus result
+in a faster runtime:</p><ul>
+<li><p>Some good settings for little to no cost in performance:</p><ul>
+<li><p>If <code>smoothness_orders = 0</code> and <code>max_degree = 3</code>,
+<code>num_knots = c(400, 200, 100)</code>.</p></li>
+<li><p>If <code>smoothness_orders = 1+</code> and <code>max_degree = 3</code>,
+<code>num_knots = c(100, 75, 50)</code>.</p></li>
+</ul></li>
+<li><p>Recommended settings for fairly fast runtime:</p><ul>
+<li><p>If <code>smoothness_orders = 0</code> and <code>max_degree = 3</code>,
+<code>num_knots = c(200, 100, 50)</code>.</p></li>
+<li><p>If <code>smoothness_orders = 1+</code> and <code>max_degree = 3</code>,
+<code>num_knots = c(50, 25, 15)</code>.</p></li>
+</ul></li>
+<li><p>Recommended settings for fast runtime:</p><ul>
+<li><p>If <code>smoothness_orders = 0</code> and <code>max_degree = 3</code>,
+<code>num_knots = c(100, 50, 25)</code>.</p></li>
+<li><p>If <code>smoothness_orders = 1+</code> and <code>max_degree = 3</code>,
+<code>num_knots = c(40, 15, 10)</code>.</p></li>
+</ul></li>
+<li><p>Recommended settings for very fast runtime:</p><ul>
+<li><p>If <code>smoothness_orders = 0</code> and <code>max_degree = 3</code>,
+<code>num_knots = c(50, 25, 10)</code>.</p></li>
+<li><p>If <code>smoothness_orders = 1+</code> and <code>max_degree = 3</code>,
+<code>num_knots = c(25, 10, 5)</code>.</p></li>
+</ul></li>
+</ul>
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
+    <pre class="examples"><div class='input'><span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
 <span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fl'>3</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='va'>xmat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>p</span><span class='op'>)</span>, <span class='va'>n</span>, <span class='va'>p</span><span class='op'>)</span>
 <span class='va'>y_prob</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span><span class='op'>(</span><span class='fl'>3</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/Trig.html'>sin</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>, <span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='va'>n</span>, size <span class='op'>=</span> <span class='fl'>1</span>, prob <span class='op'>=</span> <span class='va'>y_prob</span><span class='op'>)</span>
-<span class='va'>ml_hal_fit</span> <span class='op'>&lt;-</span> <span class='fu'>fit_hal</span><span class='op'>(</span>X <span class='op'>=</span> <span class='va'>x</span>, Y <span class='op'>=</span> <span class='va'>y</span>, family <span class='op'>=</span> <span class='st'>"binomial"</span>, yolo <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>preds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>ml_hal_fit</span>, new_data <span class='op'>=</span> <span class='va'>x</span><span class='op'>)</span>
-<span class='co'># }</span>
-
+<span class='va'>hal_fit</span> <span class='op'>&lt;-</span> <span class='fu'>fit_hal</span><span class='op'>(</span>X <span class='op'>=</span> <span class='va'>x</span>, Y <span class='op'>=</span> <span class='va'>y</span>, family <span class='op'>=</span> <span class='st'>"binomial"</span><span class='op'>)</span>
+<span class='va'>preds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>hal_fit</span>, new_data <span class='op'>=</span> <span class='va'>x</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -312,7 +386,7 @@ acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jeremy Coyle, Nima Hejazi, Mark van der Laan.</p>
+  <p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">

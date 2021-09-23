@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -104,7 +104,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/tlverse/hal9001">
-    <span class="fas fa-github fa-lg"></span>
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -131,7 +131,15 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for hal9001</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>object</span>, offset <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span>, <span class='va'>new_data</span>, new_X_unpenalized <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+<span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  <span class='va'>new_data</span>,
+  new_X_unpenalized <span class='op'>=</span> <span class='cn'>NULL</span>,
+  offset <span class='op'>=</span> <span class='cn'>NULL</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"response"</span>, <span class='st'>"link"</span><span class='op'>)</span>,
+  p_reserve <span class='op'>=</span> <span class='fl'>0.75</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,25 +150,37 @@
 fitting the Highly Adaptive Lasso, as produced by <code><a href='fit_hal.html'>fit_hal</a></code>.</p></td>
     </tr>
     <tr>
-      <th>offset</th>
-      <td><p>A vector of offsets. Must be provided if provided at training</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Additional arguments passed to <code>predict</code> as necessary.</p></td>
-    </tr>
-    <tr>
       <th>new_data</th>
       <td><p>A <code>matrix</code> or <code>data.frame</code> containing new data
-(observations NOT used in fitting the <code>hal9001</code> object passed in via
-the <code>object</code> argument above) for which the <code>hal9001</code> object will
-compute predicted values.</p></td>
+(i.e., observations not used for fitting the <code>hal9001</code> object that's
+passed in via the <code>object</code> argument) for which the <code>hal9001</code>
+object will compute predicted values.</p></td>
     </tr>
     <tr>
       <th>new_X_unpenalized</th>
       <td><p>If the user supplied <code>X_unpenalized</code> during
-training, the user should also supply this matrix with the same number of
-observations as <code>new_data</code>. Optional.</p></td>
+training, then user should also supply this matrix with the same number of
+observations as <code>new_data</code>.</p></td>
+    </tr>
+    <tr>
+      <th>offset</th>
+      <td><p>A vector of offsets. Must be provided if provided at training.</p></td>
+    </tr>
+    <tr>
+      <th>type</th>
+      <td><p>Either "response" for predictions of the response, or "link" for
+un-transformed predictions (on the scale of the link function).</p></td>
+    </tr>
+    <tr>
+      <th>p_reserve</th>
+      <td><p>Sparse matrix pre-allocation proportion, which is the
+anticipated proportion of 1's in the design matrix. Default value is
+recommended in most settings. If a dense design matrix is expected, it
+would be useful to set <code>p_reserve</code> to a higher value.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments passed to <code>predict</code> as necessary.</p></td>
     </tr>
     </table>
 
@@ -170,18 +190,19 @@ observations as <code>new_data</code>. Optional.</p></td>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Method for computing and extracting predictions from fits of the
- Highly Adaptive Lasso estimator, returned as a single S3 objects of class
- <code>hal9001</code>.</p>
+Highly Adaptive Lasso estimator, returned as a single S3 objects of class
+<code>hal9001</code>.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>This prediction method does not function similarly to the equivalent
- method from <span class="pkg">glmnet</span>. In particular, this procedure will NOT return a
- subset of lambdas originally specified in calling <code><a href='fit_hal.html'>fit_hal</a></code>
- nor result in re-fitting. Instead, it will return predictions for all of
- the lambdas specified in the call to <code><a href='fit_hal.html'>fit_hal</a></code> that constructs
- <code>object</code>, when <code>cv_select = FALSE</code>. When <code>cv_select = TRUE</code>,
- predictions will only be returned for the value of lambda selected by
- cross-validation.</p>
+method from <span class="pkg">glmnet</span>. In particular, this procedure will not return a
+subset of lambdas originally specified in calling <code><a href='fit_hal.html'>fit_hal</a></code>
+nor result in re-fitting. Instead, it will return predictions for all of
+the lambdas specified in the call to <code><a href='fit_hal.html'>fit_hal</a></code> that constructs
+<code>object</code>, when <code>fit_control</code>'s <code>cv_select</code> is set to
+<code>FALSE</code>. When <code>fit_control</code>'s <code>cv_select</code> is set to
+<code>TRUE</code>, predictions will only be returned for the value of lambda
+selected by cross-validation.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -194,7 +215,7 @@ observations as <code>new_data</code>. Optional.</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Jeremy Coyle, Nima Hejazi, Mark van der Laan.</p>
+  <p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">

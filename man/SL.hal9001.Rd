@@ -8,54 +8,64 @@ SL.hal9001(
   Y,
   X,
   newX = NULL,
-  max_degree = 3,
-  fit_type = c("glmnet", "lassi"),
-  n_folds = 10,
-  use_min = TRUE,
   family = stats::gaussian(),
   obsWeights = rep(1, length(Y)),
+  id = NULL,
+  max_degree = ifelse(ncol(X) >= 20, 2, 3),
+  smoothness_orders = 1,
+  num_knots = ifelse(smoothness_orders >= 1, 25, 50),
+  reduce_basis = 1/sqrt(length(Y)),
+  lambda = NULL,
   ...
 )
 }
 \arguments{
-\item{Y}{A \code{numeric} of outcomes.}
+\item{Y}{A \code{numeric} vector of observations of the outcome variable.}
 
-\item{X}{A \code{matrix} of predictors/covariates.}
+\item{X}{An input \code{matrix} with dimensions number of observations -by-
+number of covariates that will be used to derive the design matrix of basis
+functions.}
 
 \item{newX}{A matrix of new observations on which to obtain predictions. The
 default of \code{NULL} computes predictions on training inputs \code{X}.}
 
-\item{max_degree}{The highest order of interaction terms for which the basis
-functions ought to be generated. \code{NULL} corresponds to generating
-basis functions for the full dimensionality of the input matrix.}
+\item{family}{A \code{\link[stats]{family}} object (one that is supported
+by \code{\link[glmnet]{glmnet}}) specifying the error/link family for a
+generalized linear model.}
 
-\item{fit_type}{The specific routine to be called when fitting the Lasso
-regression via cross-validation. Choosing \code{cv.glmnet} option results
-in option results in a call to \code{\link[glmnet]{cv.glmnet}} while
-\code{lassi} produces a (faster) call to a custom routine based on a custom
-routine for fitting the Lasso.}
+\item{obsWeights}{A \code{numeric} vector of observational-level weights.}
 
-\item{n_folds}{Integer for the number of folds to be used when splitting the
-data for cross-validation. This defaults to 10 as this is the convention
-for V-fold cross-validation.}
+\item{id}{A \code{numeric} vector of IDs.}
 
-\item{use_min}{Determines which lambda is selected from \code{cv.glmnet}.
-\code{TRUE} corresponds to \code{"lambda.min"} and \code{FALSE} corresponds
-to \code{"lambda.1se"}.}
+\item{max_degree}{The highest order of interaction terms for which basis
+functions ought to be generated.}
 
-\item{family}{Not used by the function directly, but meant to ensure
-compatibility with \code{SuperLearner}.}
+\item{smoothness_orders}{An \code{integer} vector of length 1 or greater,
+specifying the smoothness of the basis functions. See the argument
+\code{smoothness_orders} of \code{\link{fit_hal}} for more information.}
 
-\item{obsWeights}{Not used by the function directly, but meant to ensure
-compatibility with \code{SuperLearner}. These are passed to
-\code{\link[glmnet]{cv.glmnet}} through the \code{...} argument of
-\code{\link{fit_hal}}.}
+\item{num_knots}{An \code{integer} vector of length 1 or \code{max_degree},
+specifying the maximum number of knot points (i.e., bins) for each
+covariate for generating basis functions. See \code{num_knots} argument in
+\code{\link{fit_hal}} for more information.}
 
-\item{...}{Placeholder (ignored).}
+\item{reduce_basis}{A \code{numeric} value bounded in the open unit interval
+indicating the minimum proportion of 1's in a basis function column needed
+for the basis function to be included in the procedure to fit the lasso.
+Any basis functions with a lower proportion of 1's than the cutoff will be
+removed.}
+
+\item{lambda}{A user-specified sequence of values of the regularization
+parameter for the lasso L1 regression. If \code{NULL}, the default sequence
+in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated
+optimal value of this regularization parameter will be selected with
+\code{\link[glmnet]{cv.glmnet}}.}
+
+\item{...}{Not used.}
 }
 \value{
 An object of class \code{SL.hal9001} with a fitted \code{hal9001}
- object and corresponding predictions based on the input data.
+object and corresponding predictions based on the input data.
 }
 \description{
 Wrapper for \pkg{SuperLearner} for objects of class \code{hal9001}

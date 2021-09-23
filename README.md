@@ -3,12 +3,9 @@
 
 # R/`hal9001`
 
-[![Travis-CI Build
-Status](https://travis-ci.org/tlverse/hal9001.svg?branch=master)](https://travis-ci.org/tlverse/hal9001)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/tlverse/hal9001?branch=master&svg=true)](https://ci.appveyor.com/project/tlverse/hal9001)
+[![R-CMD-check](https://github.com/tlverse/hal9001/workflows/R-CMD-check/badge.svg)](https://github.com/tlverse/hal9001/actions)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/tlverse/hal9001/master.svg)](https://codecov.io/github/tlverse/hal9001?branch=master)
+Status](https://codecov.io/gh/tlverse/hal9001/branch/master/graph/badge.svg)](https://codecov.io/gh/tlverse/hal9001)
 [![CRAN](https://www.r-pkg.org/badges/version/hal9001)](https://www.r-pkg.org/pkg/hal9001)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
@@ -25,7 +22,9 @@ v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/
 > The *Scalable* Highly Adaptive Lasso
 
 **Authors:** [Jeremy Coyle](https://github.com/tlverse), [Nima
-Hejazi](https://nimahejazi.org), and [Mark van der
+Hejazi](https://nimahejazi.org), [Rachael
+Phillips](https://github.com/rachaelvp), [Lars van der
+Laan](https://github.com/Larsvanderlaan), and [Mark van der
 Laan](https://vanderlaan-lab.org/)
 
 -----
@@ -97,20 +96,20 @@ x <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
 # fit the HAL regression
-hal_fit <- fit_hal(X = x, Y = y)
+hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
+#> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.009    0.000   0.008          0         0
-#> design_matrix         0.003    0.000   0.004          0         0
+#> enumerate_basis       0.006    0.000   0.006          0         0
+#> design_matrix         0.003    0.001   0.003          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 0.578    0.004   0.583          0         0
-#> total                 0.591    0.004   0.596          0         0
-
+#> lasso                 2.083    0.008   2.091          0         0
+#> total                 2.092    0.009   2.100          0         0
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
-#> [1] 0.03458131
+#> [1] 0.03481173
 ```
 
 -----
@@ -129,14 +128,14 @@ prior to submitting a pull request.
 After using the `hal9001` R package, please cite both of the following:
 
 ``` 
-    @software{coyle2020hal9001-rpkg,
-      author = {Coyle, Jeremy R and Hejazi, Nima S and {van der Laan}, Mark
-        J},
+    @software{coyle2021hal9001-rpkg,
+      author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
+        and {van der Laan}, Lars and {van der Laan}, Mark J},
       title = {{hal9001}: The scalable highly adaptive lasso},
-      year  = {2020},
+      year  = {2021},
       url = {https://doi.org/10.5281/zenodo.3558313},
       doi = {10.5281/zenodo.3558313}
-      note = {{R} package version 0.2.7}
+      note = {{R} package version 0.4.0}
     }
 
     @article{hejazi2020hal9001-joss,

@@ -28,10 +28,9 @@ cv_coxnet <- cv.glmnet(x = x_surv, y = y_surv, family = "cox")
 coxnet_pred <- as.numeric(predict(cv_coxnet, x_surv, type = "response"))
 
 # try with hal9001 instead of glmnet
-cv_halcox <- fit_hal(
-  X = x_surv, Y = y_surv, fit_type = "glmnet",
-  family = "cox", yolo = FALSE
-)
+cv_halcox <- suppressWarnings(fit_hal(
+  X = x_surv, Y = y_surv, family = "cox", yolo = FALSE
+))
 halcox_pred <- predict(cv_halcox, new_data = x_surv)
 
 
@@ -41,9 +40,9 @@ nocv_coxnet <- glmnet(x = x_surv, y = y_surv, family = "cox", nlambda = 200)
 nocv_coxnet_pred <- as.matrix(predict(nocv_coxnet, x_surv, type = "response"))
 
 # fit HAL with Cox penalty over a grid of lambda and predict
-nocv_halcox <- fit_hal(
-  X = x_surv, Y = y_surv, fit_type = "glmnet", # ,
-  family = "cox", cv_select = FALSE, nlambda = 200,
+nocv_halcox <- suppressWarnings(fit_hal(
+  X = x_surv, Y = y_surv, family = "cox",
+  fit_control = list(cv_select = FALSE, nlambda = 200),
   yolo = FALSE
-)
+))
 nocv_halcox_pred <- predict(nocv_halcox, new_data = x_surv)
