@@ -140,8 +140,6 @@
 #'   the predictions are bounded between \code{min(Y) - sd(Y)} and
 #'   \code{max(Y) + sd(Y)}. Bounding ensures that there is no extrapolation,
 #'   and it is necessary for cross-validation selection and/or Super Learning.
-#' @param formula_control List of arguments for \code{\link{formula_hal}}. See
-#'  its documentation for details.
 #' @param basis_list The full set of basis functions generated from \code{X}.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
@@ -181,8 +179,8 @@ fit_hal <- function(X,
                     num_knots = num_knots_generator(
                       max_degree = max_degree,
                       smoothness_orders = smoothness_orders,
-                      base_num_knots_0 = 500,
-                      base_num_knots_1 = 200
+                      base_num_knots_0 = 200,
+                      base_num_knots_1 = 50
                     ),
                     reduce_basis = 1 / sqrt(length(Y)),
                     family = c("gaussian", "binomial", "poisson", "cox"),
@@ -197,10 +195,7 @@ fit_hal <- function(X,
                       lambda.min.ratio = 1e-4,
                       prediction_bounds = "default"
                     ),
-                    formula_control = list(
-                      exclusive_dot = FALSE,
-                      custom_group = NULL
-                    ),
+
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
@@ -223,12 +218,7 @@ fit_hal <- function(X,
   defaults <- list(
     exclusive_dot = FALSE, custom_group = NULL
   )
-  if (any(!names(defaults) %in% names(formula_control))) {
-    formula_control <- c(
-      defaults[which(!names(defaults) %in% names(formula_control))],
-      formula_control
-    )
-  }
+
 
   if (!is.matrix(X)) X <- as.matrix(X)
 
@@ -264,14 +254,21 @@ fit_hal <- function(X,
   }
 
   if (!is.null(formula)) {
-    formula <- formula_hal(
-      formula = formula, X = X, smoothness_orders = smoothness_orders,
-      num_knots = num_knots, exclusive_dot = formula_control$exclusive_dot,
-      custom_group = formula_control$custom_group
-    )
+    # formula <- formula_hal(
+    #   formula = formula, X = X, smoothness_orders = smoothness_orders,
+    #   num_knots = num_knots, exclusive_dot = formula_control$exclusive_dot,
+    #   custom_group = formula_control$custom_group
+    # )
+
+    if (!inherits(formula, "formula_hal")) {
+      formula <- formula_hal(formula, X = X, smoothness_orders = smoothness_orders, num_knots = num_knots)
+    }
     basis_list <- formula$basis_list
     fit_control$upper.limits <- formula$upper.limits
     fit_control$lower.limits <- formula$lower.limits
+    penalty_factor <- formula$penalty_factors
+  } else {
+    penalty_factor <- NULL
   }
 
   # FUN! Quotes from HAL 9000, the robot from the film "2001: A Space Odyssey"
@@ -341,7 +338,10 @@ fit_hal <- function(X,
   }
 
   # the HAL basis are subject to L1 penalty
-  penalty_factor <- rep(1, ncol(x_basis))
+  if (is.null(penalty_factor)) {
+    penalty_factor <- rep(1, ncol(x_basis))
+  }
+
   unpenalized_covariates <- ifelse(
     test = is.null(X_unpenalized),
     yes = 0,

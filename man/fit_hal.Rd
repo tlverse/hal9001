@@ -12,7 +12,7 @@ fit_hal(
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
   smoothness_orders = 1,
   num_knots = num_knots_generator(max_degree = max_degree, smoothness_orders =
-    smoothness_orders, base_num_knots_0 = 500, base_num_knots_1 = 200),
+    smoothness_orders, base_num_knots_0 = 200, base_num_knots_1 = 50),
   reduce_basis = 1/sqrt(length(Y)),
   family = c("gaussian", "binomial", "poisson", "cox"),
   lambda = NULL,
@@ -20,7 +20,6 @@ fit_hal(
   offset = NULL,
   fit_control = list(cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
     lambda.min.ratio = 1e-04, prediction_bounds = "default"),
-  formula_control = list(exclusive_dot = FALSE, custom_group = NULL),
   basis_list = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,
@@ -126,9 +125,6 @@ the predictions are bounded between \code{min(Y) - sd(Y)} and
 \code{max(Y) + sd(Y)}. Bounding ensures that there is no extrapolation,
 and it is necessary for cross-validation selection and/or Super Learning.
 }}
-
-\item{formula_control}{List of arguments for \code{\link{formula_hal}}. See
-its documentation for details.}
 
 \item{basis_list}{The full set of basis functions generated from \code{X}.}
 

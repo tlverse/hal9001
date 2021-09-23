@@ -1,7 +1,7 @@
 #' List Basis Functions
-#'  
+#'
 #' Build a list of basis functions from a set of columns
-#' 
+#'
 #' @param cols Index or indices (as \code{numeric}) of covariates (columns) of
 #'  interest in the data matrix \code{x} for which basis functions ought to be
 #'  generated. Note that basis functions for interactions of these columns are
@@ -26,7 +26,7 @@
 #'  specified via \code{smoothness_orders}.
 #'
 #' @return A \code{list} containing the basis functions generated from a set of
-#'  input columns. 
+#'  input columns.
 basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order,
                             include_lower_order = FALSE) {
   # first, subset only to columns of interest
@@ -325,7 +325,7 @@ quantizer <- function(X, bins) {
     if (bins == 1) {
       return(rep(min(x), length(x)))
     }
-    
+
     p <- max(1 - (20 / nrow(X)), 0.98)
     quants <- seq(0, p, length.out = bins)
     q <- stats::quantile(x, quants)
@@ -337,4 +337,4 @@ quantizer <- function(X, bins) {
     as.matrix(apply(X, MARGIN = 2, FUN = convertColumn))
   }
   return(quantizer(X))
-} 
+}
