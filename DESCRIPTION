@@ -33,8 +33,8 @@ Description: A scalable implementation of the highly adaptive lasso algorithm,
   adaptive lasso was first formulated and described by MJ van der Laan (2017)
   <doi:10.1515/ijb-2015-0097>, with practical demonstrations of its performance
   given by Benkeser and van der Laan (2016) <doi:10.1109/DSAA.2016.93>. This
-  implmentation of the highly adaptive lasso algorithm was described by Hejazi,
-  Coyle, and van der Laan (2020) <10.21105/joss.02526>.
+  implementation of the highly adaptive lasso algorithm was described by Hejazi,
+  Coyle, and van der Laan (2020) <doi:10.21105/joss.02526>.
 Depends:
   R (>= 3.1.0),
   Rcpp
