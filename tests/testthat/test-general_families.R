@@ -6,7 +6,6 @@ mse <- function(preds, y) {
   mean((preds - y)^2)
 }
 
-
 # generate simple test data
 n <- 100
 p <- 3
@@ -41,8 +40,6 @@ test_that("MSE for logistic regression close to logistic family object pred", {
   expect_true(abs(ml_hal_mse1 - ml_hal_mse2) < 0.01)
 })
 
-
-
 # ml implementation
 ml_hal_fit <- suppressWarnings(fit_hal(X = x, Y = y, family = "poisson"))
 ml_hal_fit$times
@@ -62,5 +59,5 @@ preds <- predict(ml_hal_fit, new_data = x)
 ml_hal_mse2 <- mse(preds, y_prob)
 
 test_that("MSE for logistic regression close to logistic family object pred", {
-  expect_true(abs(ml_hal_mse1 - ml_hal_mse2) < 0.03)
+  expect_true(abs(ml_hal_mse1 - ml_hal_mse2) < 0.01)
 })

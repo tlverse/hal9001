@@ -14,16 +14,30 @@ There were no ERRORs or WARNINGs.
 * There are two downstream dependencies on CRAN: `haldensify`, `txshift`.
 
 ## Resubmission
-* This is an updated to an existing CRAN package, submitted after fixing:
+* This is an update to an existing CRAN package, submitted after fixing:
   ```
-   Possibly misspelled words in DESCRIPTION:
-    Coyle (37:3)
-    Hejazi (36:73)
-    implmentation (36:3)
+  No, we see
 
-  The Description field contains
-    <10.21105/joss.02526>.
-  Please write DOIs as <doi:10.prefix/suffix>.
+     Overall checktime 11 min > 10 min
+
+  mainly from
+
+  * checking tests ... [479s] OK
+     Running 'testthat.R' [478s]
+
+  Please reduce the test timings by using
+    - small toy data only
+    - few iterations
+    - or by running less important tests only conditionally if some
+  environment variable is set that you only define on your machine?
+
+  Please fix and resubmit.
   ```
-  Note that "Coyle" and "Hejazi" are surnames of two of the package authors.
-  The misspelled word and DOI reference have been correct in this submission.
+  We have reduced the testing time, and we now see the following on our end
+  ```
+  ─  checking tests (334ms)
+  ✔  Running ‘testthat.R’ [334s/332s] (5m 31.6s)
+  ...
+  ── R CMD check results ───────────────────────────── hal9001 0.4.0 ────
+  Duration: 8m 27.9s
+  ```
