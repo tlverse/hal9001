@@ -15,7 +15,8 @@ n <- 100 # observations
 x <- as.data.frame(replicate(p, rnorm(n)))
 y <- sin(1 / x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 test_x <- as.data.frame(replicate(p, rnorm(n)))
-test_y <- sin(1 / test_x[, 2]) + cos(test_x[, 3]) + rnorm(n, mean = 0, sd = 0.2)
+test_y <- sin(1 / test_x[, 2]) + cos(test_x[, 3]) +
+  rnorm(n, mean = 0, sd = 0.2)
 
 # run HAL by itself
 hal <- fit_hal(X = x, Y = y, yolo = FALSE)
