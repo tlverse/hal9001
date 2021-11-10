@@ -48,11 +48,34 @@ predict.hal9001 <- function(object,
                             ...) {
   type <- match.arg(type)
   p_reserve <- pmax(pmin(p_reserve, 1), 0)
-  # cast new data to matrix if not so already
-  if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
+  # Check the column names of new data if it is already a matrix
+  if (is.matrix(new_data)){
+    if (is.null(colnames(new_data))) {
+      warning("No column names found in the `new_data` matrix.")
+      assertthat::assert_that(ncol(new_data) >= length(object$X_colnames),
+                              msg = "The dimension of `new_data` matrix is inconsistent with the X_colnames in fit_hal")
+      warning(paste("Setting the first", length(hal_fit$X_colnames), "columns in `new_data` matrix as `hal_fit$X_colnames` for prediction"))
+      colnames(new_data) <- object$X_colnames
+    }
+  }
+
+  # cast new data to matrix if not so already
+  if (!is.matrix(new_data)) {
+    new_data <- as.matrix(new_data)
+  }
+
+  # Report an error when there is no column name in the new_data matrix.
+  new_data_colnames <- colnames(new_data)
+  assertthat::assert_that(all(object$X_colnames %in% new_data_colnames),
+                          msg = paste(paste(setdiff(hal_fit$X_colnames, new_data_colnames), collapse = " ,"),
+                                      "in hal_fit is/are not found in new_data"))
+
+  # Match the column order in new_data with hal_fit$X_colnames
   if (!is.null(object$formula)) {
     new_data <- new_data[, object$covariates]
+  } else{
+    new_data <- new_data[, object$X_colnames]
   }
 
   # generate design matrix
