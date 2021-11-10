@@ -22,7 +22,7 @@ test_that("Report a warning when `new_data` is a matrix with sufficient or large
 
 x_new <- matrix(rnorm(n * p), n, p)
 colnames(x_new) <- c("x1", "x3", "x4")
-test_that("Report an error when `new_data` is a matrix but its column names are not found in hal_fit$X_colnames", {
+test_that("Report an error when `new_data` is a matrix but does not include all columns in hal_fit$X_colnames", {
   expect_error(predict(hal_fit, new_data = x_new), "x2 in hal_fit is/are not found in new_data")
 })
 
