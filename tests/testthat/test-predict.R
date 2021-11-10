@@ -31,3 +31,12 @@ colnames(x_new) <- c("x1", "x3", "x4")
 test_that("Report an error when `new_data` is a data frame but its column names are not found in hal_fit$X_colnames", {
   expect_error(predict(hal_fit, new_data = data.frame(x_new)), "x2 in hal_fit is/are not found in new_data")
 })
+
+x_new_matched <- data.frame(matrix(rnorm(n * p), n, p))
+colnames(x_new_matched) <- c("x1", "x2", "x3")
+x_new_unmatched <- cbind(data.frame("x4" = matrix(rnorm(n * 1), n, 1)), x_new_matched)
+
+test_that("HAL prediction function respects the column names of `new_data`", {
+  expect_true(all(predict(hal_fit, new_data = x_new_matched) == predict(hal_fit, new_data = x_new_unmatched)))
+})
+
