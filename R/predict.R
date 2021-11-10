@@ -54,7 +54,7 @@ predict.hal9001 <- function(object,
     if (is.null(colnames(new_data))) {
       warning("No column names found in the `new_data` matrix.")
       assertthat::assert_that(ncol(new_data) >= length(object$X_colnames),
-                              msg = "The dimension of `new_data` matrix is inconsistent with the X_colnames in fit_hal")
+                              msg = "The dimension of `new_data` matrix is inconsistent with `hal_fit$X_colnames`")
       warning(paste("Setting the first", length(hal_fit$X_colnames), "columns in `new_data` matrix as `hal_fit$X_colnames` for prediction"))
       colnames(new_data) <- object$X_colnames
     }
