@@ -145,9 +145,6 @@ h <- function(..., k = NULL, s = NULL, pf = 1,
   formula_term <- paste0("h(", paste0(var_names, collapse = ", "), ")")
   if ("." %in% var_names) {
     var_names_filled <- fill_dots(var_names, . = .)
-    if (!is.list(var_names_filled)) {
-      var_names_filled <- list(var_names_filled)
-    }
 
     all_items <- lapply(var_names_filled, function(var) {
       h(var,
