@@ -28,6 +28,10 @@ test_that("Check formula", {
   expect_true(length(setdiff(formula_hal(formula)$basis_list, (h(X1) + h(X2))$basis_list)) == 0)
   expect_true(length(formula_hal(formula, num_knots = 3)$basis_list) == length(formula_hal(formula)$basis_list))
   expect_true(length(formula_hal(formula, num_knots = 10)$basis_list) != length(formula_hal(formula)$basis_list))
+  formula <- h(.)$basis_list
+  expect_true(length(formula[[1]]$cols) == 1)
+  formula <- h(.,.)$basis_list
+  expect_true(length(formula[[1]]$cols) == 2)
 })
 
 
