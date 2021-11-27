@@ -7,10 +7,11 @@ p <- 3
 X <- xmat <- matrix(rnorm(n * p), n, p)
 colnames(X) <- c("X1", "X2", "X3")
 
-smoothness_orders <- 1
-num_knots <- 3
+ 
 
 test_that("Check formula", {
+  smoothness_orders <- 1
+num_knots <- 3
   expect_true(length(h(X1)$basis_list) == num_knots)
   expect_true(h(X1)$basis_list[[1]]$orders == 1)
   expect_true(all(h(X1)$penalty.factors == 1))
@@ -28,6 +29,10 @@ test_that("Check formula", {
   expect_true(length(setdiff(formula_hal(formula)$basis_list, (h(X1) + h(X2))$basis_list)) == 0)
   expect_true(length(formula_hal(formula, num_knots = 3)$basis_list) == length(formula_hal(formula)$basis_list))
   expect_true(length(formula_hal(formula, num_knots = 10)$basis_list) != length(formula_hal(formula)$basis_list))
+  formula <- h(., k =2)$basis_list
+  expect_true(length(formula[[1]]$cols) == 1)
+  formula <- h(.,., k =2)$basis_list
+  expect_true(length(formula[[1]]$cols) == 2)
 })
 
 
