@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://tlverse.org/hal9001/404.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/CONTRIBUTING.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/articles/intro_hal9001.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/authors.html</loc>
+  </url>
+  <url>
     <loc>https://tlverse.org/hal9001/index.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/news/index.html</loc>
   </url>
   <url>
     <loc>https://tlverse.org/hal9001/reference/SL.hal9001.html</loc>
@@ -59,6 +80,9 @@
   </url>
   <url>
     <loc>https://tlverse.org/hal9001/reference/hal_quotes.html</loc>
+  </url>
+  <url>
+    <loc>https://tlverse.org/hal9001/reference/index.html</loc>
   </url>
   <url>
     <loc>https://tlverse.org/hal9001/reference/index_first_copy.html</loc>
@@ -119,8 +143,5 @@
   </url>
   <url>
     <loc>https://tlverse.org/hal9001/reference/summary.hal9001.html</loc>
-  </url>
-  <url>
-    <loc>https://tlverse.org/hal9001/articles/intro_hal9001.html</loc>
   </url>
 </urlset>
