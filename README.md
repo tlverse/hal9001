@@ -5,7 +5,7 @@
 
 [![R-CMD-check](https://github.com/tlverse/hal9001/workflows/R-CMD-check/badge.svg)](https://github.com/tlverse/hal9001/actions)
 [![Coverage
-Status](https://codecov.io/gh/tlverse/hal9001/branch/master/graph/badge.svg)](https://codecov.io/gh/tlverse/hal9001)
+Status](https://codecov.io/gh/tlverse/hal9001/branch/master/graph/badge.svg)](https://app.codecov.io/gh/tlverse/hal9001)
 [![CRAN](https://www.r-pkg.org/badges/version/hal9001)](https://www.r-pkg.org/pkg/hal9001)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
@@ -85,7 +85,7 @@ predictions via Highly Adaptive Lasso regression:
 # load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
-#> hal9001 v0.4.0: The Scalable Highly Adaptive Lasso
+#> hal9001 v0.4.2: The Scalable Highly Adaptive Lasso
 #> note: fit_hal defaults have changed. See ?fit_hal for details
 set.seed(385971)
 
@@ -100,12 +100,13 @@ hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.006    0.000   0.007          0         0
-#> design_matrix         0.003    0.000   0.002          0         0
+#> enumerate_basis       0.016    0.000   0.017          0         0
+#> design_matrix         0.005    0.000   0.005          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 1.576    0.006   1.582          0         0
-#> total                 1.585    0.006   1.592          0         0
+#> lasso                 3.767    0.012   3.782          0         0
+#> total                 3.789    0.012   3.805          0         0
+
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
@@ -128,14 +129,14 @@ prior to submitting a pull request.
 After using the `hal9001` R package, please cite both of the following:
 
 ``` 
-    @software{coyle2021hal9001-rpkg,
+    @software{coyle2022hal9001-rpkg,
       author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
         and {van der Laan}, Lars and {van der Laan}, Mark J},
       title = {{hal9001}: The scalable highly adaptive lasso},
-      year  = {2021},
+      year  = {2022},
       url = {https://doi.org/10.5281/zenodo.3558313},
       doi = {10.5281/zenodo.3558313}
-      note = {{R} package version 0.4.0}
+      note = {{R} package version 0.4.2}
     }
 
     @article{hejazi2020hal9001-joss,
@@ -155,7 +156,7 @@ After using the `hal9001` R package, please cite both of the following:
 
 ## License
 
-© 2017-2021 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
+© 2017-2022 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
 Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license.
