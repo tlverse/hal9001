@@ -49,7 +49,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -143,12 +143,12 @@
 <span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">#&gt; enumerate_basis       0.016    0.000   0.017          0         0</span>
-<span class="co">#&gt; design_matrix         0.005    0.000   0.005          0         0</span>
-<span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
+<span class="co">#&gt; enumerate_basis       0.011    0.000   0.011          0         0</span>
+<span class="co">#&gt; design_matrix         0.004    0.000   0.004          0         0</span>
+<span class="co">#&gt; reduce_basis          0.001    0.000   0.000          0         0</span>
 <span class="co">#&gt; remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">#&gt; lasso                 3.767    0.012   3.782          0         0</span>
-<span class="co">#&gt; total                 3.789    0.012   3.805          0         0</span>
+<span class="co">#&gt; lasso                 3.648    0.012   3.660          0         0</span>
+<span class="co">#&gt; total                 3.664    0.012   3.676          0         0</span>
 
 <span class="co"># training sample prediction</span>
 <span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>

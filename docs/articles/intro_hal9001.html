@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
       </span>
     </div>
 
@@ -136,7 +136,7 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tlverse/hal9001" class="external-link">hal9001</a></span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Loading required package: Rcpp</span></code></pre>
-<pre><code><span class="co">## hal9001 v0.4.2: The Scalable Highly Adaptive Lasso</span>
+<pre><code><span class="co">## hal9001 v0.4.3: The Scalable Highly Adaptive Lasso</span>
 <span class="co">## note: fit_hal defaults have changed. See ?fit_hal for details</span></code></pre>
 <div class="section level3">
 <h3 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
@@ -146,12 +146,12 @@
 <code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.025    0.000   0.025          0         0</span>
-<span class="co">## design_matrix         0.111    0.000   0.111          0         0</span>
-<span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
+<span class="co">## enumerate_basis       0.023    0.000   0.023          0         0</span>
+<span class="co">## design_matrix         0.134    0.000   0.135          0         0</span>
+<span class="co">## reduce_basis          0.001    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 4.981    0.018   4.999          0         0</span>
-<span class="co">## total                 5.118    0.018   5.135          0         0</span></code></pre>
+<span class="co">## lasso                 4.967    0.028   4.996          0         0</span>
+<span class="co">## total                 5.125    0.028   5.154          0         0</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="summarizing-the-model">Summarizing the model<a class="anchor" aria-label="anchor" href="#summarizing-the-model"></a>
@@ -267,12 +267,12 @@
 <code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>
 <span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.018    0.000   0.018          0         0</span>
-<span class="co">## design_matrix         0.110    0.000   0.110          0         0</span>
+<span class="co">## enumerate_basis       0.020    0.000   0.021          0         0</span>
+<span class="co">## design_matrix         0.120    0.004   0.124          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 4.371    0.016   4.407          0         0</span>
-<span class="co">## total                 4.499    0.016   4.535          0         0</span></code></pre>
+<span class="co">## lasso                 5.868    0.032   5.956          0         0</span>
+<span class="co">## total                 6.009    0.036   6.101          0         0</span></code></pre>
 <p>In the above, all basis functions with fewer than 10% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
