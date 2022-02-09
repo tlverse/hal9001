@@ -11,10 +11,10 @@ There were no ERRORs or WARNINGs.
          libs   8.0Mb
 
 ## Downstream dependencies
-* None at present. There were two (`haldensify`, `txshift`) that were also
-  removed when this package was archived.
+* The `haldensify` and `txshift` packages rely upon this package.
 
-## Resubmission
-* This is a resubmission of a package removed from CRAN due to a Solaris build
-  failure, though that OS is no longer tested against. There were no issues on
-  any other OS's.
+## Additional notes
+* This package was recently identified as being among a set of packages that
+  "have inst/CITATION files with persons using the deprecated 'first'
+  or 'middle' arguments instead of 'given'...Can you please change to use
+  'given' instead?" We have updated the inst/CITATION file accordingly.
