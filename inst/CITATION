@@ -1,17 +1,17 @@
 citHeader("Please cite the following works when using the 'hal9001' software
-           package, including both the software tool and articles describing
-           the software package and/or statistical methodology.")
+           package, including both the software tool and any articles
+           describing the software package and/or statistical methodology.")
 
 year <- format(Sys.Date(), "%Y")
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Manual",
          title = "{hal9001}: The scalable highly adaptive lasso",
-         author = c(person("Jeremy", "Coyle", "R"),
-                    person("Nima", "Hejazi", "S"),
-                    person("Rachael", "Phillips", "V"),
-                    person("Lars", "van der Laan", "WP"),
-                    person("Mark", "van der Laan", "J")),
+         author = c(person("Jeremy R", "Coyle"),
+                    person("Nima S", "Hejazi"),
+                    person("Rachael V", "Phillips"),
+                    person("Lars WP", "van der Laan"),
+                    person("Mark J", "van der Laan")),
          year = year,
          note = note,
          doi = "10.5281/zenodo.3558313",
@@ -19,9 +19,9 @@ bibentry(bibtype = "Manual",
 
 bibentry(bibtype = "Article",
          title = "{hal9001}: Scalable highly adaptive lasso regression in {R}",
-         author = c(person("Nima", "Hejazi", "S"),
-                    person("Jeremy", "Coyle", "R"),
-                    person("Mark", "van der Laan", "J")),
+         author = c(person("Nima S", "Hejazi"),
+                    person("Jeremy R", "Coyle"),
+                    person("Mark J", "van der Laan")),
          year = "2020",
          journal = "Journal of Open Source Software",
          publisher = "The Open Journal",

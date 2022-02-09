@@ -85,7 +85,7 @@ predictions via Highly Adaptive Lasso regression:
 # load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
-#> hal9001 v0.4.2: The Scalable Highly Adaptive Lasso
+#> hal9001 v0.4.3: The Scalable Highly Adaptive Lasso
 #> note: fit_hal defaults have changed. See ?fit_hal for details
 set.seed(385971)
 
@@ -100,12 +100,12 @@ hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.016    0.000   0.017          0         0
-#> design_matrix         0.005    0.000   0.005          0         0
-#> reduce_basis          0.000    0.000   0.000          0         0
-#> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 3.767    0.012   3.782          0         0
-#> total                 3.789    0.012   3.805          0         0
+#> enumerate_basis       0.008     0.00   0.008          0         0
+#> design_matrix         0.003     0.00   0.003          0         0
+#> reduce_basis          0.000     0.00   0.000          0         0
+#> remove_duplicates     0.000     0.00   0.000          0         0
+#> lasso                 3.012     0.01   3.023          0         0
+#> total                 3.024     0.01   3.035          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
