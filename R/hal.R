@@ -108,6 +108,7 @@
 #' @param id A vector of ID values that is used to generate cross-validation
 #'  folds for \code{\link[glmnet]{cv.glmnet}}. This argument is ignored when
 #'  \code{fit_control}'s \code{cv_select} argument is \code{FALSE}.
+#' @param weights observation weights; defaults to 1 per observation.
 #' @param offset a vector of offset values, used in fitting.
 #' @param fit_control List of arguments for fitting. Includes the following
 #'  arguments, and any others to be passed to \code{\link[glmnet]{cv.glmnet}}
@@ -186,6 +187,7 @@ fit_hal <- function(X,
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
                     id = NULL,
+                    weights = NULL,
                     offset = NULL,
                     fit_control = list(
                       cv_select = TRUE,
@@ -388,6 +390,7 @@ fit_hal <- function(X,
   fit_control$lambda <- lambda
   fit_control$penalty.factor <- penalty_factor
   fit_control$offset <- offset
+  fit_control$weights <- weights
 
   if (!fit_control$cv_select) {
     hal_lasso <- do.call(glmnet::glmnet, fit_control)

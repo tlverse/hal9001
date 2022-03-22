@@ -17,6 +17,7 @@ fit_hal(
   family = c("gaussian", "binomial", "poisson", "cox"),
   lambda = NULL,
   id = NULL,
+  weights = NULL,
   offset = NULL,
   fit_control = list(cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
     lambda.min.ratio = 1e-04, prediction_bounds = "default"),
@@ -89,6 +90,8 @@ lambda in the input array will be returned.}
 \item{id}{A vector of ID values that is used to generate cross-validation
 folds for \code{\link[glmnet]{cv.glmnet}}. This argument is ignored when
 \code{fit_control}'s \code{cv_select} argument is \code{FALSE}.}
+
+\item{weights}{observation weights; defaults to 1 per observation.}
 
 \item{offset}{a vector of offset values, used in fitting.}
 
