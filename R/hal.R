@@ -278,7 +278,7 @@ fit_hal <- function(X,
     folds <- origami::make_folds(
       n = length(Y), V = fit_control$n_folds, cluster_ids = id
     )
-    foldid <- origami::folds2foldvec(folds)
+    fit_control$foldid <- origami::folds2foldvec(folds)
   }
 
   # bookkeeping: get start time of enumerate basis procedure
