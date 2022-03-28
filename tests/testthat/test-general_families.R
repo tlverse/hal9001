@@ -17,9 +17,11 @@ test_n <- 100
 test_x <- matrix(rnorm(test_n * p), test_n, p)
 test_y_prob <- plogis(3 * sin(test_x[, 1]) + sin(test_x[, 2]))
 test_y <- rbinom(n = test_n, size = 1, prob = y_prob)
-
+fit_control <- list(prediction_bounds = c(0.01, 0.99))
 # ml implementation
-ml_hal_fit <- suppressWarnings(fit_hal(X = x, Y = y, family = "binomial"))
+ml_hal_fit <- suppressWarnings(
+  fit_hal(X = x, Y = y, family = "binomial", fit_control = fit_control)
+)
 ml_hal_fit$times
 x_basis <- make_design_matrix(x, ml_hal_fit$basis_list)
 
@@ -28,7 +30,9 @@ preds <- predict(ml_hal_fit, new_data = x)
 ml_hal_mse1 <- mse(preds, y_prob)
 set.seed(45791)
 
-ml_hal_fit <- suppressWarnings(fit_hal(X = x, Y = y, family = binomial()))
+ml_hal_fit <- suppressWarnings(
+  fit_hal(X = x, Y = y, family = binomial(), fit_control = fit_control)
+)
 ml_hal_fit$times
 x_basis <- make_design_matrix(x, ml_hal_fit$basis_list)
 
