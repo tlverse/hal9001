@@ -65,3 +65,8 @@ ml_hal_mse2 <- mse(preds, y_prob)
 test_that("MSE for logistic regression close to logistic family object pred", {
   expect_true(abs(ml_hal_mse1 - ml_hal_mse2) < 0.01)
 })
+
+test_that("Error when prediction_bounds is incorrectly formatted", {
+  fit_control <- list(prediction_bounds = "kitty")
+  expect_error(fit_hal(X = x, Y = y, fit_control = fit_control))
+})

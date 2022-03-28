@@ -219,6 +219,7 @@ fit_hal <- function(X,
     all(!is.na(Y)),
     msg = "NA detected in `Y`, missingness in `Y` is not supported"
   )
+
   assertthat::assert_that(
     nrow(X) == length(Y),
     msg = "Number of rows in `X` and length of `Y` must be equal"
@@ -240,6 +241,13 @@ fit_hal <- function(X,
       )
     )
   }
+
+  assertthat::assert_that(
+    fit_control$prediction_bounds == "default" ||
+      (is.numeric(fit_control$prediction_bounds) &
+        length(fit_control$prediction_bounds) == 2),
+    msg = "prediction_bounds must be 'default' or numeric (lower, upper) bounds"
+  )
 
   if (!is.null(formula)) {
     # formula <- formula_hal(
