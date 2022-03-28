@@ -1,4 +1,4 @@
-context("Fits and prediction of classic Super Learner with HAL.")
+context("Fits and prediction of SuperLearner package.")
 library(SuperLearner)
 
 # easily compute MSE
@@ -29,7 +29,7 @@ sl_hal_fit <- SL.hal9001(
   Y = y, X = x, newX = NULL,
   family = stats::gaussian(),
   obsWeights = rep(1, length(y)),
-  id = 1:length(y)
+  id = seq_along(y)
 )
 # hal9001:::predict.SL.hal9001(sl_hal_fit$fit,newX=x,newdata=x)
 pred_hal_sl_train <- as.numeric(predict(hal_sl, newX = x)$pred)
