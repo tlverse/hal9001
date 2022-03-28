@@ -40,9 +40,6 @@ SL.hal9001 <- function(Y,
                        smoothness_orders = 1,
                        num_knots = 5,
                        ...) {
-  if (!requireNamespace("hal9001", quietly = FALSE)) {
-    stop("Loading required package hal9001 failed", call. = FALSE)
-  }
 
   # create matrix version of X and newX for use with hal9001::fit_hal
   if (!is.matrix(X)) X <- as.matrix(X)
