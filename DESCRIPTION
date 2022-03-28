@@ -1,6 +1,6 @@
 Package: hal9001
 Title: The Scalable Highly Adaptive Lasso
-Version: 0.4.3
+Version: 0.4.4
 Authors@R: c(
   person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com",
          role = c("aut", "cre"),
