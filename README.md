@@ -27,7 +27,7 @@ Phillips](https://github.com/rachaelvp), [Lars van der
 Laan](https://github.com/Larsvanderlaan), and [Mark van der
 Laan](https://vanderlaan-lab.org/)
 
------
+------------------------------------------------------------------------
 
 ## What’s `hal9001`?
 
@@ -49,7 +49,7 @@ variations of HAL regression are used to estimate nuisance parameters
 (e.g., van der Laan, Benkeser, and Cai 2019; Ertefaie, Hejazi, and van
 der Laan 2020).
 
------
+------------------------------------------------------------------------
 
 ## Installation
 
@@ -67,14 +67,14 @@ GitHub via [`remotes`](https://CRAN.R-project.org/package=remotes):
 remotes::install_github("tlverse/hal9001")
 ```
 
------
+------------------------------------------------------------------------
 
 ## Issues
 
 If you encounter any bugs or have any specific feature requests, please
 [file an issue](https://github.com/tlverse/hal9001/issues).
 
------
+------------------------------------------------------------------------
 
 ## Example
 
@@ -100,12 +100,12 @@ hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.008     0.00   0.008          0         0
-#> design_matrix         0.003     0.00   0.003          0         0
-#> reduce_basis          0.000     0.00   0.000          0         0
-#> remove_duplicates     0.000     0.00   0.000          0         0
-#> lasso                 3.012     0.01   3.023          0         0
-#> total                 3.024     0.01   3.035          0         0
+#> enumerate_basis       0.007    0.000   0.007          0         0
+#> design_matrix         0.002    0.000   0.002          0         0
+#> reduce_basis          0.000    0.000   0.000          0         0
+#> remove_duplicates     0.000    0.000   0.000          0         0
+#> lasso                 1.944    0.039   2.045          0         0
+#> total                 1.954    0.039   2.055          0         0
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
@@ -113,7 +113,7 @@ mean(hal_mse <- (preds - y)^2)
 #> [1] 0.03754093
 ```
 
------
+------------------------------------------------------------------------
 
 ## Contributions
 
@@ -122,37 +122,35 @@ our [contribution
 guidelines](https://github.com/tlverse/hal9001/blob/master/CONTRIBUTING.md)
 prior to submitting a pull request.
 
------
+------------------------------------------------------------------------
 
 ## Citation
 
 After using the `hal9001` R package, please cite both of the following:
 
-``` 
-    @software{coyle2022hal9001-rpkg,
-      author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
-        and {van der Laan}, Lars and {van der Laan}, Mark J},
-      title = {{hal9001}: The scalable highly adaptive lasso},
-      year  = {2022},
-      url = {https://doi.org/10.5281/zenodo.3558313},
-      doi = {10.5281/zenodo.3558313}
-      note = {{R} package version 0.4.2}
-    }
+        @software{coyle2022hal9001-rpkg,
+          author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
+            and {van der Laan}, Lars and {van der Laan}, Mark J},
+          title = {{hal9001}: The scalable highly adaptive lasso},
+          year  = {2022},
+          url = {https://doi.org/10.5281/zenodo.3558313},
+          doi = {10.5281/zenodo.3558313}
+          note = {{R} package version 0.4.2}
+        }
 
-    @article{hejazi2020hal9001-joss,
-      author = {Hejazi, Nima S and Coyle, Jeremy R and {van der Laan}, Mark
-        J},
-      title = {{hal9001}: Scalable highly adaptive lasso regression in
-        {R}},
-      year  = {2020},
-      url = {https://doi.org/10.21105/joss.02526},
-      doi = {10.21105/joss.02526},
-      journal = {Journal of Open Source Software},
-      publisher = {The Open Journal}
-    }
-```
+        @article{hejazi2020hal9001-joss,
+          author = {Hejazi, Nima S and Coyle, Jeremy R and {van der Laan}, Mark
+            J},
+          title = {{hal9001}: Scalable highly adaptive lasso regression in
+            {R}},
+          year  = {2020},
+          url = {https://doi.org/10.21105/joss.02526},
+          doi = {10.21105/joss.02526},
+          journal = {Journal of Open Source Software},
+          publisher = {The Open Journal}
+        }
 
------
+------------------------------------------------------------------------
 
 ## License
 
@@ -162,13 +160,13 @@ Hejazi](https://nimahejazi.org)
 The contents of this repository are distributed under the GPL-3 license.
 See file `LICENSE` for details.
 
------
+------------------------------------------------------------------------
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-benkeser2016hal">
+<div id="ref-benkeser2016hal" class="csl-entry">
 
 Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive
 Lasso Estimator.” In *2016 IEEE International Conference on Data Science
@@ -177,7 +175,7 @@ and Advanced Analytics (DSAA)*. IEEE.
 
 </div>
 
-<div id="ref-bibaut2019fast">
+<div id="ref-bibaut2019fast" class="csl-entry">
 
 Bibaut, Aurélien F, and Mark J van der Laan. 2019. “Fast Rates for
 Empirical Risk Minimization over Càdlàg Functions with Bounded Sectional
@@ -185,7 +183,7 @@ Variation Norm.” <https://arxiv.org/abs/1907.09244>.
 
 </div>
 
-<div id="ref-ertefaie2020nonparametric">
+<div id="ref-ertefaie2020nonparametric" class="csl-entry">
 
 Ertefaie, Ashkan, Nima S Hejazi, and Mark J van der Laan. 2020.
 “Nonparametric Inverse Probability Weighted Estimators Based on the
@@ -193,7 +191,7 @@ Highly Adaptive Lasso.” <https://arxiv.org/abs/2005.11303>.
 
 </div>
 
-<div id="ref-vdl2017generally">
+<div id="ref-vdl2017generally" class="csl-entry">
 
 van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum
 Loss Based Estimator Based on the Highly Adaptive Lasso.” *The
@@ -202,14 +200,14 @@ International Journal of Biostatistics*.
 
 </div>
 
-<div id="ref-vdl2017finite">
+<div id="ref-vdl2017finite" class="csl-entry">
 
 ———. 2017b. “Finite Sample Inference for Targeted Learning.”
 <https://arxiv.org/abs/1708.09502>.
 
 </div>
 
-<div id="ref-vdl2019efficient">
+<div id="ref-vdl2019efficient" class="csl-entry">
 
 van der Laan, Mark J, David Benkeser, and Weixin Cai. 2019. “Efficient
 Estimation of Pathwise Differentiable Target Parameters with the
@@ -218,7 +216,7 @@ Undersmoothed Highly Adaptive Lasso.”
 
 </div>
 
-<div id="ref-vdl2017uniform">
+<div id="ref-vdl2017uniform" class="csl-entry">
 
 van der Laan, Mark J, and Aurélien F Bibaut. 2017. “Uniform Consistency
 of the Highly Adaptive Lasso Estimator of Infinite-Dimensional
