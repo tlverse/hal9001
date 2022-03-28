@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
       </span>
     </div>
 
@@ -154,7 +154,7 @@ descriptions of HAL and its various optimality properties.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tlverse/hal9001" class="external-link">hal9001</a></span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Loading required package: Rcpp</span></code></pre>
-<pre><code><span class="co">## hal9001 v0.4.3: The Scalable Highly Adaptive Lasso</span>
+<pre><code><span class="co">## hal9001 v0.4.4: The Scalable Highly Adaptive Lasso</span>
 <span class="co">## note: fit_hal defaults have changed. See ?fit_hal for details</span></code></pre>
 <div class="section level3">
 <h3 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
@@ -166,11 +166,11 @@ step:</p>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
 <span class="co">## enumerate_basis       0.015    0.000   0.015          0         0</span>
-<span class="co">## design_matrix         0.084    0.002   0.088          0         0</span>
+<span class="co">## design_matrix         0.086    0.003   0.093          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 1.997    0.059   2.072          0         0</span>
-<span class="co">## total                 2.096    0.061   2.175          0         0</span></code></pre>
+<span class="co">## lasso                 2.016    0.065   2.204          0         0</span>
+<span class="co">## total                 2.118    0.068   2.313          0         0</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="summarizing-the-model">Summarizing the model<a class="anchor" aria-label="anchor" href="#summarizing-the-model"></a>
@@ -342,12 +342,12 @@ function:</p>
 <code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>
 <span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.012    0.001   0.013          0         0</span>
-<span class="co">## design_matrix         0.077    0.002   0.079          0         0</span>
+<span class="co">## enumerate_basis       0.013    0.001   0.013          0         0</span>
+<span class="co">## design_matrix         0.078    0.002   0.081          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 1.862    0.069   1.973          0         0</span>
-<span class="co">## total                 1.951    0.072   2.065          0         0</span></code></pre>
+<span class="co">## lasso                 1.879    0.062   1.964          0         0</span>
+<span class="co">## total                 1.970    0.065   2.058          0         0</span></code></pre>
 <p>In the above, all basis functions with fewer than 10% of observations
 meeting the criterion imposed are automatically removed prior to the
 Lasso step of fitting the HAL regression. The results appear below</p>
