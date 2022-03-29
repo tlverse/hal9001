@@ -204,8 +204,24 @@ fit_hal <- function(X,
   )
   if (any(!names(defaults) %in% names(fit_control))) {
     fit_control <- c(
-      defaults[which(!names(defaults) %in% names(fit_control))], fit_control
+      defaults[!names(defaults) %in% names(fit_control)], fit_control
     )
+  }
+  # check fit_control names (exluding defaults) are glmnet/cv.glmnet formals
+  glmnet_formals <- unique(c(
+    names(formals(glmnet::cv.glmnet)),
+    names(formals(glmnet::glmnet)),
+    names(formals(glmnet::relax.glmnet)) # extra allowed args to glmnet
+  ))
+  control_names <- names(fit_control[!names(fit_control) %in% names(defaults)])
+  if (any(!control_names %in% glmnet_formals)) {
+    bad_args <- control_names[(!control_names %in% glmnet_formals)]
+    warning(sprintf(
+      "Some fit_control arguments are neither default nor glmnet/cv.glmnet ",
+      "arguments: %s \nThey will be removed from fit_control",
+      paste0(bad_args, collapse = ", ")
+    ))
+    fit_control <- fit_control[!names(fit_control) %in% bad_args]
   }
 
   if (!is.matrix(X)) X <- as.matrix(X)
@@ -257,7 +273,11 @@ fit_hal <- function(X,
     # )
 
     if (!inherits(formula, "formula_hal")) {
-      formula <- formula_hal(formula, X = X, smoothness_orders = smoothness_orders, num_knots = num_knots)
+      formula <- formula_hal(
+        formula,
+        X = X, smoothness_orders = smoothness_orders,
+        num_knots = num_knots
+      )
     }
     basis_list <- formula$basis_list
     fit_control$upper.limits <- formula$upper.limits
