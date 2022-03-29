@@ -85,7 +85,7 @@
 <a href="https://nimahejazi.org" class="external-link">Nima Hejazi</a>, <a href="https://github.com/jeremyrcoyle" class="external-link">Jeremy Coyle</a>, Rachael
 Phillips, Lars van der Laan</h4>
             
-            <h4 data-toc-skip class="date">2022-03-28</h4>
+            <h4 data-toc-skip class="date">2022-03-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/HEAD/vignettes/intro_hal9001.Rmd" class="external-link"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -165,12 +165,12 @@ step:</p>
 <code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.015    0.000   0.015          0         0</span>
-<span class="co">## design_matrix         0.086    0.003   0.093          0         0</span>
+<span class="co">## enumerate_basis       0.022    0.001   0.023          0         0</span>
+<span class="co">## design_matrix         0.081    0.002   0.085          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 2.016    0.065   2.204          0         0</span>
-<span class="co">## total                 2.118    0.068   2.313          0         0</span></code></pre>
+<span class="co">## lasso                 2.071    0.055   2.141          0         0</span>
+<span class="co">## total                 2.174    0.058   2.249          0         0</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="summarizing-the-model">Summarizing the model<a class="anchor" aria-label="anchor" href="#summarizing-the-model"></a>
@@ -342,12 +342,12 @@ function:</p>
 <code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>
 <span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.013    0.001   0.013          0         0</span>
-<span class="co">## design_matrix         0.078    0.002   0.081          0         0</span>
+<span class="co">## enumerate_basis       0.013    0.002   0.015          0         0</span>
+<span class="co">## design_matrix         0.084    0.001   0.085          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 1.879    0.062   1.964          0         0</span>
-<span class="co">## total                 1.970    0.065   2.058          0         0</span></code></pre>
+<span class="co">## lasso                 1.907    0.056   1.983          0         0</span>
+<span class="co">## total                 2.004    0.059   2.083          0         0</span></code></pre>
 <p>In the above, all basis functions with fewer than 10% of observations
 meeting the criterion imposed are automatically removed prior to the
 Lasso step of fitting the HAL regression. The results appear below</p>
