@@ -1,4 +1,4 @@
-context("Fits and prediction of classic Super Learner with HAL.")
+context("Fits and prediction of SuperLearner package.")
 library(SuperLearner)
 
 # easily compute MSE
@@ -25,7 +25,12 @@ pred_hal_test <- predict(hal, new_data = test_x)
 
 # run SL-classic with glmnet and get predictions
 hal_sl <- SuperLearner(Y = y, X = x, SL.lib = "SL.hal9001")
-sl_hal_fit <- SL.hal9001(Y = y, X = x)
+sl_hal_fit <- SL.hal9001(
+  Y = y, X = x, newX = NULL,
+  family = stats::gaussian(),
+  obsWeights = rep(1, length(y)),
+  id = seq_along(y)
+)
 # hal9001:::predict.SL.hal9001(sl_hal_fit$fit,newX=x,newdata=x)
 pred_hal_sl_train <- as.numeric(predict(hal_sl, newX = x)$pred)
 pred_hal_sl_test <- as.numeric(predict(hal_sl, newX = test_x)$pred)

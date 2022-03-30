@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
       </span>
     </div>
 
@@ -68,15 +68,13 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">SL.hal9001</span><span class="op">(</span>
   <span class="va">Y</span>,
   <span class="va">X</span>,
-  newX <span class="op">=</span> <span class="cn">NULL</span>,
-  family <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">gaussian</a></span><span class="op">(</span><span class="op">)</span>,
-  obsWeights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,
-  id <span class="op">=</span> <span class="cn">NULL</span>,
-  max_degree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">20</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,
+  <span class="va">newX</span>,
+  <span class="va">family</span>,
+  <span class="va">obsWeights</span>,
+  <span class="va">id</span>,
+  max_degree <span class="op">=</span> <span class="fl">2</span>,
   smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
-  num_knots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">smoothness_orders</span> <span class="op">&gt;=</span> <span class="fl">1</span>, <span class="fl">25</span>, <span class="fl">50</span><span class="op">)</span>,
-  reduce_basis <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,
-  lambda <span class="op">=</span> <span class="cn">NULL</span>,
+  num_knots <span class="op">=</span> <span class="fl">5</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -112,20 +110,8 @@ specifying the smoothness of the basis functions. See the argument
 specifying the maximum number of knot points (i.e., bins) for each
 covariate for generating basis functions. See <code>num_knots</code> argument in
 <code><a href="fit_hal.html">fit_hal</a></code> for more information.</p></dd>
-<dt>reduce_basis</dt>
-<dd><p>A <code>numeric</code> value bounded in the open unit interval
-indicating the minimum proportion of 1's in a basis function column needed
-for the basis function to be included in the procedure to fit the lasso.
-Any basis functions with a lower proportion of 1's than the cutoff will be
-removed.</p></dd>
-<dt>lambda</dt>
-<dd><p>A user-specified sequence of values of the regularization
-parameter for the lasso L1 regression. If <code>NULL</code>, the default sequence
-in <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code> will be used. The cross-validated
-optimal value of this regularization parameter will be selected with
-<code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>.</p></dd>
 <dt>...</dt>
-<dd><p>Not used.</p></dd>
+<dd><p>Additional arguments to <code><a href="fit_hal.html">fit_hal</a></code>.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -140,11 +126,13 @@ optimal value of this regularization parameter will be selected with
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
+  <p></p><p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van
+der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>

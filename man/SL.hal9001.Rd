@@ -7,15 +7,13 @@
 SL.hal9001(
   Y,
   X,
-  newX = NULL,
-  family = stats::gaussian(),
-  obsWeights = rep(1, length(Y)),
-  id = NULL,
-  max_degree = ifelse(ncol(X) >= 20, 2, 3),
+  newX,
+  family,
+  obsWeights,
+  id,
+  max_degree = 2,
   smoothness_orders = 1,
-  num_knots = ifelse(smoothness_orders >= 1, 25, 50),
-  reduce_basis = 1/sqrt(length(Y)),
-  lambda = NULL,
+  num_knots = 5,
   ...
 )
 }
@@ -49,19 +47,7 @@ specifying the maximum number of knot points (i.e., bins) for each
 covariate for generating basis functions. See \code{num_knots} argument in
 \code{\link{fit_hal}} for more information.}
 
-\item{reduce_basis}{A \code{numeric} value bounded in the open unit interval
-indicating the minimum proportion of 1's in a basis function column needed
-for the basis function to be included in the procedure to fit the lasso.
-Any basis functions with a lower proportion of 1's than the cutoff will be
-removed.}
-
-\item{lambda}{A user-specified sequence of values of the regularization
-parameter for the lasso L1 regression. If \code{NULL}, the default sequence
-in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated
-optimal value of this regularization parameter will be selected with
-\code{\link[glmnet]{cv.glmnet}}.}
-
-\item{...}{Not used.}
+\item{...}{Additional arguments to \code{\link{fit_hal}}.}
 }
 \value{
 An object of class \code{SL.hal9001} with a fitted \code{hal9001}

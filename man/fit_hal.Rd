@@ -17,9 +17,10 @@ fit_hal(
   family = c("gaussian", "binomial", "poisson", "cox"),
   lambda = NULL,
   id = NULL,
+  weights = rep(1, length(Y)),
   offset = NULL,
-  fit_control = list(cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
-    lambda.min.ratio = 1e-04, prediction_bounds = "default"),
+  fit_control = list(cv_select = TRUE, use_min = TRUE, lambda.min.ratio = 1e-04,
+    prediction_bounds = "default"),
   basis_list = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,
@@ -90,11 +91,13 @@ lambda in the input array will be returned.}
 folds for \code{\link[glmnet]{cv.glmnet}}. This argument is ignored when
 \code{fit_control}'s \code{cv_select} argument is \code{FALSE}.}
 
+\item{weights}{observation weights; defaults to 1 per observation.}
+
 \item{offset}{a vector of offset values, used in fitting.}
 
-\item{fit_control}{List of arguments for fitting. Includes the following
-arguments, and any others to be passed to \code{\link[glmnet]{cv.glmnet}}
-or \code{\link[glmnet]{glmnet}}.
+\item{fit_control}{List of arguments, including the following, and any
+others to be passed to \code{\link[glmnet]{cv.glmnet}} or
+\code{\link[glmnet]{glmnet}}.
 \itemize{
 \item \code{cv_select}: A \code{logical} specifying if the sequence of
 specified \code{lambda} values should be passed to
@@ -102,28 +105,22 @@ specified \code{lambda} values should be passed to
 \code{lambda} to be selected according to cross-validation. When
 \code{cv_select = FALSE}, a \code{\link[glmnet]{glmnet}} model will be
 used to fit the sequence of (or single) \code{lambda}.
-\item \code{n_folds}: Integer for the number of folds to be used when splitting
-the data for V-fold cross-validation. Only used when
-\code{cv_select = TRUE}.
-\item \code{foldid}: An optional \code{numeric} containing values between 1 and
-\code{n_folds}, identifying the fold to which each observation is
-assigned. If supplied, \code{n_folds} can be missing. In such a case,
-this vector is passed directly to \code{\link[glmnet]{cv.glmnet}}. Only
-used when \code{cv_select = TRUE}.
 \item \code{use_min}: Specify the choice of lambda to be selected by
 \code{\link[glmnet]{cv.glmnet}}. When \code{TRUE}, \code{"lambda.min"} is
 used; otherwise, \code{"lambda.1se"}. Only used when
 \code{cv_select = TRUE}.
-\item \code{lambda.min.ratio}: A \code{\link[glmnet]{glmnet}} argument specifying
-the smallest value for \code{lambda}, as a fraction of \code{lambda.max},
-the (data derived) entry value (i.e. the smallest value for which all
-coefficients are zero). We've seen that not setting \code{lambda.min.ratio}
-can lead to no \code{lambda} values that fit the data sufficiently well.
-\item \code{prediction_bounds}: A vector of size two that provides the lower and
-upper bounds for predictions. When \code{prediction_bounds = "default"},
-the predictions are bounded between \code{min(Y) - sd(Y)} and
-\code{max(Y) + sd(Y)}. Bounding ensures that there is no extrapolation,
-and it is necessary for cross-validation selection and/or Super Learning.
+\item \code{lambda.min.ratio}: A \code{\link[glmnet]{glmnet}} argument
+specifying the smallest value for \code{lambda}, as a fraction of
+\code{lambda.max}, the (data derived) entry value (i.e. the smallest value
+for which all coefficients are zero). We've seen that not setting
+\code{lambda.min.ratio} can lead to no \code{lambda} values that fit the
+data sufficiently well.
+\item \code{prediction_bounds}: A vector of size two that provides the lower
+and upper bounds for predictions. When
+\code{prediction_bounds = "default"}, the predictions are bounded between
+\code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures that
+there is no extrapolation, and it is necessary for cross-validation
+selection and/or Super Learning.
 }}
 
 \item{basis_list}{The full set of basis functions generated from \code{X}.}

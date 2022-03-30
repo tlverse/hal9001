@@ -49,7 +49,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
       </span>
     </div>
 
@@ -95,12 +95,29 @@
 <blockquote>
 <p>The <em>Scalable</em> Highly Adaptive Lasso</p>
 </blockquote>
-<p><strong>Authors:</strong> <a href="https://github.com/tlverse" class="external-link">Jeremy Coyle</a>, <a href="https://nimahejazi.org" class="external-link">Nima Hejazi</a>, <a href="https://github.com/rachaelvp" class="external-link">Rachael Phillips</a>, <a href="https://github.com/Larsvanderlaan" class="external-link">Lars van der Laan</a>, and <a href="https://vanderlaan-lab.org/" class="external-link">Mark van der Laan</a></p>
+<p><strong>Authors:</strong> <a href="https://github.com/tlverse" class="external-link">Jeremy
+Coyle</a>, <a href="https://nimahejazi.org" class="external-link">Nima Hejazi</a>, <a href="https://github.com/rachaelvp" class="external-link">Rachael Phillips</a>, <a href="https://github.com/Larsvanderlaan" class="external-link">Lars van der Laan</a>, and <a href="https://vanderlaan-lab.org/" class="external-link">Mark van der Laan</a></p>
 <hr>
 <div class="section level2">
 <h2 id="whats-hal9001">What’s <code>hal9001</code>?<a class="anchor" aria-label="anchor" href="#whats-hal9001"></a>
 </h2>
-<p><code>hal9001</code> is an R package providing an implementation of the scalable <em>highly adaptive lasso</em> (HAL), a nonparametric regression estimator that applies L1-regularized lasso regression to a design matrix composed of indicator functions corresponding to the support of the functional over a set of covariates and interactions thereof. HAL regression allows for arbitrarily complex functional forms to be estimated at fast (near-parametric) convergence rates under only global smoothness assumptions (van der Laan 2017a; Bibaut and van der Laan 2019). For detailed theoretical discussions of the highly adaptive lasso estimator, consider consulting, for example, van der Laan (2017a), van der Laan (2017b), and van der Laan and Bibaut (2017). For a computational demonstration of the versatility of HAL regression, see Benkeser and van der Laan (2016). Recent theoretical works have demonstrated success in building efficient estimators of complex parameters when particular variations of HAL regression are used to estimate nuisance parameters (e.g., van der Laan, Benkeser, and Cai 2019; Ertefaie, Hejazi, and van der Laan 2020).</p>
+<p><code>hal9001</code> is an R package providing an implementation of
+the scalable <em>highly adaptive lasso</em> (HAL), a nonparametric
+regression estimator that applies L1-regularized lasso regression to a
+design matrix composed of indicator functions corresponding to the
+support of the functional over a set of covariates and interactions
+thereof. HAL regression allows for arbitrarily complex functional forms
+to be estimated at fast (near-parametric) convergence rates under only
+global smoothness assumptions (van der Laan 2017a; Bibaut and van der
+Laan 2019). For detailed theoretical discussions of the highly adaptive
+lasso estimator, consider consulting, for example, van der Laan (2017a),
+van der Laan (2017b), and van der Laan and Bibaut (2017). For a
+computational demonstration of the versatility of HAL regression, see
+Benkeser and van der Laan (2016). Recent theoretical works have
+demonstrated success in building efficient estimators of complex
+parameters when particular variations of HAL regression are used to
+estimate nuisance parameters (e.g., van der Laan, Benkeser, and Cai
+2019; Ertefaie, Hejazi, and van der Laan 2020).</p>
 <hr>
 </div>
 <div class="section level2">
@@ -109,7 +126,8 @@
 <p>For standard use, we recommend installing the package from <a href="https://CRAN.R-project.org/package=hal9001" class="external-link">CRAN</a> via</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"hal9001"</span><span class="op">)</span></code></pre></div>
-<p>To contribute, install the <em>development version</em> of <code>hal9001</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes" class="external-link"><code>remotes</code></a>:</p>
+<p>To contribute, install the <em>development version</em> of
+<code>hal9001</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes" class="external-link"><code>remotes</code></a>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"tlverse/hal9001"</span><span class="op">)</span></code></pre></div>
 <hr>
@@ -117,13 +135,16 @@
 <div class="section level2">
 <h2 id="issues">Issues<a class="anchor" aria-label="anchor" href="#issues"></a>
 </h2>
-<p>If you encounter any bugs or have any specific feature requests, please <a href="https://github.com/tlverse/hal9001/issues" class="external-link">file an issue</a>.</p>
+<p>If you encounter any bugs or have any specific feature requests,
+please <a href="https://github.com/tlverse/hal9001/issues" class="external-link">file an
+issue</a>.</p>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>Consider the following minimal example in using <code>hal9001</code> to generate predictions via Highly Adaptive Lasso regression:</p>
+<p>Consider the following minimal example in using <code>hal9001</code>
+to generate predictions via Highly Adaptive Lasso regression:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># load the package and set a seed</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tlverse/hal9001" class="external-link">hal9001</a></span><span class="op">)</span>
@@ -143,12 +164,12 @@
 <span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">#&gt; enumerate_basis       0.008     0.00   0.008          0         0</span>
-<span class="co">#&gt; design_matrix         0.003     0.00   0.003          0         0</span>
-<span class="co">#&gt; reduce_basis          0.000     0.00   0.000          0         0</span>
-<span class="co">#&gt; remove_duplicates     0.000     0.00   0.000          0         0</span>
-<span class="co">#&gt; lasso                 3.012     0.01   3.023          0         0</span>
-<span class="co">#&gt; total                 3.024     0.01   3.035          0         0</span>
+<span class="co">#&gt; enumerate_basis       0.007    0.000   0.007          0         0</span>
+<span class="co">#&gt; design_matrix         0.003    0.000   0.003          0         0</span>
+<span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
+<span class="co">#&gt; remove_duplicates     0.000    0.000   0.000          0         0</span>
+<span class="co">#&gt; lasso                 1.499    0.024   1.529          0         0</span>
+<span class="co">#&gt; total                 1.509    0.024   1.539          0         0</span>
 
 <span class="co"># training sample prediction</span>
 <span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
@@ -159,67 +180,84 @@
 <div class="section level2">
 <h2 id="contributions">Contributions<a class="anchor" aria-label="anchor" href="#contributions"></a>
 </h2>
-<p>Contributions are very welcome. Interested contributors should consult our <a href="https://github.com/tlverse/hal9001/blob/master/CONTRIBUTING.md" class="external-link">contribution guidelines</a> prior to submitting a pull request.</p>
+<p>Contributions are very welcome. Interested contributors should
+consult our <a href="https://github.com/tlverse/hal9001/blob/master/CONTRIBUTING.md" class="external-link">contribution
+guidelines</a> prior to submitting a pull request.</p>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>After using the <code>hal9001</code> R package, please cite both of the following:</p>
-<pre><code>    @software{coyle2022hal9001-rpkg,
-      author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
-        and {van der Laan}, Lars and {van der Laan}, Mark J},
-      title = {{hal9001}: The scalable highly adaptive lasso},
-      year  = {2022},
-      url = {https://doi.org/10.5281/zenodo.3558313},
-      doi = {10.5281/zenodo.3558313}
-      note = {{R} package version 0.4.2}
-    }
-
-    @article{hejazi2020hal9001-joss,
-      author = {Hejazi, Nima S and Coyle, Jeremy R and {van der Laan}, Mark
-        J},
-      title = {{hal9001}: Scalable highly adaptive lasso regression in
-        {R}},
-      year  = {2020},
-      url = {https://doi.org/10.21105/joss.02526},
-      doi = {10.21105/joss.02526},
-      journal = {Journal of Open Source Software},
-      publisher = {The Open Journal}
-    }</code></pre>
+<p>After using the <code>hal9001</code> R package, please cite both of
+the following:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>    <span class="sc">@</span>software{coyle2022hal9001<span class="sc">-</span>rpkg,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>      author <span class="ot">=</span> {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        and {van der Laan}, Lars and {van der Laan}, Mark J},</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      title <span class="ot">=</span> {{hal9001}<span class="sc">:</span> The scalable highly adaptive lasso},</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      year  <span class="ot">=</span> {<span class="dv">2022</span>},</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.5281</span><span class="sc">/</span>zenodo<span class="fl">.3558313</span>},</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      doi <span class="ot">=</span> {<span class="fl">10.5281</span><span class="sc">/</span>zenodo<span class="fl">.3558313</span>}</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      note <span class="ot">=</span> {{R} package version <span class="dv">0</span>.<span class="fl">4.2</span>}</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="sc">@</span>article{hejazi2020hal9001<span class="sc">-</span>joss,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>      author <span class="ot">=</span> {Hejazi, Nima S and Coyle, Jeremy R and {van der Laan}, Mark</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        J},</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      title <span class="ot">=</span> {{hal9001}<span class="sc">:</span> Scalable highly adaptive lasso regression <span class="cf">in</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        {R}},</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      year  <span class="ot">=</span> {<span class="dv">2020</span>},</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.21105</span><span class="sc">/</span>joss<span class="fl">.02526</span>},</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      doi <span class="ot">=</span> {<span class="fl">10.21105</span><span class="sc">/</span>joss<span class="fl">.02526</span>},</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>      journal <span class="ot">=</span> {Journal of Open Source Software},</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>      publisher <span class="ot">=</span> {The Open Journal}</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>© 2017-2022 <a href="https://github.com/tlverse" class="external-link">Jeremy R. Coyle</a> &amp; <a href="https://nimahejazi.org" class="external-link">Nima S. Hejazi</a></p>
-<p>The contents of this repository are distributed under the GPL-3 license. See file <code>LICENSE</code> for details.</p>
+<p>© 2017-2022 <a href="https://github.com/tlverse" class="external-link">Jeremy R. Coyle</a>
+&amp; <a href="https://nimahejazi.org" class="external-link">Nima S. Hejazi</a></p>
+<p>The contents of this repository are distributed under the GPL-3
+license. See file <code>LICENSE</code> for details.</p>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-benkeser2016hal">
-<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93" class="external-link uri">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-benkeser2016hal" class="csl-entry">
+Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive
+Lasso Estimator.” In <em>2016 IEEE International Conference on Data
+Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93" class="external-link uri">https://doi.org/10.1109/dsaa.2016.93</a>.
 </div>
-<div id="ref-bibaut2019fast">
-<p>Bibaut, Aurélien F, and Mark J van der Laan. 2019. “Fast Rates for Empirical Risk Minimization over Càdlàg Functions with Bounded Sectional Variation Norm.” <a href="https://arxiv.org/abs/1907.09244" class="external-link uri">https://arxiv.org/abs/1907.09244</a>.</p>
+<div id="ref-bibaut2019fast" class="csl-entry">
+Bibaut, Aurélien F, and Mark J van der Laan. 2019. “Fast Rates for
+Empirical Risk Minimization over Càdlàg Functions with Bounded Sectional
+Variation Norm.” <a href="https://arxiv.org/abs/1907.09244" class="external-link uri">https://arxiv.org/abs/1907.09244</a>.
 </div>
-<div id="ref-ertefaie2020nonparametric">
-<p>Ertefaie, Ashkan, Nima S Hejazi, and Mark J van der Laan. 2020. “Nonparametric Inverse Probability Weighted Estimators Based on the Highly Adaptive Lasso.” <a href="https://arxiv.org/abs/2005.11303" class="external-link uri">https://arxiv.org/abs/2005.11303</a>.</p>
+<div id="ref-ertefaie2020nonparametric" class="csl-entry">
+Ertefaie, Ashkan, Nima S Hejazi, and Mark J van der Laan. 2020.
+“Nonparametric Inverse Probability Weighted Estimators Based on the
+Highly Adaptive Lasso.” <a href="https://arxiv.org/abs/2005.11303" class="external-link uri">https://arxiv.org/abs/2005.11303</a>.
 </div>
-<div id="ref-vdl2017generally">
-<p>van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum Loss Based Estimator Based on the Highly Adaptive Lasso.” <em>The International Journal of Biostatistics</em>. <a href="https://doi.org/10.1515/ijb-2015-0097" class="external-link uri">https://doi.org/10.1515/ijb-2015-0097</a>.</p>
+<div id="ref-vdl2017generally" class="csl-entry">
+van der Laan, Mark J. 2017a. “A Generally Efficient Targeted Minimum
+Loss Based Estimator Based on the Highly Adaptive Lasso.” <em>The
+International Journal of Biostatistics</em>. <a href="https://doi.org/10.1515/ijb-2015-0097" class="external-link uri">https://doi.org/10.1515/ijb-2015-0097</a>.
 </div>
-<div id="ref-vdl2017finite">
-<p>———. 2017b. “Finite Sample Inference for Targeted Learning.” <a href="https://arxiv.org/abs/1708.09502" class="external-link uri">https://arxiv.org/abs/1708.09502</a>.</p>
+<div id="ref-vdl2017finite" class="csl-entry">
+———. 2017b. “Finite Sample Inference for Targeted Learning.” <a href="https://arxiv.org/abs/1708.09502" class="external-link uri">https://arxiv.org/abs/1708.09502</a>.
 </div>
-<div id="ref-vdl2019efficient">
-<p>van der Laan, Mark J, David Benkeser, and Weixin Cai. 2019. “Efficient Estimation of Pathwise Differentiable Target Parameters with the Undersmoothed Highly Adaptive Lasso.” <a href="https://arxiv.org/abs/1908.05607" class="external-link uri">https://arxiv.org/abs/1908.05607</a>.</p>
+<div id="ref-vdl2019efficient" class="csl-entry">
+van der Laan, Mark J, David Benkeser, and Weixin Cai. 2019. “Efficient
+Estimation of Pathwise Differentiable Target Parameters with the
+Undersmoothed Highly Adaptive Lasso.” <a href="https://arxiv.org/abs/1908.05607" class="external-link uri">https://arxiv.org/abs/1908.05607</a>.
 </div>
-<div id="ref-vdl2017uniform">
-<p>van der Laan, Mark J, and Aurélien F Bibaut. 2017. “Uniform Consistency of the Highly Adaptive Lasso Estimator of Infinite-Dimensional Parameters.” <a href="https://arxiv.org/abs/1709.06256" class="external-link uri">https://arxiv.org/abs/1709.06256</a>.</p>
+<div id="ref-vdl2017uniform" class="csl-entry">
+van der Laan, Mark J, and Aurélien F Bibaut. 2017. “Uniform Consistency
+of the Highly Adaptive Lasso Estimator of Infinite-Dimensional
+Parameters.” <a href="https://arxiv.org/abs/1709.06256" class="external-link uri">https://arxiv.org/abs/1709.06256</a>.
 </div>
 </div>
 </div>
@@ -290,12 +328,14 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
+<p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van
+der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

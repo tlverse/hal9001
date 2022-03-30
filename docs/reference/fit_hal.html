@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
       </span>
     </div>
 
@@ -78,9 +78,10 @@
   family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"binomial"</span>, <span class="st">"poisson"</span>, <span class="st">"cox"</span><span class="op">)</span>,
   lambda <span class="op">=</span> <span class="cn">NULL</span>,
   id <span class="op">=</span> <span class="cn">NULL</span>,
+  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,
   offset <span class="op">=</span> <span class="cn">NULL</span>,
-  fit_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_select <span class="op">=</span> <span class="cn">TRUE</span>, n_folds <span class="op">=</span> <span class="fl">10</span>, foldid <span class="op">=</span> <span class="cn">NULL</span>, use_min <span class="op">=</span> <span class="cn">TRUE</span>,
-    lambda.min.ratio <span class="op">=</span> <span class="fl">1e-04</span>, prediction_bounds <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span>,
+  fit_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_select <span class="op">=</span> <span class="cn">TRUE</span>, use_min <span class="op">=</span> <span class="cn">TRUE</span>, lambda.min.ratio <span class="op">=</span> <span class="fl">1e-04</span>,
+    prediction_bounds <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span>,
   basis_list <span class="op">=</span> <span class="cn">NULL</span>,
   return_lasso <span class="op">=</span> <span class="cn">TRUE</span>,
   return_x_basis <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -153,39 +154,35 @@ lambda in the input array will be returned.</p></dd>
 <dd><p>A vector of ID values that is used to generate cross-validation
 folds for <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>. This argument is ignored when
 <code>fit_control</code>'s <code>cv_select</code> argument is <code>FALSE</code>.</p></dd>
+<dt>weights</dt>
+<dd><p>observation weights; defaults to 1 per observation.</p></dd>
 <dt>offset</dt>
 <dd><p>a vector of offset values, used in fitting.</p></dd>
 <dt>fit_control</dt>
-<dd><p>List of arguments for fitting. Includes the following
-arguments, and any others to be passed to <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>
-or <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code>.</p><ul><li><p><code>cv_select</code>: A <code>logical</code> specifying if the sequence of
+<dd><p>List of arguments, including the following, and any
+others to be passed to <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code> or
+<code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code>.</p><ul><li><p><code>cv_select</code>: A <code>logical</code> specifying if the sequence of
 specified <code>lambda</code> values should be passed to
 <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code> in order for a single, optimal value of
 <code>lambda</code> to be selected according to cross-validation. When
 <code>cv_select = FALSE</code>, a <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code> model will be
 used to fit the sequence of (or single) <code>lambda</code>.</p></li>
-<li><p><code>n_folds</code>: Integer for the number of folds to be used when splitting
-the data for V-fold cross-validation. Only used when
-<code>cv_select = TRUE</code>.</p></li>
-<li><p><code>foldid</code>: An optional <code>numeric</code> containing values between 1 and
-<code>n_folds</code>, identifying the fold to which each observation is
-assigned. If supplied, <code>n_folds</code> can be missing. In such a case,
-this vector is passed directly to <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>. Only
-used when <code>cv_select = TRUE</code>.</p></li>
 <li><p><code>use_min</code>: Specify the choice of lambda to be selected by
 <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>. When <code>TRUE</code>, <code>"lambda.min"</code> is
 used; otherwise, <code>"lambda.1se"</code>. Only used when
 <code>cv_select = TRUE</code>.</p></li>
-<li><p><code>lambda.min.ratio</code>: A <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code> argument specifying
-the smallest value for <code>lambda</code>, as a fraction of <code>lambda.max</code>,
-the (data derived) entry value (i.e. the smallest value for which all
-coefficients are zero). We've seen that not setting <code>lambda.min.ratio</code>
-can lead to no <code>lambda</code> values that fit the data sufficiently well.</p></li>
-<li><p><code>prediction_bounds</code>: A vector of size two that provides the lower and
-upper bounds for predictions. When <code>prediction_bounds = "default"</code>,
-the predictions are bounded between <code>min(Y) - sd(Y)</code> and
-<code>max(Y) + sd(Y)</code>. Bounding ensures that there is no extrapolation,
-and it is necessary for cross-validation selection and/or Super Learning.</p></li>
+<li><p><code>lambda.min.ratio</code>: A <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code> argument
+specifying the smallest value for <code>lambda</code>, as a fraction of
+<code>lambda.max</code>, the (data derived) entry value (i.e. the smallest value
+for which all coefficients are zero). We've seen that not setting
+<code>lambda.min.ratio</code> can lead to no <code>lambda</code> values that fit the
+data sufficiently well.</p></li>
+<li><p><code>prediction_bounds</code>: A vector of size two that provides the lower
+and upper bounds for predictions. When
+<code>prediction_bounds = "default"</code>, the predictions are bounded between
+<code>min(Y) - sd(Y)</code> and <code>max(Y) + sd(Y)</code>. Bounding ensures that
+there is no extrapolation, and it is necessary for cross-validation
+selection and/or Super Learning.</p></li>
 </ul></dd>
 <dt>basis_list</dt>
 <dd><p>The full set of basis functions generated from <code>X</code>.</p></dd>
@@ -279,11 +276,13 @@ in a faster runtime:</p><ul><li><p>Some good settings for little to no cost in p
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
+  <p></p><p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van
+der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>

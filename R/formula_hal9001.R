@@ -143,7 +143,7 @@ h <- function(..., k = NULL, s = NULL, pf = 1,
     var_names <- unlist(list(...))
   }
   formula_term <- paste0("h(", paste0(var_names, collapse = ", "), ")")
-  
+
   if (is.null(k)) {
     k <- get("num_knots", envir = parent.frame())
     k <- suppressWarnings(k + rep(0, length(var_names))) # recycle
@@ -152,8 +152,8 @@ h <- function(..., k = NULL, s = NULL, pf = 1,
   if (is.null(s)) {
     s <- get("smoothness_orders", envir = parent.frame())[1]
   }
-  
-  
+
+
   if ("." %in% var_names) {
     var_names_filled <- fill_dots(var_names, . = .)
 
@@ -186,7 +186,7 @@ h <- function(..., k = NULL, s = NULL, pf = 1,
     return(all_items)
   }
 
-   
+
 
 
   # Get corresponding column indices
