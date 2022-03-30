@@ -217,8 +217,7 @@ fit_hal <- function(X,
   if (any(!control_names %in% glmnet_formals)) {
     bad_args <- control_names[(!control_names %in% glmnet_formals)]
     warning(sprintf(
-      "Some fit_control arguments are neither default nor glmnet/cv.glmnet ",
-      "arguments: %s \nThey will be removed from fit_control",
+      "Some fit_control arguments are neither default nor glmnet/cv.glmnet arguments: %s; \nThey will be removed from fit_control",
       paste0(bad_args, collapse = ", ")
     ))
     fit_control <- fit_control[!names(fit_control) %in% bad_args]
