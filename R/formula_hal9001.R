@@ -216,7 +216,7 @@ h <- function(..., k = NULL, s = NULL, pf = 1,
   })
 
 
-  basis_list_item <- make_basis_list(
+  basis_list_item <- hal9001:::make_basis_list(
     X[, col_index, drop = FALSE],
     col_index, rep(s, ncol(X))
   )
@@ -240,6 +240,7 @@ h <- function(..., k = NULL, s = NULL, pf = 1,
   return(out)
 }
 
+
 #' Print formula_hal9001 object
 #'
 #' @param x A formula_hal9001 object.
@@ -250,16 +251,17 @@ print.formula_hal9001 <- function(x, ...) {
   cat(paste0("A hal9001 formula object of the form: ~ ", x$formula_term))
 }
 
-#' Formula Helpers
-#'
-#' @param var_names A \code{character} vector of variable names.
+#' @param var_names A \code{character} vector of variable names representing a single type of interaction
+#" (e.g. var_names = c("W1", "W2", "W3") encodes three way interactions between W1, W2 and W3. 
+#' var_names may include the wildcard variable "." in which case the argument `.` must be specified 
+#' so that all interactions matching the form of var_names are generated.
 #' @param . Specification of variables for use in the formula.
-#'
-#' @name formula_helpers
-NULL
-
+#'   This function takes a character vector `var_names` of the form c(name1, name2, ".", name3, ".") 
+#' with any number of name{int} variables and any number of wild card variables ".".
+#' It returns a list of character vectors of the form c(name1, name2, wildcard1, name3, wildcard2) 
+#' where wildcard1 and wildcard2 are iterated over all possible character names given in the argument `.`.
 #' @rdname formula_helpers
-fill_dots_helper <- function(var_names, .) {
+fill_dots <- function(var_names, .) {
   index <- which(var_names == ".")
   if (length(index) == 0) {
     return(sort(var_names))
@@ -270,25 +272,23 @@ fill_dots_helper <- function(var_names, .) {
     new_var_names <- var_names
     new_var_names[index] <- var
     out <- fill_dots_helper(new_var_names, .)
-
-    if (is.list(out[[1]])) {
-      out <- unlist(out, recursive = FALSE)
-    }
     return(out)
   })
-
-
-  return(unique(all_items))
-}
-
-#' @rdname formula_helpers
-fill_dots <- function(var_names, .) {
-  x <- unique(unlist(fill_dots_helper(var_names, . = .), recursive = FALSE))
-  keep <- sapply(x, function(item) {
+  is_nested <- is.list(all_items[[1]])
+  while(is_nested) {
+    all_items <- unlist(all_items, recursive = FALSE)
+    is_nested <- is.list(all_items[[1]])
+  }
+  # Remove combinations of variable names that have duplicates.
+  # This removes generated interactions that include two of the same variable.
+  keep <- sapply(all_items, function(item) {
     if (any(duplicated(item))) {
       return(FALSE)
     }
     return(TRUE)
   })
-  return(x[keep])
+  all_items <- all_items[keep]
+
+  return(unique(all_items))
 }
+
