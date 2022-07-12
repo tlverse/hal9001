@@ -10,7 +10,7 @@ hal_fit <- fit_hal(
   return_x_basis = TRUE
 )
 hal_summary <- summary(hal_fit)
-
+print(hal_summary, length = 2)
 test_that("HAL and glmnet predictions match for multivariate outcome", {
   # get hal preds
   hal_pred <- predict(hal_fit, new_data = MultiGaussianExample$x)
