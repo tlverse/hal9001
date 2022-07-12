@@ -134,11 +134,12 @@
 #'    \code{lambda.min.ratio} can lead to no \code{lambda} values that fit the
 #'    data sufficiently well.
 #'  - \code{prediction_bounds}: An optional vector of size two that provides
-#'    the lower and upper bounds for predictions. When
-#'    \code{prediction_bounds = "default"}, the predictions are bounded between
-#'    \code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures that
-#'    there is no extrapolation, and it is necessary for cross-validation
-#'    selection and/or Super Learning.
+#'    the lower and upper bounds predictions; not used when
+#'    \code{family = "cox"}. When \code{prediction_bounds = "default"}, the
+#'    predictions are bounded between \code{min(Y) - sd(Y)} and
+#'    \code{max(Y) + sd(Y)} for each outcome (when \code{family = "mgaussian"},
+#'    each outcome can have different bounds). Bounding ensures that there is
+#'    no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
@@ -200,6 +201,7 @@ fit_hal <- function(X,
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
+  fam <- ifelse(inherits(family, "family"), family$family, family)
 
   # errors when a supplied control list is missing arguments
   defaults <- list(
@@ -262,12 +264,23 @@ fit_hal <- function(X,
     )
   }
 
-  assertthat::assert_that(
-    fit_control$prediction_bounds == "default" ||
-      (is.numeric(fit_control$prediction_bounds) &
-        length(fit_control$prediction_bounds) == 2),
-    msg = "prediction_bounds must be 'default' or numeric (lower, upper) bounds"
-  )
+  if(!is.character(fit_control$prediction_bounds)){
+    if(fam == "mgaussian"){
+      assertthat::assert_that(
+        is.list(fit_control$prediction_bounds) &
+          length(fit_control$prediction_bounds) == ncol(Y),
+        msg = "prediction_bounds must be 'default' or list of numeric (lower, upper) bounds for each outcome"
+      )
+    } else {
+      assertthat::assert_that(
+        is.numeric(fit_control$prediction_bounds) &
+          length(fit_control$prediction_bounds) == 2,
+        msg = "prediction_bounds must be 'default' or numeric (lower, upper) bounds"
+      )
+    }
+  }
+
+
 
   if (!is.null(formula)) {
     # formula <- formula_hal(
@@ -393,7 +406,7 @@ fit_hal <- function(X,
   #   x_basis <- as.matrix(x_basis)
   # }
 
-  if (!inherits(family, "family") && family == "cox") {
+  if (fam == "cox") {
     x_basis <- as.matrix(x_basis)
   }
 
@@ -454,19 +467,16 @@ fit_hal <- function(X,
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (is.character(fit_control$prediction_bounds) &&
     fit_control$prediction_bounds == "default") {
-    if (!inherits(Y, "Surv")) {
-      # This would break if Y was a survival object as in coxnet
-      if(family != "mgaussian"){
-        fit_control$prediction_bounds <- c(
-          min(Y) - 2 * stats::sd(Y), max(Y) + 2 * stats::sd(Y)
-        )
-      } else {
-        fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i){
-          c(min(Y[,i]) - 2 * stats::sd(Y[,i]), max(Y[,i]) + 2 * stats::sd(Y[,i]))
-        })
-      }
-    } else if (inherits(Y, "Surv")) {
+    if(fam == "mgaussian") {
+      fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i){
+        c(min(Y[,i]) - 2 * stats::sd(Y[,i]), max(Y[,i]) + 2 * stats::sd(Y[,i]))
+      })
+    } else if (fam == "cox") {
       fit_control$prediction_bounds <- NULL
+    } else {
+      fit_control$prediction_bounds <- c(
+        min(Y) - 2 * stats::sd(Y), max(Y) + 2 * stats::sd(Y)
+      )
     }
   }
 
