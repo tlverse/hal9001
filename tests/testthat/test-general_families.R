@@ -67,6 +67,6 @@ test_that("MSE for logistic regression close to logistic family object pred", {
 })
 
 test_that("Error when prediction_bounds is incorrectly formatted", {
-  fit_control <- list(prediction_bounds = "kitty")
+  fit_control <- list(prediction_bounds = 9)
   expect_error(fit_hal(X = x, Y = y, fit_control = fit_control))
 })
