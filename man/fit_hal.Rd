@@ -120,11 +120,12 @@ for which all coefficients are zero). We've seen that not setting
 \code{lambda.min.ratio} can lead to no \code{lambda} values that fit the
 data sufficiently well.
 \item \code{prediction_bounds}: An optional vector of size two that provides
-the lower and upper bounds for predictions. When
-\code{prediction_bounds = "default"}, the predictions are bounded between
-\code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures that
-there is no extrapolation, and it is necessary for cross-validation
-selection and/or Super Learning.
+the lower and upper bounds predictions; not used when
+\code{family = "cox"}. When \code{prediction_bounds = "default"}, the
+predictions are bounded between \code{min(Y) - sd(Y)} and
+\code{max(Y) + sd(Y)} for each outcome (when \code{family = "mgaussian"},
+each outcome can have different bounds). Bounding ensures that there is
+no extrapolation.
 }}
 
 \item{basis_list}{The full set of basis functions generated from \code{X}.}
