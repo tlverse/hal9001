@@ -41,6 +41,9 @@ predict.hal9001 <- function(object,
                             offset = NULL,
                             type = c("response", "link"),
                             ...) {
+
+  family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
+
   type <- match.arg(type)
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
@@ -75,7 +78,7 @@ predict.hal9001 <- function(object,
   }
 
   # generate predictions
-  if (inherits(object$family, "family") || !object$family %in% c("cox", "mgaussian")) {
+  if (!family %in% c("cox", "mgaussian")) {
     if (ncol(object$coefs) > 1) {
       preds <- apply(object$coefs, 2, function(hal_coefs) {
         as.vector(Matrix::tcrossprod(
@@ -90,7 +93,7 @@ predict.hal9001 <- function(object,
       ) + object$coefs[1])
     }
   } else {
-    if(object$family == "cox") {
+    if(family == "cox") {
       # Note: there is no intercept in the Cox model (built into the baseline
       #       hazard and would cancel in the partial likelihood).
       # Note: there is no intercept in the Cox model (built into the baseline
@@ -108,7 +111,7 @@ predict.hal9001 <- function(object,
           y = as.vector(object$coefs)
         ))
       }
-    } else if (object$family == "mgaussian") {
+    } else if (family == "mgaussian") {
       preds <- stats::predict(
         object$lasso_fit, newx = pred_x_basis, s = object$lambda_star
       )
@@ -130,16 +133,26 @@ predict.hal9001 <- function(object,
   if (inherits(object$family, "family")) {
     inverse_link_fun <- object$family$linkinv
     preds <- inverse_link_fun(preds)
-  } else if (object$family == "binomial") {
-    preds <- stats::plogis(preds)
-  } else if (object$family %in% c("poisson", "cox")) {
-    preds <- exp(preds)
+  } else {
+    if (family == "binomial") {
+      preds <- stats::plogis(preds)
+    } else if (family %in% c("poisson", "cox")) {
+      preds <- exp(preds)
+    }
   }
 
   # bound predictions within observed outcome bounds if on response scale
-  bounds <- object$prediction_bounds
-  if (!is.null(bounds)) {
-    if(object$family != "mgaussian"){
+  if (!is.null(object$prediction_bounds)) {
+    bounds <- object$prediction_bounds
+    if(family == "mgaussian") {
+      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i){
+        bounds_y <- sort(bounds[[i]])
+        preds_y <- preds[,i,]
+        preds_y <- pmax(bounds_y[1], preds_y)
+        preds_y <- pmin(preds_y, bounds_y[2])
+        return(preds_y)
+      }))
+    } else {
       bounds <- sort(bounds)
       if (is.matrix(preds)) {
         preds <- apply(preds, 2, pmax, bounds[1])
@@ -148,14 +161,6 @@ predict.hal9001 <- function(object,
         preds <- pmax(bounds[1], preds)
         preds <- pmin(preds, bounds[2])
       }
-    } else {
-      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i){
-        bounds_y <- sort(bounds[[i]])
-        preds_y <- preds[,i,]
-        preds_y <- pmax(bounds_y[1], preds_y)
-        preds_y <- pmin(preds_y, bounds_y[2])
-        return(preds_y)
-      }))
     }
   }
 
