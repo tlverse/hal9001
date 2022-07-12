@@ -52,6 +52,8 @@ summary.hal9001 <- function(object,
                             include_redundant_terms = FALSE,
                             round_cutoffs = 3,
                             ...) {
+
+  family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
   abs_coef <- basis_list_idx <- coef_idx <- dup <- NULL
 
   # retain coefficients corresponding to lambda
@@ -71,12 +73,20 @@ summary.hal9001 <- function(object,
           stop("Coefficients for the specified lambda do not exist.")
         } else {
           lambda_idx <- which(object$lasso_fit$lambda == lambda)
-          coefs <- object$lasso_fit$glmnet.fit$beta[, lambda_idx]
+          if(family != "mgaussian"){
+            coefs <- object$lasso_fit$glmnet.fit$beta[, lambda_idx]
+          } else {
+            coefs <- lapply(object$lasso_fit$glmnet.fit$beta, function(x) x[,lambda_idx])
+          }
         }
       }
     } else {
       lambda_idx <- which(object$lambda_star == lambda)
-      coefs <- object$coefs[, lambda_idx]
+      if(family != "mgaussian"){
+        coefs <- object$coefs[, lambda_idx]
+      } else {
+        coefs <- lapply(object$coefs, function(x) x[,lambda_idx])
+      }
     }
   }
 
@@ -89,169 +99,202 @@ summary.hal9001 <- function(object,
         "Summarizing coefficients corresponding to minimum lambda."
       )
       lambda_idx <- which.min(lambda)
-      coefs <- object$coefs[, lambda_idx]
+      if(family != "mgaussian"){
+        coefs <- object$coefs[, lambda_idx]
+      } else {
+        coefs <- lapply(object$coefs, function(x) x[,lambda_idx])
+      }
     }
   }
 
   # cox model has no intercept
-  if (object$family != "cox") {
-    coefs_no_intercept <- coefs[-1]
-  } else {
+  if (family == "cox") {
     coefs_no_intercept <- coefs
+  } else if (family == "mgaussian") {
+    coefs_no_intercept <- lapply(coefs, function(x) x[-1])
+  } else {
+    coefs_no_intercept <- coefs[-1]
   }
 
   # subset to non-zero coefficients
   if (only_nonzero_coefs) {
-    coef_idxs <- which(coefs_no_intercept != 0)
+    if(family == "mgaussian") {
+      coef_idxs <- lapply(coefs_no_intercept, function(x) which(x != 0))
+    } else {
+      coef_idxs <- which(coefs_no_intercept != 0)
+    }
   } else {
-    coef_idxs <- seq_along(coefs_no_intercept)
+    if(family == "mgaussian") {
+      coef_idxs <- lapply(coefs_no_intercept, function(x) seq_along(x))
+    } else {
+      coef_idxs <- seq_along(coefs_no_intercept)
+    }
   }
-  copy_map <- object$copy_map[coef_idxs]
 
-  # summarize coefficients with respect to basis list
-  coefs_summ <- data.table::rbindlist(
-    lapply(seq_along(copy_map), function(map_idx) {
-      coef_idx <- coef_idxs[map_idx]
-      coef <- coefs_no_intercept[coef_idx]
+  if(family == "mgaussian") {
+    copy_map <- lapply(coef_idxs, function(x) object$copy_map[x])
+  } else {
+    copy_map <- object$copy_map[coef_idxs]
+  }
 
-      basis_list_idxs <- copy_map[[map_idx]] # indices of duplicates
-      basis_dups <- object$basis_list[basis_list_idxs]
+  # ============================================================================
+  # utility function to summarize HAL fit which can be used for multiple outcomes
+  summarize_coefs <- function(copy_map, coef_idxs, coefs_no_intercept, coefs){
+    # summarize coefficients with respect to basis list
+    coefs_summ <- data.table::rbindlist(
+      lapply(seq_along(copy_map), function(map_idx) {
+        coef_idx <- coef_idxs[map_idx]
+        coef <- coefs_no_intercept[coef_idx]
 
-      data.table::rbindlist(
-        lapply(seq_along(basis_dups), function(i) {
-          coef_idx <- ifelse(object$family != "cox", coef_idx + 1, coef_idx)
-          dt <- data.table::data.table(
-            coef_idx = coef_idx, # coefficient index
-            coef, # coefficient
-            basis_list_idx = basis_list_idxs[i], # basis list index
-            col_idx = basis_dups[[i]]$cols, # column idx in X
-            col_cutoff = basis_dups[[i]]$cutoffs, # cutoff
-            col_order = basis_dups[[i]]$orders # smoothness order
-          )
-          return(dt)
-        })
-      )
-    })
-  )
+        basis_list_idxs <- copy_map[[map_idx]] # indices of duplicates
+        basis_dups <- object$basis_list[basis_list_idxs]
 
-  if (!include_redundant_terms) {
-    coef_idxs <- unique(coefs_summ$coef_idx)
-    coefs_summ <- data.table::rbindlist(lapply(coef_idxs, function(idx) {
-      # subset to matching coefficient index
-      coef_summ <- coefs_summ[coef_idx == idx]
+        data.table::rbindlist(
+          lapply(seq_along(basis_dups), function(i) {
+            coef_idx <- ifelse(family != "cox", coef_idx + 1, coef_idx)
+            dt <- data.table::data.table(
+              coef_idx = coef_idx, # coefficient index
+              coef, # coefficient
+              basis_list_idx = basis_list_idxs[i], # basis list index
+              col_idx = basis_dups[[i]]$cols, # column idx in X
+              col_cutoff = basis_dups[[i]]$cutoffs, # cutoff
+              col_order = basis_dups[[i]]$orders # smoothness order
+            )
+            return(dt)
+          })
+        )
+      })
+    )
 
-      # label duplicates (i.e. basis functions with identical col & cutoff)
-      dups_tbl <- coef_summ[, c("col_idx", "col_cutoff", "col_order")]
-      if (!anyDuplicated(dups_tbl)) {
-        return(coef_summ)
-      } else {
-        # add col indicating whether or not there is a duplicate
-        coef_summ[, dup := (duplicated(dups_tbl) |
-          duplicated(dups_tbl, fromLast = TRUE))]
+    if (!include_redundant_terms) {
+      coef_idxs <- unique(coefs_summ$coef_idx)
+      coefs_summ <- data.table::rbindlist(lapply(coef_idxs, function(idx) {
+        # subset to matching coefficient index
+        coef_summ <- coefs_summ[coef_idx == idx]
 
-        # if basis_list_idx contains redundant duplicates, remove them
-        redundant_dups <- coef_summ[dup == TRUE, "basis_list_idx"]
-        if (nrow(redundant_dups) > 1) {
-          # keep the redundant duplicate term that has the shortest length
-          retain_idx <- which.min(apply(redundant_dups, 1, function(idx) {
-            nrow(coef_summ[basis_list_idx == idx])
-          }))
-          idx_keep <- unname(unlist(redundant_dups[retain_idx]))
-          coef_summ <- coef_summ[basis_list_idx == idx_keep]
+        # label duplicates (i.e. basis functions with identical col & cutoff)
+        dups_tbl <- coef_summ[, c("col_idx", "col_cutoff", "col_order")]
+        if (!anyDuplicated(dups_tbl)) {
+          return(coef_summ)
+        } else {
+          # add col indicating whether or not there is a duplicate
+          coef_summ[, dup := (duplicated(dups_tbl) |
+                                duplicated(dups_tbl, fromLast = TRUE))]
+
+          # if basis_list_idx contains redundant duplicates, remove them
+          redundant_dups <- coef_summ[dup == TRUE, "basis_list_idx"]
+          if (nrow(redundant_dups) > 1) {
+            # keep the redundant duplicate term that has the shortest length
+            retain_idx <- which.min(apply(redundant_dups, 1, function(idx) {
+              nrow(coef_summ[basis_list_idx == idx])
+            }))
+            idx_keep <- unname(unlist(redundant_dups[retain_idx]))
+            coef_summ <- coef_summ[basis_list_idx == idx_keep]
+          }
+          return(coef_summ[, -"dup"])
         }
-        return(coef_summ[, -"dup"])
-      }
-    }))
-  }
+      }))
+    }
 
-  # summarize with respect to x column names:
-  x_names <- data.table::data.table(
-    col_idx = 1:length(object$X_colnames),
-    col_names = object$X_colnames
-  )
-  summ <- merge(coefs_summ, x_names, by = "col_idx", all.x = TRUE)
-
-  # combine name, cutoff into 0-order basis function (may include interaction)
-  summ$zero_term <- paste0(
-    "I(", summ$col_names, " >= ", round(summ$col_cutoff, round_cutoffs), ")"
-  )
-  summ$higher_term <- ifelse(
-    summ$col_order == 0, "",
-    paste0(
-      "(", summ$col_names, " - ",
-      round(summ$col_cutoff, round_cutoffs), ")"
+    # summarize with respect to x column names:
+    x_names <- data.table::data.table(
+      col_idx = 1:length(object$X_colnames),
+      col_names = object$X_colnames
     )
-  )
-  summ$higher_term <- ifelse(
-    summ$col_order < 1, summ$higher_term,
-    paste0(summ$higher_term, "^", summ$col_order)
-  )
-  summ$term <- ifelse(
-    summ$col_order == 0,
-    paste0("[ ", summ$zero_term, " ]"),
-    paste0("[ ", summ$zero_term, "*", summ$higher_term, " ]")
-  )
+    summ <- merge(coefs_summ, x_names, by = "col_idx", all.x = TRUE)
 
-  term_tbl <- data.table::as.data.table(stats::aggregate(
-    term ~ basis_list_idx,
-    data = summ, paste, collapse = " * "
-  ))
+    # combine name, cutoff into 0-order basis function (may include interaction)
+    summ$zero_term <- paste0(
+      "I(", summ$col_names, " >= ", round(summ$col_cutoff, round_cutoffs), ")"
+    )
+    summ$higher_term <- ifelse(
+      summ$col_order == 0, "",
+      paste0(
+        "(", summ$col_names, " - ",
+        round(summ$col_cutoff, round_cutoffs), ")"
+      )
+    )
+    summ$higher_term <- ifelse(
+      summ$col_order < 1, summ$higher_term,
+      paste0(summ$higher_term, "^", summ$col_order)
+    )
+    summ$term <- ifelse(
+      summ$col_order == 0,
+      paste0("[ ", summ$zero_term, " ]"),
+      paste0("[ ", summ$zero_term, "*", summ$higher_term, " ]")
+    )
 
-  # no longer need the columns or rows that were incorporated in the term
-  redundant <- c(
-    "term", "col_cutoff", "col_names", "col_idx", "col_order", "zero_term",
-    "higher_term"
-  )
-  summ <- summ[, -..redundant]
-  summ_unique <- unique(summ)
-  summ <- merge(
-    term_tbl, summ_unique,
-    by = "basis_list_idx", all.x = TRUE, all.y = FALSE
-  )
-
-  # summarize in a list
-  coefs_list <- lapply(unique(summ$coef_idx), function(this_coef_idx) {
-    coef_terms <- summ[coef_idx == this_coef_idx]
-    list(coef = unique(coef_terms$coef), term = t(coef_terms$term))
-  })
-
-  # summarize in a table
-  coefs_tbl <- data.table::as.data.table(stats::aggregate(
-    term ~ coef_idx,
-    data = summ, FUN = paste, collapse = "  OR  "
-  ))
-  redundant <- c("term", "basis_list_idx")
-  summ_unique_coefs <- unique(summ[, -..redundant])
-  coefs_tbl <- data.table::data.table(merge(
-    summ_unique_coefs, coefs_tbl,
-    by = "coef_idx", all = TRUE
-  ))
-  coefs_tbl[, "abs_coef" := abs(coef)]
-  coefs_tbl <- data.table::setorder(coefs_tbl[, -"coef_idx"], -abs_coef)
-  coefs_tbl <- coefs_tbl[, -"abs_coef", with = FALSE]
-
-  # incorporate intercept
-  if (object$family != "cox") {
-    intercept <- list(data.table::data.table(
-      coef = coefs[1], term = "(Intercept)"
+    term_tbl <- data.table::as.data.table(stats::aggregate(
+      term ~ basis_list_idx,
+      data = summ, paste, collapse = " * "
     ))
-    coefs_tbl <- data.table::rbindlist(
-      c(intercept, list(coefs_tbl)),
-      fill = TRUE
-    )
-    intercept <- list(coef = coefs[1], term = "(Intercept)")
-    coefs_list <- c(list(intercept), coefs_list)
-  }
-  out <- list(
-    table = coefs_tbl,
-    list = coefs_list,
-    lambda = lambda,
-    only_nonzero_coefs = only_nonzero_coefs
-  )
-  class(out) <- "summary.hal9001"
-  return(out)
-}
 
+    # no longer need the columns or rows that were incorporated in the term
+    redundant <- c(
+      "term", "col_cutoff", "col_names", "col_idx", "col_order", "zero_term",
+      "higher_term"
+    )
+    summ <- summ[, -..redundant]
+    summ_unique <- unique(summ)
+    summ <- merge(
+      term_tbl, summ_unique,
+      by = "basis_list_idx", all.x = TRUE, all.y = FALSE
+    )
+
+    # summarize in a list
+    coefs_list <- lapply(unique(summ$coef_idx), function(this_coef_idx) {
+      coef_terms <- summ[coef_idx == this_coef_idx]
+      list(coef = unique(coef_terms$coef), term = t(coef_terms$term))
+    })
+
+    # summarize in a table
+    coefs_tbl <- data.table::as.data.table(stats::aggregate(
+      term ~ coef_idx,
+      data = summ, FUN = paste, collapse = "  OR  "
+    ))
+    redundant <- c("term", "basis_list_idx")
+    summ_unique_coefs <- unique(summ[, -..redundant])
+    coefs_tbl <- data.table::data.table(merge(
+      summ_unique_coefs, coefs_tbl,
+      by = "coef_idx", all = TRUE
+    ))
+    coefs_tbl[, "abs_coef" := abs(coef)]
+    coefs_tbl <- data.table::setorder(coefs_tbl[, -"coef_idx"], -abs_coef)
+    coefs_tbl <- coefs_tbl[, -"abs_coef", with = FALSE]
+
+    # incorporate intercept
+    if (family != "cox") {
+      intercept <- list(data.table::data.table(
+        coef = coefs[1], term = "(Intercept)"
+      ))
+      coefs_tbl <- data.table::rbindlist(
+        c(intercept, list(coefs_tbl)),
+        fill = TRUE
+      )
+      intercept <- list(coef = coefs[1], term = "(Intercept)")
+      coefs_list <- c(list(intercept), coefs_list)
+    }
+    out <- list(
+      table = coefs_tbl,
+      list = coefs_list,
+      lambda = lambda,
+      only_nonzero_coefs = only_nonzero_coefs,
+      family = family
+    )
+    class(out) <- "summary.hal9001"
+    return(out)
+  }
+  # ============================================================================
+
+  if(family == "mgaussian") {
+    return_obj <- lapply(seq_along(copy_map), function(i){
+      summarize_coefs(copy_map[[i]], coef_idxs[[i]], coefs_no_intercept[[i]], coefs[[i]])
+    })
+  } else {
+    return_obj <- summarize_coefs(copy_map, coef_idxs, coefs_no_intercept, coefs)
+  }
+  return(return_obj)
+}
 ###############################################################################
 
 #' Print Method for Summary Class of HAL fits
@@ -262,28 +305,60 @@ summary.hal9001 <- function(object,
 #'
 #' @export
 print.summary.hal9001 <- function(x, length = NULL, ...) {
-  if (x$only_nonzero_coefs & is.null(length)) {
-    cat(
-      "\n\nSummary of non-zero coefficients is based on lambda of",
-      x$lambda, "\n\n"
-    )
-  } else if (!x$only_nonzero_coefs & is.null(length)) {
-    cat("\nSummary of coefficients is based on lambda of", x$lambda, "\n\n")
-  } else if (!x$only_nonzero_coefs & !is.null(length)) {
-    cat(
-      "\nSummary of top", length,
-      "coefficients is based on lambda of", x$lambda, "\n\n"
-    )
-  } else if (x$only_nonzero_coefs & !is.null(length)) {
-    cat(
-      "\nSummary of top", length,
-      "non-zero coefficients is based on lambda of", x$lambda, "\n\n"
-    )
-  }
+  if(x$family != "mgaussian" || !is.null(x$family)) {
+    if (x$only_nonzero_coefs & is.null(length)) {
+      cat(
+        "\n\nSummary of non-zero coefficients is based on lambda of",
+        x$lambda, "\n\n"
+      )
+    } else if (!x$only_nonzero_coefs & is.null(length)) {
+      cat("\nSummary of coefficients is based on lambda of", x$lambda, "\n\n")
+    } else if (!x$only_nonzero_coefs & !is.null(length)) {
+      cat(
+        "\nSummary of top", length,
+        "coefficients is based on lambda of", x$lambda, "\n\n"
+      )
+    } else if (x$only_nonzero_coefs & !is.null(length)) {
+      cat(
+        "\nSummary of top", length,
+        "non-zero coefficients is based on lambda of", x$lambda, "\n\n"
+      )
+    }
 
-  if (is.null(length)) {
-    print(x$table, row.names = FALSE)
+    if (is.null(length)) {
+      print(x$table, row.names = FALSE)
+    } else {
+      print(utils::head(x$table, length), row.names = FALSE)
+    }
   } else {
-    print(utils::head(x$table, length), row.names = FALSE)
+   for(i in 1:length(x)){
+      if (x[[i]]$only_nonzero_coefs & is.null(length)) {
+        cat(
+          "\n\nSummary of non-zero coefficients for each outcome is based on lambda of",
+          x[[i]]$lambda, "\n\n"
+        )
+      } else if (!x[[i]]$only_nonzero_coefs & is.null(length)) {
+        cat(
+          "\nSummary of coefficients for each outcome is based on lambda of",
+          x[[i]]$lambda, "\n\n"
+        )
+      } else if (!x[[i]]$only_nonzero_coefs & !is.null(length)) {
+        cat(
+          "\nSummary of top", length,
+          "coefficients for each outcome is based on lambda of", x[[i]]$lambda, "\n\n"
+        )
+      } else if (x[[i]]$only_nonzero_coefs & !is.null(length)) {
+        cat(
+          "\nSummary of top", length,
+          "non-zero coefficients for each outcome is based on lambda of",
+          x[[i]]$lambda, "\n\n"
+        )
+      }
+      if (is.null(length)) {
+        print(x[[i]]$table, row.names = FALSE)
+      } else {
+        print(utils::head(x[[i]]$table, length), row.names = FALSE)
+      }
+    }
   }
 }
