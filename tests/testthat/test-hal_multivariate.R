@@ -9,6 +9,7 @@ hal_fit <- fit_hal(
   X = MultiGaussianExample$x, Y = MultiGaussianExample$y, family = "mgaussian",
   return_x_basis = TRUE
 )
+hal_summary <- summary(hal_fit)
 
 test_that("HAL and glmnet predictions match for multivariate outcome", {
   # get hal preds
@@ -24,6 +25,19 @@ test_that("HAL and glmnet predictions match for multivariate outcome", {
   expect_equivalent(glmnet_pred, hal_pred)
 })
 
-# test_that("HAL summary works for multivariate outcome prediction", {
-#   TODO
-# })
+test_that("HAL summarizes coefs for each multivariate outcome prediction", {
+  expect_equal(ncol(MultiGaussianExample$y), length(hal_summary))
+})
+
+test_that("HAL summarizes coefs appropriately for multivariate outcome", {
+  # this checks intercept matches
+  lapply(seq_along(hal_summary), function(i){
+    expect_equal(hal_fit$coefs[[i]][1,], as.numeric(hal_summary[[i]]$table[1,1]))
+  })
+})
+
+test_that("Error when prediction_bounds is incorrectly formatted", {
+  fit_control <- list(prediction_bounds = 9)
+  expect_error(fit_hal(X = MultiGaussianExample$x, Y = MultiGaussianExample$y,
+                       family = "mgaussian", fit_control = fit_control))
+})
