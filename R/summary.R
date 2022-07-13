@@ -290,6 +290,7 @@ summary.hal9001 <- function(object,
     return_obj <- lapply(seq_along(copy_map), function(i){
       summarize_coefs(copy_map[[i]], coef_idxs[[i]], coefs_no_intercept[[i]], coefs[[i]])
     })
+    class(return_obj) <- "summary.hal9001"
   } else {
     return_obj <- summarize_coefs(copy_map, coef_idxs, coefs_no_intercept, coefs)
   }
@@ -305,7 +306,7 @@ summary.hal9001 <- function(object,
 #'
 #' @export
 print.summary.hal9001 <- function(x, length = NULL, ...) {
-  if(x$family != "mgaussian" || !is.null(x$family)) {
+  if(x$family != "mgaussian" && !is.null(x$family)) {
     if (x$only_nonzero_coefs & is.null(length)) {
       cat(
         "\n\nSummary of non-zero coefficients is based on lambda of",
