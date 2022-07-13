@@ -1,3 +1,6 @@
+# hal9001 0.4.5
+* Added multivariate outcome prediction
+
 # hal9001 0.4.4
 * Fixed bug with `prediction_bounds` (a `fit_hal` argument in `fit_control` 
   list), which would error when it was specified as a numeric vector. Also, 

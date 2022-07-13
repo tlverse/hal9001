@@ -51,7 +51,7 @@ test_that("Prediction bounds respected when numeric vector supplied", {
 })
 
 test_that("Check of prediction_bounds formatting errors", {
-  kitty_fit_control <- list(prediction_bounds = "kitty")
+  kitty_fit_control <- list(prediction_bounds = 9)
   expect_error(
     fit_hal(X = x, Y = y, family = "binomial", fit_control = kitty_fit_control)
   )

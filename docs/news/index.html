@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -60,21 +60,14 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.5" id="hal9001-045">hal9001 0.4.5<a class="anchor" aria-label="anchor" href="#hal9001-045"></a></h2>
+<ul><li>Added multivariate outcome prediction</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.4" id="hal9001-044">hal9001 0.4.4<a class="anchor" aria-label="anchor" href="#hal9001-044"></a></h2>
-<ul><li>Fixed bug with <code>prediction_bounds</code> (a
-<code>fit_hal</code> argument in <code>fit_control</code> list), which
-would error when it was specified as a numeric vector. Also, added a
-check to assert this argument is correctly specified, and tests to
-ensure a numeric vector of bounds is provided.</li>
-<li>Simplified <code>fit_control</code> list arguments in
-<code>fit_hal</code>. Users can still specify additional arguments to
-<code>cv.glmnet</code> and <code>glmnet</code> in this list.</li>
-<li>Defined <code>weights</code> as a formal argument in
-<code>fit_hal</code>, opposed to an optional argument in
-<code>fit_control</code>, to facilitate specification and avoid
-confusion. This increases flexibility with SuperLearner wrapper
-<code>SL.hal9001</code> as well; <code>fit_control</code> can now be
-customized with <code>SL.hal9001</code>.</li>
+<ul><li>Fixed bug with <code>prediction_bounds</code> (a <code>fit_hal</code> argument in <code>fit_control</code> list), which would error when it was specified as a numeric vector. Also, added a check to assert this argument is correctly specified, and tests to ensure a numeric vector of bounds is provided.</li>
+<li>Simplified <code>fit_control</code> list arguments in <code>fit_hal</code>. Users can still specify additional arguments to <code>cv.glmnet</code> and <code>glmnet</code> in this list.</li>
+<li>Defined <code>weights</code> as a formal argument in <code>fit_hal</code>, opposed to an optional argument in <code>fit_control</code>, to facilitate specification and avoid confusion. This increases flexibility with SuperLearner wrapper <code>SL.hal9001</code> as well; <code>fit_control</code> can now be customized with <code>SL.hal9001</code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3" id="hal9001-043">hal9001 0.4.3<small>2022-02-09</small><a class="anchor" aria-label="anchor" href="#hal9001-043"></a></h2>
@@ -91,88 +84,24 @@ customized with <code>SL.hal9001</code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0" id="hal9001-040">hal9001 0.4.0<a class="anchor" aria-label="anchor" href="#hal9001-040"></a></h2>
-<p>As of September 2021: * Minor change to how binning is performed when
-<code>num_knots = 1</code>, ensuring that the minimal number of knots is
-chosen when <code>num_knots = 1</code>. This results in HAL agreeing
-with (main terms) <code>glmnet</code> when <code>smoothness_orders =
-1</code> and <code>num_knots = 1</code>. * Revised formula interface
-with enhanced capabilities, allowing specifciation of penalization
-factors, smoothness_orders, and the number of knots for each variable,
-for every single term separately using the new <code>h</code> function.
-It is possible to specify, e.g., <code>h(X) + h(W)</code> which will
-generate and concatenate the two basis function terms.</p>
-<p>As of April 2021: * The default of <code>fit_hal</code> is now a
-first order smoothed HAL with binning. * Updated documentation for
-<code>formula_hal</code>, <code>fit_hal</code> and <code>predict</code>;
-and added <code>fit_control</code> and <code>formula_control</code>
-lists for arguments. Moved much of the text to details sections, and
-shortened the argument descriptions. * Updated <code>summary</code> to
-support higher-order HAL fit interpretations. * Added checks to
-<code>fit_hal</code> for missingness and dimensionality correspondence
-between <code>X</code>, <code>Y</code>, and <code>X_unpenalized</code>.
-These checks lead to quickly-produced errors, opposed to enumerating the
-basis list and then letting <code>glmnet</code> error on something
-trivial like this. * Modified formula interface in <code>fit_hal</code>,
-so <code>formula</code> is now provided directly to <code>fit_hal</code>
-and <code>formula_hal</code> is run within <code>fit_hal</code>. Due to
-these changes, it no longer made sense for <code>formula_hal</code> to
-accept <code>data</code>, so it now takes as input <code>X</code>. Also,
-the <code>formula_fit_hal</code> function was removed as it is no longer
-needed. * Support for the custom lasso procedure implemented in
-<code>Rcpp</code> has been discontinued. Accordingly, the
-<code>"lassi"</code> option and argument <code>fit_type</code> have been
-removed from <code>fit_hal</code>. * Re-added
-<code>lambda.min.ratio</code> as a <code>fit_control</code> argument to
-<code>fit_hal</code>. We’ve seen that not setting
-<code>lambda.min.ratio</code> in <code>glmnet</code> can lead to no
-<code>lambda</code> values that fit the data sufficiently well, so it
-seems appropriate to override the <code>glmnet</code> default.</p>
+<p>As of September 2021: * Minor change to how binning is performed when <code>num_knots = 1</code>, ensuring that the minimal number of knots is chosen when <code>num_knots = 1</code>. This results in HAL agreeing with (main terms) <code>glmnet</code> when <code>smoothness_orders = 1</code> and <code>num_knots = 1</code>. * Revised formula interface with enhanced capabilities, allowing specifciation of penalization factors, smoothness_orders, and the number of knots for each variable, for every single term separately using the new <code>h</code> function. It is possible to specify, e.g., <code>h(X) + h(W)</code> which will generate and concatenate the two basis function terms.</p>
+<p>As of April 2021: * The default of <code>fit_hal</code> is now a first order smoothed HAL with binning. * Updated documentation for <code>formula_hal</code>, <code>fit_hal</code> and <code>predict</code>; and added <code>fit_control</code> and <code>formula_control</code> lists for arguments. Moved much of the text to details sections, and shortened the argument descriptions. * Updated <code>summary</code> to support higher-order HAL fit interpretations. * Added checks to <code>fit_hal</code> for missingness and dimensionality correspondence between <code>X</code>, <code>Y</code>, and <code>X_unpenalized</code>. These checks lead to quickly-produced errors, opposed to enumerating the basis list and then letting <code>glmnet</code> error on something trivial like this. * Modified formula interface in <code>fit_hal</code>, so <code>formula</code> is now provided directly to <code>fit_hal</code> and <code>formula_hal</code> is run within <code>fit_hal</code>. Due to these changes, it no longer made sense for <code>formula_hal</code> to accept <code>data</code>, so it now takes as input <code>X</code>. Also, the <code>formula_fit_hal</code> function was removed as it is no longer needed. * Support for the custom lasso procedure implemented in <code>Rcpp</code> has been discontinued. Accordingly, the <code>"lassi"</code> option and argument <code>fit_type</code> have been removed from <code>fit_hal</code>. * Re-added <code>lambda.min.ratio</code> as a <code>fit_control</code> argument to <code>fit_hal</code>. We’ve seen that not setting <code>lambda.min.ratio</code> in <code>glmnet</code> can lead to no <code>lambda</code> values that fit the data sufficiently well, so it seems appropriate to override the <code>glmnet</code> default.</p>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0" id="hal9001-030">hal9001 0.3.0<a class="anchor" aria-label="anchor" href="#hal9001-030"></a></h2>
-<p>As of February 2021: * Support <em>higher order</em> HAL via the new
-<code>smoothness_orders</code> argument * <code>smoothness_orders</code>
-is a vector of length 1 or length <code>ncol(X)</code>. * If
-<code>smoothness_orders</code> is of length 1 then its values are
-recycled to form a vector of length <code>ncol(X)</code>. * Given such a
-vector of length <code>ncol(X)</code>, the ith element gives the level
-of smoothness for the variable corresponding to the ith column in
-<code>X</code>. * Degree-dependant binning. Higher order terms are
-binned more coarsely; the <code>num_knots</code> argument is a vector up
-to <code>max_degree</code> controlling the degree-specific binning. *
-Adds <code>formula_hal</code> which allows a formula specification of a
-HAL model.</p>
+<p>As of February 2021: * Support <em>higher order</em> HAL via the new <code>smoothness_orders</code> argument * <code>smoothness_orders</code> is a vector of length 1 or length <code>ncol(X)</code>. * If <code>smoothness_orders</code> is of length 1 then its values are recycled to form a vector of length <code>ncol(X)</code>. * Given such a vector of length <code>ncol(X)</code>, the ith element gives the level of smoothness for the variable corresponding to the ith column in <code>X</code>. * Degree-dependant binning. Higher order terms are binned more coarsely; the <code>num_knots</code> argument is a vector up to <code>max_degree</code> controlling the degree-specific binning. * Adds <code>formula_hal</code> which allows a formula specification of a HAL model.</p>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.8" id="hal9001-028">hal9001 0.2.8<a class="anchor" aria-label="anchor" href="#hal9001-028"></a></h2>
-<p>As of November 2020: * Allow support for Poisson family to
-<code>glmnet()</code>. * Begins consideration of supporting arbitrary
-<code><a href="https://rdrr.io/r/stats/family.html" class="external-link">stats::family()</a></code> objects to be passed through to calls to
-<code>glmnet()</code>. * Simplifies output of <code><a href="../reference/fit_hal.html">fit_hal()</a></code> by
-unifying the redundant <code>hal_lasso</code> and
-<code>glmnet_lasso</code> slots into the new <code>lasso_fit</code>
-slot. * Cleans up of methods throughout and improves documentation,
-reducing a few redundancies for cleaner/simpler code in
-<code>summary.hal9001</code>. * Adds link to DOI of the published
-<em>Journal of Open Source Software</em> paper in
-<code>DESCRIPTION</code>.</p>
+<p>As of November 2020: * Allow support for Poisson family to <code>glmnet()</code>. * Begins consideration of supporting arbitrary <code><a href="https://rdrr.io/r/stats/family.html" class="external-link">stats::family()</a></code> objects to be passed through to calls to <code>glmnet()</code>. * Simplifies output of <code><a href="../reference/fit_hal.html">fit_hal()</a></code> by unifying the redundant <code>hal_lasso</code> and <code>glmnet_lasso</code> slots into the new <code>lasso_fit</code> slot. * Cleans up of methods throughout and improves documentation, reducing a few redundancies for cleaner/simpler code in <code>summary.hal9001</code>. * Adds link to DOI of the published <em>Journal of Open Source Software</em> paper in <code>DESCRIPTION</code>.</p>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.7" id="hal9001-027">hal9001 0.2.7<small>2021-01-22</small><a class="anchor" aria-label="anchor" href="#hal9001-027"></a></h2>
-<p>As of September 2020: * Adds a <code>summary</code> method for
-interpreting HAL regressions (<a href="https://github.com/tlverse/hal9001/pull/64" class="external-link uri">https://github.com/tlverse/hal9001/pull/64</a>). * Adds a
-software paper for publication in the <em>Journal of Open Source
-Software</em> (<a href="https://github.com/tlverse/hal9001/pull/71" class="external-link uri">https://github.com/tlverse/hal9001/pull/71</a>).</p>
+<p>As of September 2020: * Adds a <code>summary</code> method for interpreting HAL regressions (<a href="https://github.com/tlverse/hal9001/pull/64" class="external-link uri">https://github.com/tlverse/hal9001/pull/64</a>). * Adds a software paper for publication in the <em>Journal of Open Source Software</em> (<a href="https://github.com/tlverse/hal9001/pull/71" class="external-link uri">https://github.com/tlverse/hal9001/pull/71</a>).</p>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.6" id="hal9001-026">hal9001 0.2.6<small>2020-06-27</small><a class="anchor" aria-label="anchor" href="#hal9001-026"></a></h2>
-<p>As of June 2020: * Address bugs/inconsistencies reported in the
-prediction method when trying to specify a value of lambda not included
-in initial fitting. * Addresses a bug arising from a silent failure in
-<code>glmnet</code> in which it ignores the argument
-<code>lambda.min.ratio</code> when <code>family = "gaussian"</code> is
-not set. * Adds a short software paper for submission to JOSS. * Minor
-documentation updates.</p>
+<p>As of June 2020: * Address bugs/inconsistencies reported in the prediction method when trying to specify a value of lambda not included in initial fitting. * Addresses a bug arising from a silent failure in <code>glmnet</code> in which it ignores the argument <code>lambda.min.ratio</code> when <code>family = "gaussian"</code> is not set. * Adds a short software paper for submission to JOSS. * Minor documentation updates.</p>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.5" id="hal9001-025">hal9001 0.2.5<small>2020-03-05</small><a class="anchor" aria-label="anchor" href="#hal9001-025"></a></h2>
@@ -188,13 +117,11 @@ documentation updates.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van
-der Laan, Mark van der Laan.</p>
+  <p></p><p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

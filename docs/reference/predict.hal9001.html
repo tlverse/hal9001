@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -72,7 +72,6 @@
   new_X_unpenalized <span class="op">=</span> <span class="cn">NULL</span>,
   offset <span class="op">=</span> <span class="cn">NULL</span>,
   type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"response"</span>, <span class="st">"link"</span><span class="op">)</span>,
-  p_reserve <span class="op">=</span> <span class="fl">0.75</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -96,11 +95,6 @@ observations as <code>new_data</code>.</p></dd>
 <dt>type</dt>
 <dd><p>Either "response" for predictions of the response, or "link" for
 un-transformed predictions (on the scale of the link function).</p></dd>
-<dt>p_reserve</dt>
-<dd><p>Sparse matrix pre-allocation proportion, which is the
-anticipated proportion of 1's in the design matrix. Default value is
-recommended in most settings. If a dense design matrix is expected, it
-would be useful to set <code>p_reserve</code> to a higher value.</p></dd>
 <dt>...</dt>
 <dd><p>Additional arguments passed to <code>predict</code> as necessary.</p></dd>
 </dl></div>
@@ -135,13 +129,11 @@ selected by cross-validation.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van
-der Laan, Mark van der Laan.</p>
+  <p></p><p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

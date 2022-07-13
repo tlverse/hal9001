@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@
 <a href="https://nimahejazi.org" class="external-link">Nima Hejazi</a>, <a href="https://github.com/jeremyrcoyle" class="external-link">Jeremy Coyle</a>, Rachael
 Phillips, Lars van der Laan</h4>
             
-            <h4 data-toc-skip class="date">2022-03-29</h4>
+            <h4 data-toc-skip class="date">2022-07-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/HEAD/vignettes/intro_hal9001.Rmd" class="external-link"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -154,7 +154,7 @@ descriptions of HAL and its various optimality properties.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tlverse/hal9001" class="external-link">hal9001</a></span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Loading required package: Rcpp</span></code></pre>
-<pre><code><span class="co">## hal9001 v0.4.4: The Scalable Highly Adaptive Lasso</span>
+<pre><code><span class="co">## hal9001 v0.4.5: The Scalable Highly Adaptive Lasso</span>
 <span class="co">## note: fit_hal defaults have changed. See ?fit_hal for details</span></code></pre>
 <div class="section level3">
 <h3 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
@@ -165,12 +165,12 @@ step:</p>
 <code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.015    0.000   0.015          0         0</span>
-<span class="co">## design_matrix         0.084    0.002   0.086          0         0</span>
+<span class="co">## enumerate_basis       0.027    0.003   0.053          0         0</span>
+<span class="co">## design_matrix         0.129    0.021   0.340          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 2.283    0.093   2.524          0         0</span>
-<span class="co">## total                 2.382    0.095   2.626          0         0</span></code></pre>
+<span class="co">## lasso                 3.577    0.436   9.466          0         0</span>
+<span class="co">## total                 3.734    0.460   9.861          0         0</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="summarizing-the-model">Summarizing the model<a class="anchor" aria-label="anchor" href="#summarizing-the-model"></a>
@@ -339,19 +339,22 @@ default.</p>
 <code>reduce_basis</code> argument to the <code>fit_hal</code>
 function:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>
-<span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
+<code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Warning in fit_hal(X = x, Y = y, reduce_basis = 0.1): Dropping reduce_basis;</span>
+<span class="co">## only applies if smoothness_orders = 0</span></code></pre>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.013    0.001   0.014          0         0</span>
-<span class="co">## design_matrix         0.078    0.002   0.080          0         0</span>
+<span class="co">## enumerate_basis       0.028    0.007   0.122          0         0</span>
+<span class="co">## design_matrix         0.131    0.017   0.463          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 2.063    0.079   2.231          0         0</span>
-<span class="co">## total                 2.154    0.082   2.325          0         0</span></code></pre>
+<span class="co">## lasso                 3.667    0.733  16.867          0         0</span>
+<span class="co">## total                 3.826    0.757  17.453          0         0</span></code></pre>
 <p>In the above, all basis functions with fewer than 10% of observations
 meeting the criterion imposed are automatically removed prior to the
 Lasso step of fitting the HAL regression. The results appear below</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
 <pre><code><span class="co">##              coef</span>
 <span class="co">##  1: -1.424003e+00</span>
@@ -464,7 +467,7 @@ corresponds to a piece-wise polynomial fit of degree <span class="math inline">\
 under the constraint that the total variation of the function’s <span class="math inline">\(k^{\text{th}}\)</span> derivative is bounded by
 some constant, which is selected with cross-validation.</p>
 <p>Let’s see this in action.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
 <span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">100</span> <span class="co"># Try changing this value to see what happens.</span>
 <span class="va">n_covars</span> <span class="op">&lt;-</span> <span class="fl">1</span>
@@ -510,16 +513,16 @@ imposing higher-order smoothness is that fewer knot points are required
 for a near-optimal fit. Therefore, one can safely pass a smaller value
 to <code>num_knots</code> for a big decrease in runtime without
 sacrificing performance.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] 0.00732315</span></code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] 0.003458005</span></code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] 0.001834611</span></code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
                  ytrue <span class="op">=</span> <span class="va">ytrue</span>,
                  y <span class="op">=</span> <span class="va">y</span>,
@@ -529,13 +532,13 @@ sacrificing performance.</p>
 <span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">dt</span>, id <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">value</span>, color <span class="op">=</span> <span class="va">variable</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_0</span>, main <span class="op">=</span> <span class="st">"Zero order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-2.png" width="700"></p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_1</span>, main <span class="op">=</span> <span class="st">"First order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-3.png" width="700"></p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_2</span>, main <span class="op">=</span> <span class="st">"Second order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-4.png" width="700"></p>
 <p>In general, if the basis functions are not coarse, then the
@@ -549,7 +552,7 @@ data-adaptively choose the optimal smoothness (invoked in
 Comparing the following simulation and the previous one, the HAL with
 second-order smoothness performed better when there were fewer knot
 points.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
 <span class="va">n_covars</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">250</span>
@@ -571,22 +574,22 @@ points.</p>
 <span class="va">pred_0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">hal_fit_0</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="va">pred_smooth_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_1</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
 <span class="va">pred_smooth_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">hal_fit_smooth_2</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] 0.00732315</span></code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_1</span><span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] 0.003458005</span></code></pre>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_smooth_2</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] 0.001848927</span></code></pre>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_0</span>, main <span class="op">=</span> <span class="st">"Zero order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_1</span>, main <span class="op">=</span> <span class="st">"First order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-2.png" width="700"></p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_2</span>, main <span class="op">=</span> <span class="st">"Second order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-5-3.png" width="700"></p>
 </div>
@@ -606,7 +609,7 @@ information for <code>fit_hal</code> and <code>glmnet</code>. The
 <code>fit_hal</code>, and the user-supplied character string is inputted
 into <code>fit_hal</code>. Here, we call <code>formula_hal</code>
 directly for illustrative purposes.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
 <span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">100</span>
 
@@ -624,7 +627,7 @@ ignored in <code>formula_hal</code>). This is why
 <code>formula_hal</code> takes the input <code>X</code> matrix of
 covariates, and not <code>X</code> and <code>Y</code>. In what follows,
 we include formulas with and without “y” in the character string.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># The `h` function is used to specify the basis functions for a given term</span>
 <span class="co"># h(x1) generates one-way basis functions for the variable x1</span>
 <span class="co"># This is an additive model:</span>
@@ -643,7 +646,7 @@ we include formulas with and without “y” in the character string.</p>
 <span class="co">## </span>
 <span class="co">## $orders</span>
 <span class="co">## [1] 0</span></code></pre>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We don't need the variables in the parent environment if we specify them directly:</span>
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">smoothness_orders</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">num_knots</span><span class="op">)</span>
@@ -652,7 +655,7 @@ we include formulas with and without “y” in the character string.</p>
 <span class="co"># They are the same!</span>
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span> <span class="va">form_term_new</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">form_term</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] TRUE</span></code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#To evaluate a unevaluated formula object like:</span>
 <span class="va">formula</span> <span class="op">&lt;-</span> <span class="op">~</span><span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span>
 <span class="co"># we can use the formula_hal function:</span>
@@ -669,13 +672,13 @@ all or a subset of variables using the <code>.</code> variable and
 <code>h(.)</code> is treated as a wildcard and basis functions are
 generated by replacing the <code>.</code> with all variables in
 <code>X</code>.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">smoothness_orders</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">5</span>
 <span class="co"># A additive model</span>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] "x1" "x2" "A"</span></code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Shortcut:</span>
 <span class="va">formula1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>
 <span class="co"># Longcut:</span>
@@ -683,7 +686,7 @@ generated by replacing the <code>.</code> with all variables in
 <span class="co"># Same number of basis functions</span>
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula1</span><span class="op">$</span><span class="va">basis_list</span> <span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula2</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] TRUE</span></code></pre>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Maybe we only want an additive model for x1 and x2</span>
 <span class="co"># Use the `.` argument</span>
 <span class="va">formula1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, . <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x1"</span>, <span class="st">"x2"</span><span class="op">)</span><span class="op">)</span>
@@ -691,19 +694,19 @@ generated by replacing the <code>.</code> with all variables in
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula1</span><span class="op">$</span><span class="va">basis_list</span> <span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula2</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] TRUE</span></code></pre>
 <p>We can specify interactions as follows.</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#  Two way interactions</span>
 <span class="va">formula1</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span>  <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span><span class="op">)</span>
 <span class="va">formula2</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>  <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula1</span><span class="op">$</span><span class="va">basis_list</span> <span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula2</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] TRUE</span></code></pre>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#</span>
 <span class="va">formula1</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span><span class="op">)</span>    <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span>,<span class="va">A</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x2</span>,<span class="va">A</span><span class="op">)</span>
 <span class="va">formula2</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>  <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">.</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula1</span><span class="op">$</span><span class="va">basis_list</span> <span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula2</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] TRUE</span></code></pre>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#  Three way interactions</span>
 <span class="va">formula1</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>,<span class="va">.</span><span class="op">)</span>    <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span>,<span class="va">A</span>,<span class="va">x2</span><span class="op">)</span>  
 <span class="va">formula2</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>  <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">.</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>,<span class="va">.</span>,<span class="va">.</span><span class="op">)</span>  
@@ -713,7 +716,7 @@ generated by replacing the <code>.</code> with all variables in
 two-way interactions with one variable (e.g., treatment “A”). This can
 be done in a variety of ways. The <code>.</code> argument allows you to
 specify a subset of variables.</p>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Write it all out</span>
 <span class="va">formula</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span>, <span class="va">x1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span>,<span class="va">x2</span><span class="op">)</span>
  
@@ -742,7 +745,7 @@ constraint on the function’s derivative (e.g. a convexity constraint).
 We can also specify that certain terms are not penalized in the
 LASSO/glmnet using the <code>pf</code> argument of <code>h</code>
 (stands for penalty factor).</p>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># An additive monotone increasing model</span>
 <span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
   <span class="va">y</span> <span class="op">~</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, monotone <span class="op">=</span> <span class="st">"i"</span><span class="op">)</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">0</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
@@ -765,7 +768,7 @@ LASSO/glmnet using the <code>pf</code> argument of <code>h</code>
   <span class="op">~</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, monotone <span class="op">=</span> <span class="st">"d"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>,<span class="va">.</span>, monotone <span class="op">=</span> <span class="st">"d"</span><span class="op">)</span>, <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
 <span class="op">)</span></code></pre></div>
 <p>The penalization feature can be used to reproduce glm</p>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Additive glm</span>
 <span class="co"># One knot (at the origin) and first order smoothness</span>
 <span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, s <span class="op">=</span> <span class="fl">1</span>, k <span class="op">=</span> <span class="fl">1</span>, pf <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
@@ -777,7 +780,7 @@ LASSO/glmnet using the <code>pf</code> argument of <code>h</code>
 <p>Now, that we’ve illustrated the options with
 <code>formula_hal</code>, let’s show how to fit a HAL model with the
 specified formula.</p>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># get formula object</span>
 <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
   X <span class="op">=</span> <span class="va">X</span>, Y <span class="op">=</span> <span class="va">Y</span>, formula <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">100</span>
@@ -797,7 +800,7 @@ specified formula.</p>
 <span class="co">##   0.2078703 [ I(x2 &gt;= -1.293)*(x2 - -1.293)^1 ]</span>
 <span class="co">##  -0.2039605     [ I(A &gt;= 1.384)*(A - 1.384)^1 ]</span>
 <span class="co">##   0.1993688   [ I(A &gt;= -1.356)*(A - -1.356)^1 ]</span></code></pre>
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, new_data <span class="op">=</span> <span class="va">X</span><span class="op">)</span>, <span class="va">Y</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
@@ -848,14 +851,12 @@ van der Laan, Mark J. 2017. <span>“Finite Sample Inference for
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van
-der Laan, Mark van der Laan.</p>
+<p>Developed by Jeremy Coyle, Nima Hejazi, Rachael Phillips, Lars van der Laan, Mark van der Laan.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
