@@ -70,3 +70,12 @@ test_that("Error when prediction_bounds is incorrectly formatted", {
   fit_control <- list(prediction_bounds = 9)
   expect_error(fit_hal(X = x, Y = y, fit_control = fit_control))
 })
+
+test_that("Message when standardize set to TRUE", {
+  fit_control <- list(standardize = TRUE)
+  expect_message(fit_hal(X = x, Y = y, fit_control = fit_control))
+})
+
+test_that("Warning when reduce_basis without zero-order smoothness", {
+  expect_warning(fit_hal(X = x, Y = y, reduce_basis = 0.95))
+})

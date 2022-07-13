@@ -40,8 +40,6 @@ sl <- SuperLearner(
   Y = y, X = x, SL.lib = c("SL.mean", "SL.hal9001"),
   cvControl = list(validRows = hal_sl$validRows)
 )
-pred_sl_train <- as.numeric(predict(sl, newX = x)$pred)
-pred_sl_test <- as.numeric(predict(sl, newX = test_x)$pred)
 
 # test for HAL vs. SL-HAL: outputs are the same length
 test_that("HAL and SuperLearner-HAL produce results of same shape", {
@@ -52,6 +50,7 @@ test_that("HAL and SuperLearner-HAL produce results of same shape", {
 # test of MSEs being close: SL-HAL and SL dominated by HAL should be very close
 # (hence the rather low tolerance, esp. given an additive scale)
 test_that("HAL dominates other algorithms when used in SuperLearner", {
+  pred_sl_test <- as.numeric(predict(sl, newX = test_x)$pred)
   expect_equal(
     mse(pred_sl_test, test_y),
     expected = mse(pred_hal_sl_test, test_y),
