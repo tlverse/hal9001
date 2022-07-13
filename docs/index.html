@@ -143,12 +143,12 @@
 <span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">#&gt; enumerate_basis       0.012    0.003   0.020          0         0</span>
-<span class="co">#&gt; design_matrix         0.004    0.000   0.004          0         0</span>
-<span class="co">#&gt; reduce_basis          0.000    0.000   0.001          0         0</span>
+<span class="co">#&gt; enumerate_basis       0.014    0.003   0.059          0         0</span>
+<span class="co">#&gt; design_matrix         0.004    0.001   0.005          0         0</span>
+<span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">#&gt; remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">#&gt; lasso                 2.660    0.272   4.215          0         0</span>
-<span class="co">#&gt; total                 2.677    0.276   4.240          0         0</span>
+<span class="co">#&gt; lasso                 2.684    0.343   6.583          0         0</span>
+<span class="co">#&gt; total                 2.703    0.348   6.655          0         0</span>
 
 <span class="co"># training sample prediction</span>
 <span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
