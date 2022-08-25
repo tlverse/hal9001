@@ -52,7 +52,8 @@ Imports:
   origami (>= 1.0.3),
   glmnet,
   data.table,
-  stringr
+  stringr,
+  RMTL
 Suggests:
   testthat,
   knitr,
