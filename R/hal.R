@@ -134,12 +134,13 @@
 #'    \code{lambda.min.ratio} can lead to no \code{lambda} values that fit the
 #'    data sufficiently well.
 #'  - \code{prediction_bounds}: An optional vector of size two that provides
-#'    the lower and upper bounds predictions; not used when
+#'    the lower and upper bounds for predictions; not used when
 #'    \code{family = "cox"}. When \code{prediction_bounds = "default"}, the
 #'    predictions are bounded between \code{min(Y) - sd(Y)} and
 #'    \code{max(Y) + sd(Y)} for each outcome (when \code{family = "mgaussian"},
-#'    each outcome can have different bounds). Bounding ensures that there is
-#'    no extrapolation.
+#'    each outcome can have different bounds). Supply a list of bounds when
+#'    \code{family = "mgaussian"} and each outcome has different bounds.
+#'    Bounding ensures that there is no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
@@ -213,7 +214,7 @@ fit_hal <- function(X,
       defaults[!names(defaults) %in% names(fit_control)], fit_control
     )
   }
-  # check fit_control names (exluding defaults) are glmnet/cv.glmnet formals
+  # check fit_control names (excluding defaults) are glmnet/cv.glmnet formals
   glmnet_formals <- unique(c(
     names(formals(glmnet::cv.glmnet)),
     names(formals(glmnet::glmnet)),
