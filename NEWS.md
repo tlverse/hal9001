@@ -1,5 +1,14 @@
 # hal9001 0.4.5
-* Added multivariate outcome prediction
+* Added multivariate outcome prediction with `glmnet`, and this can be invoked 
+  by setting `family = "mgaussian"` and passing a `matrix` of outcomes for `Y` 
+  in the call to `fit_hal`
+* Added `fit_mthal` which supports multivariate outcome prediction with custom 
+  `RMTL`: a package providing efficient solvers for 10 regularized multi-task 
+  learning algorithms. Compared to multivariate outcome prediction using 
+  `fit_hal` with `family = "mgaussian"`, `fit_mthal` can consider cross-task 
+  regularization (e.g,. "L21"-type group lasso) and missingness in the outcome 
+  matrix `Y`. The custom `RMTL` package can be installed via 
+  `devtools::install_github("imalenica/RMTL")`.
 
 # hal9001 0.4.4
 * Fixed bug with `prediction_bounds` (a `fit_hal` argument in `fit_control` 
