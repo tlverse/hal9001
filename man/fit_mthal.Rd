@@ -2,7 +2,7 @@
 % Please edit documentation in R/mthal.R
 \name{fit_mthal}
 \alias{fit_mthal}
-\title{MT-HAL: Multi-Task Highly Adaptive Lasso}
+\title{MT-HAL: Multi-task Highly Adaptive Lasso}
 \usage{
 fit_mthal(
   X,
@@ -14,7 +14,8 @@ fit_mthal(
   num_knots = num_knots_generator(max_degree = max_degree, smoothness_orders =
     smoothness_orders, base_num_knots_0 = 200, base_num_knots_1 = 50),
   reduce_basis = NULL,
-  lambda_1 = NULL,
+  lambda_1 = 10^seq(1, -10, -0.1),
+  nfolds = 10,
   fit_control = list(cv_select = TRUE, prediction_bounds = "default"),
   basis_list = NULL,
   return_x_basis = FALSE,
@@ -66,13 +67,17 @@ observations. Only applicable for models fit with zero-order splines, i.e.
 
 \item{lambda_1}{User-specified sequence of values of the regularization
 parameter for the lasso L1 regression, which control cross-task
-regularization. If \code{NULL}, the default sequence in
-\code{\link[RMTL]{cvMTL}} will be used. The cross-validated
+regularization. If \code{NULL}, the default sequence of
+\code{10^seq(1, -10, -.1)} will be used. The cross-validated
 optimal value of this regularization parameter will be selected with
 \code{\link[RMTL]{cvMTL}}. If \code{fit_control}'s \code{cv_select}
-argument is set to \code{FALSE}, then the regression will be fit via
-\code{\link[RMTL]{MTL}}, and regularized coefficient values for each
-lambda in the input array will be returned.}
+argument is set to \code{FALSE}, then (according to the
+\code{\link[RMTL]{MTL}} documentation) "the \code{\link[RMTL]{MTL}} model
+will be trained using a warm-start technique".}
+
+\item{nfolds}{Number of V-fold cross-validation folds, default is 10. Only
+used when \code{fit_control}'s \code{cv_select} argument is set to
+\code{TRUE}.}
 
 \item{fit_control}{List of arguments, including the following, and any
 others to be passed to \code{\link[RMTL]{cvMTL}} or
@@ -110,7 +115,7 @@ timing results (for assessing computational efficiency), and the \code{RMTL}
 fit object.
 }
 \description{
-Estimation procedure for MT-HAL, Multi-Task Highly Adaptive Lasso
+Estimation procedure for MT-HAL, Multi-task Highly Adaptive Lasso
 }
 \details{
 The procedure uses a custom C++ implementation to generate a design
