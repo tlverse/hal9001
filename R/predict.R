@@ -45,12 +45,17 @@ predict.hal9001 <- function(object,
   family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
 
   type <- match.arg(type)
+
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
-  if (!is.null(object$formula)) {
-    new_data <- new_data[, object$covariates]
-  }
+  assertthat::assert_that(
+    all(!is.na(new_data)),
+    msg = "NA detected in `new_data`, `new_data` missingness is not supported"
+  )
+  # if (!is.null(object$formula)) {
+  #   new_data <- new_data[, object$covariates]
+  # }
 
   # generate design matrix
   pred_x_basis <- make_design_matrix(new_data, object$basis_list)
@@ -165,5 +170,59 @@ predict.hal9001 <- function(object,
   }
 
   # output predictions on the response scale
+  return(preds)
+}
+
+
+#' Prediction from MT-HAL fits
+#'
+#' @details Method for computing and extracting predictions from fits of the
+#'  Multi-task Highly Adaptive Lasso estimator, returned as a single S3 objects
+#'  of class \code{mthal9001}.
+#'
+#' @param object An object of class \code{mthal9001}, containing the results of
+#'  fitting the Multi-task Highly Adaptive Lasso, as produced by
+#'  \code{\link{fit_mthal}}.
+#' @param new_data A \code{numeric} input \code{matrix} that the
+#'  \code{mthal9001} object will use to derive the predicted values.
+#'
+#' @importFrom stats predict
+#'
+#' @export
+#'
+#' @return A \code{numeric} vector of predictions from a \code{mthal9001}
+#'  object. The predictions will be truncated if in the call to
+#'  \code{fit_mthal} \code{prediction_bounds} were supplied or set to default,
+#'  and if the predictions fall outside those bounds.
+predict.mthal9001 <- function(object, new_data) {
+
+  if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
+  assertthat::assert_that(
+    all(!is.na(new_data)),
+    msg = "NA detected in `new_data`, `new_data` missingness is not supported"
+  )
+
+  # generate design matrix
+  pred_x_basis <- make_design_matrix(new_data, object$basis_list)
+
+  pred_X_list <- list()
+  for(i in 1:object$num_tasks) { pred_X_list[[i]] <- pred_x_basis }
+
+  if(class(object$RMTL_fit) == "cvMTL") object$RMTL_fit <- object$RMTL_fit$m
+  preds <- stats::predict(object$RMTL_fit, pred_X_list)
+
+  # bound predictions within observed outcome bounds if on response scale
+  if (!is.null(object$prediction_bounds)) {
+    bounds <- object$prediction_bounds
+    preds <- lapply(seq(length(preds)), function(i){
+      bounds_y <- sort(bounds[[i]])
+      preds_y <- preds[[i]]
+      preds_y <- pmax(bounds_y[1], preds_y)
+      preds_y <- pmin(preds_y, bounds_y[2])
+      return(preds_y)
+    })
+  }
+  preds <- do.call(cbind, preds)
+  colnames(preds) <- object$Y_colnames
   return(preds)
 }
