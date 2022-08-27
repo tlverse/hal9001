@@ -126,7 +126,7 @@
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
 #'
 #' @importFrom RMTL cvMTL MTL
-#' @importFrom stats coef
+#' @importFrom origami make_folds folds2foldvec
 #' @importFrom assertthat assert_that
 #'
 #' @return Object of class \code{mthal9001}, containing a list of basis
