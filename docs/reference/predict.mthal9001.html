@@ -81,9 +81,10 @@ fitting the Multi-task Highly Adaptive Lasso, as produced by
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code>numeric</code> vector of predictions from a <code>mthal9001</code>object. The predictions will be truncated if in the call to
-<code>fit_mthal</code><code>prediction_bounds</code> were supplied or set to default,
-and if the predictions fall outside those bounds.</p>
+    <p>A <code>matrix</code> of predictions from a <code>mthal9001</code> object. The
+predictions will be truncated if in the call to <code>fit_mthal</code>, either
+(a) <code>prediction_bounds</code> were supplied or (b) <code>type = "Regression"</code>and <code>prediction_bounds</code> were set to default, and if the generated
+predictions fall outside of those bounds.</p>
     </div>
     <div id="details">
     <h2>Details</h2>

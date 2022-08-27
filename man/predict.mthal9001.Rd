@@ -15,10 +15,11 @@ fitting the Multi-task Highly Adaptive Lasso, as produced by
 \code{mthal9001} object will use to derive the predicted values.}
 }
 \value{
-A \code{numeric} vector of predictions from a \code{mthal9001}
-object. The predictions will be truncated if in the call to
-\code{fit_mthal} \code{prediction_bounds} were supplied or set to default,
-and if the predictions fall outside those bounds.
+A \code{matrix} of predictions from a \code{mthal9001} object. The
+predictions will be truncated if in the call to \code{fit_mthal}, either
+(a) \code{prediction_bounds} were supplied or (b) \code{type = "Regression"}
+and \code{prediction_bounds} were set to default, and if the generated
+predictions fall outside of those bounds.
 }
 \description{
 Prediction from MT-HAL fits

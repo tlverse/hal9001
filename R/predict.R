@@ -190,10 +190,11 @@ predict.hal9001 <- function(object,
 #'
 #' @export
 #'
-#' @return A \code{numeric} vector of predictions from a \code{mthal9001}
-#'  object. The predictions will be truncated if in the call to
-#'  \code{fit_mthal} \code{prediction_bounds} were supplied or set to default,
-#'  and if the predictions fall outside those bounds.
+#' @return A \code{matrix} of predictions from a \code{mthal9001} object. The
+#'  predictions will be truncated if in the call to \code{fit_mthal}, either
+#'  (a) \code{prediction_bounds} were supplied or (b) \code{type = "Regression"}
+#'  and \code{prediction_bounds} were set to default, and if the generated
+#'  predictions fall outside of those bounds.
 predict.mthal9001 <- function(object, new_data) {
 
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
