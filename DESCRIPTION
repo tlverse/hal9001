@@ -65,6 +65,8 @@ Suggests:
   tidyr,
   survival,
   SuperLearner
+Remotes:
+  github::imalenica/RMTL
 LinkingTo:
   Rcpp,
   RcppEigen
