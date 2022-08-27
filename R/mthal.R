@@ -1,6 +1,6 @@
-#' MT-HAL: Multi-Task Highly Adaptive Lasso
+#' MT-HAL: Multi-task Highly Adaptive Lasso
 #'
-#' Estimation procedure for MT-HAL, Multi-Task Highly Adaptive Lasso
+#' Estimation procedure for MT-HAL, Multi-task Highly Adaptive Lasso
 #'
 #' @details The procedure uses a custom C++ implementation to generate a design
 #'  matrix of spline basis functions of covariates and interactions of
@@ -89,15 +89,18 @@
 #'  cutoff will be removed. Defaults to 1 over the square root of the number of
 #'  observations. Only applicable for models fit with zero-order splines, i.e.
 #'  \code{smoothness_orders = 0}.
-#' @param lambda_1  User-specified sequence of values of the regularization
+#' @param lambda_1 User-specified sequence of values of the regularization
 #'  parameter for the lasso L1 regression, which control cross-task
-#'  regularization. If \code{NULL}, the default sequence in
-#'  \code{\link[RMTL]{cvMTL}} will be used. The cross-validated
+#'  regularization. If \code{NULL}, the default sequence of
+#'  \code{10^seq(1, -10, -.1)} will be used. The cross-validated
 #'  optimal value of this regularization parameter will be selected with
 #'  \code{\link[RMTL]{cvMTL}}. If \code{fit_control}'s \code{cv_select}
-#'  argument is set to \code{FALSE}, then the regression will be fit via
-#'  \code{\link[RMTL]{MTL}}, and regularized coefficient values for each
-#'  lambda in the input array will be returned.
+#'  argument is set to \code{FALSE}, then (according to the
+#'  \code{\link[RMTL]{MTL}} documentation) "the \code{\link[RMTL]{MTL}} model
+#'  will be trained using a warm-start technique".
+#' @param nfolds Number of V-fold cross-validation folds, default is 10. Only
+#'  used when \code{fit_control}'s \code{cv_select} argument is set to
+#'  \code{TRUE}.
 #' @param fit_control List of arguments, including the following, and any
 #'  others to be passed to \code{\link[RMTL]{cvMTL}} or
 #'  \code{\link[RMTL]{MTL}}.
@@ -159,7 +162,8 @@ fit_mthal <- function(X,
                         base_num_knots_1 = 50
                       ),
                       reduce_basis = NULL,
-                      lambda_1 = NULL,
+                      lambda_1 = 10^seq(1, -10, -.1),
+                      nfolds = 10,
                       fit_control = list(
                         cv_select = TRUE,
                         prediction_bounds = "default"
@@ -198,12 +202,21 @@ fit_mthal <- function(X,
     all(!is.na(X)),
     msg = "NA detected in `X`; Missingness in `X` is not supported"
   )
-
+  assertthat::assert_that(
+    is.matrix(Y),
+    msg = "`Y` must be a matrix, missingness is allowed; see documentation"
+  )
+  assertthat::assert_that(
+    ncol(Y) > 1,
+    msg = "`Y` must be a matrix with multiple outcomes, i.e. one column per task"
+  )
   n_Y <- nrow(Y)
   assertthat::assert_that(
     nrow(X) == n_Y,
     msg = "Number of rows in `X` and `Y` must be equal"
   )
+
+
   if(!is.character(fit_control$prediction_bounds)){
     assertthat::assert_that(
       is.list(fit_control$prediction_bounds) &
@@ -293,25 +306,38 @@ fit_mthal <- function(X,
     X_colnames <- paste0("x", 1:ncol(X))
   }
 
-  # bookkeeping: get start time of lasso
-  time_start_lasso <- proc.time()
+  if (!is.null(colnames(Y))) {
+    Y_colnames <- colnames(Y)
+  } else {
+    Y_colnames <- paste0("y", 1:ncol(Y))
+  }
 
-  # format X and Y for RMTL
+  foldid <- origami::folds2foldvec(origami::make_folds(n = nrow(X), V = nfolds))
+
+  # format X, Y, foldid for RMTL
   Y_list <- lapply(seq_along(1:ncol(Y)), function(i) Y[,i])
   Y_NA <- lapply(Y_list, function(y) which(is.na(y)))
   Y_list <- lapply(Y_list, function(y) na.omit(y))
-  X_list <- lapply(seq_along(1:ncol(Y)), function(i){
+  X_foldid_list <- lapply(seq_along(1:ncol(Y)), function(i){
     x_i <- x_basis
-    if(any(Y_NA[[i]])){
-     x_i <- x_i[-Y_NA[[i]],]
+    foldid_i <- foldid
+    na_idx_i <- Y_NA[[i]]
+    if(any(na_idx_i)){
+     x_i <- x_i[-na_idx_i,]
+     foldid_i <- foldid_i[-na_idx_i]
     }
-    return(x_i)
+    return(list("X" = x_i, "foldid" = foldid_i))
   })
+  foldid_list <- lapply(X_foldid_list, '[[', 'foldid')
+  X_list <- lapply(X_foldid_list, '[[', 'X')
+
+  # bookkeeping: get start time of lasso
+  time_start_lasso <- proc.time()
+
   # fit regression
-  prediction_bounds <- fit_control$prediction_bounds
-  cv_select <- fit_control$cv_select
   fit_control$Y <- Y_list
   fit_control$X <- X_list
+  fit_control$type <- type
   if(!is.null(lambda_1)){
     if(length(lambda_1) == 1) {
       fit_control$Lam1 <- lambda_1
@@ -320,13 +346,14 @@ fit_mthal <- function(X,
       fit_control$Lam1_seq <- lambda_1
     }
   }
-  fit_control$type <- type
+  prediction_bounds <- fit_control$prediction_bounds
+  cv_select <- fit_control$cv_select
   fit_control <- fit_control[-which(names(fit_control) %in% c("prediction_bounds", "cv_select"))]
-
-  if (!cv_select) {
-    mtl_fit <- do.call(RMTL::MTL, fit_control)
-  } else {
+  if (cv_select) {
+    fit_control$foldid <- foldid_list
     mtl_fit <- do.call(RMTL::cvMTL, fit_control)
+  } else {
+    mtl_fit <- do.call(RMTL::MTL, fit_control)
   }
 
   # bookkeeping: get time for computation of the lasso regression
@@ -347,10 +374,14 @@ fit_mthal <- function(X,
 
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (is.character(prediction_bounds) && prediction_bounds == "default") {
-    prediction_bounds <- lapply(seq(ncol(Y)), function(i){
-      y <- na.omit(Y[,i])
-      c(min(y) - 2 * stats::sd(y), max(y) + 2 * stats::sd(y))
-    })
+    if(type == "Regression") {
+      prediction_bounds <- lapply(seq(ncol(Y)), function(i){
+        y <- na.omit(Y[,i])
+        c(min(y) - 2 * stats::sd(y), max(y) + 2 * stats::sd(y))
+      })
+    } else {
+      prediction_bounds <- NULL
+    }
   }
 
   # construct output object via lazy S3 list
@@ -363,6 +394,7 @@ fit_mthal <- function(X,
       },
     basis_list = basis_list,
     X_colnames = X_colnames,
+    Y_colnames = Y_colnames,
     copy_map = copy_map,
     # coefs = as.matrix(coefs),
     times = times,
@@ -370,38 +402,10 @@ fit_mthal <- function(X,
     reduce_basis = reduce_basis,
     family = family,
     RMTL_fit = mtl_fit,
+    num_tasks = length(Y_list),
     prediction_bounds = prediction_bounds
   )
   class(fit) <- "mthal9001"
   return(fit)
 }
 
-###############################################################################
-
-#' A default generator for the \code{num_knots} argument for each degree of
-#' interactions and the smoothness orders.
-#'
-#' @param d interaction degree.
-#' @param smoothness_orders see \code{\link{fit_hal}}.
-#' @param base_num_knots_0 The base number of knots for zeroth-order smoothness
-#'  basis functions. The number of knots by degree interaction decays as
-#'  `base_num_knots_0/2^(d-1)` where `d` is the interaction degree of the basis
-#'  function.
-#' @param base_num_knots_1 The base number of knots for 1 or greater order
-#'  smoothness basis functions. The number of knots by degree interaction
-#'  decays as `base_num_knots_1/2^(d-1)` where `d` is the interaction degree of
-#'  the basis function.
-#'
-#' @keywords internal
-num_knots_generator <- function(max_degree, smoothness_orders, base_num_knots_0 = 500,
-                                base_num_knots_1 = 200) {
-  if (all(smoothness_orders > 0)) {
-    return(sapply(seq_len(max_degree), function(d) {
-      round(base_num_knots_1 / 2^(d - 1))
-    }))
-  } else {
-    return(sapply(seq_len(max_degree), function(d) {
-      round(base_num_knots_0 / 2^(d - 1))
-    }))
-  }
-}
