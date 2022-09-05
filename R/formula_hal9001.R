@@ -251,14 +251,15 @@ print.formula_hal9001 <- function(x, ...) {
   cat(paste0("A hal9001 formula object of the form: ~ ", x$formula_term))
 }
 
+#'
 #' @param var_names A \code{character} vector of variable names representing a single type of interaction
-#" (e.g. var_names = c("W1", "W2", "W3") encodes three way interactions between W1, W2 and W3. 
-#' var_names may include the wildcard variable "." in which case the argument `.` must be specified 
+#" (e.g. var_names = c("W1", "W2", "W3") encodes three way interactions between W1, W2 and W3.
+#' var_names may include the wildcard variable "." in which case the argument `.` must be specified
 #' so that all interactions matching the form of var_names are generated.
 #' @param . Specification of variables for use in the formula.
-#'   This function takes a character vector `var_names` of the form c(name1, name2, ".", name3, ".") 
+#'   This function takes a character vector `var_names` of the form c(name1, name2, ".", name3, ".")
 #' with any number of name{int} variables and any number of wild card variables ".".
-#' It returns a list of character vectors of the form c(name1, name2, wildcard1, name3, wildcard2) 
+#' It returns a list of character vectors of the form c(name1, name2, wildcard1, name3, wildcard2)
 #' where wildcard1 and wildcard2 are iterated over all possible character names given in the argument `.`.
 #' @rdname formula_helpers
 fill_dots <- function(var_names, .) {
