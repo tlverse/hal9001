@@ -272,7 +272,7 @@ fill_dots <- function(var_names, .) {
   all_items <- lapply(., function(var) {
     new_var_names <- var_names
     new_var_names[index] <- var
-    out <- fill_dots_helper(new_var_names, .)
+    out <- fill_dots(new_var_names, .)
     return(out)
   })
   is_nested <- is.list(all_items[[1]])
