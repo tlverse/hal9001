@@ -78,12 +78,14 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Fitting the Highly Adaptive Lasso with <code>hal9001</code>
+      <h1 data-toc-skip>Fitting the Highly Adaptive Lasso with
+<code>hal9001</code>
 </h1>
                         <h4 data-toc-skip class="author">
-<a href="https://nimahejazi.org" class="external-link">Nima Hejazi</a>, <a href="https://github.com/jeremyrcoyle" class="external-link">Jeremy Coyle</a>, Rachael Phillips, Lars van der Laan</h4>
+<a href="https://nimahejazi.org" class="external-link">Nima Hejazi</a>, <a href="https://github.com/jeremyrcoyle" class="external-link">Jeremy Coyle</a>, Rachael
+Phillips, Lars van der Laan</h4>
             
-            <h4 data-toc-skip class="date">2022-02-09</h4>
+            <h4 data-toc-skip class="date">2022-11-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tlverse/hal9001/blob/HEAD/vignettes/intro_hal9001.Rmd" class="external-link"><code>vignettes/intro_hal9001.Rmd</code></a></small>
       <div class="hidden name"><code>intro_hal9001.Rmd</code></div>
@@ -95,7 +97,23 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <em>highly adaptive Lasso</em> (HAL) is a flexible machine learning algorithm that nonparametrically estimates a function based on available data by embedding a set of input observations and covariates in an extremely high-dimensional space (i.e., generating basis functions from the available data). For an input data matrix of <span class="math inline">\(n\)</span> observations and <span class="math inline">\(d\)</span> covariates, the maximum number of zero-order basis functions generated is approximately <span class="math inline">\(n \cdot 2^{d - 1}\)</span>. To select a set of basis functions from among the (possibly reduced/screener) set that’s generated, the lasso is employed. The <code>hal9001</code> R package <span class="citation">(Hejazi, Coyle, and van der Laan 2020; Coyle, Hejazi, and van der Laan, n.d.)</span> provides an efficient implementation of this routine, relying on the <code>glmnet</code> R package <span class="citation">(Friedman, Hastie, and Tibshirani 2010)</span> for compatibility with the canonical Lasso implementation and using lasso regression with an input matrix composed of basis functions. Consult <span class="citation">Benkeser and van der Laan (2016)</span>, <span class="citation">(<span class="citeproc-not-found" data-reference-id="vdl2015generally"><strong>???</strong></span>)</span>, <span class="citation">van der Laan (2017)</span> for detailed theoretical descriptions of HAL and its various optimality properties.</p>
+<p>The <em>highly adaptive Lasso</em> (HAL) is a flexible machine
+learning algorithm that nonparametrically estimates a function based on
+available data by embedding a set of input observations and covariates
+in an extremely high-dimensional space (i.e., generating basis functions
+from the available data). For an input data matrix of <span class="math inline">\(n\)</span> observations and <span class="math inline">\(d\)</span> covariates, the maximum number of
+zero-order basis functions generated is approximately <span class="math inline">\(n \cdot 2^{d - 1}\)</span>. To select a set of
+basis functions from among the (possibly reduced/screener) set that’s
+generated, the lasso is employed. The <code>hal9001</code> R package
+<span class="citation">(Hejazi, Coyle, and van der Laan 2020; Coyle,
+Hejazi, and van der Laan, n.d.)</span> provides an efficient
+implementation of this routine, relying on the <code>glmnet</code> R
+package <span class="citation">(Friedman, Hastie, and Tibshirani
+2010)</span> for compatibility with the canonical Lasso implementation
+and using lasso regression with an input matrix composed of basis
+functions. Consult <span class="citation">Benkeser and van der Laan
+(2016)</span>, <span class="citation">(<strong>vdl2015generally?</strong>)</span>, <span class="citation">van der Laan (2017)</span> for detailed theoretical
+descriptions of HAL and its various optimality properties.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -141,22 +159,29 @@
 <div class="section level3">
 <h3 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
 </h3>
-<p>HAL uses the popular <code>glmnet</code> R package for the lasso step:</p>
+<p>HAL uses the popular <code>glmnet</code> R package for the lasso
+step:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">hal_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.017    0.000   0.017          0         0</span>
-<span class="co">## design_matrix         0.090    0.000   0.091          0         0</span>
+<span class="co">## enumerate_basis       0.017    0.000   0.018          0         0</span>
+<span class="co">## design_matrix         0.082    0.003   0.086          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 3.832    0.008   3.840          0         0</span>
-<span class="co">## total                 3.940    0.008   3.948          0         0</span></code></pre>
+<span class="co">## lasso                 2.284    0.072   2.399          0         0</span>
+<span class="co">## total                 2.384    0.075   2.503          0         0</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="summarizing-the-model">Summarizing the model<a class="anchor" aria-label="anchor" href="#summarizing-the-model"></a>
 </h3>
-<p>While the raw output object may be examined, it has (usually large) slots that make quick examination challenging. The <code>summary</code> method provides an interpretable table of basis functions with non-zero coefficients. All terms (i.e., including the terms with zero coefficient) can be included by setting <code>only_nonzero_coefs</code> to <code>FALSE</code> when calling <code>summary</code> on a <code>hal9001</code> model object.</p>
+<p>While the raw output object may be examined, it has (usually large)
+slots that make quick examination challenging. The <code>summary</code>
+method provides an interpretable table of basis functions with non-zero
+coefficients. All terms (i.e., including the terms with zero
+coefficient) can be included by setting <code>only_nonzero_coefs</code>
+to <code>FALSE</code> when calling <code>summary</code> on a
+<code>hal9001</code> model object.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">hal_fit</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## </span>
@@ -237,7 +262,11 @@
 <span class="co">##                                          [ I(x1 &gt;= 0.594)*(x1 - 0.594)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]</span>
 <span class="co">##                                        [ I(x1 &gt;= -0.685)*(x1 - -0.685)^1 ] * [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]</span>
 <span class="co">##                                                                                                             term</span></code></pre>
-<p>Note the length and width of these tables! The R environment might not be the optimal location to view the summary. Tip: Tables can be exported from R to LaTeX with the <code>xtable</code> R package. Here’s an example: <code>print(xtable(summary(fit)$table, type = "latex"), file = "haltbl_meow.tex")</code>.</p>
+<p>Note the length and width of these tables! The R environment might
+not be the optimal location to view the summary. Tip: Tables can be
+exported from R to LaTeX with the <code>xtable</code> R package. Here’s
+an example: <code>print(xtable(summary(fit)$table, type = "latex"), file
+= "haltbl_meow.tex")</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="obtaining-model-predictions">Obtaining model predictions<a class="anchor" aria-label="anchor" href="#obtaining-model-predictions"></a>
@@ -261,19 +290,31 @@
 <div class="section level3">
 <h3 id="reducing-basis-functions">Reducing basis functions<a class="anchor" aria-label="anchor" href="#reducing-basis-functions"></a>
 </h3>
-<p>As described in <span class="citation">Benkeser and van der Laan (2016)</span>, the HAL algorithm operates by first constructing a set of basis functions and subsequently fitting a Lasso model with this set of basis functions as the design matrix. Several approaches are considered for reducing this set of basis functions: 1. Removing duplicated basis functions (done by default in the <code>fit_hal</code> function), 2. Removing basis functions that correspond to only a small set of observations; a good rule of thumb is to scale with <span class="math inline">\(\frac{1}{\sqrt{n}}\)</span>, and that is the default.</p>
-<p>The second of these two options may be modified by specifying the <code>reduce_basis</code> argument to the <code>fit_hal</code> function:</p>
+<p>As described in <span class="citation">Benkeser and van der Laan
+(2016)</span>, the HAL algorithm operates by first constructing a set of
+basis functions and subsequently fitting a Lasso model with this set of
+basis functions as the design matrix. Several approaches are considered
+for reducing this set of basis functions: 1. Removing duplicated basis
+functions (done by default in the <code>fit_hal</code> function), 2.
+Removing basis functions that correspond to only a small set of
+observations; a good rule of thumb is to scale with <span class="math inline">\(\frac{1}{\sqrt{n}}\)</span>, and that is the
+default.</p>
+<p>The second of these two options may be modified by specifying the
+<code>reduce_basis</code> argument to the <code>fit_hal</code>
+function:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">hal_fit_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>X <span class="op">=</span> <span class="va">x</span>, Y <span class="op">=</span> <span class="va">y</span>, reduce_basis <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>
 <span class="va">hal_fit_reduced</span><span class="op">$</span><span class="va">times</span></code></pre></div>
 <pre><code><span class="co">##                   user.self sys.self elapsed user.child sys.child</span>
-<span class="co">## enumerate_basis       0.013    0.000   0.014          0         0</span>
-<span class="co">## design_matrix         0.084    0.000   0.084          0         0</span>
+<span class="co">## enumerate_basis       0.026    0.005   0.031          0         0</span>
+<span class="co">## design_matrix         0.080    0.002   0.082          0         0</span>
 <span class="co">## reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">## remove_duplicates     0.000    0.000   0.000          0         0</span>
-<span class="co">## lasso                 3.763    0.008   3.771          0         0</span>
-<span class="co">## total                 3.860    0.008   3.869          0         0</span></code></pre>
-<p>In the above, all basis functions with fewer than 10% of observations meeting the criterion imposed are automatically removed prior to the Lasso step of fitting the HAL regression. The results appear below</p>
+<span class="co">## lasso                 1.951    0.063   2.030          0         0</span>
+<span class="co">## total                 2.057    0.070   2.143          0         0</span></code></pre>
+<p>In the above, all basis functions with fewer than 10% of observations
+meeting the criterion imposed are automatically removed prior to the
+Lasso step of fitting the HAL regression. The results appear below</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">hal_fit_reduced</span><span class="op">)</span><span class="op">$</span><span class="va">table</span></code></pre></div>
 <pre><code><span class="co">##              coef</span>
@@ -350,12 +391,42 @@
 <span class="co">## 34:                                                                             [ I(x3 &gt;= -3.289)*(x3 - -3.289)^1 ]</span>
 <span class="co">## 35:   [ I(x1 &gt;= -3.224)*(x1 - -3.224)^1 ] * [ I(x2 &gt;= -3.038)*(x2 - -3.038)^1 ] * [ I(x3 &gt;= 1.202)*(x3 - 1.202)^1 ]</span>
 <span class="co">##                                                                                                                term</span></code></pre>
-<p>Other approaches exist for reducing the set of basis functions <em>before</em> they are actually created, which is essential for most real-world applications with HAL. Currently, we provide this “pre-screening” via <code>num_knots</code> argument in <code>hal_fit</code>. The <code>num_knots</code> argument is akin to binning: it increases the coarseness of the approximation. <code>num_knots</code> allows one to specify the number of knot points used to generate the basis functions for each/all interaction degree(s). This reduces the total number of basis functions generated, and thus the size of the optimization problem, and it can dramatically decrease runtime. One can pass in a vector of length <code>max_degree</code> to <code>num_knots</code>, specifying the number of knot points to use by interaction degree for each basis function. Thus, one can specify if interactions of higher degrees (e.g., two- or three- way interactions) should be more coarse. Increasing the coarseness of more complex basis functions helps prevent a combinatorial explosion of basis functions, which can easily occur when basis functions are generated for all possible knot points. We will show an example with <code>num_knots</code> in the section that follows.</p>
+<p>Other approaches exist for reducing the set of basis functions
+<em>before</em> they are actually created, which is essential for most
+real-world applications with HAL. Currently, we provide this
+“pre-screening” via <code>num_knots</code> argument in
+<code>hal_fit</code>. The <code>num_knots</code> argument is akin to
+binning: it increases the coarseness of the approximation.
+<code>num_knots</code> allows one to specify the number of knot points
+used to generate the basis functions for each/all interaction degree(s).
+This reduces the total number of basis functions generated, and thus the
+size of the optimization problem, and it can dramatically decrease
+runtime. One can pass in a vector of length <code>max_degree</code> to
+<code>num_knots</code>, specifying the number of knot points to use by
+interaction degree for each basis function. Thus, one can specify if
+interactions of higher degrees (e.g., two- or three- way interactions)
+should be more coarse. Increasing the coarseness of more complex basis
+functions helps prevent a combinatorial explosion of basis functions,
+which can easily occur when basis functions are generated for all
+possible knot points. We will show an example with
+<code>num_knots</code> in the section that follows.</p>
 </div>
 <div class="section level3">
 <h3 id="specifying-smoothness-of-the-hal-model">Specifying smoothness of the HAL model<a class="anchor" aria-label="anchor" href="#specifying-smoothness-of-the-hal-model"></a>
 </h3>
-<p>One might wish to enforce smoothness on the functional form of the HAL fit. This can be done using the <code>smoothness_orders</code> argument. Setting <code>smoothness_orders = 0</code> gives a piece-wise constant fit (via zero-order basis functions), allowing for discontinuous jumps in the function. This is useful if one does not want to assume any smoothness or continuity of the “true” function. Setting <code>smoothness_orders = 1</code> gives a piece-wise linear fit (via first-order basis functions), which is continuous and mostly differentiable. In general, <code>smoothness_orders = k</code> corresponds to a piece-wise polynomial fit of degree <span class="math inline">\(k\)</span>. Mathematically, <code>smoothness_orders = k</code> corresponds with finding the best fit under the constraint that the total variation of the function’s <span class="math inline">\(k^{\text{th}}\)</span> derivative is bounded by some constant, which is selected with cross-validation.</p>
+<p>One might wish to enforce smoothness on the functional form of the
+HAL fit. This can be done using the <code>smoothness_orders</code>
+argument. Setting <code>smoothness_orders = 0</code> gives a piece-wise
+constant fit (via zero-order basis functions), allowing for
+discontinuous jumps in the function. This is useful if one does not want
+to assume any smoothness or continuity of the “true” function. Setting
+<code>smoothness_orders = 1</code> gives a piece-wise linear fit (via
+first-order basis functions), which is continuous and mostly
+differentiable. In general, <code>smoothness_orders = k</code>
+corresponds to a piece-wise polynomial fit of degree <span class="math inline">\(k\)</span>. Mathematically,
+<code>smoothness_orders = k</code> corresponds with finding the best fit
+under the constraint that the total variation of the function’s <span class="math inline">\(k^{\text{th}}\)</span> derivative is bounded by
+some constant, which is selected with cross-validation.</p>
 <p>Let’s see this in action.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
@@ -393,7 +464,16 @@
 <span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">dt</span>, id <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">value</span>, group <span class="op">=</span> <span class="va">variable</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
-<p>Comparing the mean squared error (MSE) between the predictions and the true (denoised) outcome, the first- and second- order smoothed HAL is able to recover from the coarseness of the basis functions caused by the small <code>num_knots</code> argument. Also, the HAL with second-order smoothness is able to fit the true function very well (as expected, since sin(x) is a very smooth function). The main benefit of imposing higher-order smoothness is that fewer knot points are required for a near-optimal fit. Therefore, one can safely pass a smaller value to <code>num_knots</code> for a big decrease in runtime without sacrificing performance.</p>
+<p>Comparing the mean squared error (MSE) between the predictions and
+the true (denoised) outcome, the first- and second- order smoothed HAL
+is able to recover from the coarseness of the basis functions caused by
+the small <code>num_knots</code> argument. Also, the HAL with
+second-order smoothness is able to fit the true function very well (as
+expected, since sin(x) is a very smooth function). The main benefit of
+imposing higher-order smoothness is that fewer knot points are required
+for a near-optimal fit. Therefore, one can safely pass a smaller value
+to <code>num_knots</code> for a big decrease in runtime without
+sacrificing performance.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">(</span><span class="va">pred_0</span> <span class="op">-</span> <span class="va">ytrue</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] 0.00732315</span></code></pre>
@@ -422,7 +502,17 @@
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">pred_smooth_2</span>, main <span class="op">=</span> <span class="st">"Second order smoothness fit"</span><span class="op">)</span></code></pre></div>
 <p><img src="intro_hal9001_files/figure-html/unnamed-chunk-3-4.png" width="700"></p>
-<p>In general, if the basis functions are not coarse, then the performance for different smoothness orders is similar. Notice how the runtime is a fair bit slower when more knot points are considered. In general, we recommend either zero- or first- order smoothness. Second-order smoothness tends to be less robust and suffers from extrapolation on new data. One can also use cross-validation to data-adaptively choose the optimal smoothness (invoked in <code>fit_hal</code> by setting <code>adaptive_smoothing = TRUE</code>). Comparing the following simulation and the previous one, the HAL with second-order smoothness performed better when there were fewer knot points.</p>
+<p>In general, if the basis functions are not coarse, then the
+performance for different smoothness orders is similar. Notice how the
+runtime is a fair bit slower when more knot points are considered. In
+general, we recommend either zero- or first- order smoothness.
+Second-order smoothness tends to be less robust and suffers from
+extrapolation on new data. One can also use cross-validation to
+data-adaptively choose the optimal smoothness (invoked in
+<code>fit_hal</code> by setting <code>adaptive_smoothing = TRUE</code>).
+Comparing the following simulation and the previous one, the HAL with
+second-order smoothness performed better when there were fewer knot
+points.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
 <span class="va">n_covars</span> <span class="op">&lt;-</span> <span class="fl">1</span>
@@ -467,7 +557,19 @@
 <div class="section level3">
 <h3 id="formula-interface">Formula interface<a class="anchor" aria-label="anchor" href="#formula-interface"></a>
 </h3>
-<p>One might wish to specify the functional form of the HAL fit further. This can be done using the formula interface. Specifically, the formula interface allows one to specify monotonicity constraints on components of the HAL fit. It also allows one to specify exactly which basis functions (e.g., interactions) one wishes to model. The <code>formula_hal</code> function generates a <code>formula</code> object from a user-supplied character string, and this <code>formula</code> object contains the necessary specification information for <code>fit_hal</code> and <code>glmnet</code>. The <code>formula_hal</code> function is intended for use within <code>fit_hal</code>, and the user-supplied character string is inputted into <code>fit_hal</code>. Here, we call <code>formula_hal</code> directly for illustrative purposes.</p>
+<p>One might wish to specify the functional form of the HAL fit further.
+This can be done using the formula interface. Specifically, the formula
+interface allows one to specify monotonicity constraints on components
+of the HAL fit. It also allows one to specify exactly which basis
+functions (e.g., interactions) one wishes to model. The
+<code>formula_hal</code> function generates a <code>formula</code>
+object from a user-supplied character string, and this
+<code>formula</code> object contains the necessary specification
+information for <code>fit_hal</code> and <code>glmnet</code>. The
+<code>formula_hal</code> function is intended for use within
+<code>fit_hal</code>, and the user-supplied character string is inputted
+into <code>fit_hal</code>. Here, we call <code>formula_hal</code>
+directly for illustrative purposes.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">98109</span><span class="op">)</span>
 <span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">100</span>
@@ -479,7 +581,13 @@
 <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x1 <span class="op">=</span> <span class="va">x1</span>, x2 <span class="op">=</span> <span class="va">x2</span>, A <span class="op">=</span> <span class="va">A</span><span class="op">)</span>
 <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></code></pre></div>
 <p>We can specify an additive model in a number of ways.</p>
-<p>The formula below includes the outcome, but <code>formula_hal</code> doesn’t fit a HAL model, and doesn’t need the outcome (actually everything before “<span class="math inline">\(\tilde\)</span>” is ignored in <code>formula_hal</code>). This is why <code>formula_hal</code> takes the input <code>X</code> matrix of covariates, and not <code>X</code> and <code>Y</code>. In what follows, we include formulas with and without “y” in the character string.</p>
+<p>The formula below includes the outcome, but <code>formula_hal</code>
+doesn’t fit a HAL model, and doesn’t need the outcome (actually
+everything before “<span class="math inline">\(\tilde\)</span>” is
+ignored in <code>formula_hal</code>). This is why
+<code>formula_hal</code> takes the input <code>X</code> matrix of
+covariates, and not <code>X</code> and <code>Y</code>. In what follows,
+we include formulas with and without “y” in the character string.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># The `h` function is used to specify the basis functions for a given term</span>
 <span class="co"># h(x1) generates one-way basis functions for the variable x1</span>
@@ -519,7 +627,12 @@
 <span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
   <span class="va">Y</span> <span class="op">~</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span>, k<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x2</span>,  k<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span>, k<span class="op">=</span><span class="fl">1</span><span class="op">)</span>, X <span class="op">=</span> <span class="va">X</span>, smoothness_orders <span class="op">=</span> <span class="fl">1</span>, num_knots <span class="op">=</span> <span class="fl">10</span>
 <span class="op">)</span></code></pre></div>
-<p>The <code>.</code> argument. We can generate an additive model for all or a subset of variables using the <code>.</code> variable and <code>.</code> argument of <code>h</code>. By default, <code>.</code> in <code>h(.)</code> is treated as a wildcard and basis functions are generated by replacing the <code>.</code> with all variables in <code>X</code>.</p>
+<p>The <code>.</code> argument. We can generate an additive model for
+all or a subset of variables using the <code>.</code> variable and
+<code>.</code> argument of <code>h</code>. By default, <code>.</code> in
+<code>h(.)</code> is treated as a wildcard and basis functions are
+generated by replacing the <code>.</code> with all variables in
+<code>X</code>.</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">smoothness_orders</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">num_knots</span> <span class="op">&lt;-</span> <span class="fl">5</span>
@@ -560,7 +673,10 @@
 <span class="va">formula2</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>  <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">.</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>,<span class="va">.</span>,<span class="va">.</span><span class="op">)</span>  
 <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula1</span><span class="op">$</span><span class="va">basis_list</span> <span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula2</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] TRUE</span></code></pre>
-<p>Sometimes, one might want to build an additive model, but include all two-way interactions with one variable (e.g., treatment “A”). This can be done in a variety of ways. The <code>.</code> argument allows you to specify a subset of variables.</p>
+<p>Sometimes, one might want to build an additive model, but include all
+two-way interactions with one variable (e.g., treatment “A”). This can
+be done in a variety of ways. The <code>.</code> argument allows you to
+specify a subset of variables.</p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Write it all out</span>
 <span class="va">formula</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">x2</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span>, <span class="va">x1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span>,<span class="va">x2</span><span class="op">)</span>
@@ -581,7 +697,15 @@
 <span class="va">formula2</span> <span class="op">&lt;-</span>   <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">A</span>,<span class="va">.</span>, . <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x1"</span><span class="op">)</span><span class="op">)</span> 
  <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula1</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">formula2</span><span class="op">$</span><span class="va">basis_list</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] FALSE</span></code></pre>
-<p>A key feature of the HAL formula is <strong>monotonicity constraints</strong>. Specifying these constraints is achieved by specifying the <code>monotone</code> argument of <code>h</code>. Note if smoothness_orders = 0 then this is a monotonicity constrain on the function, but if if smoothness_orders = 1 then this is a monotonicity constraint on the function’s derivative (e.g. a convexity constraint). We can also specify that certain terms are not penalized in the LASSO/glmnet using the <code>pf</code> argument of <code>h</code> (stands for penalty factor).</p>
+<p>A key feature of the HAL formula is <strong>monotonicity
+constraints</strong>. Specifying these constraints is achieved by
+specifying the <code>monotone</code> argument of <code>h</code>. Note if
+smoothness_orders = 0 then this is a monotonicity constrain on the
+function, but if if smoothness_orders = 1 then this is a monotonicity
+constraint on the function’s derivative (e.g. a convexity constraint).
+We can also specify that certain terms are not penalized in the
+LASSO/glmnet using the <code>pf</code> argument of <code>h</code>
+(stands for penalty factor).</p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># An additive monotone increasing model</span>
 <span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formula_hal.html">formula_hal</a></span><span class="op">(</span>
@@ -614,7 +738,9 @@
 <span class="co"># intraction glm</span>
 <span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">.</span>, s <span class="op">=</span> <span class="fl">1</span>, k <span class="op">=</span> <span class="fl">1</span>, pf <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/h.html">h</a></span><span class="op">(</span><span class="va">.</span>, s <span class="op">=</span> <span class="fl">1</span>, k <span class="op">=</span> <span class="fl">1</span>, pf <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
 <span class="co"># Running HAL with this formula will be equivalent to running glm with the formula Y ~ .^2</span></code></pre></div>
-<p>Now, that we’ve illustrated the options with <code>formula_hal</code>, let’s show how to fit a HAL model with the specified formula.</p>
+<p>Now, that we’ve illustrated the options with
+<code>formula_hal</code>, let’s show how to fit a HAL model with the
+specified formula.</p>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># get formula object</span>
 <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_hal.html">fit_hal</a></span><span class="op">(</span>
@@ -641,23 +767,34 @@
 </div>
 </div>
 <div class="section level2 unnumbered">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-benkeser2016hal">
-<p>Benkeser, David, and Mark J van der Laan. 2016. “The Highly Adaptive Lasso Estimator.” In <em>2016 IEEE International Conference on Data Science and Advanced Analytics (DSAA)</em>. IEEE. <a href="https://doi.org/10.1109/dsaa.2016.93" class="external-link">https://doi.org/10.1109/dsaa.2016.93</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-benkeser2016hal" class="csl-entry">
+Benkeser, David, and Mark J van der Laan. 2016. <span>“The Highly
+Adaptive Lasso Estimator.”</span> In <em>2016 <span>IEEE</span>
+International Conference on Data Science and Advanced Analytics
+(<span>DSAA</span>)</em>. <span>IEEE</span>. <a href="https://doi.org/10.1109/dsaa.2016.93" class="external-link">https://doi.org/10.1109/dsaa.2016.93</a>.
 </div>
-<div id="ref-coyle-gh-hal9001">
-<p>Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. n.d. <em><code>hal9001</code>: The Scalable Highly Adaptive Lasso</em> (version 0.2.7). <a href="https://doi.org/10.5281/zenodo.3558313" class="external-link">https://doi.org/10.5281/zenodo.3558313</a>.</p>
+<div id="ref-coyle-gh-hal9001" class="csl-entry">
+Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. n.d.
+<em><span><code>hal9001</code></span>: The Scalable Highly Adaptive
+Lasso</em> (version 0.2.7). <a href="https://doi.org/10.5281/zenodo.3558313" class="external-link">https://doi.org/10.5281/zenodo.3558313</a>.
 </div>
-<div id="ref-friedman2010glmnet">
-<p>Friedman, Jerome, Trevor Hastie, and Rob Tibshirani. 2010. “Regularization Paths for Generalized Linear Models via Coordinate Descent.” <em>Journal of Statistical Software</em> 33 (1): 1.</p>
+<div id="ref-friedman2010glmnet" class="csl-entry">
+Friedman, Jerome, Trevor Hastie, and Rob Tibshirani. 2010.
+<span>“Regularization Paths for Generalized Linear Models via Coordinate
+Descent.”</span> <em>Journal of Statistical Software</em> 33 (1): 1.
 </div>
-<div id="ref-hejazi2020hal9001">
-<p>Hejazi, Nima S, Jeremy R Coyle, and Mark J van der Laan. 2020. “hal9001: Scalable Highly Adaptive Lasso Regression in R.” <em>Journal of Open Source Software</em> 5 (53): 2526. <a href="https://doi.org/10.21105/joss.02526" class="external-link">https://doi.org/10.21105/joss.02526</a>.</p>
+<div id="ref-hejazi2020hal9001" class="csl-entry">
+Hejazi, Nima S, Jeremy R Coyle, and Mark J van der Laan. 2020.
+<span>“<span class="nocase">hal9001</span>: Scalable Highly Adaptive
+Lasso Regression in <span>R</span>.”</span> <em>Journal of Open Source
+Software</em> 5 (53): 2526. <a href="https://doi.org/10.21105/joss.02526" class="external-link">https://doi.org/10.21105/joss.02526</a>.
 </div>
-<div id="ref-vdl2017finite">
-<p>van der Laan, Mark J. 2017. “Finite Sample Inference for Targeted Learning.” <a href="https://arxiv.org/abs/1708.09502" class="external-link">https://arxiv.org/abs/1708.09502</a>.</p>
+<div id="ref-vdl2017finite" class="csl-entry">
+van der Laan, Mark J. 2017. <span>“Finite Sample Inference for
+<span>Targeted Learning</span>.”</span> <a href="https://arxiv.org/abs/1708.09502" class="external-link">https://arxiv.org/abs/1708.09502</a>.
 </div>
 </div>
 </div>
@@ -680,7 +817,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>

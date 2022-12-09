@@ -35,19 +35,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// lassi_predict
-NumericVector lassi_predict(const MSpMat X, const NumericVector beta, double intercept);
-RcppExport SEXP _hal9001_lassi_predict(SEXP XSEXP, SEXP betaSEXP, SEXP interceptSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const MSpMat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const NumericVector >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< double >::type intercept(interceptSEXP);
-    rcpp_result_gen = Rcpp::wrap(lassi_predict(X, beta, intercept));
-    return rcpp_result_gen;
-END_RCPP
-}
 // make_basis_list
 List make_basis_list(const NumericMatrix& X_sub, const NumericVector& cols, const IntegerVector& order_map);
 RcppExport SEXP _hal9001_make_basis_list(SEXP X_subSEXP, SEXP colsSEXP, SEXP order_mapSEXP) {
@@ -137,12 +124,9 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP _rcpp_module_boot_lassi_module();
-
 static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_index_first_copy", (DL_FUNC) &_hal9001_index_first_copy, 1},
     {"_hal9001_apply_copy_map", (DL_FUNC) &_hal9001_apply_copy_map, 2},
-    {"_hal9001_lassi_predict", (DL_FUNC) &_hal9001_lassi_predict, 3},
     {"_hal9001_make_basis_list", (DL_FUNC) &_hal9001_make_basis_list, 3},
     {"_hal9001_meets_basis", (DL_FUNC) &_hal9001_meets_basis, 5},
     {"_hal9001_evaluate_basis", (DL_FUNC) &_hal9001_evaluate_basis, 4},
@@ -150,7 +134,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_hal9001_as_dgCMatrix", (DL_FUNC) &_hal9001_as_dgCMatrix, 1},
     {"_hal9001_calc_pnz", (DL_FUNC) &_hal9001_calc_pnz, 1},
     {"_hal9001_calc_xscale", (DL_FUNC) &_hal9001_calc_xscale, 2},
-    {"_rcpp_module_boot_lassi_module", (DL_FUNC) &_rcpp_module_boot_lassi_module, 0},
     {NULL, NULL, 0}
 };
 
