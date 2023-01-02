@@ -11,8 +11,7 @@ fit_hal(
   X_unpenalized = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
   smoothness_orders = 1,
-  num_knots = num_knots_generator(max_degree = max_degree, smoothness_orders =
-    smoothness_orders, base_num_knots_0 = 200, base_num_knots_1 = 50),
+  num_knots = c(sqrt(n), n^(1/3), n^(1/5)),
   reduce_basis = 1/sqrt(length(Y)),
   family = c("gaussian", "binomial", "poisson", "cox"),
   lambda = NULL,
