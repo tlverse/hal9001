@@ -36,8 +36,8 @@
 #' n <- 100
 #' p <- 2
 #' x <- xmat <- matrix(rnorm(n * p), n, p)
-#'  colnames(x) <- paste0("X", 1:p)
-#' y_prob <- plogis( sin(x[, 1])  + sin(x[, 2]))
+#' colnames(x) <- paste0("X", 1:p)
+#' y_prob <- plogis(sin(x[, 1]) + sin(x[, 2]))
 #' y <- rbinom(n = n, size = 1, prob = y_prob)
 
 #' sal_fit <- fit_sal(X = x, Y = y, family = "binomial", max_degree = 1, num_knots = 10)
