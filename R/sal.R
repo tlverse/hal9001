@@ -46,7 +46,7 @@ fit_sal <- function(X,
                     max_degree = 3,
                     smoothness_orders = 1,
                     num_knots = ceiling(c(sqrt(n), n^(1 / 3), n^(1 / 5))),
-                    reduce_basis = 1 / sqrt(length(Y)),
+                    reduce_basis = NULL,
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
                     id = NULL,
@@ -116,13 +116,7 @@ fit_sal <- function(X,
     warning("NOTE: Screening does not incorporate offset")
   }
 
-  # X <- apply(X, 2, function(x) {
-  #  (x - mean(x)) / sd(x)
-  # })
 
-  # screen_function <- function(X, Y, weights, offset, id) {
-  # screen_hal(X, Y, screening_method = screening_method, num_knots = 5,  nvar_accept = screening_nvar_accept, weights = weights,   offset = offset, id = id, nfolds = ifelse(n >= 1000, 5, 10))
-  # }
   screen_function <- function(X, Y, weights, offset, id) {
     if (is.character(family)) {
       family <- get(family)
@@ -141,10 +135,8 @@ fit_sal <- function(X,
   }
   formula_screened <- screen_function(X, Y, weights, offset, id)
 
-  print("full_cols_selected")
-  print(formula_screened)
-  fit_control <- fit_control
   fit_control$cv_select <- FALSE
+
   full_fit <- fit_hal(X,
     Y,
     formula = formula_screened,
@@ -162,10 +154,7 @@ fit_sal <- function(X,
   )
   lambda_seq <- full_fit$lambda
   basis_list <- full_fit$basis_list
-  # basis_list <- lapply(basis_list, function(basis) {
-  #   basis$cols <- cols_to_include[basis$cols]
-  #   return(basis)
-  # })
+
 
   cv_fun <- function(fold, data_list, X_unpenalized,
                      max_degree,
@@ -180,22 +169,11 @@ fit_sal <- function(X,
     offset <- data_list$offset
     id <- data_list$id
     lambda_seq <- data_list$lambda_seq
-
-
-
-    # training <- training()
-    # val <- validation()
-
-    formula_screened <- screen_function(training(X), training(Y), training(weights), training(offset), training(id))
-    # screen_hal(training(X), training(Y),  weights = training(weights), offset = training(offset), id = training(id))
-    print("cv_cols_selected")
-    print(formula_screened)
-
     if (!is.null(X_unpenalized)) {
       X_unpenalized <- training(X_unpenalized)
     }
 
-
+    formula_screened <- screen_function(training(X), training(Y), training(weights), training(offset), training(id))
 
     fold_fit <- fit_hal(training(X),
       training(Y),
@@ -212,14 +190,18 @@ fit_sal <- function(X,
       offset = training(offset),
       fit_control = fit_control, return_x_basis = F
     )
-    out <- predict(fold_fit, new_data = validation(X), offset = validation(offset))
+
+    predictions <- predict(fold_fit, new_data = validation(X), offset = validation(offset))
+
     index <- validation()
     list(
       index = index,
       fold_index = rep(fold_index(), length(index)),
-      predictions = data.table::data.table(out)
+      predictions = data.table::data.table(predictions)
     )
+
   }
+
   combiner_c <- origami:::combiner_c
   comb_ctrl <- list(combiners = list(
     index = combiner_c, fold_index = combiner_c,

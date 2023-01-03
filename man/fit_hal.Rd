@@ -13,7 +13,7 @@ fit_hal(
   smoothness_orders = 1,
   num_knots = c(sqrt(n), n^(1/3), n^(1/5)),
   reduce_basis = NULL,
-  family = c("gaussian", "binomial", "poisson", "cox"),
+  family = c("gaussian", "binomial", "poisson", "cox", "mgaussian"),
   lambda = NULL,
   id = NULL,
   weights = NULL,
