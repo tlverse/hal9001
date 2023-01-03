@@ -1,7 +1,6 @@
 
 
-
-
+#' Screening variables and interactions with MARS (earth)
 #'
 #' @details A greedy procedure for learning variables and interaction subgroups for HAL using
 #'  multivariate adaptive regression splines (MARS) implementation of \code{\link[earth]{earth}}
