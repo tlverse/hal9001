@@ -17,12 +17,12 @@ formula_hal <- function(formula, smoothness_orders, num_knots, X = NULL) {
   }
 
   if (!is.null(get0("smoothness_orders", envir = parent.frame())) &&
-    missing(smoothness_orders)) {
+      missing(smoothness_orders)) {
     smoothness_orders <- get("smoothness_orders", envir = parent.frame())
   }
 
   if (!is.null(get0("num_knots", envir = parent.frame())) &&
-    missing(num_knots)) {
+      missing(num_knots)) {
     num_knots <- get("num_knots", envir = parent.frame())
   }
   num_knots <- num_knots
@@ -43,7 +43,7 @@ formula_hal <- function(formula, smoothness_orders, num_knots, X = NULL) {
 #' @export
 `+.formula_hal9001` <- function(x, y) {
   if (length(x$covariates) != length(y$covariates) ||
-    length(setdiff(x$covariates, y$covariates)) != 0) {
+      length(setdiff(x$covariates, y$covariates)) != 0) {
     stop("Order of `colnames(X)` must be the same for both terms in formula.")
   }
   keep <- !duplicated(c(x$basis_list, y$basis_list))
@@ -251,9 +251,9 @@ print.formula_hal9001 <- function(x, ...) {
   cat(paste0("A hal9001 formula object of the form: ~ ", x$formula_term))
 }
 
-#' A helper function for formula
+#'
 #' @param var_names A \code{character} vector of variable names representing a single type of interaction
-# " (e.g. var_names = c("W1", "W2", "W3") encodes three way interactions between W1, W2 and W3.
+#" (e.g. var_names = c("W1", "W2", "W3") encodes three way interactions between W1, W2 and W3.
 #' var_names may include the wildcard variable "." in which case the argument `.` must be specified
 #' so that all interactions matching the form of var_names are generated.
 #' @param . Specification of variables for use in the formula.
@@ -272,11 +272,11 @@ fill_dots <- function(var_names, .) {
   all_items <- lapply(., function(var) {
     new_var_names <- var_names
     new_var_names[index] <- var
-    out <- fill_dots_helper(new_var_names, .)
+    out <- fill_dots(new_var_names, .)
     return(out)
   })
   is_nested <- is.list(all_items[[1]])
-  while (is_nested) {
+  while(is_nested) {
     all_items <- unlist(all_items, recursive = FALSE)
     is_nested <- is.list(all_items[[1]])
   }
@@ -292,3 +292,4 @@ fill_dots <- function(var_names, .) {
 
   return(unique(all_items))
 }
+
