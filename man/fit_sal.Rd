@@ -10,7 +10,7 @@ fit_sal(
   X_unpenalized = NULL,
   max_degree = 3,
   smoothness_orders = 1,
-  num_knots = ceiling(c(sqrt(n), n^(1/3), n^(1/5))),
+  num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1/3), length(Y)^(1/5))),
   reduce_basis = NULL,
   family = c("gaussian", "binomial", "poisson", "cox"),
   lambda = NULL,
