@@ -36,9 +36,9 @@ The _selectively adaptive Lasso_ (HAL) is a greedy version of HAL that uses mult
 
 ```{r sim-data}
 library(data.table)
- 
+
 # simulation constants
- 
+
 set.seed(1234)
 n <- 500
 d <- 100
@@ -46,11 +46,8 @@ X <- replicate(d, runif(n))
 colnames(X) <- paste0("X", 1:d)
 mu <- 5 * (sin(3 * X[, 5]) + sin(3 * X[, 3]) + sin(3 * X[, 1]))
 Y <- rnorm(n, mu, 0.5)
-out <- fit_sal(X,Y, max_degree = 1, num_knots = 10) # Should take no more than a minute
+out <- fit_sal(X, Y, max_degree = 1, num_knots = 10) # Should take no more than a minute
 out$coefs <- as.matrix(out$coefs)
-p <-predict(out, new_data = X)
+p <- predict(out, new_data = X)
 plot(p, mu)
- 
- 
- 
 ```

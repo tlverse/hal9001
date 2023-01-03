@@ -259,8 +259,8 @@ fit_hal <- function(X,
     )
   }
 
-  if(!is.character(fit_control$prediction_bounds)){
-    if(fam == "mgaussian"){
+  if (!is.character(fit_control$prediction_bounds)) {
+    if (fam == "mgaussian") {
       assertthat::assert_that(
         is.list(fit_control$prediction_bounds) &
           length(fit_control$prediction_bounds) == ncol(Y),
@@ -340,14 +340,14 @@ fit_hal <- function(X,
   # LARS's note: reduce basis is fine for high smoothness since it drops based on proportion of 0's.
   # But if it starts dropping by proportion of 1's then it no longer works for higher order smoothness
   if (all(smoothness_orders == 0)) {
-    if(is.null(reduce_basis)){
+    if (is.null(reduce_basis)) {
       reduce_basis <- 1 / sqrt(n_Y)
     }
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
   } else {
-    if(!is.null(reduce_basis)){
+    if (!is.null(reduce_basis)) {
       warning("Dropping reduce_basis; only applies if smoothness_orders = 0")
     }
   }
@@ -465,9 +465,9 @@ fit_hal <- function(X,
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (is.character(fit_control$prediction_bounds) &&
     fit_control$prediction_bounds == "default") {
-    if(fam == "mgaussian") {
-      fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i){
-        c(min(Y[,i]) - 2 * stats::sd(Y[,i]), max(Y[,i]) + 2 * stats::sd(Y[,i]))
+    if (fam == "mgaussian") {
+      fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i) {
+        c(min(Y[, i]) - 2 * stats::sd(Y[, i]), max(Y[, i]) + 2 * stats::sd(Y[, i]))
       })
     } else if (fam == "cox") {
       fit_control$prediction_bounds <- NULL

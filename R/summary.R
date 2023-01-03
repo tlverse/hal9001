@@ -52,7 +52,6 @@ summary.hal9001 <- function(object,
                             include_redundant_terms = FALSE,
                             round_cutoffs = 3,
                             ...) {
-
   family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
   abs_coef <- basis_list_idx <- coef_idx <- dup <- NULL
 
@@ -73,19 +72,19 @@ summary.hal9001 <- function(object,
           stop("Coefficients for the specified lambda do not exist.")
         } else {
           lambda_idx <- which(object$lasso_fit$lambda == lambda)
-          if(family != "mgaussian"){
+          if (family != "mgaussian") {
             coefs <- object$lasso_fit$glmnet.fit$beta[, lambda_idx]
           } else {
-            coefs <- lapply(object$lasso_fit$glmnet.fit$beta, function(x) x[,lambda_idx])
+            coefs <- lapply(object$lasso_fit$glmnet.fit$beta, function(x) x[, lambda_idx])
           }
         }
       }
     } else {
       lambda_idx <- which(object$lambda_star == lambda)
-      if(family != "mgaussian"){
+      if (family != "mgaussian") {
         coefs <- object$coefs[, lambda_idx]
       } else {
-        coefs <- lapply(object$coefs, function(x) x[,lambda_idx])
+        coefs <- lapply(object$coefs, function(x) x[, lambda_idx])
       }
     }
   }
@@ -99,10 +98,10 @@ summary.hal9001 <- function(object,
         "Summarizing coefficients corresponding to minimum lambda."
       )
       lambda_idx <- which.min(lambda)
-      if(family != "mgaussian"){
+      if (family != "mgaussian") {
         coefs <- object$coefs[, lambda_idx]
       } else {
-        coefs <- lapply(object$coefs, function(x) x[,lambda_idx])
+        coefs <- lapply(object$coefs, function(x) x[, lambda_idx])
       }
     }
   }
@@ -118,20 +117,20 @@ summary.hal9001 <- function(object,
 
   # subset to non-zero coefficients
   if (only_nonzero_coefs) {
-    if(family == "mgaussian") {
+    if (family == "mgaussian") {
       coef_idxs <- lapply(coefs_no_intercept, function(x) which(x != 0))
     } else {
       coef_idxs <- which(coefs_no_intercept != 0)
     }
   } else {
-    if(family == "mgaussian") {
+    if (family == "mgaussian") {
       coef_idxs <- lapply(coefs_no_intercept, function(x) seq_along(x))
     } else {
       coef_idxs <- seq_along(coefs_no_intercept)
     }
   }
 
-  if(family == "mgaussian") {
+  if (family == "mgaussian") {
     copy_map <- lapply(coef_idxs, function(x) object$copy_map[x])
   } else {
     copy_map <- object$copy_map[coef_idxs]
@@ -139,7 +138,7 @@ summary.hal9001 <- function(object,
 
   # ============================================================================
   # utility function to summarize HAL fit which can be used for multiple outcomes
-  summarize_coefs <- function(copy_map, coef_idxs, coefs_no_intercept, coefs){
+  summarize_coefs <- function(copy_map, coef_idxs, coefs_no_intercept, coefs) {
     # summarize coefficients with respect to basis list
     coefs_summ <- data.table::rbindlist(
       lapply(seq_along(copy_map), function(map_idx) {
@@ -179,7 +178,7 @@ summary.hal9001 <- function(object,
         } else {
           # add col indicating whether or not there is a duplicate
           coef_summ[, dup := (duplicated(dups_tbl) |
-                                duplicated(dups_tbl, fromLast = TRUE))]
+            duplicated(dups_tbl, fromLast = TRUE))]
 
           # if basis_list_idx contains redundant duplicates, remove them
           redundant_dups <- coef_summ[dup == TRUE, "basis_list_idx"]
@@ -286,8 +285,8 @@ summary.hal9001 <- function(object,
   }
   # ============================================================================
 
-  if(family == "mgaussian") {
-    return_obj <- lapply(seq_along(copy_map), function(i){
+  if (family == "mgaussian") {
+    return_obj <- lapply(seq_along(copy_map), function(i) {
       summarize_coefs(copy_map[[i]], coef_idxs[[i]], coefs_no_intercept[[i]], coefs[[i]])
     })
     class(return_obj) <- "summary.hal9001"
@@ -306,7 +305,7 @@ summary.hal9001 <- function(object,
 #'
 #' @export
 print.summary.hal9001 <- function(x, length = NULL, ...) {
-  if(x$family != "mgaussian" && !is.null(x$family)) {
+  if (x$family != "mgaussian" && !is.null(x$family)) {
     if (x$only_nonzero_coefs & is.null(length)) {
       cat(
         "\n\nSummary of non-zero coefficients is based on lambda of",
@@ -332,7 +331,7 @@ print.summary.hal9001 <- function(x, length = NULL, ...) {
       print(utils::head(x$table, length), row.names = FALSE)
     }
   } else {
-   for(i in 1:length(x)){
+    for (i in 1:length(x)) {
       if (x[[i]]$only_nonzero_coefs & is.null(length)) {
         cat(
           "\n\nSummary of non-zero coefficients for each outcome is based on lambda of",

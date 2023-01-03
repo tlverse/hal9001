@@ -251,7 +251,7 @@ print.formula_hal9001 <- function(x, ...) {
   cat(paste0("A hal9001 formula object of the form: ~ ", x$formula_term))
 }
 
-#'
+#' A helper function for formula
 #' @param var_names A \code{character} vector of variable names representing a single type of interaction
 # " (e.g. var_names = c("W1", "W2", "W3") encodes three way interactions between W1, W2 and W3.
 #' var_names may include the wildcard variable "." in which case the argument `.` must be specified
