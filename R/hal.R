@@ -171,7 +171,7 @@ fit_hal <- function(X,
                     X_unpenalized = NULL,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
                     smoothness_orders = 1,
-                    num_knots = c(sqrt(n), n^(1/3), n^(1/5) ),
+                    num_knots = c(sqrt(n), n^(1 / 3), n^(1 / 5)),
                     reduce_basis = 1 / sqrt(length(Y)),
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
@@ -318,7 +318,7 @@ fit_hal <- function(X,
   time_design_matrix <- proc.time()
 
   # NOTE: keep only basis functions with some (or higher) proportion of nonzeros
-  if (!is.null(reduce_basis) && is.numeric(reduce_basis) ) {
+  if (!is.null(reduce_basis) && is.numeric(reduce_basis)) {
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]

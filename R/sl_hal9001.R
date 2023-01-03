@@ -40,7 +40,6 @@ SL.hal9001 <- function(Y,
                        smoothness_orders = 1,
                        num_knots = 5,
                        ...) {
-
   # create matrix version of X and newX for use with hal9001::fit_hal
   if (!is.matrix(X)) X <- as.matrix(X)
   if (!is.null(newX) & !is.matrix(newX)) newX <- as.matrix(newX)
