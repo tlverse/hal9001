@@ -31,7 +31,7 @@
 #' colnames(X) <- paste0("X", 1:d)
 #' mu <- 10 * sin(3 * X[, 5]) * sin(3 * X[, 3]) * sin(3 * X[, 1])
 #' Y <- rnorm(n, mu, 0.5)
-#' screen_MARS(X, Y, degree = 1, weights = rep(1, n))
+#' screen_MARS(X, Y, degree = 1)
 #'
 screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, glm = list(family = gaussian())) {
   X <- x

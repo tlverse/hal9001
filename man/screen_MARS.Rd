@@ -42,6 +42,6 @@ X <- replicate(d, runif(n))
 colnames(X) <- paste0("X", 1:d)
 mu <- 10 * sin(3 * X[, 5]) * sin(3 * X[, 3]) * sin(3 * X[, 1])
 Y <- rnorm(n, mu, 0.5)
-screen_MARS(X, Y, degree = 1, weights = rep(1, n))
+screen_MARS(X, Y, degree = 1)
 
 }
