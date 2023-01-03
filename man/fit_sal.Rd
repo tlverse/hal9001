@@ -148,10 +148,12 @@ and provides relatively quick solutions in large samples and moderately high dim
 }
 \examples{
 n <- 100
-p <- 3
+p <- 2
 x <- xmat <- matrix(rnorm(n * p), n, p)
-y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
+ colnames(x) <- paste0("X", 1:p)
+y_prob <- plogis( sin(x[, 1])  + sin(x[, 2]))
 y <- rbinom(n = n, size = 1, prob = y_prob)
-sal_fit <- fit_sal(X = x, Y = y, family = "binomial", max_degree = 3)
+sal_fit <- fit_sal(X = x, Y = y, family = "binomial", max_degree = 1, num_knots = 10)
+print(sal_fit$formula)
 preds <- predict(sal_fit, new_data = x)
 }

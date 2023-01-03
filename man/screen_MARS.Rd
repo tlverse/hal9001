@@ -5,8 +5,8 @@
 \title{Screening variables and interactions with MARS (earth)}
 \usage{
 screen_MARS(
-  X,
-  Y,
+  x,
+  y,
   pmethod = "cv",
   degree = 2,
   nfold = 10,
@@ -14,14 +14,6 @@ screen_MARS(
 )
 }
 \arguments{
-\item{X}{An input \code{matrix} with dimensions number of observations -by-
-number of covariates that will be used to derive the design matrix of basis
-functions.}
-
-\item{Y}{A \code{numeric} vector of observations of the outcome variable. For
-\code{family="mgaussian"}, \code{Y} is a matrix of observations of the
-outcome variables.}
-
 \item{pmethod}{Model pruning method for earth. Default is to use cross-validation. See documentation of \code{\link[earth]{earth}}.}
 
 \item{degree}{The max degree interaction of MARS model used for variable selection.

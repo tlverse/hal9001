@@ -34,11 +34,14 @@
 #'
 #' @examples
 #' n <- 100
-#' p <- 3
+#' p <- 2
 #' x <- xmat <- matrix(rnorm(n * p), n, p)
-#' y_prob <- plogis(3 * sin(x[, 1]) + sin(x[, 2]))
+#'  colnames(x) <- paste0("X", 1:p)
+#' y_prob <- plogis( sin(x[, 1])  + sin(x[, 2]))
 #' y <- rbinom(n = n, size = 1, prob = y_prob)
-#' sal_fit <- fit_sal(X = x, Y = y, family = "binomial", max_degree = 3)
+
+#' sal_fit <- fit_sal(X = x, Y = y, family = "binomial", max_degree = 1, num_knots = 10)
+#' print(sal_fit$formula)
 #' preds <- predict(sal_fit, new_data = x)
 fit_sal <- function(X,
                     Y,
@@ -94,7 +97,7 @@ fit_sal <- function(X,
     )
   } else {
     folds <- lapply(unique(sort(fit_control$foldid)), function(v) {
-      fold_from_foldvec(v, fit_control$foldid)
+      origami::fold_from_foldvec(v, fit_control$foldid)
     })
   }
 
@@ -102,7 +105,7 @@ fit_sal <- function(X,
     X_colnames <- colnames(X)
   } else {
     X_colnames <- paste0("x", 1:ncol(X))
-    colnames(X) <- paste0("x", 1:ncol(X))
+    colnames(X) <- X_colnames
   }
 
   if (is.null(weights)) {
@@ -116,23 +119,26 @@ fit_sal <- function(X,
     warning("NOTE: Screening does not incorporate offset")
   }
 
-
+  n <- length(Y)
   screen_function <- function(X, Y, weights, offset, id) {
     if (is.character(family)) {
       family <- get(family)
     }
+    family <- gaussian()
+    # FOR NOW just use least-squares as its fast
     if (variable_selection_only) {
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree_MARS, nfold = ifelse(n >= 5000, 5, 10), glm = list(family = family))
+      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree_MARS, nfold = 10, glm = list(family = family))
       terms <- sapply(1:max_degree, function(d) {
         paste0("h(", paste0(rep(".", d), collapse = ","), ", .= c(", paste0(out_mars$vars_selected, collapse = ","), "))")
       })
       formula <- as.formula(paste0("~", paste0(terms, collapse = " + ")))
       return((formula))
     } else {
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree, nfold = ifelse(n >= 5000, 5, 10), glm = list(family = family))
+      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree, nfold = 10, glm = list(family = family))
       return(out_mars$formula)
     }
   }
+
   formula_screened <- screen_function(X, Y, weights, offset, id)
 
   fit_control$cv_select <- FALSE
@@ -201,7 +207,7 @@ fit_sal <- function(X,
     )
   }
 
-  combiner_c <- origami:::combiner_c
+  combiner_c <- origami::combiner_c
   comb_ctrl <- list(combiners = list(
     index = combiner_c, fold_index = combiner_c,
     predictions = function(x) rbindlist(x, fill = TRUE)

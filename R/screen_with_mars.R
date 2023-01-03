@@ -23,7 +23,7 @@
 #'
 #' @rdname screen_MARS
 #'
-#'
+#' @export
 #' @examples
 #' n <- 900
 #' d <- 10
@@ -33,9 +33,13 @@
 #' Y <- rnorm(n, mu, 0.5)
 #' screen_MARS(X, Y, degree = 1, weights = rep(1, n))
 #'
-screen_MARS <- function(X, Y, pmethod = "cv", degree = 2, nfold = 10, glm = list(family = gaussian())) {
-  fit <- earth(X, Y, fast.k = min(max(sqrt(n), 30), 100), nk = min(max(round(sqrt(length(Y))) * ncol(X), 200), 1000), pmethod = "cv", degree = degree, nfold = nfold, glm = glm)
-
+screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, glm = list(family = gaussian())) {
+  X <- x
+  Y <- y
+  n <- length(Y)
+  nk <- min(max(round(sqrt(length(Y))) * ncol(X), 200), 1000)
+  fast.k <-  min(max(sqrt(n), 20), 100)
+  fit <- earth(x=x, y=y, fast.k = fast.k, nk = nk, pmethod = "cv", degree = degree, nfold = nfold)#, glm = glm)
   vars_selected <- intersect(rownames(earth::evimp(fit)), colnames(X))
   cols_selected <- match(vars_selected, colnames(X))
   terms <- colnames(fit$bx)
