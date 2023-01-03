@@ -112,6 +112,8 @@ fit_sal <- function(X,
   }
   if (is.null(offset)) {
     offset <- rep(0, length(Y))
+  } else {
+    warning("NOTE: Screening does not incorporate offset")
   }
 
   # X <- apply(X, 2, function(x) {
@@ -126,14 +128,14 @@ fit_sal <- function(X,
       family <- get(family)
     }
     if (variable_selection_only) {
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree_MARS, nfold = ifelse(n >= 5000, 5, 10), glm = list(family = family, offset = offset, weights = weights))
+      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree_MARS, nfold = ifelse(n >= 5000, 5, 10), glm = list(family = family ))
       terms <- sapply(1:max_degree, function(d) {
         paste0("h(", paste0(rep(".", d), collapse = ","), ", .= c(", paste0(out_mars$vars_selected, collapse = ","), "))")
       })
       formula <- as.formula(paste0("~", paste0(terms, collapse = " + ")))
       return((formula))
     } else {
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree, nfold = ifelse(n >= 5000, 5, 10), family = family, glm = list(family = family, offset = offset, weights = weights))
+      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree, nfold = ifelse(n >= 5000, 5, 10),   glm = list(family = family ))
       return(out_mars$formula)
     }
   }
@@ -249,9 +251,9 @@ fit_sal <- function(X,
   })
 
   cv_fit <- list(
-    cvrisks = risks, coefs = full_fit$coefs[, which.min(risks)[1], drop = F], basis_list = basis_list,
+    cvrisks = risks, coefs = as.matrix(full_fit$coefs[, which.min(risks)[1], drop = F]), basis_list = basis_list,
     prediction_bounds = full_fit$prediction_bounds, family = full_fit$family,
-    unpenalized_covariates = full_fit$unpenalized_covariates, copy_map = full_fit$copy_map, covariates = full_fit$covariates, lasso_fit = full_fit, formula_screened = formula_screened
+    unpenalized_covariates = full_fit$unpenalized_covariates, copy_map = full_fit$copy_map,  lasso_fit = full_fit, formula = formula_screened
   )
   class(cv_fit) <- "hal9001"
   return(cv_fit)

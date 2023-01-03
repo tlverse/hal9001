@@ -51,9 +51,9 @@ predict.hal9001 <- function(object,
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
-  if (!is.null(object$formula)) {
-    new_data <- new_data[, object$covariates]
-  }
+  #if (!is.null(object$formula)) {
+   # new_data <- new_data[, object$covariates]
+  #}
 
   # generate design matrix
   pred_x_basis <- make_design_matrix(new_data, object$basis_list,
@@ -92,6 +92,7 @@ predict.hal9001 <- function(object,
         ) + hal_coefs[1])
       })
     } else {
+
       preds <- as.vector(Matrix::tcrossprod(
         x = pred_x_basis,
         y = object$coefs[-1]
@@ -114,6 +115,8 @@ predict.hal9001 <- function(object,
       ))
     }
   }
+
+
 
   # incorporate offset into predictions
   if (!is.null(offset)) {

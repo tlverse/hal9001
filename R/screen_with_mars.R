@@ -1,27 +1,3 @@
-#
-# n <-900
-# d <- 10
-# X <-  replicate(d, runif(n))
-# colnames(X) <- paste0("X", 1:d)
-# mu <-   10*sin(3*X[,5])*sin(3*X[,3])*sin(3*X[,1])
-# Y <- rnorm(n,mu  , 0.5)
-# X <- apply(X, 2, function(x) {
-#   (x - mean(x)) / sd(x)
-# })
-# fit <- cv.hal_fit(X,Y,   max_degree = 1, max_degree_MARS =1, num_knots = 6)
-#
-#
-#
-# screen_MARS(X,Y,degree=1, weights = rep(1, n))
-#
-# library(earth)
-# fit <- earth(X, Y, degree = 3, nk = 5 * ncol(X), pmethod = "cv", nfold = 5)
-# earth::evimp(fit)
-# vars_selected <- intersect(rownames(earth::evimp(fit)), colnames(X))
-# vars_selected
-#
-# #screen_MARS(X,Y,degree=3)
-#
 
 
 
