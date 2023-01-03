@@ -59,7 +59,9 @@
 #' @param X An input \code{matrix} with dimensions number of observations -by-
 #'  number of covariates that will be used to derive the design matrix of basis
 #'  functions.
-#' @param Y A \code{numeric} vector of observations of the outcome variable.
+#' @param Y A \code{numeric} vector of observations of the outcome variable. For
+#'  \code{family="mgaussian"}, \code{Y} is a matrix of observations of the
+#'  outcome variables.
 #' @param formula A character string formula to be used in
 #'  \code{\link{formula_hal}}. See its documentation for details.
 #' @param X_unpenalized An input \code{matrix} with the same number of rows as
@@ -81,18 +83,20 @@
 #'  combinatorial explosions in the number of higher-degree and higher-order
 #'  basis functions generated. This allows the complexity of the optimization
 #'  problem to grow scalably. See details of \code{num_knots} more information.
-#' @param reduce_basis A \code{numeric} value bounded in the open unit interval
-#'  indicating the minimum proportion of 1's in a basis function column needed
-#'  for the basis function to be included in the procedure to fit the lasso.
-#'  Any basis functions with a lower proportion of 1's than the cutoff will be
-#'  removed. When \code{reduce_basis} is set to \code{NULL}, all basis
-#'  functions are used in the lasso-fitting stage of \code{fit_hal}.
+#' @param reduce_basis Am optional \code{numeric} value bounded in the open
+#'  unit interval indicating the minimum proportion of 1's in a basis function
+#'  column needed for the basis function to be included in the procedure to fit
+#'  the lasso. Any basis functions with a lower proportion of 1's than the
+#'  cutoff will be removed. Defaults to 1 over the square root of the number of
+#'  observations. Only applicable for models fit with zero-order splines, i.e.
+#'  \code{smoothness_orders = 0}.
 #' @param family A \code{character} or a \code{\link[stats]{family}} object
 #'  (supported by \code{\link[glmnet]{glmnet}}) specifying the error/link
 #'  family for a generalized linear model. \code{character} options are limited
 #'  to "gaussian" for fitting a standard penalized linear model, "binomial" for
 #'  penalized logistic regression, "poisson" for penalized Poisson regression,
-#'  and "cox" for a penalized proportional hazards model. Note that passing in
+#'  "cox" for a penalized proportional hazards model, and "mgaussian" for
+#'  multivariate penalized linear model. Note that passing in
 #'  family objects leads to slower performance relative to passing in a
 #'  character family (if supported). For example, one should set
 #'  \code{family = "binomial"} instead of \code{family = binomial()} when
@@ -129,12 +133,13 @@
 #'    for which all coefficients are zero). We've seen that not setting
 #'    \code{lambda.min.ratio} can lead to no \code{lambda} values that fit the
 #'    data sufficiently well.
-#'  - \code{prediction_bounds}: A vector of size two that provides the lower
-#'    and upper bounds for predictions. When
-#'    \code{prediction_bounds = "default"}, the predictions are bounded between
-#'    \code{min(Y) - sd(Y)} and \code{max(Y) + sd(Y)}. Bounding ensures that
-#'    there is no extrapolation, and it is necessary for cross-validation
-#'    selection and/or Super Learning.
+#'  - \code{prediction_bounds}: An optional vector of size two that provides
+#'    the lower and upper bounds predictions; not used when
+#'    \code{family = "cox"}. When \code{prediction_bounds = "default"}, the
+#'    predictions are bounded between \code{min(Y) - sd(Y)} and
+#'    \code{max(Y) + sd(Y)} for each outcome (when \code{family = "mgaussian"},
+#'    each outcome can have different bounds). Bounding ensures that there is
+#'    no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
@@ -172,11 +177,11 @@ fit_hal <- function(X,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
                     smoothness_orders = 1,
                     num_knots = c(sqrt(n), n^(1 / 3), n^(1 / 5)),
-                    reduce_basis = 1 / sqrt(length(Y)),
+                    reduce_basis = NULL,
                     family = c("gaussian", "binomial", "poisson", "cox"),
                     lambda = NULL,
                     id = NULL,
-                    weights = rep(1, length(Y)),
+                    weights = NULL,
                     offset = NULL,
                     fit_control = list(
                       cv_select = TRUE,
@@ -191,6 +196,7 @@ fit_hal <- function(X,
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
+  fam <- ifelse(inherits(family, "family"), family$family, family)
 
   # errors when a supplied control list is missing arguments
   defaults <- list(
@@ -230,9 +236,10 @@ fit_hal <- function(X,
     msg = "NA detected in `Y`, missingness in `Y` is not supported"
   )
 
+  n_Y <- ifelse(is.matrix(Y), nrow(Y), length(Y))
   assertthat::assert_that(
-    nrow(X) == length(Y),
-    msg = "Number of rows in `X` and length of `Y` must be equal"
+    nrow(X) == n_Y,
+    msg = "Number of rows in `X` and `Y` must be equal"
   )
 
   if (!is.null(X_unpenalized)) {
@@ -252,12 +259,23 @@ fit_hal <- function(X,
     )
   }
 
-  assertthat::assert_that(
-    fit_control$prediction_bounds == "default" ||
-      (is.numeric(fit_control$prediction_bounds) &
-        length(fit_control$prediction_bounds) == 2),
-    msg = "prediction_bounds must be 'default' or numeric (lower, upper) bounds"
-  )
+  if(!is.character(fit_control$prediction_bounds)){
+    if(fam == "mgaussian"){
+      assertthat::assert_that(
+        is.list(fit_control$prediction_bounds) &
+          length(fit_control$prediction_bounds) == ncol(Y),
+        msg = "prediction_bounds must be 'default' or list of numeric (lower, upper) bounds for each outcome"
+      )
+    } else {
+      assertthat::assert_that(
+        is.numeric(fit_control$prediction_bounds) &
+          length(fit_control$prediction_bounds) == 2,
+        msg = "prediction_bounds must be 'default' or numeric (lower, upper) bounds"
+      )
+    }
+  }
+
+
 
   if (!is.null(formula)) {
     # formula <- formula_hal(
@@ -288,7 +306,7 @@ fit_hal <- function(X,
   if (is.null(fit_control$foldid)) {
     if (is.null(fit_control$nfolds)) fit_control$nfolds <- 10
     folds <- origami::make_folds(
-      n = length(Y), V = fit_control$nfolds, cluster_ids = id
+      n = n_Y, V = fit_control$nfolds, cluster_ids = id
     )
     fit_control$foldid <- origami::folds2foldvec(folds)
   }
@@ -317,12 +335,23 @@ fit_hal <- function(X,
   # bookkeeping: get end time of design matrix procedure
   time_design_matrix <- proc.time()
 
-  # NOTE: keep only basis functions with some (or higher) proportion of nonzeros
-  if (!is.null(reduce_basis) && is.numeric(reduce_basis)) {
+
+  # NOTE: keep only basis functions with some (or higher) proportion of 1's
+  # LARS's note: reduce basis is fine for high smoothness since it drops based on proportion of 0's.
+  # But if it starts dropping by proportion of 1's then it no longer works for higher order smoothness
+  if (all(smoothness_orders == 0)) {
+    if(is.null(reduce_basis)){
+      reduce_basis <- 1 / sqrt(n_Y)
+    }
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
+  } else {
+    if(!is.null(reduce_basis)){
+      warning("Dropping reduce_basis; only applies if smoothness_orders = 0")
+    }
   }
+
   time_reduce_basis <- proc.time()
 
   # catalog and eliminate duplicates
@@ -375,7 +404,7 @@ fit_hal <- function(X,
   #   x_basis <- as.matrix(x_basis)
   # }
 
-  if (!inherits(family, "family") && family == "cox") {
+  if (fam == "cox") {
     x_basis <- as.matrix(x_basis)
   }
 
@@ -436,13 +465,16 @@ fit_hal <- function(X,
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (is.character(fit_control$prediction_bounds) &&
     fit_control$prediction_bounds == "default") {
-    if (!inherits(Y, "Surv")) {
-      # This would break if Y was a survival object as in coxnet
+    if(fam == "mgaussian") {
+      fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i){
+        c(min(Y[,i]) - 2 * stats::sd(Y[,i]), max(Y[,i]) + 2 * stats::sd(Y[,i]))
+      })
+    } else if (fam == "cox") {
+      fit_control$prediction_bounds <- NULL
+    } else {
       fit_control$prediction_bounds <- c(
         min(Y) - 2 * stats::sd(Y), max(Y) + 2 * stats::sd(Y)
       )
-    } else if (inherits(Y, "Surv")) {
-      fit_control$prediction_bounds <- NULL
     }
   }
 

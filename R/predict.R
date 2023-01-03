@@ -16,10 +16,6 @@
 #' @param offset A vector of offsets. Must be provided if provided at training.
 #' @param type Either "response" for predictions of the response, or "link" for
 #' un-transformed predictions (on the scale of the link function).
-#' @param p_reserve Sparse matrix pre-allocation proportion, which is the
-#'  anticipated proportion of 1's in the design matrix. Default value is
-#'  recommended in most settings. If a dense design matrix is expected, it
-#'  would be useful to set \code{p_reserve} to a higher value.
 #' @param ... Additional arguments passed to \code{predict} as necessary.
 #'
 #' @importFrom Matrix tcrossprod
@@ -44,10 +40,11 @@ predict.hal9001 <- function(object,
                             new_X_unpenalized = NULL,
                             offset = NULL,
                             type = c("response", "link"),
-                            p_reserve = 0.75,
                             ...) {
+
+  family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
+
   type <- match.arg(type)
-  p_reserve <- pmax(pmin(p_reserve, 1), 0)
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
@@ -56,9 +53,7 @@ predict.hal9001 <- function(object,
   #}
 
   # generate design matrix
-  pred_x_basis <- make_design_matrix(new_data, object$basis_list,
-    p_reserve = p_reserve
-  )
+  pred_x_basis <- make_design_matrix(new_data, object$basis_list)
 
   # reduce matrix of basis functions
   # pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
@@ -83,7 +78,7 @@ predict.hal9001 <- function(object,
   }
 
   # generate predictions
-  if (inherits(object$family, "family") || object$family != "cox") {
+  if (!family %in% c("cox", "mgaussian")) {
     if (ncol(object$coefs) > 1) {
       preds <- apply(object$coefs, 2, function(hal_coefs) {
         as.vector(Matrix::tcrossprod(
@@ -99,20 +94,28 @@ predict.hal9001 <- function(object,
       ) + object$coefs[1])
     }
   } else {
-    # Note: there is no intercept in the Cox model (built into the baseline
-    #       hazard and would cancel in the partial likelihood).
-    if (ncol(object$coefs) > 1) {
-      preds <- apply(object$coefs, 2, function(hal_coefs) {
-        as.vector(Matrix::tcrossprod(
+    if(family == "cox") {
+      # Note: there is no intercept in the Cox model (built into the baseline
+      #       hazard and would cancel in the partial likelihood).
+      # Note: there is no intercept in the Cox model (built into the baseline
+      #       hazard and would cancel in the partial likelihood).
+      if (ncol(object$coefs) > 1) {
+        preds <- apply(object$coefs, 2, function(hal_coefs) {
+          as.vector(Matrix::tcrossprod(
+            x = pred_x_basis,
+            y = hal_coefs
+          ))
+        })
+      } else {
+        preds <- as.vector(Matrix::tcrossprod(
           x = pred_x_basis,
-          y = hal_coefs
+          y = as.vector(object$coefs)
         ))
-      })
-    } else {
-      preds <- as.vector(Matrix::tcrossprod(
-        x = pred_x_basis,
-        y = as.vector(object$coefs)
-      ))
+      }
+    } else if (family == "mgaussian") {
+      preds <- stats::predict(
+        object$lasso_fit, newx = pred_x_basis, s = object$lambda_star
+      )
     }
   }
 
@@ -133,22 +136,34 @@ predict.hal9001 <- function(object,
   if (inherits(object$family, "family")) {
     inverse_link_fun <- object$family$linkinv
     preds <- inverse_link_fun(preds)
-  } else if (object$family == "binomial") {
-    preds <- stats::plogis(preds)
-  } else if (object$family %in% c("poisson", "cox")) {
-    preds <- exp(preds)
+  } else {
+    if (family == "binomial") {
+      preds <- stats::plogis(preds)
+    } else if (family %in% c("poisson", "cox")) {
+      preds <- exp(preds)
+    }
   }
 
   # bound predictions within observed outcome bounds if on response scale
-  bounds <- object$prediction_bounds
-  if (!is.null(bounds)) {
-    bounds <- sort(bounds)
-    if (is.matrix(preds)) {
-      preds <- apply(preds, 2, pmax, bounds[1])
-      preds <- apply(preds, 2, pmin, bounds[2])
+  if (!is.null(object$prediction_bounds)) {
+    bounds <- object$prediction_bounds
+    if(family == "mgaussian") {
+      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i){
+        bounds_y <- sort(bounds[[i]])
+        preds_y <- preds[,i,]
+        preds_y <- pmax(bounds_y[1], preds_y)
+        preds_y <- pmin(preds_y, bounds_y[2])
+        return(preds_y)
+      }))
     } else {
-      preds <- pmax(bounds[1], preds)
-      preds <- pmin(preds, bounds[2])
+      bounds <- sort(bounds)
+      if (is.matrix(preds)) {
+        preds <- apply(preds, 2, pmax, bounds[1])
+        preds <- apply(preds, 2, pmin, bounds[2])
+      } else {
+        preds <- pmax(bounds[1], preds)
+        preds <- pmin(preds, bounds[2])
+      }
     }
   }
 
