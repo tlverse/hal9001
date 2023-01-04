@@ -168,6 +168,9 @@ fit_sal <- function(X,
     return_lasso = return_lasso,
     return_x_basis = return_x_basis
   )
+  # summary() expects lasso_fit to be a cv.glmnet object
+  # But it is just a glmnet object. So this is the hack:
+  full_fit$lasso_fit$glmnet.fit <- full_fit$lasso_fit
   lambda_seq <- full_fit$lambda
   basis_list <- full_fit$basis_list
 
@@ -180,7 +183,7 @@ fit_sal <- function(X,
           NULL
         },
       basis_list = basis_list,
-      X_colnames = X_colnames,
+      X_colnames = full_fit$X_colnames,
       copy_map = full_fit$copy_map,
       coefs = as.matrix(full_fit$coefs),
       times = full_fit$times,
@@ -306,7 +309,7 @@ fit_sal <- function(X,
         NULL
       },
     basis_list = basis_list,
-    X_colnames = X_colnames,
+    X_colnames = full_fit$X_colnames,
     copy_map = full_fit$copy_map,
     coefs = as.matrix(full_fit$coefs[, which.min(risks)[1], drop = F]),
     times = full_fit$times,

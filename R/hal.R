@@ -459,7 +459,7 @@ fit_hal <- function(X,
   fit_control$weights <- weights
 
   sal_fit <- NULL
-  if (screen_variables || screen_interactions) {
+  if (screen_variables) {
     if (!is.null(formula)) {
       warning("`formula` argument is not used if screen_variables or screen_interactions is TRUE.")
     }
@@ -483,7 +483,8 @@ fit_hal <- function(X,
     )
     hal_lasso <- sal_fit$lasso_fit
     coefs <- sal_fit$coefs
-    lambda_star <- sal_fit$lambda
+    lambda_star <- sal_fit$lambda_star
+
     formula <- sal_fit$formula
     basis_list <- sal_fit$basis_list
   } else if (!fit_control$cv_select) {
