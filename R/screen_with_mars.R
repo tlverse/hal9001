@@ -39,7 +39,7 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, glm = list
   n <- length(Y)
   nk <- min(max(round(sqrt(length(Y))) * ncol(X), 200), 1000)
   fast.k <- min(max(sqrt(n), 20), 100)
-  fit <- earth(x = x, y = y, fast.k = fast.k, nk = nk, pmethod = "cv", degree = degree, nfold = nfold) # , glm = glm)
+  fit <- earth(x = x, y = y, fast.k = fast.k, nk = nk, pmethod = "cv", degree = degree, nfold = nfold, glm = glm)
   vars_selected <- intersect(rownames(earth::evimp(fit)), colnames(X))
   terms <- colnames(fit$bx)
 
