@@ -131,7 +131,7 @@ fit_sal <- function(X,
     }
     family <- gaussian()
     # FOR NOW just use least-squares as its fast
-    if(screen_interactions) {
+    if (screen_interactions) {
       out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree, nfold = 10, glm = list(family = family))
       return(out_mars$formula)
     } else {
@@ -148,6 +148,7 @@ fit_sal <- function(X,
 
   fit_control_internal <- fit_control
   fit_control_internal$cv_select <- FALSE
+  print("error")
   full_fit <- fit_hal(X,
     Y,
     formula = formula_screened,
@@ -170,7 +171,7 @@ fit_sal <- function(X,
   lambda_seq <- full_fit$lambda
   basis_list <- full_fit$basis_list
 
-  if(fit_control$cv_select == FALSE) {
+  if (fit_control$cv_select == FALSE) {
     fit <- list(
       x_basis =
         if (return_x_basis) {
@@ -209,7 +210,6 @@ fit_sal <- function(X,
                      reduce_basis,
                      family,
                      fit_control_internal, screen_function) {
-
     X <- data_list$X
     Y <- data_list$Y
     weights <- data_list$weights
@@ -218,6 +218,9 @@ fit_sal <- function(X,
     lambda_seq <- data_list$lambda_seq
     if (!is.null(X_unpenalized)) {
       X_unpenalized <- training(X_unpenalized)
+      new_X_unpenalized <- validation(X_unpenalized)
+    } else {
+      new_X_unpenalized <- NULL
     }
 
     formula_screened <- screen_function(training(X), training(Y), training(weights), training(offset), training(id))
@@ -242,7 +245,7 @@ fit_sal <- function(X,
       return_lasso = FALSE
     )
 
-    predictions <- predict(fold_fit, new_data = validation(X), offset = validation(offset))
+    predictions <- predict(fold_fit, new_data = validation(X), offset = validation(offset), new_X_unpenalized = new_X_unpenalized)
 
     index <- validation()
     list(
@@ -275,7 +278,7 @@ fit_sal <- function(X,
 
 
   preds <- data.table::as.data.table(results$predictions)
-  if(nrow(preds) != n){
+  if (nrow(preds) != n) {
     print(results$error)
   }
   good_preds <- unlist(preds[, lapply(.SD, function(x) all(!is.na(x)))])
@@ -290,7 +293,6 @@ fit_sal <- function(X,
 
 
   risks <- apply(predictions, 2, function(pred) {
-
     mean(fam$dev.resids(Y, pred, weights))
   })
 
@@ -323,12 +325,12 @@ fit_sal <- function(X,
     formula = formula_screened
   )
 
-  #cv_fit <- list(
-   # cvrisks = risks, coefs = as.matrix(full_fit$coefs[, which.min(risks)[1], drop = F]), basis_list = basis_list,
+  # cv_fit <- list(
+  # cvrisks = risks, coefs = as.matrix(full_fit$coefs[, which.min(risks)[1], drop = F]), basis_list = basis_list,
   #  prediction_bounds = full_fit$prediction_bounds, family = full_fit$family,
-   # unpenalized_covariates = full_fit$unpenalized_covariates, copy_map = full_fit$copy_map, lasso_fit = full_fit, formula = formula_screened,
-    #lambda_star = lambda_star
-  #)
+  # unpenalized_covariates = full_fit$unpenalized_covariates, copy_map = full_fit$copy_map, lasso_fit = full_fit, formula = formula_screened,
+  # lambda_star = lambda_star
+  # )
   class(fit) <- "hal9001"
   return(fit)
 }

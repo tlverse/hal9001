@@ -44,12 +44,13 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, glm = list
   terms <- colnames(fit$bx)
 
 
-  if(is.null(vars_selected) || length(vars_selected)== 0) { # If none selected add most correlated one.
+  if (is.null(vars_selected) || length(vars_selected) == 0) { # If none selected add most correlated one.
 
-    cors <- as.vector(apply(X,2,function(u) {abs(cor(u,Y))}))
+    cors <- as.vector(apply(X, 2, function(u) {
+      abs(cor(u, Y))
+    }))
     vars_selected <- colnames(X)[which.max(cors)[1]]
     terms <- paste0("h(", vars_selected, ")")
-
   }
 
   cols_selected <- match(vars_selected, colnames(X))
@@ -62,10 +63,9 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, glm = list
 
   terms <- unique(gsub("[)][*]h[(]", ", ", terms))
   sapply(colnames(X), function(col) {
-    terms <<- gsub(paste0("[*]", col, "[*]"), paste0("*h(", col, ")*") , terms)
-    terms <<- gsub(paste0("[*]", col), paste0("*h(", col, ")") , terms)
-    terms <<- gsub(paste0( col, "[*]"), paste0("h(", col, ")*") , terms)
-
+    terms <<- gsub(paste0("[*]", col, "[*]"), paste0("*h(", col, ")*"), terms)
+    terms <<- gsub(paste0("[*]", col), paste0("*h(", col, ")"), terms)
+    terms <<- gsub(paste0(col, "[*]"), paste0("h(", col, ")*"), terms)
   })
   terms <- unique(gsub("[)][*]h[(]", ", ", terms))
 

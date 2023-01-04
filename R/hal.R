@@ -198,7 +198,7 @@ fit_hal <- function(X,
                     yolo = FALSE) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
-    if(family %in% c("cox", "mgaussian") && (screen_variables || screen_interactions)) {
+    if (family %in% c("cox", "mgaussian") && (screen_variables || screen_interactions)) {
       screen_variables <- screen_interactions <- FALSE
       warning("Screening not supported for cox and mgaussian families.")
     }
@@ -401,6 +401,12 @@ fit_hal <- function(X,
   if (unpenalized_covariates > 0) {
     x_basis <- cbind(x_basis, X_unpenalized)
     penalty_factor <- c(penalty_factor, rep(0, ncol(X_unpenalized)))
+    if (!is.null(fit_control$lower.limits)) {
+      fit_control$lower.limits <- c(fit_control$lower.limits, rep(-Inf, ncol(X_unpenalized)))
+    }
+    if (!is.null(fit_control$upper.limits)) {
+      fit_control$upper.limits <- c(fit_control$upper.limits, rep(Inf, ncol(X_unpenalized)))
+    }
   }
 
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
@@ -439,33 +445,34 @@ fit_hal <- function(X,
   fit_control$offset <- offset
   fit_control$weights <- weights
 
-  if(screen_variables || screen_interactions) {
-    if(!is.null(formula)){
+  sal_fit <- NULL
+  if (screen_variables || screen_interactions) {
+    if (!is.null(formula)) {
       warning("`formula` argument is not used if screen_variables or screen_interactions is TRUE.")
     }
-     sal_fit <- fit_sal(X,
-             Y,
-             X_unpenalized = X_unpenalized,
-             max_degree = max_degree,
-             smoothness_orders = smoothness_orders,
-             num_knots = num_knots,
-             reduce_basis = reduce_basis,
-             family = family,
-             lambda = lambda,
-             id = id,
-             weights = weights,
-             offset = offset,
-             fit_control = fit_control_initial,
-             screen_interactions = screen_interactions,
-             screener_max_degree = screener_max_degree,
-             return_lasso = return_lasso,
-             return_x_basis = return_x_basis)
-     hal_lasso <- sal_fit$hal_lasso
-     coefs <- sal_fit$coefs
-     lambda_star <- sal_fit$lambda
-     formula <- sal_fit$formula
-     basis_list <- sal_fit$basis_list
-
+    sal_fit <- fit_sal(X,
+      Y,
+      X_unpenalized = X_unpenalized,
+      max_degree = max_degree,
+      smoothness_orders = smoothness_orders,
+      num_knots = num_knots,
+      reduce_basis = reduce_basis,
+      family = family,
+      lambda = lambda,
+      id = id,
+      weights = weights,
+      offset = offset,
+      fit_control = fit_control_initial,
+      screen_interactions = screen_interactions,
+      screener_max_degree = screener_max_degree,
+      return_lasso = return_lasso,
+      return_x_basis = return_x_basis
+    )
+    hal_lasso <- sal_fit$lasso_fit
+    coefs <- sal_fit$coefs
+    lambda_star <- sal_fit$lambda
+    formula <- sal_fit$formula
+    basis_list <- sal_fit$basis_list
   } else if (!fit_control$cv_select) {
     hal_lasso <- do.call(glmnet::glmnet, fit_control)
     lambda_star <- hal_lasso$lambda
@@ -540,7 +547,7 @@ fit_hal <- function(X,
     prediction_bounds = fit_control$prediction_bounds,
     formula = formula
   )
-  if(!is.null(sal_fit)){
+  if (!is.null(sal_fit)) {
     fit$sal_fit <- sal_fit
   }
   class(fit) <- "hal9001"
