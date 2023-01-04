@@ -489,7 +489,7 @@ X <- replicate(d, runif(n))
 colnames(X) <- paste0("X", 1:d)
 mu <- 5 * (sin(3 * X[, 5]) + sin(3 * X[, 3]) + sin(3 * X[, 1]))
 Y <- rnorm(n, mu, 0.5)
-out <- fit_hal(X, Y, max_degree = 1, num_knots = 10,  screen_variables = TRUE, screen_interactions = TRUE) # Should take no more than a minute
+out <- fit_hal(X, Y, max_degree = 1, num_knots = 10, screen_variables = TRUE, screen_interactions = TRUE) # Should take no more than a minute
 out$coefs <- as.matrix(out$coefs)
 p <- predict(out, new_data = X)
 plot(p, mu)

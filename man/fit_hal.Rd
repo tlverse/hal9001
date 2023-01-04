@@ -9,7 +9,7 @@ fit_hal(
   Y,
   formula = NULL,
   X_unpenalized = NULL,
-  max_degree = ifelse(ncol(X) >= 20, 2, 3),
+  max_degree = 3,
   smoothness_orders = 1,
   num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1/3), length(Y)^(1/5))),
   reduce_basis = NULL,
@@ -130,21 +130,18 @@ each outcome can have different bounds). Bounding ensures that there is
 no extrapolation.
 }}
 
-\item{screen_variables}{Whether to screen variables using the MARS-based selectively adaptive
-as implemented in \code{fit_sal}. \code{TRUE} by default.
+\item{screen_variables}{A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
+If \code{TRUE}, then the selectively adaptive lasso routine \code{fit_sal} is called internally.
 Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}}
 
-\item{screen_interactions}{Only used if \code{screen_variables} is \code{TRUE}.
-Whether to screen interactions using the MARS-based selectively adaptive lasso as implemented in \code{fit_sal}.
+\item{screen_interactions}{A \code{logical} of whether to screen interactions using MARS-based screening as implemented in \code{screen_MARS}.
+Only used if \code{screen_variables} is \code{TRUE}.
 This argument is passed to \code{fit_sal} internally if \code{screen_variables} is \code{TRUE}.
 Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.}
 
-\item{screener_max_degree}{Only used if \code{screen_variables} is \code{TRUE}.
+\item{screener_max_degree}{Only used if \code{screen_variables} is \code{TRUE} and \code{screen_interactions} is \code{FALSE}.
 The maximum degree of interaction to search for in the MARS-based selectively adaptive
-lasso routine as implemented in \code{fit_sal}.
-This argument is only useful if \code{screen_variables} is TRUE and \code{screen_interactions} is FALSE.
-If \code{screen_interactions} is TRUE then \code{screener_max_degree} and \code{max_degree} have an identical functionality,
-except that \code{screener_max_degree} overrides \code{max_degree} in this case.}
+lasso routine as implemented in \code{fit_sal}.}
 
 \item{basis_list}{The full set of basis functions generated from \code{X}.}
 
@@ -192,11 +189,8 @@ higher, then fewer knot points (e.g., 10-30) is actually better for
 performance. We recommend specifying \code{num_knots} with respect to
 \code{smoothness_orders}, and as a vector of length \code{max_degree} with
 values decreasing exponentially. This prevents combinatorial explosions in
-the number of higher-degree basis functions generated. The default behavior
-of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
-\code{num_knots} is set to \eqn{500 / 2^{j-1}}, and for
-\code{smoothness_orders = 1} or higher, \code{num_knots} is set to
-\eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
+the number of higher-degree basis functions generated. The default values
+of \code{num_knots} are c(sqrt(n), (n)^(1/3), n^(1/5)) where n = length(Y).
 include some other suitable settings for \code{num_knots} below, all of
 which are less complex than default \code{num_knots} and will thus result
 in a faster runtime:
@@ -208,21 +202,21 @@ in a faster runtime:
 \item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 \code{num_knots = c(100, 75, 50)}.
 }
-\item Recommended settings for fairly fast runtime:
+\item Some settings for fairly fast runtime:
 \itemize{
 \item If \code{smoothness_orders = 0} and \code{max_degree = 3},
 \code{num_knots = c(200, 100, 50)}.
 \item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 \code{num_knots = c(50, 25, 15)}.
 }
-\item Recommended settings for fast runtime:
+\item Some settings for fast runtime:
 \itemize{
 \item If \code{smoothness_orders = 0} and \code{max_degree = 3},
 \code{num_knots = c(100, 50, 25)}.
 \item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 \code{num_knots = c(40, 15, 10)}.
 }
-\item Recommended settings for very fast runtime:
+\item Some settings for very fast runtime:
 \itemize{
 \item If \code{smoothness_orders = 0} and \code{max_degree = 3},
 \code{num_knots = c(50, 25, 10)}.
