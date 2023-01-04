@@ -463,7 +463,7 @@ fit a HAL model with the specified formula.
 ```{r}
 # get formula object
 fit <- fit_hal(
-  X = X, Y = Y, formula = ~ h(.), smoothness_orders = 1, num_knots = 100
+  X = X, Y = Y, formula = ~ h(.), smoothness_orders = 1, num_knots = 100, screen_variables = FALSE,
 )
 print(summary(fit), 10) # prints top 10 rows, i.e., highest absolute coefs
 plot(predict(fit, new_data = X), Y)
@@ -489,7 +489,7 @@ X <- replicate(d, runif(n))
 colnames(X) <- paste0("X", 1:d)
 mu <- 5 * (sin(3 * X[, 5]) + sin(3 * X[, 3]) + sin(3 * X[, 1]))
 Y <- rnorm(n, mu, 0.5)
-out <- fit_sal(X, Y, max_degree = 1, num_knots = 10) # Should take no more than a minute
+out <- fit_hal(X, Y, max_degree = 1, num_knots = 10,  screen_variables = TRUE, screen_interactions = TRUE) # Should take no more than a minute
 out$coefs <- as.matrix(out$coefs)
 p <- predict(out, new_data = X)
 plot(p, mu)
