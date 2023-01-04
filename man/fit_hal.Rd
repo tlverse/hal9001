@@ -130,6 +130,22 @@ each outcome can have different bounds). Bounding ensures that there is
 no extrapolation.
 }}
 
+\item{screen_variables}{Whether to screen variables using the MARS-based selectively adaptive
+as implemented in \code{fit_sal}. \code{TRUE} by default.
+Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}}
+
+\item{screen_interactions}{Only used if \code{screen_variables} is \code{TRUE}.
+Whether to screen interactions using the MARS-based selectively adaptive lasso as implemented in \code{fit_sal}.
+This argument is passed to \code{fit_sal} internally if \code{screen_variables} is \code{TRUE}.
+Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.}
+
+\item{screener_max_degree}{Only used if \code{screen_variables} is \code{TRUE}.
+The maximum degree of interaction to search for in the MARS-based selectively adaptive
+lasso routine as implemented in \code{fit_sal}.
+This argument is only useful if \code{screen_variables} is TRUE and \code{screen_interactions} is FALSE.
+If \code{screen_interactions} is TRUE then \code{screener_max_degree} and \code{max_degree} have an identical functionality,
+except that \code{screener_max_degree} overrides \code{max_degree} in this case.}
+
 \item{basis_list}{The full set of basis functions generated from \code{X}.}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
