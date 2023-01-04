@@ -126,7 +126,7 @@ system.time({
     max_degree = 3,
     num_knots = length(y),
     smoothness_orders = 0,
-    yolo = FALSE
+    yolo = FALSE, screen_variables = FALSE, screen_interactions = FALSE
   )
 })
 hff_preds <- predict(hal_fit_full, new_data = x)
@@ -143,7 +143,7 @@ hal_fit_reduced <- fit_hal(
   max_degree = 3,
   num_knots = length(y),
   smoothness_orders = 0,
-  yolo = FALSE
+  yolo = FALSE, screen_variables = FALSE, screen_interactions = FALSE
 )
 
 hal_fit_reduced$times

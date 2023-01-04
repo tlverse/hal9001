@@ -172,11 +172,31 @@ fit_sal <- function(X,
 
   if(fit_control$cv_select == FALSE) {
     fit <- list(
-      cvrisks = risks, coefs = as.matrix(full_fit$coefs), basis_list = basis_list,
-      prediction_bounds = full_fit$prediction_bounds, family = full_fit$family,
-      unpenalized_covariates = full_fit$unpenalized_covariates, copy_map = full_fit$copy_map, lasso_fit = full_fit, formula = formula_screened,
-      lambda = lambda_seq
+      x_basis =
+        if (return_x_basis) {
+          full_fit$x_basis
+        } else {
+          NULL
+        },
+      basis_list = basis_list,
+      X_colnames = X_colnames,
+      copy_map = full_fit$copy_map,
+      coefs = as.matrix(full_fit$coefs),
+      times = full_fit$times,
+      lambda_star = lambda_seq,
+      reduce_basis = full_fit$reduce_basis,
+      family = full_fit$family,
+      lasso_fit =
+        if (return_lasso) {
+          full_fit$lasso_fit
+        } else {
+          NULL
+        },
+      unpenalized_covariates = full_fit$unpenalized_covariates,
+      prediction_bounds = full_fit$prediction_bounds,
+      formula = formula_screened
     )
+
     class(fit) <- "hal9001"
     return(fit)
   }

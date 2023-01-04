@@ -198,7 +198,7 @@ fit_hal <- function(X,
                     yolo = FALSE) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
-    if(family %in% c("cox", "mgaussian") & (screen_variables | screen_interactions)) {
+    if(family %in% c("cox", "mgaussian") && (screen_variables || screen_interactions)) {
       screen_variables <- screen_interactions <- FALSE
       warning("Screening not supported for cox and mgaussian families.")
     }
