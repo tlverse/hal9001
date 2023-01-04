@@ -7,7 +7,7 @@ x <- matrix(rnorm(n * p), n, p)
 y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 colnames(x) <- c("col1", "col2", "col3")
 
-hal_fit <- fit_hal(X = x, Y = y, fit_control = list(use_min = FALSE), screen_variables =T)
+hal_fit <- fit_hal(X = x, Y = y, fit_control = list(use_min = FALSE), screen_variables = T)
 
 
 hal_fit_nolasso <- fit_hal(X = x, Y = y, yolo = FALSE, return_lasso = FALSE, screen_variables = FALSE)
