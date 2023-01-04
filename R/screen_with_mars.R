@@ -41,8 +41,18 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, glm = list
   fast.k <- min(max(sqrt(n), 20), 100)
   fit <- earth(x = x, y = y, fast.k = fast.k, nk = nk, pmethod = "cv", degree = degree, nfold = nfold) # , glm = glm)
   vars_selected <- intersect(rownames(earth::evimp(fit)), colnames(X))
-  cols_selected <- match(vars_selected, colnames(X))
   terms <- colnames(fit$bx)
+
+
+  if(is.null(vars_selected) || length(vars_selected)== 0) { # If none selected add most correlated one.
+
+    cors <- as.vector(apply(X,2,function(u) {abs(cor(u,Y))}))
+    vars_selected <- colnames(X)[which.max(cors)[1]]
+    terms <- paste0("h(", vars_selected, ")")
+
+  }
+
+  cols_selected <- match(vars_selected, colnames(X))
 
   terms <- unique(gsub("[-+]+[0-9.]+", "", terms))
   terms <- unique(gsub("[-+]*[0-9.]+[-+]+", "", terms))
@@ -51,7 +61,16 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, glm = list
   terms <- unique(gsub("[-+]+", "", terms))
 
   terms <- unique(gsub("[)][*]h[(]", ", ", terms))
+  sapply(colnames(X), function(col) {
+    terms <<- gsub(paste0("[*]", col, "[*]"), paste0("*h(", col, ")*") , terms)
+    terms <<- gsub(paste0("[*]", col), paste0("*h(", col, ")") , terms)
+    terms <<- gsub(paste0( col, "[*]"), paste0("h(", col, ")*") , terms)
+
+  })
+  terms <- unique(gsub("[)][*]h[(]", ", ", terms))
+
   formula <- paste0("~", paste0(terms[grep("h", terms)], collapse = " + "))
+
 
   return(list(vars_selected = vars_selected, cols_selected = cols_selected, formula = formula))
 }

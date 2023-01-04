@@ -263,6 +263,7 @@ print.formula_hal9001 <- function(x, ...) {
 #' where wildcard1 and wildcard2 are iterated over all possible character names given in the argument `.`.
 #' @rdname formula_helpers
 fill_dots <- function(var_names, .) {
+
   index <- which(var_names == ".")
   if (length(index) == 0) {
     return(sort(var_names))
@@ -275,6 +276,7 @@ fill_dots <- function(var_names, .) {
     out <- fill_dots(new_var_names, .)
     return(out)
   })
+
   is_nested <- is.list(all_items[[1]])
   while (is_nested) {
     all_items <- unlist(all_items, recursive = FALSE)

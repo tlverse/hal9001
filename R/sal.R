@@ -11,12 +11,12 @@
 #'
 #'
 #' @inheritParams fit_hal
-#' @param variable_selection_only Boolean variable. If TRUE then MARS is only used to select variables
+#' @param screen_interactions Boolean variable. If TRUE then MARS is only used to select variables
 #' and is not used to learn interactions.
 #' If TRUE then all basis functions as specified by the parameters \code{max_degree} and \code{num_knots}
 #' are generated for variables selected by MARS.
-#' The parameter \code{max_degree_MARS} can be used to set max degree interaction of MARS model for variable selection.
-#' @param max_degree_MARS Only used if \code{variable_selection_only} is set to \code{TRUE}. The max degree interaction of MARS model used for variable selection.
+#' The parameter \code{screener_max_degree} can be used to set max degree interaction of MARS model for variable selection.
+#' @param screener_max_degree Only used if \code{screen_interactions} is set to \code{TRUE}. The max degree interaction of MARS model used for variable selection.
 #'
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom glmnet cv.glmnet glmnet
@@ -50,7 +50,7 @@ fit_sal <- function(X,
                     smoothness_orders = 1,
                     num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1 / 3), length(Y)^(1 / 5))),
                     reduce_basis = NULL,
-                    family = c("gaussian", "binomial", "poisson", "cox"),
+                    family = c("gaussian", "binomial", "poisson"),
                     lambda = NULL,
                     id = NULL,
                     weights = NULL,
@@ -61,8 +61,10 @@ fit_sal <- function(X,
                       lambda.min.ratio = 1e-4,
                       prediction_bounds = "default"
                     ),
-                    variable_selection_only = FALSE,
-                    max_degree_MARS = max_degree,
+                    screen_interactions = TRUE,
+                    screener_max_degree = max_degree,
+                    return_lasso = TRUE,
+                    return_x_basis = FALSE,
                     ...) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
@@ -119,6 +121,9 @@ fit_sal <- function(X,
     warning("NOTE: Screening does not incorporate offset")
   }
 
+  # To incorporate formula, we could get cols from basis_list
+  #
+
   n <- length(Y)
   screen_function <- function(X, Y, weights, offset, id) {
     if (is.character(family)) {
@@ -126,23 +131,23 @@ fit_sal <- function(X,
     }
     family <- gaussian()
     # FOR NOW just use least-squares as its fast
-    if (variable_selection_only) {
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree_MARS, nfold = 10, glm = list(family = family))
-      terms <- sapply(1:max_degree, function(d) {
-        paste0("h(", paste0(rep(".", d), collapse = ","), ", .= c(", paste0(out_mars$vars_selected, collapse = ","), "))")
+    if(screen_interactions) {
+      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree, nfold = 10, glm = list(family = family))
+      return(out_mars$formula)
+    } else {
+      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = family))
+      terms <- sapply(1:min(max_degree, length(out_mars$vars_selected)), function(d) {
+        paste0("h(", paste0(rep(".", d), collapse = ","), ', .= c("', paste0(out_mars$vars_selected, collapse = '","'), '"))')
       })
       formula <- as.formula(paste0("~", paste0(terms, collapse = " + ")))
       return((formula))
-    } else {
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree, nfold = 10, glm = list(family = family))
-      return(out_mars$formula)
     }
   }
 
   formula_screened <- screen_function(X, Y, weights, offset, id)
 
-  fit_control$cv_select <- FALSE
-
+  fit_control_internal <- fit_control
+  fit_control_internal$cv_select <- FALSE
   full_fit <- fit_hal(X,
     Y,
     formula = formula_screened,
@@ -156,10 +161,25 @@ fit_sal <- function(X,
     id = id,
     weights = weights,
     offset = offset,
-    fit_control = fit_control, return_x_basis = F
+    fit_control = fit_control_internal,
+    screen_variables = FALSE,
+    screen_interactions = FALSE,
+    return_lasso = return_lasso,
+    return_x_basis = return_x_basis
   )
   lambda_seq <- full_fit$lambda
   basis_list <- full_fit$basis_list
+
+  if(fit_control$cv_select == FALSE) {
+    fit <- list(
+      cvrisks = risks, coefs = as.matrix(full_fit$coefs), basis_list = basis_list,
+      prediction_bounds = full_fit$prediction_bounds, family = full_fit$family,
+      unpenalized_covariates = full_fit$unpenalized_covariates, copy_map = full_fit$copy_map, lasso_fit = full_fit, formula = formula_screened,
+      lambda = lambda_seq
+    )
+    class(fit) <- "hal9001"
+    return(fit)
+  }
 
 
   cv_fun <- function(fold, data_list, X_unpenalized,
@@ -168,7 +188,8 @@ fit_sal <- function(X,
                      num_knots,
                      reduce_basis,
                      family,
-                     fit_control, screen_function) {
+                     fit_control_internal, screen_function) {
+
     X <- data_list$X
     Y <- data_list$Y
     weights <- data_list$weights
@@ -194,7 +215,11 @@ fit_sal <- function(X,
       id = training(id),
       weights = training(weights),
       offset = training(offset),
-      fit_control = fit_control, return_x_basis = F
+      fit_control = fit_control_internal,
+      screen_variables = FALSE,
+      screen_interactions = FALSE,
+      return_x_basis = FALSE,
+      return_lasso = FALSE
     )
 
     predictions <- predict(fold_fit, new_data = validation(X), offset = validation(offset))
@@ -213,6 +238,7 @@ fit_sal <- function(X,
     predictions = function(x) rbindlist(x, fill = TRUE)
   ))
 
+
   results <- origami::cross_validate(cv_fun, folds,
     .combine_control = comb_ctrl, data_list = list(X = X, Y = Y, weights = weights, offset = offset, id = id, lambda_seq = lambda_seq),
     X_unpenalized = X_unpenalized,
@@ -221,29 +247,70 @@ fit_sal <- function(X,
     num_knots = num_knots,
     reduce_basis = reduce_basis,
     family = family,
-    fit_control = fit_control,
+    fit_control_internal = fit_control_internal,
     screen_function = screen_function
   )
 
+
+
+
   preds <- data.table::as.data.table(results$predictions)
+  if(nrow(preds) != n){
+    print(results$error)
+  }
   good_preds <- unlist(preds[, lapply(.SD, function(x) all(!is.na(x)))])
   preds <- preds[, which(good_preds), with = FALSE]
   predictions <- aorder(preds, order(results$index, results$fold_index))
   if (is.character(family)) {
     fam <- get(family)()
+  } else {
+    fam <- family
   }
 
+
+
   risks <- apply(predictions, 2, function(pred) {
+
     mean(fam$dev.resids(Y, pred, weights))
   })
 
-  cv_fit <- list(
-    cvrisks = risks, coefs = as.matrix(full_fit$coefs[, which.min(risks)[1], drop = F]), basis_list = basis_list,
-    prediction_bounds = full_fit$prediction_bounds, family = full_fit$family,
-    unpenalized_covariates = full_fit$unpenalized_covariates, copy_map = full_fit$copy_map, lasso_fit = full_fit, formula = formula_screened
+  lambda_star <- lambda_seq[which.min(risks)[1]]
+
+  fit <- list(
+    x_basis =
+      if (return_x_basis) {
+        full_fit$x_basis
+      } else {
+        NULL
+      },
+    basis_list = basis_list,
+    X_colnames = X_colnames,
+    copy_map = full_fit$copy_map,
+    coefs = as.matrix(full_fit$coefs[, which.min(risks)[1], drop = F]),
+    times = full_fit$times,
+    lambda_star = lambda_star,
+    reduce_basis = full_fit$reduce_basis,
+    family = full_fit$family,
+    lasso_fit =
+      if (return_lasso) {
+        full_fit$lasso_fit
+      } else {
+        NULL
+      },
+    unpenalized_covariates = full_fit$unpenalized_covariates,
+    prediction_bounds = full_fit$prediction_bounds,
+    cvrisks = risks,
+    formula = formula_screened
   )
-  class(cv_fit) <- "hal9001"
-  return(cv_fit)
+
+  #cv_fit <- list(
+   # cvrisks = risks, coefs = as.matrix(full_fit$coefs[, which.min(risks)[1], drop = F]), basis_list = basis_list,
+  #  prediction_bounds = full_fit$prediction_bounds, family = full_fit$family,
+   # unpenalized_covariates = full_fit$unpenalized_covariates, copy_map = full_fit$copy_map, lasso_fit = full_fit, formula = formula_screened,
+    #lambda_star = lambda_star
+  #)
+  class(fit) <- "hal9001"
+  return(fit)
 }
 
 

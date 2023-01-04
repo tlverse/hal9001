@@ -19,8 +19,10 @@ fit_sal(
   offset = NULL,
   fit_control = list(cv_select = TRUE, use_min = TRUE, lambda.min.ratio = 1e-04,
     prediction_bounds = "default"),
-  variable_selection_only = FALSE,
-  max_degree_MARS = max_degree,
+  screen_interactions = TRUE,
+  screener_max_degree = max_degree,
+  return_lasso = TRUE,
+  return_x_basis = FALSE,
   ...
 )
 }
@@ -122,13 +124,19 @@ each outcome can have different bounds). Bounding ensures that there is
 no extrapolation.
 }}
 
-\item{variable_selection_only}{Boolean variable. If TRUE then MARS is only used to select variables
+\item{screen_interactions}{Boolean variable. If TRUE then MARS is only used to select variables
 and is not used to learn interactions.
 If TRUE then all basis functions as specified by the parameters \code{max_degree} and \code{num_knots}
 are generated for variables selected by MARS.
-The parameter \code{max_degree_MARS} can be used to set max degree interaction of MARS model for variable selection.}
+The parameter \code{screener_max_degree} can be used to set max degree interaction of MARS model for variable selection.}
 
-\item{max_degree_MARS}{Only used if \code{variable_selection_only} is set to \code{TRUE}. The max degree interaction of MARS model used for variable selection.}
+\item{screener_max_degree}{Only used if \code{screen_interactions} is set to \code{TRUE}. The max degree interaction of MARS model used for variable selection.}
+
+\item{return_lasso}{A \code{logical} indicating whether or not to return
+the \code{\link[glmnet]{glmnet}} fit object of the lasso model.}
+
+\item{return_x_basis}{A \code{logical} indicating whether or not to return
+the matrix of (possibly reduced) basis functions used in \code{fit_hal}.}
 }
 \value{
 Object of class \code{hal9001}, containing a list of basis
@@ -150,8 +158,8 @@ and provides relatively quick solutions in large samples and moderately high dim
 n <- 100
 p <- 2
 x <- xmat <- matrix(rnorm(n * p), n, p)
- colnames(x) <- paste0("X", 1:p)
-y_prob <- plogis( sin(x[, 1])  + sin(x[, 2]))
+colnames(x) <- paste0("X", 1:p)
+y_prob <- plogis(sin(x[, 1]) + sin(x[, 2]))
 y <- rbinom(n = n, size = 1, prob = y_prob)
 sal_fit <- fit_sal(X = x, Y = y, family = "binomial", max_degree = 1, num_knots = 10)
 print(sal_fit$formula)
