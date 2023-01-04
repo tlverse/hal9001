@@ -27,11 +27,8 @@
 #'  performance. We recommend specifying \code{num_knots} with respect to
 #'  \code{smoothness_orders}, and as a vector of length \code{max_degree} with
 #'  values decreasing exponentially. This prevents combinatorial explosions in
-#'  the number of higher-degree basis functions generated. The default behavior
-#'  of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
-#'  \code{num_knots} is set to \eqn{500 / 2^{j-1}}, and for
-#'  \code{smoothness_orders = 1} or higher, \code{num_knots} is set to
-#'  \eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
+#'  the number of higher-degree basis functions generated. The default values
+#'  of \code{num_knots} are c(sqrt(n), (n)^(1/3), n^(1/5)) where n = length(Y).
 #'  include some other suitable settings for \code{num_knots} below, all of
 #'  which are less complex than default \code{num_knots} and will thus result
 #'  in a faster runtime:
@@ -40,17 +37,17 @@
 #'      \code{num_knots = c(400, 200, 100)}.
 #'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(100, 75, 50)}.
-#'  - Recommended settings for fairly fast runtime:
+#'  - Some settings for fairly fast runtime:
 #'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
 #'      \code{num_knots = c(200, 100, 50)}.
 #'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(50, 25, 15)}.
-#'  - Recommended settings for fast runtime:
+#'  - Some settings for fast runtime:
 #'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
 #'      \code{num_knots = c(100, 50, 25)}.
 #'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
 #'      \code{num_knots = c(40, 15, 10)}.
-#'  - Recommended settings for very fast runtime:
+#'  - Some settings for very fast runtime:
 #'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
 #'      \code{num_knots = c(50, 25, 10)}.
 #'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
@@ -141,19 +138,16 @@
 #'    each outcome can have different bounds). Bounding ensures that there is
 #'    no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
-#' @param screen_variables Whether to screen variables using the MARS-based selectively adaptive
-#' as implemented in \code{fit_sal}. \code{TRUE} by default.
+#' @param screen_variables A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
+#' If \code{TRUE}, then the selectively adaptive lasso routine \code{fit_sal} is called internally.
 #' Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}
-#' @param screen_interactions Only used if \code{screen_variables} is \code{TRUE}.
-#' Whether to screen interactions using the MARS-based selectively adaptive lasso as implemented in \code{fit_sal}.
+#' @param screen_interactions  A \code{logical} of whether to screen interactions using MARS-based screening as implemented in \code{screen_MARS}.
+#' Only used if \code{screen_variables} is \code{TRUE}.
 #' This argument is passed to \code{fit_sal} internally if \code{screen_variables} is \code{TRUE}.
 #' Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.
-#' @param screener_max_degree Only used if \code{screen_variables} is \code{TRUE}.
+#' @param screener_max_degree Only used if \code{screen_variables} is \code{TRUE} and \code{screen_interactions} is \code{FALSE}.
 #' The maximum degree of interaction to search for in the MARS-based selectively adaptive
 #' lasso routine as implemented in \code{fit_sal}.
-#' This argument is only useful if \code{screen_variables} is TRUE and \code{screen_interactions} is FALSE.
-#' If \code{screen_interactions} is TRUE then \code{screener_max_degree} and \code{max_degree} have an identical functionality,
-#' except that \code{screener_max_degree} overrides \code{max_degree} in this case.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
