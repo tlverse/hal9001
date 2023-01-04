@@ -148,7 +148,7 @@ fit_sal <- function(X,
 
   fit_control_internal <- fit_control
   fit_control_internal$cv_select <- FALSE
-  print("error")
+
   full_fit <- fit_hal(X,
     Y,
     formula = formula_screened,
