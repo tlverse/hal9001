@@ -10,7 +10,10 @@ screen_MARS(
   pmethod = "cv",
   degree = 2,
   nfold = 10,
-  glm = list(family = gaussian())
+  fast.k = NULL,
+  nk = NULL,
+  glm = list(family = gaussian()),
+  weights = NULL
 )
 }
 \arguments{
@@ -23,6 +26,8 @@ See documentation of \code{\link[earth]{earth}}.}
 
 \item{glm}{A list of parameters to pass to \code{\link[earth]{glm}}.
 See documentation of \code{\link[earth]{earth}}.}
+
+\item{weights}{observation weights; defaults to 1 per observation.}
 }
 \value{
 list contains variable selected and their column indices,

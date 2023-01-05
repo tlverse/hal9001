@@ -21,6 +21,7 @@ fit_sal(
     prediction_bounds = "default"),
   screen_interactions = TRUE,
   screener_max_degree = max_degree,
+  screener_family = family,
   return_lasso = TRUE,
   return_x_basis = FALSE,
   ...
@@ -131,6 +132,10 @@ are generated for variables selected by MARS.
 The parameter \code{screener_max_degree} can be used to set max degree interaction of MARS model for variable selection.}
 
 \item{screener_max_degree}{Only used if \code{screen_interactions} is set to \code{TRUE}. The max degree interaction of MARS model used for variable selection.}
+
+\item{screener_family}{A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
+By default, \code{screener_family} is the same as \code{family}.
+However, \code{\link[earth]{earth}} may have convergence issues and/or error when \code{family} is not \code{"gaussian"}..}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
 the \code{\link[glmnet]{glmnet}} fit object of the lasso model.}

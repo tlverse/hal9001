@@ -148,6 +148,9 @@
 #' @param screener_max_degree Only used if \code{screen_variables} is \code{TRUE} and \code{screen_interactions} is \code{FALSE}.
 #' The maximum degree of interaction to search for in the MARS-based selectively adaptive
 #' lasso routine as implemented in \code{fit_sal}.
+#' @param screener_family A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
+#' By default, \code{screener_family} is the same as \code{family}.
+#' However, \code{\link[earth]{earth}} may have convergence issues and/or error when \code{family} is not `"gaussian"`..
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -199,6 +202,7 @@ fit_hal <- function(X,
                     screen_variables = TRUE,
                     screen_interactions = TRUE,
                     screener_max_degree = max_degree,
+                    screener_family = family,
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
@@ -472,6 +476,7 @@ fit_hal <- function(X,
       fit_control = fit_control_initial,
       screen_interactions = screen_interactions,
       screener_max_degree = screener_max_degree,
+      screener_family = screener_family,
       return_lasso = return_lasso,
       return_x_basis = return_x_basis
     )

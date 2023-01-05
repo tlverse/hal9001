@@ -63,6 +63,7 @@ fit_sal <- function(X,
                     ),
                     screen_interactions = TRUE,
                     screener_max_degree = max_degree,
+                    screener_family = family,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     ...) {
@@ -125,17 +126,25 @@ fit_sal <- function(X,
   #
 
   n <- length(Y)
+  #family <- screener_family
   screen_function <- function(X, Y, weights, offset, id) {
-    if (is.character(family)) {
-      family <- get(family)
+    if (is.character(screener_family)) {
+      screener_family <- screener_family[1]
+      screener_family <- get(screener_family)
     }
-    family <- gaussian()
+    if (screen_interactions) screener_max_degree <- max_degree
+    out_mars <- NULL
+    # Sometimes non-gaussian MARS has trouble converging.\
+    # Try given screener_family and if errors then use gaussian family.
+    try({out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = screener_family))})
+    if(is.null(out_mars)) {
+      warning("MARS-based screening errors.Rerunning with family_screener = gaussian()")
+      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = gaussian()))
+    }
     # FOR NOW just use least-squares as its fast
     if (screen_interactions) {
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = max_degree, nfold = 10, glm = list(family = family))
       return(out_mars$formula)
     } else {
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = family))
       terms <- sapply(1:min(max_degree, length(out_mars$vars_selected)), function(d) {
         paste0("h(", paste0(rep(".", d), collapse = ","), ', .= c("', paste0(out_mars$vars_selected, collapse = '","'), '"))')
       })
