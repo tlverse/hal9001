@@ -23,7 +23,7 @@ fit_hal(
   screen_variables = TRUE,
   screen_interactions = TRUE,
   screener_max_degree = max_degree,
-  screener_family = family,
+  screener_family = NULL,
   basis_list = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,

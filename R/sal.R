@@ -63,14 +63,16 @@ fit_sal <- function(X,
                     ),
                     screen_interactions = TRUE,
                     screener_max_degree = max_degree,
-                    screener_family = family,
+                    screener_family = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     ...) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
-
+  if(is.null(screener_family)) {
+    screener_family <- family
+  }
 
 
   if (!is.matrix(X)) X <- as.matrix(X)

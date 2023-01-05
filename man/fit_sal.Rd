@@ -21,7 +21,7 @@ fit_sal(
     prediction_bounds = "default"),
   screen_interactions = TRUE,
   screener_max_degree = max_degree,
-  screener_family = family,
+  screener_family = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,
   ...

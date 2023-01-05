@@ -202,7 +202,7 @@ fit_hal <- function(X,
                     screen_variables = TRUE,
                     screen_interactions = TRUE,
                     screener_max_degree = max_degree,
-                    screener_family = family,
+                    screener_family = NULL,
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
@@ -213,6 +213,9 @@ fit_hal <- function(X,
       screen_variables <- screen_interactions <- FALSE
       warning("Screening not supported for cox and mgaussian families.")
     }
+  }
+  if(is.null(screener_family)) {
+    screener_family <- family
   }
   fam <- ifelse(inherits(family, "family"), family$family, family)
 
