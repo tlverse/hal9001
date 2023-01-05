@@ -63,7 +63,7 @@ fit_sal <- function(X,
                     ),
                     screen_interactions = TRUE,
                     screener_max_degree = max_degree,
-                    screener_pruning_method = ifelse(length(Y) >= 1000, "backward", "cv"),
+                    screener_pruning_method = ifelse(length(Y) > 1000, "backward", "cv"),
                     screener_family = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
@@ -71,7 +71,7 @@ fit_sal <- function(X,
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
-  if(is.null(screener_family)) {
+  if (is.null(screener_family)) {
     screener_family <- family
   }
 

@@ -23,7 +23,7 @@ fit_hal(
   screen_variables = TRUE,
   screen_interactions = TRUE,
   screener_max_degree = max_degree,
-  screener_pruning_method = ifelse(length(Y) >= 1000, "backward", "cv"),
+  screener_pruning_method = ifelse(length(Y) > 1000, "backward", "cv"),
   screener_family = NULL,
   basis_list = NULL,
   return_lasso = TRUE,
@@ -149,7 +149,7 @@ lasso routine as implemented in \code{fit_sal}.}
 The pruning method to select the MARS-based variable and interaction screener.
 See the \code{pmethod} argument of \code{\link[earth]{earth}}.
 The option \code{cv} uses 10-fold cross-validation (CV).
-The option \code{backward} and \code{forward} prunes using backward and forward selection with the generalized cross-validation critera (GCV).
+The option \code{backward} and \code{forward} prunes using backward and forward selection with the generalized cross-validation criteria (GCV).
 GCV is a penalty that penalizes model complexity/size and is an approximation of leave-one-out CV.
 The option \code{backward} avoids cross-validation and can thus be substantially faster than \code{cv}.
 GCV-based pruning methods tend to select more variables and interactions than CV and
