@@ -63,6 +63,7 @@ fit_sal <- function(X,
                     ),
                     screen_interactions = TRUE,
                     screener_max_degree = max_degree,
+                    screener_pruning_method = ifelse(length(Y) >= 1000, "backward", "cv"),
                     screener_family = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
@@ -139,11 +140,11 @@ fit_sal <- function(X,
     # Sometimes non-gaussian MARS has trouble converging.\
     # Try given screener_family and if errors then use gaussian family.
     try({
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = screener_family))
+      out_mars <- screen_MARS(X, Y, pmethod = screener_pruning_method, degree = screener_max_degree, nfold = 10, glm = list(family = screener_family))
     })
     if (is.null(out_mars)) {
       warning("MARS-based screening errors.Rerunning with family_screener = gaussian()")
-      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = gaussian()))
+      out_mars <- screen_MARS(X, Y, pmethod = screener_pruning_method, degree = screener_max_degree, nfold = 10, glm = list(family = gaussian()))
     }
     # FOR NOW just use least-squares as its fast
     if (screen_interactions) {

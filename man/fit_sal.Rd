@@ -10,7 +10,7 @@ fit_sal(
   X_unpenalized = NULL,
   max_degree = 3,
   smoothness_orders = 1,
-  num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1/3), length(Y)^(1/5))),
+  num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1/3), length(Y)^(1/4))),
   reduce_basis = NULL,
   family = c("gaussian", "binomial", "poisson"),
   lambda = NULL,
@@ -21,6 +21,7 @@ fit_sal(
     prediction_bounds = "default"),
   screen_interactions = TRUE,
   screener_max_degree = max_degree,
+  screener_pruning_method = ifelse(length(Y) >= 1000, "backward", "cv"),
   screener_family = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,
@@ -132,6 +133,18 @@ are generated for variables selected by MARS.
 The parameter \code{screener_max_degree} can be used to set max degree interaction of MARS model for variable selection.}
 
 \item{screener_max_degree}{Only used if \code{screen_interactions} is set to \code{TRUE}. The max degree interaction of MARS model used for variable selection.}
+
+\item{screener_pruning_method}{Only used if \code{screen_variables} is \code{TRUE}.
+The pruning method to select the MARS-based variable and interaction screener.
+See the \code{pmethod} argument of \code{\link[earth]{earth}}.
+The option \code{cv} uses 10-fold cross-validation (CV).
+The option \code{backward} and \code{forward} prunes using backward and forward selection with the generalized cross-validation critera (GCV).
+GCV is a penalty that penalizes model complexity/size and is an approximation of leave-one-out CV.
+The option \code{backward} avoids cross-validation and can thus be substantially faster than \code{cv}.
+GCV-based pruning methods tend to select more variables and interactions than CV and
+may be preferred in larger sample sizes.
+
+However, \code{backward} may choose a subo}
 
 \item{screener_family}{A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
 By default, \code{screener_family} is the same as \code{family}.

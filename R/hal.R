@@ -148,6 +148,17 @@
 #' @param screener_max_degree Only used if \code{screen_variables} is \code{TRUE} and \code{screen_interactions} is \code{FALSE}.
 #' The maximum degree of interaction to search for in the MARS-based selectively adaptive
 #' lasso routine as implemented in \code{fit_sal}.
+#' @param screener_pruning_method Only used if \code{screen_variables} is \code{TRUE}.
+#' The pruning method to select the MARS-based variable and interaction screener.
+#' See the \code{pmethod} argument of \code{\link[earth]{earth}}.
+#' The option `cv` uses 10-fold cross-validation (CV).
+#' The option `backward` and `forward` prunes using backward and forward selection with the generalized cross-validation critera (GCV).
+#' GCV is a penalty that penalizes model complexity/size and is an approximation of leave-one-out CV.
+#' The option `backward` avoids cross-validation and can thus be substantially faster than `cv`.
+#' GCV-based pruning methods tend to select more variables and interactions than CV and
+#' may be preferred in larger sample sizes.
+#'
+#' However, `backward` may choose a subo
 #' @param screener_family A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
 #' By default, \code{screener_family} is the same as \code{family}.
 #' However, \code{\link[earth]{earth}} may have convergence issues and/or error when \code{family} is not `"gaussian"`..
@@ -202,11 +213,15 @@ fit_hal <- function(X,
                     screen_variables = TRUE,
                     screen_interactions = TRUE,
                     screener_max_degree = max_degree,
+                    screener_pruning_method = ifelse(length(Y) >= 1000, "backward", "cv"),
                     screener_family = NULL,
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     yolo = FALSE) {
+
+  screener_pruning_method <- match.arg(screener_pruning_method)
+
   if (!inherits(family, "family")) {
     family <- match.arg(family)
     if (family %in% c("cox", "mgaussian") && (screen_variables || screen_interactions)) {
@@ -480,6 +495,7 @@ fit_hal <- function(X,
       screen_interactions = screen_interactions,
       screener_max_degree = screener_max_degree,
       screener_family = screener_family,
+      screener_pruning_method = screener_pruning_method,
       return_lasso = return_lasso,
       return_x_basis = return_x_basis
     )
