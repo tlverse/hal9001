@@ -150,6 +150,7 @@
 #' lasso routine as implemented in \code{fit_sal}.
 #' @param screener_pruning_method Only used if \code{screen_variables} is \code{TRUE}.
 #' The pruning method to select the MARS-based variable and interaction screener.
+#' NOTE that HAL uses honest cross-validation so is thus robust to the screening algorithm overfitting the data.
 #' See the \code{pmethod} argument of \code{\link[earth]{earth}}.
 #' The option `cv` uses 10-fold cross-validation (CV).
 #' The option `backward` and `forward` prunes using backward and forward selection with the generalized cross-validation criteria (GCV).
@@ -213,13 +214,13 @@ fit_hal <- function(X,
                     screen_variables = TRUE,
                     screen_interactions = TRUE,
                     screener_max_degree = max_degree,
-                    screener_pruning_method = ifelse(length(Y) > 1000, "backward", "cv"),
+                    screener_pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
                     screener_family = NULL,
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     yolo = FALSE) {
-  screener_pruning_method <- match.arg(screener_pruning_method)
+
 
   if (!inherits(family, "family")) {
     family <- match.arg(family)
