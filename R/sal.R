@@ -113,12 +113,12 @@ fit_sal <- function(X,
   if (is.null(weights)) {
     weights <- rep(1, length(Y))
   } else {
-    warning("NOTE: Screening does not incorporate weights")
+   if(!all(weights == 1)) warning("NOTE: Screening does not incorporate weights")
   }
   if (is.null(offset)) {
     offset <- rep(0, length(Y))
   } else {
-    warning("NOTE: Screening does not incorporate offset")
+    if(!all(weights == offset)) warning("NOTE: Screening does not incorporate offset")
   }
 
   # To incorporate formula, we could get cols from basis_list
