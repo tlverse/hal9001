@@ -37,8 +37,8 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, fast.k = N
   X <- x
   Y <- y
   n <- length(Y)
-  if(is.null(nk)) nk <- min(max(round(sqrt(length(Y))) * ncol(X), 200), 1000)
-  if(is.null(fast.k))  fast.k <- min(max(sqrt(n), 20), 100)
+  if (is.null(nk)) nk <- min(max(round(sqrt(length(Y))) * ncol(X), 200), 1000)
+  if (is.null(fast.k)) fast.k <- min(max(sqrt(n), 20), 100)
 
   fit <- earth(x = x, y = y, fast.k = fast.k, nk = nk, pmethod = "cv", degree = degree, nfold = nfold, glm = glm, weights = weights)
   vars_selected <- intersect(rownames(earth::evimp(fit)), colnames(X))
@@ -56,20 +56,39 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, fast.k = N
 
   cols_selected <- match(vars_selected, colnames(X))
 
+  # Remove knot points in  basis function names
   terms <- unique(gsub("[-+]+[0-9.]+", "", terms))
   terms <- unique(gsub("[-+]*[0-9.]+[-+]+", "", terms))
-
-
   terms <- unique(gsub("[-+]+", "", terms))
 
+  # Convert h(X1)*h(X2) to h(X1,X2) as required by formula_HAL
+  # Need to also convert X1*h(X2) to h(X1,X2), so handling all edge cases below.
   terms <- unique(gsub("[)][*]h[(]", ", ", terms))
   sapply(colnames(X), function(col) {
     terms <<- gsub(paste0("[*]", col, "[*]"), paste0("*h(", col, ")*"), terms)
-    terms <<- gsub(paste0("[*]", col,"$"), paste0("*h(", col, ")"), terms)
-    terms <<- gsub(paste0("^",col, "[*]"), paste0("h(", col, ")*"), terms)
-    terms <<- gsub(paste0("^",col, "$"), paste0("h(", col, ")"), terms)
+    terms <<- gsub(paste0("[*]", col, "$"), paste0("*h(", col, ")"), terms)
+    terms <<- gsub(paste0("^", col, "[*]"), paste0("h(", col, ")*"), terms)
+    terms <<- gsub(paste0("^", col, "$"), paste0("h(", col, ")"), terms)
   })
-  terms <- unique(gsub("[)][*]h[(]", ", ", terms))
+  terms <- unique(gsub("[)][*]h[(]", ", ", terms)) # A final pass is needed
+
+  # remove intercept if present
+  terms <- terms[grep("h", terms)]
+  # Generate lower order terms.
+  # Sometimes MARS includes interactions terms but not the main terms
+  # Not much loss with HAL to falsely include lower-order interactions.
+  terms <- sort(unique(unlist(sapply(terms, function(term) {
+    vars <- unique(unlist(stringr::str_extract_all(term, vars_selected)))
+
+    all_terms <- lapply(1:length(vars), function(i) {
+      mat <- combn(vars, i)
+
+      return(sapply(seq(ncol(mat)), function(j) {
+        paste0("h(", paste0(mat[, j], collapse = ","), ")")
+      }))
+    })
+    return(all_terms)
+  }))))
 
   formula <- paste0("~", paste0(terms[grep("h", terms)], collapse = " + "))
 

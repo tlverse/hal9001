@@ -114,19 +114,19 @@ fit_sal <- function(X,
   if (is.null(weights)) {
     weights <- rep(1, length(Y))
   } else {
-   if(!all(weights == 1)) warning("NOTE: Screening does not incorporate weights")
+    if (!all(weights == 1)) warning("NOTE: Screening does not incorporate weights")
   }
   if (is.null(offset)) {
     offset <- rep(0, length(Y))
   } else {
-    if(!all(weights == offset)) warning("NOTE: Screening does not incorporate offset")
+    if (!all(weights == offset)) warning("NOTE: Screening does not incorporate offset")
   }
 
   # To incorporate formula, we could get cols from basis_list
   #
 
   n <- length(Y)
-  #family <- screener_family
+  # family <- screener_family
   screen_function <- function(X, Y, weights, offset, id) {
     if (is.character(screener_family)) {
       screener_family <- screener_family[1]
@@ -136,8 +136,10 @@ fit_sal <- function(X,
     out_mars <- NULL
     # Sometimes non-gaussian MARS has trouble converging.\
     # Try given screener_family and if errors then use gaussian family.
-    try({out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = screener_family))})
-    if(is.null(out_mars)) {
+    try({
+      out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = screener_family))
+    })
+    if (is.null(out_mars)) {
       warning("MARS-based screening errors.Rerunning with family_screener = gaussian()")
       out_mars <- screen_MARS(X, Y, pmethod = "cv", degree = screener_max_degree, nfold = 10, glm = list(family = gaussian()))
     }
