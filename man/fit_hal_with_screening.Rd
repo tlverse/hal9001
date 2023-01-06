@@ -19,8 +19,10 @@ fit_hal_with_screening(
   offset = NULL,
   fit_control = list(cv_select = TRUE, use_min = TRUE, lambda.min.ratio = 1e-04,
     prediction_bounds = "default"),
-  screener_control = list(screen_interactions = TRUE, max_degree = max_degree,
-    pruning_method = ifelse(length(Y) > 500, "backward", "cv"), family = family),
+  screen_interactions = TRUE,
+  screener_max_degree = max_degree,
+  pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
+  screener_family = family,
   return_lasso = TRUE,
   return_x_basis = FALSE,
   ...
@@ -124,20 +126,14 @@ each outcome can have different bounds). Bounding ensures that there is
 no extrapolation.
 }}
 
-\item{screener_control}{A list of parameters for the earth-based screening algorithm.
-Options includee
--- \code{screen_variables}: A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
-If \code{TRUE}, then the selectively adaptive lasso routine \code{fit_hal_with_screening} is called internally.
-Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}
--- \code{screen_interactions}:  A \code{logical} of whether to screen interactions using MARS-based screening as implemented in \code{screen_MARS}.
-Only used if \code{screen_variables} is \code{TRUE}.
-This argument is passed to \code{fit_hal_with_screening} internally if \code{screen_variables} is \code{TRUE}.
-Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.
--- \code{max_degree}: Only used if \code{screen_variables} is \code{TRUE} and \code{screen_interactions} is \code{FALSE}.
+\item{screen_interactions}{A \code{logical} of whether to screen interactions using MARS-based screening as implemented in \code{screen_MARS}.
+Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.}
+
+\item{screener_max_degree}{Only used if \code{screen_interactions} is \code{FALSE}.
 The maximum degree of interaction to search for in the MARS-based selectively adaptive
-lasso routine as implemented in \code{fit_hal_with_screening}.
--- \code{pruning_method}: Only used if \code{screen_variables} is \code{TRUE}.
-The pruning method to select the MARS-based variable and interaction screener.
+lasso routine as implemented in \code{fit_hal_with_screening}.}
+
+\item{pruning_method}{The pruning method to select the MARS-based variable and interaction screener.
 NOTE that HAL uses honest cross-validation and is thus robust to
 the aggressiveness of the MARS-based fitting algorithm used for screening.
 See the \code{pmethod} argument of \code{\link[earth]{earth}}.
@@ -146,8 +142,9 @@ The option \code{backward} and \code{forward} prunes using backward and forward 
 GCV is a penalty that penalizes model complexity/size and is an approximation of leave-one-out CV.
 The option \code{backward} avoids cross-validation and can thus be substantially faster than \code{cv}.
 GCV-based pruning methods tend to select more variables and interactions than CV and
-may be preferred in larger sample sizes.
--- \code{family}: A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
+may be preferred in larger sample sizes.}
+
+\item{screener_family}{A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
 By default, \code{family} is the same as \code{family}.
 However, \code{\link[earth]{earth}} may have convergence issues and/or error when \code{family} is not \code{"gaussian"}..}
 

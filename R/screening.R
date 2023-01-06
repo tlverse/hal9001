@@ -11,6 +11,25 @@
 #'
 #'
 #' @inheritParams fit_hal
+#' @param screen_interactions  A \code{logical} of whether to screen interactions using MARS-based screening as implemented in \code{screen_MARS}.
+#' Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.
+#' @param screener_max_degree Only used if \code{screen_interactions} is \code{FALSE}.
+#' The maximum degree of interaction to search for in the MARS-based selectively adaptive
+#' lasso routine as implemented in \code{fit_hal_with_screening}.
+#' @param pruning_method
+#' The pruning method to select the MARS-based variable and interaction screener.
+#' NOTE that HAL uses honest cross-validation and is thus robust to
+#' the aggressiveness of the MARS-based fitting algorithm used for screening.
+#' See the \code{pmethod} argument of \code{\link[earth]{earth}}.
+#' The option `cv` uses 10-fold cross-validation (CV).
+#' The option `backward` and `forward` prunes using backward and forward selection with the generalized cross-validation criteria (GCV).
+#' GCV is a penalty that penalizes model complexity/size and is an approximation of leave-one-out CV.
+#' The option `backward` avoids cross-validation and can thus be substantially faster than `cv`.
+#' GCV-based pruning methods tend to select more variables and interactions than CV and
+#' may be preferred in larger sample sizes.
+#' @param screener_family A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
+#' By default, \code{family} is the same as \code{family}.
+#' However, \code{\link[earth]{earth}} may have convergence issues and/or error when \code{family} is not `"gaussian"`..
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom stats coef
@@ -53,18 +72,23 @@ fit_hal_with_screening <- function(X,
                                      lambda.min.ratio = 1e-4,
                                      prediction_bounds = "default"
                                    ),
-                                   screener_control = list(
-                                     screen_interactions = TRUE,
-                                     max_degree = max_degree,
-                                     pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
-                                     family = family
-                                   ),
+                                   screen_interactions = TRUE,
+                                   screener_max_degree = max_degree,
+                                   pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
+                                   screener_family = family,
                                    return_lasso = TRUE,
                                    return_x_basis = FALSE,
                                    ...) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
+  screener_control <- list(
+    screen_interactions = screen_interactions,
+    max_degree = screener_max_degree,
+    pruning_method = pruning_method,
+    family = screener_family
+  ) # In case down the line we would like to also make screener_control an argument here.
+
 
 
   if (!is.matrix(X)) X <- as.matrix(X)
@@ -85,7 +109,7 @@ fit_hal_with_screening <- function(X,
   )
 
 
-  defaults_screener <-  list(
+  defaults_screener <- list(
     screen_interactions = TRUE,
     max_degree = max_degree,
     pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
@@ -137,6 +161,7 @@ fit_hal_with_screening <- function(X,
   # family <- family
 
   screen_function <- function(X, Y, weights, offset, id) {
+
     if (is.character(screener_control$family)) {
       screener_control$family <- screener_control$family[1]
       screener_control$family <- get(screener_control$family)
@@ -168,25 +193,24 @@ fit_hal_with_screening <- function(X,
 
   fit_control_internal <- fit_control
   fit_control_internal$cv_select <- FALSE
-  screener_control_internal <- list(screen_variables = FALSE, screen_interactions = FALSE)
 
   full_fit <- fit_hal(X,
-                      Y,
-                      formula = formula_screened,
-                      X_unpenalized = X_unpenalized,
-                      max_degree = max_degree,
-                      smoothness_orders = smoothness_orders,
-                      num_knots = num_knots,
-                      reduce_basis = reduce_basis,
-                      family = family,
-                      lambda = lambda,
-                      id = id,
-                      weights = weights,
-                      offset = offset,
-                      fit_control = fit_control_internal,
-                      screener_control = screener_control_internal,
-                      return_lasso = return_lasso,
-                      return_x_basis = return_x_basis
+    Y,
+    formula = formula_screened,
+    X_unpenalized = X_unpenalized,
+    max_degree = max_degree,
+    smoothness_orders = smoothness_orders,
+    num_knots = num_knots,
+    reduce_basis = reduce_basis,
+    family = family,
+    lambda = lambda,
+    id = id,
+    weights = weights,
+    offset = offset,
+    fit_control = fit_control_internal,
+    screen_variables = FALSE,
+    return_lasso = return_lasso,
+    return_x_basis = return_x_basis
   )
   # summary() expects lasso_fit to be a cv.glmnet object
   # But it is just a glmnet object. So this is the hack:
@@ -249,22 +273,22 @@ fit_hal_with_screening <- function(X,
     formula_screened <- screen_function(training(X), training(Y), training(weights), training(offset), training(id))
 
     fold_fit <- fit_hal(training(X),
-                        training(Y),
-                        formula = formula_screened,
-                        X_unpenalized = X_unpenalized,
-                        max_degree = max_degree,
-                        smoothness_orders = smoothness_orders,
-                        num_knots = num_knots,
-                        reduce_basis = reduce_basis,
-                        family = family,
-                        lambda = lambda_seq,
-                        id = training(id),
-                        weights = training(weights),
-                        offset = training(offset),
-                        fit_control = fit_control_internal,
-                        screener_control = screener_control_internal,
-                        return_x_basis = FALSE,
-                        return_lasso = FALSE
+      training(Y),
+      formula = formula_screened,
+      X_unpenalized = X_unpenalized,
+      max_degree = max_degree,
+      smoothness_orders = smoothness_orders,
+      num_knots = num_knots,
+      reduce_basis = reduce_basis,
+      family = family,
+      lambda = lambda_seq,
+      id = training(id),
+      weights = training(weights),
+      offset = training(offset),
+      fit_control = fit_control_internal,
+      screen_variables = FALSE,
+      return_x_basis = FALSE,
+      return_lasso = FALSE
     )
 
     predictions <- predict(fold_fit, new_data = validation(X), offset = validation(offset), new_X_unpenalized = new_X_unpenalized)
@@ -286,15 +310,15 @@ fit_hal_with_screening <- function(X,
 
 
   results <- origami::cross_validate(cv_fun, folds,
-                                     .combine_control = comb_ctrl, data_list = list(X = X, Y = Y, weights = weights, offset = offset, id = id, lambda_seq = lambda_seq),
-                                     X_unpenalized = X_unpenalized,
-                                     max_degree = max_degree,
-                                     smoothness_orders = smoothness_orders,
-                                     num_knots = num_knots,
-                                     reduce_basis = reduce_basis,
-                                     family = family,
-                                     fit_control_internal = fit_control_internal,
-                                     screen_function = screen_function
+    .combine_control = comb_ctrl, data_list = list(X = X, Y = Y, weights = weights, offset = offset, id = id, lambda_seq = lambda_seq),
+    X_unpenalized = X_unpenalized,
+    max_degree = max_degree,
+    smoothness_orders = smoothness_orders,
+    num_knots = num_knots,
+    reduce_basis = reduce_basis,
+    family = family,
+    fit_control_internal = fit_control_internal,
+    screen_function = screen_function
   )
 
 
@@ -477,6 +501,3 @@ safe_dim <- function(x) {
   }
   return(d)
 }
-
-
-

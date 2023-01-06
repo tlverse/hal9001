@@ -138,32 +138,12 @@
 #'    each outcome can have different bounds). Bounding ensures that there is
 #'    no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
-#' @param screener_control A list of parameters for the earth-based screening algorithm.
-#' Options includee
-#' -- `screen_variables`: A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
-#' If \code{TRUE}, then the selectively adaptive lasso routine \code{fit_hal_with_screening} is called internally.
+#' @param screen_variables A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
+#' If \code{TRUE}, then the routine \code{fit_hal_with_screening} is called internally.
 #' Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}
-#' -- `screen_interactions`:  A \code{logical} of whether to screen interactions using MARS-based screening as implemented in \code{screen_MARS}.
-#' Only used if \code{screen_variables} is \code{TRUE}.
-#' This argument is passed to \code{fit_hal_with_screening} internally if \code{screen_variables} is \code{TRUE}.
-#' Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.
-#' -- `max_degree`: Only used if \code{screen_variables} is \code{TRUE} and \code{screen_interactions} is \code{FALSE}.
-#' The maximum degree of interaction to search for in the MARS-based selectively adaptive
-#' lasso routine as implemented in \code{fit_hal_with_screening}.
-#' -- `pruning_method`: Only used if \code{screen_variables} is \code{TRUE}.
-#' The pruning method to select the MARS-based variable and interaction screener.
-#' NOTE that HAL uses honest cross-validation and is thus robust to
-#' the aggressiveness of the MARS-based fitting algorithm used for screening.
-#' See the \code{pmethod} argument of \code{\link[earth]{earth}}.
-#' The option `cv` uses 10-fold cross-validation (CV).
-#' The option `backward` and `forward` prunes using backward and forward selection with the generalized cross-validation criteria (GCV).
-#' GCV is a penalty that penalizes model complexity/size and is an approximation of leave-one-out CV.
-#' The option `backward` avoids cross-validation and can thus be substantially faster than `cv`.
-#' GCV-based pruning methods tend to select more variables and interactions than CV and
-#' may be preferred in larger sample sizes.
-#' -- ``family``: A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
-#' By default, \code{family} is the same as \code{family}.
-#' However, \code{\link[earth]{earth}} may have convergence issues and/or error when \code{family} is not `"gaussian"`..
+#' @param screener_control A list of parameters for the earth-based screening algorithm.
+#' The possible parameters include `screen_interactions`, `screener_max_degree`, `screener_family`, and `pruning_method`.
+#' Please see the documentation of \code{fit_hal_with_screening} for additional information.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -212,23 +192,21 @@ fit_hal <- function(X,
                       lambda.min.ratio = 1e-4,
                       prediction_bounds = "default"
                     ),
+                    screen_variables = TRUE,
                     screener_control = list(
-                      screen_variables = TRUE,
                       screen_interactions = TRUE,
-                      max_degree = max_degree,
+                      screener_max_degree = max_degree,
                       pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
-                      family = family
+                      screener_family = family
                     ),
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     yolo = FALSE) {
-
-
   if (!inherits(family, "family")) {
     family <- match.arg(family)
-    if (family %in% c("cox", "mgaussian") && (screener_control$screen_variables)) {
-      screener_control$screen_variables <- FALSE
+    if (family %in% c("cox", "mgaussian") && screen_variables) {
+      screen_variables <- FALSE
       warning("Screening not supported for cox and mgaussian families.")
     }
   }
@@ -475,7 +453,7 @@ fit_hal <- function(X,
   fit_control$weights <- weights
 
   sal_fit <- NULL
-  if (screener_control$screen_variables) {
+  if (screen_variables) {
     if (!is.null(formula)) {
       warning("`formula` argument is not used if screen_variables or screen_interactions is TRUE.")
     }
@@ -492,7 +470,10 @@ fit_hal <- function(X,
       weights = weights,
       offset = offset,
       fit_control = fit_control_initial,
-      screener_control =screener_control,
+      screen_interactions = screener_control$screen_interactions,
+      screener_max_degree = screener_control$screener_max_degree,
+      screener_family = screener_control$screener_family,
+      pruning_method = screener_control$pruning_method,
       return_lasso = return_lasso,
       return_x_basis = return_x_basis
     )
