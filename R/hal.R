@@ -119,7 +119,7 @@
 #' as implemented in \code{screen_MARS}.
 #' If \code{TRUE}, then the routine \code{fit_earth_hal} is called internally.
 #' Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}
-#' @param screener_control A list of parameters for the earth-based screening algorithm.
+#' @param screen_control A list of parameters for the earth-based screening algorithm.
 #' The possible parameters include \code{screen_interactions}, \code{screener_max_degree},
 #'  \code{screener_family}, and \code{pruning_method}.
 #' Please see the documentation of \code{fit_earth_hal} for additional information.
@@ -172,7 +172,7 @@ fit_hal <- function(X,
                       prediction_bounds = "default"
                     ),
                     screen_variables = TRUE,
-                    screener_control = list(
+                    screen_control = list(
                       screen_interactions = TRUE,
                       screener_max_degree = max_degree,
                       pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
@@ -190,6 +190,19 @@ fit_hal <- function(X,
     }
   }
   fam <- ifelse(inherits(family, "family"), family$family, family)
+
+  defaults_screener <- list(
+    screen_interactions = TRUE,
+    screener_max_degree = max_degree,
+    pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
+    screener_family = family
+  )
+
+  if (any(!names(defaults_screener) %in% names(screen_control))) {
+    screen_control <- c(
+      defaults_screener[!names(defaults_screener) %in% names(screen_control)], screen_control
+    )
+  }
 
   # errors when a supplied control list is missing arguments
   defaults <- list(
@@ -449,10 +462,10 @@ fit_hal <- function(X,
       weights = weights,
       offset = offset,
       fit_control = fit_control_initial,
-      screen_interactions = screener_control$screen_interactions,
-      screener_max_degree = screener_control$screener_max_degree,
-      screener_family = screener_control$screener_family,
-      pruning_method = screener_control$pruning_method,
+      screen_interactions = screen_control$screen_interactions,
+      screener_max_degree = screen_control$screener_max_degree,
+      screener_family = screen_control$screener_family,
+      pruning_method = screen_control$pruning_method,
       return_lasso = return_lasso,
       return_x_basis = return_x_basis
     )

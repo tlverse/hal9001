@@ -21,7 +21,7 @@ fit_hal(
   fit_control = list(cv_select = TRUE, use_min = TRUE, lambda.min.ratio = 1e-04,
     prediction_bounds = "default"),
   screen_variables = TRUE,
-  screener_control = list(screen_interactions = TRUE, screener_max_degree = max_degree,
+  screen_control = list(screen_interactions = TRUE, screener_max_degree = max_degree,
     pruning_method = ifelse(length(Y) > 500, "backward", "cv"), screener_family = family),
   basis_list = NULL,
   return_lasso = TRUE,
@@ -135,7 +135,7 @@ as implemented in \code{screen_MARS}.
 If \code{TRUE}, then the routine \code{fit_earth_hal} is called internally.
 Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}}
 
-\item{screener_control}{A list of parameters for the earth-based screening algorithm.
+\item{screen_control}{A list of parameters for the earth-based screening algorithm.
 The possible parameters include \code{screen_interactions}, \code{screener_max_degree},
 \code{screener_family}, and \code{pruning_method}.
 Please see the documentation of \code{fit_earth_hal} for additional information.}

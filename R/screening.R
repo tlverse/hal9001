@@ -71,12 +71,12 @@ fit_earth_hal <- function(X,
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
-  screener_control <- list(
+  screen_control <- list(
     screen_interactions = screen_interactions,
     max_degree = screener_max_degree,
     pruning_method = pruning_method,
     family = screener_family
-  ) # In case down the line we would like to also make screener_control an argument here.
+  ) # In case down the line we would like to also make screen_control an argument here.
 
 
 
@@ -98,18 +98,7 @@ fit_earth_hal <- function(X,
   )
 
 
-  defaults_screener <- list(
-    screen_interactions = TRUE,
-    max_degree = max_degree,
-    pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
-    family = family
-  )
 
-  if (any(!names(defaults_screener) %in% names(screener_control))) {
-    screener_control <- c(
-      defaults_screener[!names(defaults_screener) %in% names(screener_control)], screener_control
-    )
-  }
 
 
 
@@ -151,23 +140,23 @@ fit_earth_hal <- function(X,
 
   screen_function <- function(X, Y, weights, offset, id) {
 
-    if (is.character(screener_control$family)) {
-      screener_control$family <- screener_control$family[1]
-      screener_control$family <- get(screener_control$family)
+    if (is.character(screen_control$family)) {
+      screen_control$family <- screen_control$family[1]
+      screen_control$family <- get(screen_control$family)
     }
-    if (screener_control$screen_interactions) screener_control$max_degree <- max_degree
+    if (screen_control$screen_interactions) screen_control$max_degree <- max_degree
     out_mars <- NULL
     # Sometimes non-gaussian MARS has trouble converging.\
     # Try given family and if errors then use gaussian family.
     try({
-      out_mars <- screen_MARS(X, Y, pmethod = screener_control$pruning_method, degree = screener_control$max_degree, nfold = 10, glm = list(family = screener_control$family))
+      out_mars <- screen_MARS(X, Y, pmethod = screen_control$pruning_method, degree = screen_control$max_degree, nfold = 10, glm = list(family = screen_control$family))
     })
     if (is.null(out_mars)) {
       warning("MARS-based screening errors.Rerunning with family_screener = gaussian()")
-      out_mars <- screen_MARS(X, Y, pmethod = screener_control$pruning_method, degree = screener_control$max_degree, nfold = 10, glm = list(family = gaussian()))
+      out_mars <- screen_MARS(X, Y, pmethod = screen_control$pruning_method, degree = screen_control$max_degree, nfold = 10, glm = list(family = gaussian()))
     }
     # FOR NOW just use least-squares as its fast
-    if (screener_control$screen_interactions) {
+    if (screen_control$screen_interactions) {
       return(out_mars$formula)
     } else {
       terms <- sapply(1:min(max_degree, length(out_mars$vars_selected)), function(d) {
