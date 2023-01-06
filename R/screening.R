@@ -15,7 +15,7 @@
 #' Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.
 #' @param screener_max_degree Only used if \code{screen_interactions} is \code{FALSE}.
 #' The maximum degree of interaction to search for in the MARS-based selectively adaptive
-#' lasso routine as implemented in \code{fit_hal_with_screening}.
+#' lasso routine as implemented in \code{fit_earth_hal}.
 #' @param pruning_method
 #' The pruning method to select the MARS-based variable and interaction screener.
 #' NOTE that HAL uses honest cross-validation and is thus robust to
@@ -40,7 +40,7 @@
 #'  functions, a copy map, coefficients estimated for basis functions, and
 #'  timing results (for assessing computational efficiency).
 #'
-#' @rdname fit_hal_with_screening
+#' @rdname fit_earth_hal
 #'
 #'
 #' @examples
@@ -51,10 +51,10 @@
 #' y_prob <- plogis(sin(x[, 1]) + sin(x[, 2]))
 #' y <- rbinom(n = n, size = 1, prob = y_prob)
 
-#' hal_fit <- fit_hal_with_screening(X = x, Y = y, family = "binomial", max_degree = 1, num_knots = 10)
+#' hal_fit <- fit_earth_hal(X = x, Y = y, family = "binomial", max_degree = 1, num_knots = 10)
 #' print(hal_fit$formula)
 #' preds <- predict(hal_fit, new_data = x)
-fit_hal_with_screening <- function(X,
+fit_earth_hal <- function(X,
                                    Y,
                                    X_unpenalized = NULL,
                                    max_degree = 3,

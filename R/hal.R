@@ -138,12 +138,13 @@
 #'    each outcome can have different bounds). Bounding ensures that there is
 #'    no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
-#' @param screen_variables A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
-#' If \code{TRUE}, then the routine \code{fit_hal_with_screening} is called internally.
+#' @param screen_variables A \code{logical} of whether to screen variables using MARS-based screening
+#' as implemented in \code{screen_MARS}.
+#' If \code{TRUE}, then the routine \code{fit_earth_hal} is called internally.
 #' Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}
 #' @param screener_control A list of parameters for the earth-based screening algorithm.
 #' The possible parameters include `screen_interactions`, `screener_max_degree`, `screener_family`, and `pruning_method`.
-#' Please see the documentation of \code{fit_hal_with_screening} for additional information.
+#' Please see the documentation of \code{fit_earth_hal} for additional information.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -457,7 +458,7 @@ fit_hal <- function(X,
     if (!is.null(formula)) {
       warning("`formula` argument is not used if screen_variables or screen_interactions is TRUE.")
     }
-    sal_fit <- fit_hal_with_screening(X,
+    sal_fit <- fit_earth_hal(X,
       Y,
       X_unpenalized = X_unpenalized,
       max_degree = max_degree,
