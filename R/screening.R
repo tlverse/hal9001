@@ -398,6 +398,9 @@ fit_earth_hal <- function(X,
 #' screen_MARS(X, Y, degree = 1)
 #'
 screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, fast.k = NULL, nk = NULL, glm = list(family = gaussian()), weights = NULL) {
+  if(pmethod != "cv") {
+    nfold <- 0
+  }
   X <- x
   Y <- y
   n <- length(Y)
