@@ -148,6 +148,7 @@ fit_earth_hal <- function(X,
     out_mars <- NULL
     # Sometimes non-gaussian MARS has trouble converging.\
     # Try given family and if errors then use gaussian family.
+
     try({
       out_mars <- screen_MARS(X, Y, pmethod = screen_control$pruning_method, degree = screen_control$max_degree, nfold = 10, glm = list(family = screen_control$family))
     })
@@ -155,6 +156,7 @@ fit_earth_hal <- function(X,
       warning("MARS-based screening errors.Rerunning with family_screener = gaussian()")
       out_mars <- screen_MARS(X, Y, pmethod = screen_control$pruning_method, degree = screen_control$max_degree, nfold = 10, glm = list(family = gaussian()))
     }
+
     # FOR NOW just use least-squares as its fast
     if (screen_control$screen_interactions) {
       return(out_mars$formula)
@@ -402,7 +404,7 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, fast.k = N
   if (is.null(nk)) nk <- min(max(round(sqrt(length(Y))) * ncol(X), 200), 1000)
   if (is.null(fast.k)) fast.k <- min(max(sqrt(n), 20), 100)
 
-  fit <- earth(x = x, y = y, fast.k = fast.k, nk = nk, pmethod = "cv", degree = degree, nfold = nfold, glm = glm, weights = weights)
+  fit <- earth(x = x, y = y, fast.k = fast.k, nk = nk, pmethod = pmethod, degree = degree, nfold = nfold, glm = glm, weights = weights)
   vars_selected <- intersect(rownames(earth::evimp(fit)), colnames(X))
   terms <- colnames(fit$bx)
 
