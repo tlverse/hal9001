@@ -130,13 +130,15 @@ each outcome can have different bounds). Bounding ensures that there is
 no extrapolation.
 }}
 
-\item{screen_variables}{A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
-If \code{TRUE}, then the routine \code{fit_hal_with_screening} is called internally.
+\item{screen_variables}{A \code{logical} of whether to screen variables using MARS-based screening
+as implemented in \code{screen_MARS}.
+If \code{TRUE}, then the routine \code{fit_earth_hal} is called internally.
 Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}}
 
 \item{screener_control}{A list of parameters for the earth-based screening algorithm.
-The possible parameters include \code{screen_interactions}, \code{screener_max_degree}, \code{screener_family}, and \code{pruning_method}.
-Please see the documentation of \code{fit_hal_with_screening} for additional information.}
+The possible parameters include \code{screen_interactions}, \code{screener_max_degree},
+\code{screener_family}, and \code{pruning_method}.
+Please see the documentation of \code{fit_earth_hal} for additional information.}
 
 \item{basis_list}{The full set of basis functions generated from \code{X}.}
 
@@ -183,42 +185,9 @@ can significantly reduce performance. When \code{smoothness_orders = 1} or
 higher, then fewer knot points (e.g., 10-30) is actually better for
 performance. We recommend specifying \code{num_knots} with respect to
 \code{smoothness_orders}, and as a vector of length \code{max_degree} with
-values decreasing exponentially. This prevents combinatorial explosions in
+values decreasing polynomially or exponentially. This prevents combinatorial explosions in
 the number of higher-degree basis functions generated. The default values
 of \code{num_knots} are c(sqrt(n), (n)^(1/3), n^(1/5)) where n = length(Y).
-include some other suitable settings for \code{num_knots} below, all of
-which are less complex than default \code{num_knots} and will thus result
-in a faster runtime:
-\itemize{
-\item Some good settings for little to no cost in performance:
-\itemize{
-\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
-\code{num_knots = c(400, 200, 100)}.
-\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-\code{num_knots = c(100, 75, 50)}.
-}
-\item Some settings for fairly fast runtime:
-\itemize{
-\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
-\code{num_knots = c(200, 100, 50)}.
-\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-\code{num_knots = c(50, 25, 15)}.
-}
-\item Some settings for fast runtime:
-\itemize{
-\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
-\code{num_knots = c(100, 50, 25)}.
-\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-\code{num_knots = c(40, 15, 10)}.
-}
-\item Some settings for very fast runtime:
-\itemize{
-\item If \code{smoothness_orders = 0} and \code{max_degree = 3},
-\code{num_knots = c(50, 25, 10)}.
-\item If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-\code{num_knots = c(25, 10, 5)}.
-}
-}
 }
 \examples{
 n <- 100
