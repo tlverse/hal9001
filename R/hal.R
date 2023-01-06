@@ -138,19 +138,22 @@
 #'    each outcome can have different bounds). Bounding ensures that there is
 #'    no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
-#' @param screen_variables A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
-#' If \code{TRUE}, then the selectively adaptive lasso routine \code{fit_sal} is called internally.
+#' @param screener_control A list of parameters for the earth-based screening algorithm.
+#' Options includee
+#' -- `screen_variables`: A \code{logical} of whether to screen variables using MARS-based screening as implemented in \code{screen_MARS}.
+#' If \code{TRUE}, then the selectively adaptive lasso routine \code{fit_hal_with_screening} is called internally.
 #' Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}
-#' @param screen_interactions  A \code{logical} of whether to screen interactions using MARS-based screening as implemented in \code{screen_MARS}.
+#' -- `screen_interactions`:  A \code{logical} of whether to screen interactions using MARS-based screening as implemented in \code{screen_MARS}.
 #' Only used if \code{screen_variables} is \code{TRUE}.
-#' This argument is passed to \code{fit_sal} internally if \code{screen_variables} is \code{TRUE}.
+#' This argument is passed to \code{fit_hal_with_screening} internally if \code{screen_variables} is \code{TRUE}.
 #' Note that \code{fit_hal} may be slower if this is set to \code{FALSE}.
-#' @param screener_max_degree Only used if \code{screen_variables} is \code{TRUE} and \code{screen_interactions} is \code{FALSE}.
+#' -- `max_degree`: Only used if \code{screen_variables} is \code{TRUE} and \code{screen_interactions} is \code{FALSE}.
 #' The maximum degree of interaction to search for in the MARS-based selectively adaptive
-#' lasso routine as implemented in \code{fit_sal}.
-#' @param screener_pruning_method Only used if \code{screen_variables} is \code{TRUE}.
+#' lasso routine as implemented in \code{fit_hal_with_screening}.
+#' -- `pruning_method`: Only used if \code{screen_variables} is \code{TRUE}.
 #' The pruning method to select the MARS-based variable and interaction screener.
-#' NOTE that HAL uses honest cross-validation so is thus robust to the screening algorithm overfitting the data.
+#' NOTE that HAL uses honest cross-validation and is thus robust to
+#' the aggressiveness of the MARS-based fitting algorithm used for screening.
 #' See the \code{pmethod} argument of \code{\link[earth]{earth}}.
 #' The option `cv` uses 10-fold cross-validation (CV).
 #' The option `backward` and `forward` prunes using backward and forward selection with the generalized cross-validation criteria (GCV).
@@ -158,10 +161,8 @@
 #' The option `backward` avoids cross-validation and can thus be substantially faster than `cv`.
 #' GCV-based pruning methods tend to select more variables and interactions than CV and
 #' may be preferred in larger sample sizes.
-#'
-#' However, `backward` may choose a subo
-#' @param screener_family A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
-#' By default, \code{screener_family} is the same as \code{family}.
+#' -- ``family``: A \code{\link[stats]{family}} object that is passed to \code{\link[earth]{earth}} during screening.
+#' By default, \code{family} is the same as \code{family}.
 #' However, \code{\link[earth]{earth}} may have convergence issues and/or error when \code{family} is not `"gaussian"`..
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
@@ -211,11 +212,13 @@ fit_hal <- function(X,
                       lambda.min.ratio = 1e-4,
                       prediction_bounds = "default"
                     ),
-                    screen_variables = TRUE,
-                    screen_interactions = TRUE,
-                    screener_max_degree = max_degree,
-                    screener_pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
-                    screener_family = NULL,
+                    screener_control = list(
+                      screen_variables = TRUE,
+                      screen_interactions = TRUE,
+                      max_degree = max_degree,
+                      pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
+                      family = family
+                    ),
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
@@ -224,13 +227,10 @@ fit_hal <- function(X,
 
   if (!inherits(family, "family")) {
     family <- match.arg(family)
-    if (family %in% c("cox", "mgaussian") && (screen_variables || screen_interactions)) {
-      screen_variables <- screen_interactions <- FALSE
+    if (family %in% c("cox", "mgaussian") && (screener_control$screen_variables)) {
+      screener_control$screen_variables <- FALSE
       warning("Screening not supported for cox and mgaussian families.")
     }
-  }
-  if (is.null(screener_family)) {
-    screener_family <- family
   }
   fam <- ifelse(inherits(family, "family"), family$family, family)
 
@@ -475,11 +475,11 @@ fit_hal <- function(X,
   fit_control$weights <- weights
 
   sal_fit <- NULL
-  if (screen_variables) {
+  if (screener_control$screen_variables) {
     if (!is.null(formula)) {
       warning("`formula` argument is not used if screen_variables or screen_interactions is TRUE.")
     }
-    sal_fit <- fit_sal(X,
+    sal_fit <- fit_hal_with_screening(X,
       Y,
       X_unpenalized = X_unpenalized,
       max_degree = max_degree,
@@ -492,10 +492,7 @@ fit_hal <- function(X,
       weights = weights,
       offset = offset,
       fit_control = fit_control_initial,
-      screen_interactions = screen_interactions,
-      screener_max_degree = screener_max_degree,
-      screener_family = screener_family,
-      screener_pruning_method = screener_pruning_method,
+      screener_control =screener_control,
       return_lasso = return_lasso,
       return_x_basis = return_x_basis
     )
