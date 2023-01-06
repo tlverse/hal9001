@@ -120,7 +120,8 @@
 #' If \code{TRUE}, then the routine \code{fit_earth_hal} is called internally.
 #' Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}
 #' @param screener_control A list of parameters for the earth-based screening algorithm.
-#' The possible parameters include `screen_interactions`, `screener_max_degree`, `screener_family`, and `pruning_method`.
+#' The possible parameters include \code{screen_interactions}, \code{screener_max_degree},
+#'  \code{screener_family}, and \code{pruning_method}.
 #' Please see the documentation of \code{fit_earth_hal} for additional information.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
