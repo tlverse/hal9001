@@ -26,32 +26,9 @@
 #'  higher, then fewer knot points (e.g., 10-30) is actually better for
 #'  performance. We recommend specifying \code{num_knots} with respect to
 #'  \code{smoothness_orders}, and as a vector of length \code{max_degree} with
-#'  values decreasing exponentially. This prevents combinatorial explosions in
+#'  values decreasing polynomially or exponentially. This prevents combinatorial explosions in
 #'  the number of higher-degree basis functions generated. The default values
 #'  of \code{num_knots} are c(sqrt(n), (n)^(1/3), n^(1/5)) where n = length(Y).
-#'  include some other suitable settings for \code{num_knots} below, all of
-#'  which are less complex than default \code{num_knots} and will thus result
-#'  in a faster runtime:
-#'  - Some good settings for little to no cost in performance:
-#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
-#'      \code{num_knots = c(400, 200, 100)}.
-#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-#'      \code{num_knots = c(100, 75, 50)}.
-#'  - Some settings for fairly fast runtime:
-#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
-#'      \code{num_knots = c(200, 100, 50)}.
-#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-#'      \code{num_knots = c(50, 25, 15)}.
-#'  - Some settings for fast runtime:
-#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
-#'      \code{num_knots = c(100, 50, 25)}.
-#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-#'      \code{num_knots = c(40, 15, 10)}.
-#'  - Some settings for very fast runtime:
-#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
-#'      \code{num_knots = c(50, 25, 10)}.
-#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-#'      \code{num_knots = c(25, 10, 5)}.
 #'
 #' @param X An input \code{matrix} with dimensions number of observations -by-
 #'  number of covariates that will be used to derive the design matrix of basis

@@ -8,7 +8,7 @@ y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.1)
 colnames(x) <- c("col1", "col2", "col3")
 
 # NOTE: Summary errors if only intercept is nonzero
-hal_fit <- fit_hal(X = x, Y = y, fit_control = list(use_min = FALSE), screen_variables = F)
+hal_fit <- fit_hal(X = x, Y = y, fit_control = list(use_min = FALSE), screen_variables = FALSE)
 
 
 hal_fit_nolasso <- fit_hal(X = x, Y = y, yolo = FALSE, return_lasso = FALSE, screen_variables = FALSE)
