@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 # R/`hal9001`
 
 [![R-CMD-check](https://github.com/tlverse/hal9001/workflows/R-CMD-check/badge.svg)](https://github.com/tlverse/hal9001/actions)
-[![Coverage Status](https://codecov.io/gh/tlverse/hal9001/branch/master/graph/badge.svg)](https://codecov.io/gh/tlverse/hal9001)
+[![Coverage Status](https://codecov.io/gh/tlverse/hal9001/branch/master/graph/badge.svg)](https://app.codecov.io/gh/tlverse/hal9001)
 [![CRAN](https://www.r-pkg.org/badges/version/hal9001)](https://www.r-pkg.org/pkg/hal9001)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/hal9001)](https://CRAN.R-project.org/package=hal9001)
 [![CRAN total downloads](http://cranlogs.r-pkg.org/badges/grand-total/hal9001)](https://CRAN.R-project.org/package=hal9001)
@@ -120,14 +120,14 @@ prior to submitting a pull request.
 
 After using the `hal9001` R package, please cite both of the following:
 
-        @software{coyle2021hal9001-rpkg,
+        @software{coyle2022hal9001-rpkg,
           author = {Coyle, Jeremy R and Hejazi, Nima S and Phillips, Rachael V
             and {van der Laan}, Lars and {van der Laan}, Mark J},
           title = {{hal9001}: The scalable highly adaptive lasso},
-          year  = {2021},
+          year  = {2022},
           url = {https://doi.org/10.5281/zenodo.3558313},
           doi = {10.5281/zenodo.3558313}
-          note = {{R} package version 0.4.0}
+          note = {{R} package version 0.4.2}
         }
 
         @article{hejazi2020hal9001-joss,
@@ -146,7 +146,7 @@ After using the `hal9001` R package, please cite both of the following:
 
 ## License
 
-&copy; 2017-2021 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
+&copy; 2017-2022 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
 Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license. See

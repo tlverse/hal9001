@@ -1,3 +1,10 @@
+# hal9001 0.4.2
+* Version bump for CRAN resubmission following archiving.
+
+# hal9001 0.4.1
+* Minor adjustments to speed up unit tests and examples.
+* Version bump for CRAN resubmission.
+
 # hal9001 0.4.0
 
 As of September 2021:

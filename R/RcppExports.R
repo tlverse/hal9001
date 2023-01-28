@@ -51,16 +51,6 @@ apply_copy_map <- function(X, copy_map) {
     .Call('_hal9001_apply_copy_map', PACKAGE = 'hal9001', X, copy_map)
 }
 
-#' Prediction from a Lassi Model
-#'
-#' @param X A sparse matrix of HAL basis functions.
-#' @param beta A vector of coefficient values for the HAL basis functions.
-#' @param intercept A numeric value giving the intercept of the HAL model.
-#'
-lassi_predict <- function(X, beta, intercept) {
-    .Call('_hal9001_lassi_predict', PACKAGE = 'hal9001', X, beta, intercept)
-}
-
 #' Sort Basis Functions
 #'
 #' Build a sorted list of unique basis functions based on columns, where each
