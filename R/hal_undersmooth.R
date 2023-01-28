@@ -74,6 +74,7 @@ undersmooth_hal <- function(X,
                             criterion = NULL,
                             Nlam = 20,
                             family = "gaussian"){
+  n <- length(Y)
 
   preds_init <- predict(fit_init, new_data = X)
   # estimates of sd in each direction using initial fit
