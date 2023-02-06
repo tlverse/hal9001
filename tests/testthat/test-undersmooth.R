@@ -3,7 +3,6 @@ context("Unit test for procedures relating to undersmooth HAL.")
 library(hal9001)
 library(glmnet)
 library(here)
-
 source(paste0(here(), "/R/hal_undersmooth.R"))
 
 # library(devtools)
@@ -20,6 +19,11 @@ y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 # fit undersmoothed HAL
 uhal_fit <- fit_uhal(X=x, Y=y, family="gaussian")
 uhal_fit$lambda
+
+
+
+
+
 
 # # initialize the undersmoothing procedure
 # hal_init <- undersmooth_init(X=x, Y=y,

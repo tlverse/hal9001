@@ -59,17 +59,51 @@ fit_uhal <- function(X,
 
   print(paste0("Initial CV Lambda: ", hal_under$lambda_init))
 
-  # return undersmoothed HAL
-  basis_mat_full <- hal_init$fit_init$x_basis
+  # return undersmoothed HAL fit
+  x_basis <- hal_init$fit_init$x_basis
   lambda_under <- hal_under$lambda_under
 
-  uhal_fit <- glmnet(basis_mat_full,
+  uhal_fit <- glmnet(x_basis,
                      Y,
                      lambda=lambda_under,
                      family = family,
                      standardize = FALSE)
 
-  return(uhal_fit)
+  lambda_star <- uhal_fit$lambda
+  coefs <- stats::coef(uhal_fit)
+  unpenalized_covariates <- hal_init$fit_init$unpenalized_covariates
+  X_colnames <- hal_init$fit_init$X_colnames
+  copy_map <- hal_init$fit_init$copy_map
+  times <- hal_init$fit_init$times
+  basis_list <- hal_init$fit_init$basis_list
+
+  # construct output object via lazy S3 list
+  fit <- list(
+    x_basis =
+      if (return_x_basis) {
+        x_basis
+      } else {
+        NULL
+      },
+    basis_list = basis_list,
+    X_colnames = X_colnames,
+    copy_map = copy_map,
+    coefs = as.matrix(coefs),
+    times = times,
+    lambda_star = lambda_star,
+    reduce_basis = reduce_basis,
+    family = family,
+    lasso_fit =
+      if (return_lasso) {
+        uhal_fit
+      } else {
+        NULL
+      },
+    unpenalized_covariates = unpenalized_covariates,
+    prediction_bounds = fit_control$prediction_bounds
+  )
+  class(fit) <- "hal9001"
+  return(fit)
 }
 
 ###############################################################################
