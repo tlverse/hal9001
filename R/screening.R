@@ -85,13 +85,13 @@ fit_earth_hal <- function(X,
 
 
 
-
+  n_Y <- ifelse(is.matrix(Y), nrow(Y), length(Y))
 
 
   if (is.null(fit_control$foldid)) {
     if (is.null(fit_control$nfolds)) fit_control$nfolds <- 10
     folds <- origami::make_folds(
-      n = length(Y), V = fit_control$nfolds, cluster_ids = id
+      n = n_Y, V = fit_control$nfolds, cluster_ids = id
     )
   } else {
     folds <- lapply(unique(sort(fit_control$foldid)), function(v) {
@@ -107,12 +107,12 @@ fit_earth_hal <- function(X,
   }
 
   if (is.null(weights)) {
-    weights <- rep(1, length(Y))
+    weights <- rep(1, n_Y)
   } else {
     if (!all(weights == 1)) warning("NOTE: Screening does not incorporate weights")
   }
   if (is.null(offset)) {
-    offset <- rep(0, length(Y))
+    offset <- rep(0, n_Y)
   } else {
     if (!all(weights == offset)) warning("NOTE: Screening does not incorporate offset")
   }
@@ -120,7 +120,7 @@ fit_earth_hal <- function(X,
   # To incorporate formula, we could get cols from basis_list
   #
 
-  n <- length(Y)
+  n <- n_Y
   # family <- family
 
   screen_function <- function(X, Y, weights, offset, id) {
@@ -387,8 +387,8 @@ screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = ifelse(pmethod
   }
   X <- x
   Y <- y
-  n <- length(Y)
-  if (is.null(nk)) nk <- min(max(round(sqrt(length(Y))) * ncol(X), 200), 1000)
+  n <- nrow(X)
+  if (is.null(nk)) nk <- min(max(round(sqrt(n)) * ncol(X), 200), 1000)
   if (is.null(fast.k)) fast.k <- min(max(sqrt(n), 20), 100)
 
   fit <- earth(x = x, y = y, fast.k = fast.k, nk = nk, pmethod = pmethod, degree = degree, nfold = nfold, glm = glm, weights = weights)
