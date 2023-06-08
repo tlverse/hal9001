@@ -44,30 +44,30 @@
 #'
 #'
 fit_earth_hal <- function(X,
-                                   Y,
-                                   X_unpenalized = NULL,
-                                   max_degree = 3,
-                                   smoothness_orders = 1,
-                                   num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1 / 3), length(Y)^(1 / 4))),
-                                   reduce_basis = NULL,
-                                   family = c("gaussian", "binomial", "poisson"),
-                                   lambda = NULL,
-                                   id = NULL,
-                                   weights = NULL,
-                                   offset = NULL,
-                                   fit_control = list(
-                                     cv_select = TRUE,
-                                     use_min = TRUE,
-                                     lambda.min.ratio = 1e-4,
-                                     prediction_bounds = "default"
-                                   ),
-                                   screen_interactions = TRUE,
-                                   screener_max_degree = max_degree,
-                                   pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
-                                   screener_family = family,
-                                   return_lasso = TRUE,
-                                   return_x_basis = FALSE,
-                                   ...) {
+                          Y,
+                          X_unpenalized = NULL,
+                          max_degree = 3,
+                          smoothness_orders = 1,
+                          num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1 / 3), length(Y)^(1 / 4))),
+                          reduce_basis = NULL,
+                          family = c("gaussian", "binomial", "poisson"),
+                          lambda = NULL,
+                          id = NULL,
+                          weights = NULL,
+                          offset = NULL,
+                          fit_control = list(
+                            cv_select = TRUE,
+                            use_min = TRUE,
+                            lambda.min.ratio = 1e-4,
+                            prediction_bounds = "default"
+                          ),
+                          screen_interactions = TRUE,
+                          screener_max_degree = max_degree,
+                          pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
+                          screener_family = family,
+                          return_lasso = TRUE,
+                          return_x_basis = FALSE,
+                          ...) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
@@ -139,7 +139,6 @@ fit_earth_hal <- function(X,
   # family <- family
 
   screen_function <- function(X, Y, weights, offset, id) {
-
     if (is.character(screen_control$family)) {
       screen_control$family <- screen_control$family[1]
       screen_control$family <- get(screen_control$family)
@@ -397,8 +396,8 @@ fit_earth_hal <- function(X,
 #' Y <- rnorm(n, mu, 0.5)
 #' screen_MARS(X, Y, degree = 1)
 #'
-screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = 10, fast.k = NULL, nk = NULL, glm = list(family = gaussian()), weights = NULL) {
-  if(pmethod != "cv") {
+screen_MARS <- function(x, y, pmethod = "cv", degree = 2, nfold = ifelse(pmethod == "cv", 10, 0), fast.k = NULL, nk = NULL, glm = list(family = gaussian()), weights = NULL) {
+  if (pmethod != "cv") {
     nfold <- 0
   }
   X <- x

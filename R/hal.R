@@ -184,9 +184,13 @@ fit_hal <- function(X,
                     yolo = FALSE) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
-    if (family %in% c("cox", "mgaussian") && screen_variables) {
+    if (family %in% c("cox") && screen_variables) {
       screen_variables <- FALSE
-      warning("Screening not supported for cox and mgaussian families.")
+      warning("Screening not supported for cox families.")
+    }
+    if(family %in% c("mgaussian")) {
+      # Earth does multitask learning if matrix outcome.
+      screen_control$screener_family <- "gaussian"
     }
   }
   fam <- ifelse(inherits(family, "family"), family$family, family)
