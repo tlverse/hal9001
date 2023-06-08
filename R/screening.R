@@ -82,21 +82,6 @@ fit_earth_hal <- function(X,
 
   if (!is.matrix(X)) X <- as.matrix(X)
 
-  # check for missingness and ensure dimensionality matches
-  assertthat::assert_that(
-    all(!is.na(X)),
-    msg = "NA detected in `X`, missingness in `X` is not supported"
-  )
-  assertthat::assert_that(
-    all(!is.na(Y)),
-    msg = "NA detected in `Y`, missingness in `Y` is not supported"
-  )
-
-  assertthat::assert_that(
-    nrow(X) == length(Y),
-    msg = "Number of rows in `X` and length of `Y` must be equal"
-  )
-
 
 
 
