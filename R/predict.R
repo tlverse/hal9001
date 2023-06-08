@@ -113,7 +113,7 @@ predict.hal9001 <- function(object,
     } else if (family == "mgaussian") {
       preds <- stats::predict(
         object$lasso_fit,
-        newx = pred_x_basis, s = object$lambda_star
+        newx = pred_x_basis, s = object$lambda_star, newoffset = offset
       )
     }
   }
@@ -121,7 +121,7 @@ predict.hal9001 <- function(object,
 
 
   # incorporate offset into predictions
-  if (!is.null(offset)) {
+  if (!is.null(offset) & family != "mgaussian") {
     preds <- preds + offset
   }
 

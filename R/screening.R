@@ -118,6 +118,9 @@ fit_earth_hal <- function(X,
   }
   if (is.null(offset)) {
     offset <- matrix(0, nrow = nrow(as.matrix(Y)), ncol = ncol(as.matrix(Y)))
+    if(!is.matrix(Y)) {
+      offset <- as.vector(offset)
+    }
   } else {
     if (!all(offset == 0)) warning("NOTE: Screening does not incorporate offset")
   }
@@ -257,9 +260,8 @@ fit_earth_hal <- function(X,
       fit_control = fit_control_internal,
       screen_variables = FALSE,
       return_x_basis = FALSE,
-      return_lasso = FALSE
+      return_lasso = family == "mgaussian"
     )
-    #print(class(fold_fit))
 
     predictions <- predict(fold_fit, new_data = validation(X), offset = validation(offset), new_X_unpenalized = new_X_unpenalized)
 
