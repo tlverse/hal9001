@@ -303,7 +303,9 @@ fit_earth_hal <- function(X,
   good_preds <- unlist(preds[, lapply(.SD, function(x) all(!is.na(x)))])
   preds <- preds[, which(good_preds), with = FALSE]
   predictions <- aorder(preds, order(results$index, results$fold_index))
-  if (is.character(family)) {
+  if(family == "mgaussian") {
+    fam <- gaussian()
+  } else if (is.character(family)) {
     fam <- get(family)()
   } else {
     fam <- family
@@ -314,6 +316,7 @@ fit_earth_hal <- function(X,
   risks <- apply(predictions, 2, function(pred) {
     mean(fam$dev.resids(Y, pred, weights))
   })
+
 
   lambda_star <- lambda_seq[which.min(risks)[1]]
 
