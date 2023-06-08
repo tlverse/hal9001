@@ -188,10 +188,6 @@ fit_hal <- function(X,
       screen_variables <- FALSE
       warning("Screening not supported for cox families.")
     }
-    if(family %in% c("mgaussian")) {
-      # Earth does multitask learning if matrix outcome.
-      screen_control$screener_family <- "gaussian"
-    }
   }
   fam <- ifelse(inherits(family, "family"), family$family, family)
 

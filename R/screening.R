@@ -43,6 +43,7 @@
 #' @rdname fit_earth_hal
 #'
 #'
+
 fit_earth_hal <- function(X,
                           Y,
                           X_unpenalized = NULL,
@@ -70,6 +71,10 @@ fit_earth_hal <- function(X,
                           ...) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
+  }
+  if(family %in% c("mgaussian")) {
+    # Earth does multitask learning if matrix outcome.
+    screener_family <- "gaussian"
   }
   screen_control <- list(
     screen_interactions = screen_interactions,
@@ -112,9 +117,9 @@ fit_earth_hal <- function(X,
     if (!all(weights == 1)) warning("NOTE: Screening does not incorporate weights")
   }
   if (is.null(offset)) {
-    offset <- rep(0, n_Y)
+    offset <- matrix(0, nrow = nrow(as.matrix(Y)), ncol = ncol(as.matrix(Y)))
   } else {
-    if (!all(weights == offset)) warning("NOTE: Screening does not incorporate offset")
+    if (!all(offset == 0)) warning("NOTE: Screening does not incorporate offset")
   }
 
   # To incorporate formula, we could get cols from basis_list
@@ -254,6 +259,7 @@ fit_earth_hal <- function(X,
       return_x_basis = FALSE,
       return_lasso = FALSE
     )
+    #print(class(fold_fit))
 
     predictions <- predict(fold_fit, new_data = validation(X), offset = validation(offset), new_X_unpenalized = new_X_unpenalized)
 
