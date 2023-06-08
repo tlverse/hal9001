@@ -9,7 +9,7 @@ screen_MARS(
   y,
   pmethod = "cv",
   degree = 2,
-  nfold = 10,
+  nfold = ifelse(pmethod == "cv", 10, 0),
   fast.k = NULL,
   nk = NULL,
   glm = list(family = gaussian()),

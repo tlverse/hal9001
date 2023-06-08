@@ -12,7 +12,7 @@ fit_earth_hal(
   smoothness_orders = 1,
   num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1/3), length(Y)^(1/4))),
   reduce_basis = NULL,
-  family = c("gaussian", "binomial", "poisson"),
+  family = c("gaussian", "binomial", "poisson", "mgaussian"),
   lambda = NULL,
   id = NULL,
   weights = NULL,
