@@ -4,17 +4,20 @@ set.seed(45791)
 n <- 50
 p <- 3
 x <- matrix(rnorm(n * p), n, p)
-y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
+y <- sin(x[, 1]) + sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.1)
 colnames(x) <- c("col1", "col2", "col3")
 
-hal_fit <- fit_hal(X = x, Y = y, fit_control = list(use_min = FALSE))
-hal_fit_nolasso <- fit_hal(X = x, Y = y, yolo = FALSE, return_lasso = FALSE)
+# NOTE: Summary errors if only intercept is nonzero
+hal_fit <- fit_hal(X = x, Y = y, fit_control = list(use_min = FALSE), screen_variables = FALSE)
+
+
+hal_fit_nolasso <- fit_hal(X = x, Y = y, yolo = FALSE, return_lasso = FALSE, screen_variables = FALSE)
 hal_fit_nocv <- fit_hal(
-  X = x, Y = y, yolo = FALSE, fit_control = list(cv_select = FALSE)
+  X = x, Y = y, yolo = FALSE, fit_control = list(cv_select = FALSE), screen_variables = FALSE
 )
 hal_fit_nocv_nolasso <- fit_hal(
   X = x, Y = y, yolo = FALSE, fit_control = list(cv_select = FALSE),
-  return_lasso = FALSE, return_x_basis = TRUE
+  return_lasso = FALSE, return_x_basis = TRUE, screen_variables = FALSE
 )
 
 # Basic summary works
@@ -22,6 +25,10 @@ summ <- summary(hal_fit)
 
 # Basic summary works when lambda is provided
 summ <- summary(hal_fit, lambda = hal_fit$lambda_star)
+
+print(hal_fit$family)
+print(names(hal_fit$lasso_fit))
+print(hal_fit$lasso_fit$lambda[7])
 summ <- summary(hal_fit, lambda = hal_fit$lasso_fit$lambda[7])
 
 

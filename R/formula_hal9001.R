@@ -253,14 +253,14 @@ print.formula_hal9001 <- function(x, ...) {
 
 #'
 #' @param var_names A \code{character} vector of variable names representing a single type of interaction
-#" (e.g. var_names = c("W1", "W2", "W3") encodes three way interactions between W1, W2 and W3.
-#' var_names may include the wildcard variable "." in which case the argument `.` must be specified
-#' so that all interactions matching the form of var_names are generated.
-#' @param . Specification of variables for use in the formula.
-#'   This function takes a character vector `var_names` of the form c(name1, name2, ".", name3, ".")
-#' with any number of name{int} variables and any number of wild card variables ".".
-#' It returns a list of character vectors of the form c(name1, name2, wildcard1, name3, wildcard2)
-#' where wildcard1 and wildcard2 are iterated over all possible character names given in the argument `.`.
+#'  (e.g. var_names = c("W1", "W2", "W3") encodes three way interactions between W1, W2 and W3.
+#'  `var_names` may include the wildcard variable "." in which case the argument `.` must be specified
+#'  so that all interactions matching the form of var_names are generated.
+#' @param . Specification of variables for use in the formula. This function takes a character vector
+#'  `var_names` of the form c(name1, name2, ".", name3, ".") with any number of name{int} variables and
+#'  any number of wild card variables ".". It returns a list of character vectors of the form
+#'  c(name1, name2, wildcard1, name3, wildcard2)
+#'  where wildcard1 and wildcard2 are iterated over all possible character names given in argument `.`.
 #' @rdname formula_helpers
 fill_dots <- function(var_names, .) {
   index <- which(var_names == ".")
@@ -275,8 +275,9 @@ fill_dots <- function(var_names, .) {
     out <- fill_dots(new_var_names, .)
     return(out)
   })
+
   is_nested <- is.list(all_items[[1]])
-  while(is_nested) {
+  while (is_nested) {
     all_items <- unlist(all_items, recursive = FALSE)
     is_nested <- is.list(all_items[[1]])
   }
@@ -292,4 +293,3 @@ fill_dots <- function(var_names, .) {
 
   return(unique(all_items))
 }
-

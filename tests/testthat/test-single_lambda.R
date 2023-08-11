@@ -15,7 +15,7 @@ hal_fit <- fit_hal(
   lambda = 2e-2,
   return_lasso = TRUE
 )
-
+print(class(hal_fit$lasso_fit))
 test_that("Output object is `glmnet`.", {
   expect_true("glmnet" %in% class(hal_fit$lasso_fit))
 })

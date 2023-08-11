@@ -325,10 +325,10 @@ quantizer <- function(X, bins) {
       return(rep(min(x), length(x)))
     }
 
-    p <- max(1 - (20 / nrow(X)), 0.98)
-    quants <- seq(0, p, length.out = bins)
+    quants <- seq(0, 1, length.out = bins + 1)
+    quants <- quants[-length(quants)] # Remove final knot point which is edge.
     q <- stats::quantile(x, quants)
-    nearest <- findInterval(x, q)
+    nearest <- findInterval(x, q) # Possibly values are 1 up to length(quants)
     x <- q[nearest]
     return(x)
   }

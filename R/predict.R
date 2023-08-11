@@ -41,16 +41,15 @@ predict.hal9001 <- function(object,
                             offset = NULL,
                             type = c("response", "link"),
                             ...) {
-
   family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
 
   type <- match.arg(type)
   # cast new data to matrix if not so already
   if (!is.matrix(new_data)) new_data <- as.matrix(new_data)
 
-  if (!is.null(object$formula)) {
-    new_data <- new_data[, object$covariates]
-  }
+  # if (!is.null(object$formula)) {
+  # new_data <- new_data[, object$covariates]
+  # }
 
   # generate design matrix
   pred_x_basis <- make_design_matrix(new_data, object$basis_list)
@@ -93,7 +92,7 @@ predict.hal9001 <- function(object,
       ) + object$coefs[1])
     }
   } else {
-    if(family == "cox") {
+    if (family == "cox") {
       # Note: there is no intercept in the Cox model (built into the baseline
       #       hazard and would cancel in the partial likelihood).
       # Note: there is no intercept in the Cox model (built into the baseline
@@ -113,10 +112,13 @@ predict.hal9001 <- function(object,
       }
     } else if (family == "mgaussian") {
       preds <- stats::predict(
-        object$lasso_fit, newx = pred_x_basis, s = object$lambda_star
+        object$lasso_fit,
+        newx = pred_x_basis, s = object$lambda_star
       )
     }
   }
+
+
 
   # incorporate offset into predictions
   if (!is.null(offset)) {
@@ -144,10 +146,10 @@ predict.hal9001 <- function(object,
   # bound predictions within observed outcome bounds if on response scale
   if (!is.null(object$prediction_bounds)) {
     bounds <- object$prediction_bounds
-    if(family == "mgaussian") {
-      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i){
+    if (family == "mgaussian") {
+      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i) {
         bounds_y <- sort(bounds[[i]])
-        preds_y <- preds[,i,]
+        preds_y <- preds[, i, ]
         preds_y <- pmax(bounds_y[1], preds_y)
         preds_y <- pmin(preds_y, bounds_y[2])
         return(preds_y)

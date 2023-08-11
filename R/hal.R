@@ -26,35 +26,9 @@
 #'  higher, then fewer knot points (e.g., 10-30) is actually better for
 #'  performance. We recommend specifying \code{num_knots} with respect to
 #'  \code{smoothness_orders}, and as a vector of length \code{max_degree} with
-#'  values decreasing exponentially. This prevents combinatorial explosions in
-#'  the number of higher-degree basis functions generated. The default behavior
-#'  of \code{num_knots} follows this logic --- for \code{smoothness_orders = 0},
-#'  \code{num_knots} is set to \eqn{500 / 2^{j-1}}, and for
-#'  \code{smoothness_orders = 1} or higher, \code{num_knots} is set to
-#'  \eqn{200 / 2^{j-1}}, where \eqn{j} is the interaction degree. We also
-#'  include some other suitable settings for \code{num_knots} below, all of
-#'  which are less complex than default \code{num_knots} and will thus result
-#'  in a faster runtime:
-#'  - Some good settings for little to no cost in performance:
-#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
-#'      \code{num_knots = c(400, 200, 100)}.
-#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-#'      \code{num_knots = c(100, 75, 50)}.
-#'  - Recommended settings for fairly fast runtime:
-#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
-#'      \code{num_knots = c(200, 100, 50)}.
-#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-#'      \code{num_knots = c(50, 25, 15)}.
-#'  - Recommended settings for fast runtime:
-#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
-#'      \code{num_knots = c(100, 50, 25)}.
-#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-#'      \code{num_knots = c(40, 15, 10)}.
-#'  - Recommended settings for very fast runtime:
-#'    - If \code{smoothness_orders = 0} and \code{max_degree = 3},
-#'      \code{num_knots = c(50, 25, 10)}.
-#'    - If \code{smoothness_orders = 1+} and \code{max_degree = 3},
-#'      \code{num_knots = c(25, 10, 5)}.
+#'  values decreasing polynomially or exponentially. This prevents combinatorial explosions in
+#'  the number of higher-degree basis functions generated. The default values
+#'  of \code{num_knots} are c(sqrt(n), (n)^(1/3), n^(1/5)) where n = length(Y).
 #'
 #' @param X An input \code{matrix} with dimensions number of observations -by-
 #'  number of covariates that will be used to derive the design matrix of basis
@@ -141,6 +115,14 @@
 #'    each outcome can have different bounds). Bounding ensures that there is
 #'    no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
+#' @param screen_variables A \code{logical} of whether to screen variables using MARS-based screening
+#' as implemented in \code{screen_MARS}.
+#' If \code{TRUE}, then the routine \code{fit_earth_hal} is called internally.
+#' Note that \code{fit_hal} may be much slower if this is set to \code{FALSE}
+#' @param screen_control A list of parameters for the earth-based screening algorithm.
+#' The possible parameters include \code{screen_interactions}, \code{screener_max_degree},
+#'  \code{screener_family}, and \code{pruning_method}.
+#' Please see the documentation of \code{fit_earth_hal} for additional information.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -174,14 +156,9 @@ fit_hal <- function(X,
                     Y,
                     formula = NULL,
                     X_unpenalized = NULL,
-                    max_degree = ifelse(ncol(X) >= 20, 2, 3),
+                    max_degree = 3,
                     smoothness_orders = 1,
-                    num_knots = num_knots_generator(
-                      max_degree = max_degree,
-                      smoothness_orders = smoothness_orders,
-                      base_num_knots_0 = 200,
-                      base_num_knots_1 = 50
-                    ),
+                    num_knots = ceiling(c(sqrt(length(Y)), length(Y)^(1 / 3), length(Y)^(1 / 4))),
                     reduce_basis = NULL,
                     family = c("gaussian", "binomial", "poisson", "cox", "mgaussian"),
                     lambda = NULL,
@@ -194,14 +171,38 @@ fit_hal <- function(X,
                       lambda.min.ratio = 1e-4,
                       prediction_bounds = "default"
                     ),
+                    screen_variables = TRUE,
+                    screen_control = list(
+                      screen_interactions = TRUE,
+                      screener_max_degree = max_degree,
+                      pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
+                      screener_family = family
+                    ),
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
                     yolo = FALSE) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
+    if (family %in% c("cox", "mgaussian") && screen_variables) {
+      screen_variables <- FALSE
+      warning("Screening not supported for cox and mgaussian families.")
+    }
   }
   fam <- ifelse(inherits(family, "family"), family$family, family)
+
+  defaults_screener <- list(
+    screen_interactions = TRUE,
+    screener_max_degree = max_degree,
+    pruning_method = ifelse(length(Y) > 500, "backward", "cv"),
+    screener_family = family
+  )
+
+  if (any(!names(defaults_screener) %in% names(screen_control))) {
+    screen_control <- c(
+      defaults_screener[!names(defaults_screener) %in% names(screen_control)], screen_control
+    )
+  }
 
   # errors when a supplied control list is missing arguments
   defaults <- list(
@@ -264,8 +265,8 @@ fit_hal <- function(X,
     )
   }
 
-  if(!is.character(fit_control$prediction_bounds)){
-    if(fam == "mgaussian"){
+  if (!is.character(fit_control$prediction_bounds)) {
+    if (fam == "mgaussian") {
       assertthat::assert_that(
         is.list(fit_control$prediction_bounds) &
           length(fit_control$prediction_bounds) == ncol(Y),
@@ -340,16 +341,19 @@ fit_hal <- function(X,
   # bookkeeping: get end time of design matrix procedure
   time_design_matrix <- proc.time()
 
+
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
+  # LARS's note: reduce basis is fine for high smoothness since it drops based on proportion of 0's.
+  # But if it starts dropping by proportion of 1's then it no longer works for higher order smoothness
   if (all(smoothness_orders == 0)) {
-    if(is.null(reduce_basis)){
+    if (is.null(reduce_basis)) {
       reduce_basis <- 1 / sqrt(n_Y)
     }
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
   } else {
-    if(!is.null(reduce_basis)){
+    if (!is.null(reduce_basis)) {
       warning("Dropping reduce_basis; only applies if smoothness_orders = 0")
     }
   }
@@ -376,6 +380,7 @@ fit_hal <- function(X,
     X_colnames <- colnames(X)
   } else {
     X_colnames <- paste0("x", 1:ncol(X))
+    colnames(X) <- X_colnames
   }
 
   # the HAL basis are subject to L1 penalty
@@ -395,6 +400,12 @@ fit_hal <- function(X,
   if (unpenalized_covariates > 0) {
     x_basis <- cbind(x_basis, X_unpenalized)
     penalty_factor <- c(penalty_factor, rep(0, ncol(X_unpenalized)))
+    if (!is.null(fit_control$lower.limits)) {
+      fit_control$lower.limits <- c(fit_control$lower.limits, rep(-Inf, ncol(X_unpenalized)))
+    }
+    if (!is.null(fit_control$upper.limits)) {
+      fit_control$upper.limits <- c(fit_control$upper.limits, rep(Inf, ncol(X_unpenalized)))
+    }
   }
 
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
@@ -423,6 +434,7 @@ fit_hal <- function(X,
   }
 
   # just use the standard implementation available in glmnet
+  fit_control_initial <- fit_control
   fit_control$x <- x_basis
   fit_control$y <- Y
   fit_control$standardize <- FALSE
@@ -432,7 +444,38 @@ fit_hal <- function(X,
   fit_control$offset <- offset
   fit_control$weights <- weights
 
-  if (!fit_control$cv_select) {
+  sal_fit <- NULL
+  if (screen_variables) {
+    if (!is.null(formula)) {
+      warning("`formula` argument is not used if screen_variables or screen_interactions is TRUE.")
+    }
+    sal_fit <- fit_earth_hal(X,
+      Y,
+      X_unpenalized = X_unpenalized,
+      max_degree = max_degree,
+      smoothness_orders = smoothness_orders,
+      num_knots = num_knots,
+      reduce_basis = reduce_basis,
+      family = family,
+      lambda = lambda,
+      id = id,
+      weights = weights,
+      offset = offset,
+      fit_control = fit_control_initial,
+      screen_interactions = screen_control$screen_interactions,
+      screener_max_degree = screen_control$screener_max_degree,
+      screener_family = screen_control$screener_family,
+      pruning_method = screen_control$pruning_method,
+      return_lasso = return_lasso,
+      return_x_basis = return_x_basis
+    )
+    hal_lasso <- sal_fit$lasso_fit
+    coefs <- sal_fit$coefs
+    lambda_star <- sal_fit$lambda_star
+
+    formula <- sal_fit$formula
+    basis_list <- sal_fit$basis_list
+  } else if (!fit_control$cv_select) {
     hal_lasso <- do.call(glmnet::glmnet, fit_control)
     lambda_star <- hal_lasso$lambda
     coefs <- stats::coef(hal_lasso)
@@ -467,9 +510,9 @@ fit_hal <- function(X,
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (is.character(fit_control$prediction_bounds) &&
     fit_control$prediction_bounds == "default") {
-    if(fam == "mgaussian") {
-      fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i){
-        c(min(Y[,i]) - 2 * stats::sd(Y[,i]), max(Y[,i]) + 2 * stats::sd(Y[,i]))
+    if (fam == "mgaussian") {
+      fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i) {
+        c(min(Y[, i]) - 2 * stats::sd(Y[, i]), max(Y[, i]) + 2 * stats::sd(Y[, i]))
       })
     } else if (fam == "cox") {
       fit_control$prediction_bounds <- NULL
@@ -503,8 +546,12 @@ fit_hal <- function(X,
         NULL
       },
     unpenalized_covariates = unpenalized_covariates,
-    prediction_bounds = fit_control$prediction_bounds
+    prediction_bounds = fit_control$prediction_bounds,
+    formula = formula
   )
+  if (!is.null(sal_fit)) {
+    fit$sal_fit <- sal_fit
+  }
   class(fit) <- "hal9001"
   return(fit)
 }

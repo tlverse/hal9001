@@ -50,7 +50,7 @@ system.time({
     mse <- mean(se)
     se[c(current_i, new_i)] <- 0
     new_i <- which.max(se)
-    print(sprintf("%f, %f", old_mse, mse))
+    # print(sprintf("%f, %f", old_mse, mse))
     continue <- mse < 1.1 * old_mse
     if (mse < old_mse) {
       good_i <- unique(c(good_i, new_i))
@@ -58,7 +58,7 @@ system.time({
       old_mse <- mse
       coefs <- as.vector(coef(screen_glmnet, s = "lambda.min"))[-1]
       # old_basis <- union(old_basis,c(old_basis,b1)[which(coefs!=0)])
-      print(length(old_basis))
+      # print(length(old_basis))
       old_basis <- unique(c(old_basis, b1))
     }
 
@@ -72,7 +72,7 @@ system.time({
     if (is.na(rate)) {
       rate <- -Inf
     }
-    print(rate)
+    # print(rate)
     continue <- (-1 * rate) > 1e-4
     continue <- TRUE
     continue <- length(current_i) < n
@@ -126,7 +126,7 @@ system.time({
     max_degree = 3,
     num_knots = length(y),
     smoothness_orders = 0,
-    yolo = FALSE
+    yolo = FALSE, screen_variables = FALSE
   )
 })
 hff_preds <- predict(hal_fit_full, new_data = x)
@@ -143,7 +143,7 @@ hal_fit_reduced <- fit_hal(
   max_degree = 3,
   num_knots = length(y),
   smoothness_orders = 0,
-  yolo = FALSE
+  yolo = FALSE, screen_variables = FALSE
 )
 
 hal_fit_reduced$times
