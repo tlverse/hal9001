@@ -327,7 +327,7 @@ quantizer <- function(X, bins) {
 
     p <- max(1 - (20 / nrow(X)), 0.98)
     quants <- seq(0, p, length.out = bins)
-    q <- stats::quantile(x, quants)
+    q <- unique(stats::quantile(x, quants, type = 1))
     nearest <- findInterval(x, q)
     x <- q[nearest]
     return(x)
