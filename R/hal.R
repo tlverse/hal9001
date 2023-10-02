@@ -68,6 +68,11 @@
 #'  \code{X}, for which no L1 penalization will be performed. Note that
 #'  \code{X_unpenalized} is directly appended to the design matrix; no basis
 #'  expansion is performed on \code{X_unpenalized}.
+#' @param X_no_basis An input \code{matrix} with the same number of rows as
+#'  \code{X}, for which L1 penalization but no basis expansion is performed.
+#'  Note that \code{X_no_basis} is directly appended to the design matrix of
+#'  basis functions generated from \code{X}. (The only difference between
+#'  \code{X_no_basis} and \code{X_unpenalized} is the L1 penalization.)
 #' @param max_degree The highest order of interaction terms for which basis
 #'  functions ought to be generated.
 #' @param smoothness_orders An \code{integer}, specifying the smoothness of the
@@ -83,7 +88,7 @@
 #'  combinatorial explosions in the number of higher-degree and higher-order
 #'  basis functions generated. This allows the complexity of the optimization
 #'  problem to grow scalably. See details of \code{num_knots} more information.
-#' @param reduce_basis Am optional \code{numeric} value bounded in the open
+#' @param reduce_basis An optional \code{numeric} value bounded in the open
 #'  unit interval indicating the minimum proportion of 1's in a basis function
 #'  column needed for the basis function to be included in the procedure to fit
 #'  the lasso. Any basis functions with a lower proportion of 1's than the
@@ -174,6 +179,7 @@ fit_hal <- function(X,
                     Y,
                     formula = NULL,
                     X_unpenalized = NULL,
+                    X_no_basis = NULL,
                     max_degree = ifelse(ncol(X) >= 20, 2, 3),
                     smoothness_orders = 1,
                     num_knots = num_knots_generator(
@@ -264,8 +270,25 @@ fit_hal <- function(X,
     )
   }
 
-  if(!is.character(fit_control$prediction_bounds)){
-    if(fam == "mgaussian"){
+  if (!is.null(X_no_basis)) {
+    assertthat::assert_that(
+      all(!is.na(X_no_basis)),
+      msg = paste(
+        "NA detected in `X_no_basis`, missingness",
+        "in `X_no_basis` is not supported."
+      )
+    )
+    assertthat::assert_that(
+      nrow(X) == nrow(X_no_basis),
+      msg = paste(
+        "Number of rows in `X` and `X_no_basis`,",
+        "and length of `Y` must be equal."
+      )
+    )
+  }
+
+  if (!is.character(fit_control$prediction_bounds)) {
+    if (fam == "mgaussian") {
       assertthat::assert_that(
         is.list(fit_control$prediction_bounds) &
           length(fit_control$prediction_bounds) == ncol(Y),
@@ -342,14 +365,14 @@ fit_hal <- function(X,
 
   # NOTE: keep only basis functions with some (or higher) proportion of 1's
   if (all(smoothness_orders == 0)) {
-    if(is.null(reduce_basis)){
+    if (is.null(reduce_basis)) {
       reduce_basis <- 1 / sqrt(n_Y)
     }
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
   } else {
-    if(!is.null(reduce_basis)){
+    if (!is.null(reduce_basis)) {
       warning("Dropping reduce_basis; only applies if smoothness_orders = 0")
     }
   }
@@ -381,6 +404,20 @@ fit_hal <- function(X,
   # the HAL basis are subject to L1 penalty
   if (is.null(penalty_factor)) {
     penalty_factor <- rep(1, ncol(x_basis))
+  }
+
+  main_terms_covariates <- ifelse(
+    test = is.null(X_no_basis),
+    yes = 0,
+    no = {
+      assertthat::assert_that(is.matrix(X_no_basis))
+      assertthat::assert_that(nrow(X_no_basis) == nrow(x_basis))
+      ncol(X_no_basis)
+    }
+  )
+  if (main_terms_covariates > 0) {
+    x_basis <- cbind(x_basis, X_no_basis)
+    penalty_factor <- c(penalty_factor, rep(1, ncol(X_no_basis)))
   }
 
   unpenalized_covariates <- ifelse(
@@ -467,9 +504,9 @@ fit_hal <- function(X,
   # Bounds for prediction on new data (to prevent extrapolation for linear HAL)
   if (is.character(fit_control$prediction_bounds) &&
     fit_control$prediction_bounds == "default") {
-    if(fam == "mgaussian") {
-      fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i){
-        c(min(Y[,i]) - 2 * stats::sd(Y[,i]), max(Y[,i]) + 2 * stats::sd(Y[,i]))
+    if (fam == "mgaussian") {
+      fit_control$prediction_bounds <- lapply(seq(ncol(Y)), function(i) {
+        c(min(Y[, i]) - 2 * stats::sd(Y[, i]), max(Y[, i]) + 2 * stats::sd(Y[, i]))
       })
     } else if (fam == "cox") {
       fit_control$prediction_bounds <- NULL
@@ -503,6 +540,7 @@ fit_hal <- function(X,
         NULL
       },
     unpenalized_covariates = unpenalized_covariates,
+    main_terms_covariates = main_terms_covariates,
     prediction_bounds = fit_control$prediction_bounds
   )
   class(fit) <- "hal9001"

@@ -38,10 +38,10 @@
 predict.hal9001 <- function(object,
                             new_data,
                             new_X_unpenalized = NULL,
+                            new_X_no_basis = NULL,
                             offset = NULL,
                             type = c("response", "link"),
                             ...) {
-
   family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
 
   type <- match.arg(type)
@@ -57,6 +57,24 @@ predict.hal9001 <- function(object,
 
   # reduce matrix of basis functions
   # pred_x_basis <- apply_copy_map(pred_x_basis, object$copy_map)
+
+  # add no basis covariates
+  new_main_terms_covariates <- ifelse(
+    test = is.null(new_X_no_basis),
+    yes = 0,
+    no = {
+      assertthat::assert_that(is.matrix(new_X_no_basis))
+      assertthat::assert_that(nrow(new_X_no_basis) == nrow(new_data))
+      ncol(new_X_no_basis)
+    }
+  )
+
+  # column rank of X_no_basis should be consistent between the prediction
+  # and training phases
+  assertthat::assert_that(object$main_terms_covariates == new_main_terms_covariates)
+  if (object$main_terms_covariates > 0) {
+    pred_x_basis <- cbind(pred_x_basis, new_X_no_basis)
+  }
 
   # add unpenalized covariates
   new_unpenalized_covariates <- ifelse(
@@ -93,7 +111,7 @@ predict.hal9001 <- function(object,
       ) + object$coefs[1])
     }
   } else {
-    if(family == "cox") {
+    if (family == "cox") {
       # Note: there is no intercept in the Cox model (built into the baseline
       #       hazard and would cancel in the partial likelihood).
       # Note: there is no intercept in the Cox model (built into the baseline
@@ -113,7 +131,8 @@ predict.hal9001 <- function(object,
       }
     } else if (family == "mgaussian") {
       preds <- stats::predict(
-        object$lasso_fit, newx = pred_x_basis, s = object$lambda_star
+        object$lasso_fit,
+        newx = pred_x_basis, s = object$lambda_star
       )
     }
   }
@@ -144,10 +163,10 @@ predict.hal9001 <- function(object,
   # bound predictions within observed outcome bounds if on response scale
   if (!is.null(object$prediction_bounds)) {
     bounds <- object$prediction_bounds
-    if(family == "mgaussian") {
-      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i){
+    if (family == "mgaussian") {
+      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i) {
         bounds_y <- sort(bounds[[i]])
-        preds_y <- preds[,i,]
+        preds_y <- preds[, i, ]
         preds_y <- pmax(bounds_y[1], preds_y)
         preds_y <- pmin(preds_y, bounds_y[2])
         return(preds_y)
