@@ -8,6 +8,7 @@
   object,
   new_data,
   new_X_unpenalized = NULL,
+  new_X_no_basis = NULL,
   offset = NULL,
   type = c("response", "link"),
   ...

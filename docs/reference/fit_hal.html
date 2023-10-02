@@ -70,6 +70,7 @@
   <span class="va">Y</span>,
   formula <span class="op">=</span> <span class="cn">NULL</span>,
   X_unpenalized <span class="op">=</span> <span class="cn">NULL</span>,
+  X_no_basis <span class="op">=</span> <span class="cn">NULL</span>,
   max_degree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">20</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,
   smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
   num_knots <span class="op">=</span> <span class="fu"><a href="num_knots_generator.html">num_knots_generator</a></span><span class="op">(</span>max_degree <span class="op">=</span> <span class="va">max_degree</span>, smoothness_orders <span class="op">=</span>
@@ -107,6 +108,12 @@ outcome variables.</p></dd>
 <code>X</code>, for which no L1 penalization will be performed. Note that
 <code>X_unpenalized</code> is directly appended to the design matrix; no basis
 expansion is performed on <code>X_unpenalized</code>.</p></dd>
+<dt>X_no_basis</dt>
+<dd><p>An input <code>matrix</code> with the same number of rows as
+<code>X</code>, for which L1 penalization but no basis expansion is performed.
+Note that <code>X_no_basis</code> is directly appended to the design matrix of
+basis functions generated from <code>X</code>. (The only difference between
+<code>X_no_basis</code> and <code>X_unpenalized</code> is the L1 penalization.)</p></dd>
 <dt>max_degree</dt>
 <dd><p>The highest order of interaction terms for which basis
 functions ought to be generated.</p></dd>
@@ -126,7 +133,7 @@ combinatorial explosions in the number of higher-degree and higher-order
 basis functions generated. This allows the complexity of the optimization
 problem to grow scalably. See details of <code>num_knots</code> more information.</p></dd>
 <dt>reduce_basis</dt>
-<dd><p>Am optional <code>numeric</code> value bounded in the open
+<dd><p>An optional <code>numeric</code> value bounded in the open
 unit interval indicating the minimum proportion of 1's in a basis function
 column needed for the basis function to be included in the procedure to fit
 the lasso. Any basis functions with a lower proportion of 1's than the

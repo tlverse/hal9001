@@ -9,6 +9,7 @@ fit_hal(
   Y,
   formula = NULL,
   X_unpenalized = NULL,
+  X_no_basis = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
   smoothness_orders = 1,
   num_knots = num_knots_generator(max_degree = max_degree, smoothness_orders =
@@ -44,6 +45,12 @@ outcome variables.}
 \code{X_unpenalized} is directly appended to the design matrix; no basis
 expansion is performed on \code{X_unpenalized}.}
 
+\item{X_no_basis}{An input \code{matrix} with the same number of rows as
+\code{X}, for which L1 penalization but no basis expansion is performed.
+Note that \code{X_no_basis} is directly appended to the design matrix of
+basis functions generated from \code{X}. (The only difference between
+\code{X_no_basis} and \code{X_unpenalized} is the L1 penalization.)}
+
 \item{max_degree}{The highest order of interaction terms for which basis
 functions ought to be generated.}
 
@@ -62,7 +69,7 @@ combinatorial explosions in the number of higher-degree and higher-order
 basis functions generated. This allows the complexity of the optimization
 problem to grow scalably. See details of \code{num_knots} more information.}
 
-\item{reduce_basis}{Am optional \code{numeric} value bounded in the open
+\item{reduce_basis}{An optional \code{numeric} value bounded in the open
 unit interval indicating the minimum proportion of 1's in a basis function
 column needed for the basis function to be included in the procedure to fit
 the lasso. Any basis functions with a lower proportion of 1's than the
