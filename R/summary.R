@@ -52,7 +52,6 @@ summary.hal9001 <- function(object,
                             include_redundant_terms = FALSE,
                             round_cutoffs = 3,
                             ...) {
-
   family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
   abs_coef <- basis_list_idx <- coef_idx <- dup <- NULL
 
@@ -73,19 +72,19 @@ summary.hal9001 <- function(object,
           stop("Coefficients for the specified lambda do not exist.")
         } else {
           lambda_idx <- which(object$lasso_fit$lambda == lambda)
-          if(family != "mgaussian"){
+          if (family != "mgaussian") {
             coefs <- object$lasso_fit$glmnet.fit$beta[, lambda_idx]
           } else {
-            coefs <- lapply(object$lasso_fit$glmnet.fit$beta, function(x) x[,lambda_idx])
+            coefs <- lapply(object$lasso_fit$glmnet.fit$beta, function(x) x[, lambda_idx])
           }
         }
       }
     } else {
       lambda_idx <- which(object$lambda_star == lambda)
-      if(family != "mgaussian"){
+      if (family != "mgaussian") {
         coefs <- object$coefs[, lambda_idx]
       } else {
-        coefs <- lapply(object$coefs, function(x) x[,lambda_idx])
+        coefs <- lapply(object$coefs, function(x) x[, lambda_idx])
       }
     }
   }
@@ -99,10 +98,10 @@ summary.hal9001 <- function(object,
         "Summarizing coefficients corresponding to minimum lambda."
       )
       lambda_idx <- which.min(lambda)
-      if(family != "mgaussian"){
+      if (family != "mgaussian") {
         coefs <- object$coefs[, lambda_idx]
       } else {
-        coefs <- lapply(object$coefs, function(x) x[,lambda_idx])
+        coefs <- lapply(object$coefs, function(x) x[, lambda_idx])
       }
     }
   }
@@ -118,20 +117,20 @@ summary.hal9001 <- function(object,
 
   # subset to non-zero coefficients
   if (only_nonzero_coefs) {
-    if(family == "mgaussian") {
+    if (family == "mgaussian") {
       coef_idxs <- lapply(coefs_no_intercept, function(x) which(x != 0))
     } else {
       coef_idxs <- which(coefs_no_intercept != 0)
     }
   } else {
-    if(family == "mgaussian") {
+    if (family == "mgaussian") {
       coef_idxs <- lapply(coefs_no_intercept, function(x) seq_along(x))
     } else {
       coef_idxs <- seq_along(coefs_no_intercept)
     }
   }
 
-  if(family == "mgaussian") {
+  if (family == "mgaussian") {
     copy_map <- lapply(coef_idxs, function(x) object$copy_map[x])
   } else {
     copy_map <- object$copy_map[coef_idxs]
@@ -139,7 +138,7 @@ summary.hal9001 <- function(object,
 
   # ============================================================================
   # utility function to summarize HAL fit which can be used for multiple outcomes
-  summarize_coefs <- function(copy_map, coef_idxs, coefs_no_intercept, coefs){
+  summarize_coefs <- function(copy_map, coef_idxs, coefs_no_intercept, coefs) {
     # summarize coefficients with respect to basis list
     coefs_summ <- data.table::rbindlist(
       lapply(seq_along(copy_map), function(map_idx) {
@@ -229,6 +228,7 @@ summary.hal9001 <- function(object,
       data = summ, paste, collapse = " * "
     ))
 
+
     # no longer need the columns or rows that were incorporated in the term
     redundant <- c(
       "term", "col_cutoff", "col_names", "col_idx", "col_order", "zero_term",
@@ -239,6 +239,11 @@ summary.hal9001 <- function(object,
     summ <- merge(
       term_tbl, summ_unique,
       by = "basis_list_idx", all.x = TRUE, all.y = FALSE
+    )
+
+    # generate input for rules summary
+    rules_tbl <- generate_all_rules(
+      object$basis_list[summ$basis_list_idx], summ$coef, object$X_colnames
     )
 
     # summarize in a list
@@ -279,15 +284,16 @@ summary.hal9001 <- function(object,
       list = coefs_list,
       lambda = lambda,
       only_nonzero_coefs = only_nonzero_coefs,
-      family = family
+      family = family,
+      rules = rules_tbl
     )
     class(out) <- "summary.hal9001"
     return(out)
   }
   # ============================================================================
 
-  if(family == "mgaussian") {
-    return_obj <- lapply(seq_along(copy_map), function(i){
+  if (family == "mgaussian") {
+    return_obj <- lapply(seq_along(copy_map), function(i) {
       summarize_coefs(copy_map[[i]], coef_idxs[[i]], coefs_no_intercept[[i]], coefs[[i]])
     })
     class(return_obj) <- "summary.hal9001"
@@ -306,7 +312,7 @@ summary.hal9001 <- function(object,
 #'
 #' @export
 print.summary.hal9001 <- function(x, length = NULL, ...) {
-  if(x$family != "mgaussian" && !is.null(x$family)) {
+  if (x$family != "mgaussian" && !is.null(x$family)) {
     if (x$only_nonzero_coefs & is.null(length)) {
       cat(
         "\n\nSummary of non-zero coefficients is based on lambda of",
@@ -331,8 +337,10 @@ print.summary.hal9001 <- function(x, length = NULL, ...) {
     } else {
       print(utils::head(x$table, length), row.names = FALSE)
     }
+    cat("\n\n Summary of aggregated marginal and interaction regions: \n\n")
+    print(x$rules, row.names = FALSE)
   } else {
-   for(i in 1:length(x)){
+    for (i in 1:length(x)) {
       if (x[[i]]$only_nonzero_coefs & is.null(length)) {
         cat(
           "\n\nSummary of non-zero coefficients for each outcome is based on lambda of",
@@ -360,6 +368,110 @@ print.summary.hal9001 <- function(x, length = NULL, ...) {
       } else {
         print(utils::head(x[[i]]$table, length), row.names = FALSE)
       }
+      cat("\n\n Summary of aggregated marginal and interaction regions: \n\n")
+      print(x[[i]]$rules, row.names = FALSE)
     }
   }
+}
+
+#' Generates rules based on knot points of the fitted HAL basis functions with
+#' non-zero coefficients.
+#'
+#' @keywords internal
+generate_all_rules <- function(basis_list, coefs, X_colnames) {
+  # Convert coefficients to matrix and filter out the intercept
+  coefs_mat <- as.matrix(coefs)
+
+  # Identify indices where coefficients are non-zero
+  # (i.e., relevant to the final model)
+  relevant_indices <- which(coefs_mat != 0)
+
+  # Initialize a list to store cutoffs for each feature
+  cutoffs_list <- vector("list", length(X_colnames))
+  names(cutoffs_list) <- X_colnames
+
+  # Initialize list to store interaction rules and their cumulative coefficients
+  interaction_rules <- list()
+  interaction_coefs <- list()
+
+  # Loop over each basis function that has a non-zero coefficient
+  for (i in relevant_indices) {
+    basis <- basis_list[[i]]
+    coef_val <- coefs_mat[i, ]
+
+    # For marginal basis functions (no interactions)
+    if (length(basis$cols) == 1) {
+      colname <- X_colnames[basis$cols[1]]
+      # Add unique cutoffs to the cutoffs_list
+      cutoffs_list[[colname]] <- unique(c(cutoffs_list[[colname]], basis$cutoffs[1]))
+    }
+
+    # For interaction basis functions
+    if (length(basis$cols) > 1) {
+      interaction_name <- paste(X_colnames[basis$cols], collapse = "-")
+      if (!interaction_name %in% names(interaction_rules)) {
+        interaction_rules[[interaction_name]] <- list()
+        interaction_coefs[[interaction_name]] <- 0
+        for (j in basis$cols) {
+          interaction_rules[[interaction_name]][[X_colnames[j]]] <- c()
+        }
+      }
+      for (j in seq_along(basis$cols)) {
+        interaction_rules[[interaction_name]][[X_colnames[basis$cols[j]]]] <-
+          c(interaction_rules[[interaction_name]][[X_colnames[basis$cols[j]]]], basis$cutoffs[j])
+      }
+      interaction_coefs[[interaction_name]] <- interaction_coefs[[interaction_name]] + coef_val
+    }
+  }
+
+  # check if there are any marginal rules
+  # (i.e., any non-interaction basis functions with non-zero coefficients)
+  cutoffs_list <- cutoffs_list[-which(sapply(cutoffs_list, is.null))]
+  if (length(cutoffs_list) > 0) {
+    # for each feature, identify the min cutoff and form rule
+    min_cutoffs <- sapply(cutoffs_list, min, na.rm = TRUE)
+    marginal_rules <- sapply(seq_along(min_cutoffs), function(i) {
+      paste0(X_colnames[i], " >= ", min_cutoffs[i])
+    }, USE.NAMES = TRUE)
+    names(marginal_rules) <- names(min_cutoffs)
+  } else {
+    # instantiate empty marginal rules if there are none
+    marginal_rules <- c()
+    min_cutoffs <- c()
+  }
+
+  # check if there are any interaction rules
+  # (i.e., any interaction basis functions with non-zero coefficients)
+  if (length(interaction_rules) > 0) {
+    # create bounding box rules for interactions
+    bounding_rules <- list()
+    for (interaction in names(interaction_rules)) {
+      rules <- c()
+      for (var in names(interaction_rules[[interaction]])) {
+        min_val <- min(interaction_rules[[interaction]][[var]], na.rm = TRUE)
+        rules <- c(rules, paste0(var, " >= ", min_val))
+      }
+      bounding_rules[[interaction]] <- paste(rules, collapse = " & ")
+    }
+    # combine all rules
+    all_rules <- c(marginal_rules, unlist(bounding_rules))
+    all_coefs <- c(min_cutoffs, unlist(interaction_coefs))
+  } else {
+    # all rules are only comprised of the marginals
+    all_rules <- marginal_rules
+    all_coefs <- min_cutoffs
+  }
+
+  if (is.null(all_rules) | is.null(all_coefs)) {
+    # there are no rules!
+    rules_df <- NULL
+  } else {
+    # convert rules into a data table for easy viewing and interpretation
+    rules_df <- data.table::data.table(
+      variables = names(all_rules),
+      rule = all_rules,
+      cumulative_coefficient = all_coefs
+    )
+  }
+  return(rules_df)
 }
