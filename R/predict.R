@@ -95,16 +95,7 @@ predict.hal9001 <- function(object,
       #       hazard and would cancel in the partial likelihood).
       # Note: there is no intercept in the Cox model (built into the baseline
       #       hazard and would cancel in the partial likelihood).
-      if (ncol(object$coefs) > 1) {
-        preds <- pred_x_basis%*%object$coefs[-1,]+
-          matrix(object$coefs[1,], nrow=nrow(pred_x_basis), 
-                 ncol=ncol(object$coefs), byrow = TRUE)
-      } else {
-        preds <- as.vector(Matrix::tcrossprod(
-          x = pred_x_basis,
-          y = as.matrix(object$coefs,nrow = 1)
-        ))
-      }
+      preds <- pred_x_basis%*%object$coefs
     } else if (family == "mgaussian") {
       preds <- stats::predict(
         object$lasso_fit, newx = pred_x_basis, s = object$lambda_star
@@ -129,9 +120,21 @@ predict.hal9001 <- function(object,
     preds <- inverse_link_fun(preds)
   } else {
     if (family == "binomial") {
-      preds <- stats::plogis(preds)
+      transform <- stats::plogis
     } else if (family %in% c("poisson", "cox")) {
-      preds <- exp(preds)
+      transform <- exp
+    } else if(family%in%c("gaussian","mgaussian")){
+      transform <- identity
+    } else{
+      stop("unsupported family")
+    }
+    
+    if(length(ncol(preds))){
+      # apply along only the first dimension (to handle n-d arrays)
+      margin <- seq(length(dim(preds)))[-1]
+      preds <- apply(preds, margin, transform)
+    } else {
+      preds <- transform(preds)
     }
   }
 
