@@ -85,7 +85,11 @@ predictions via Highly Adaptive Lasso regression:
 # load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
+<<<<<<< HEAD
 #> hal9001 v0.4.4: The Scalable Highly Adaptive Lasso
+=======
+#> hal9001 v0.4.5: The Scalable Highly Adaptive Lasso
+>>>>>>> 81093a5ceebcd36630f308dd07f69d4e30f07f1c
 #> note: fit_hal defaults have changed. See ?fit_hal for details
 set.seed(385971)
 
