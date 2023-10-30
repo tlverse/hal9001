@@ -216,7 +216,7 @@ h <- function(..., k = NULL, s = NULL, pf = 1,
   })
 
 
-  basis_list_item <- hal9001:::make_basis_list(
+  basis_list_item <- make_basis_list(
     X[, col_index, drop = FALSE],
     col_index, rep(s, ncol(X))
   )

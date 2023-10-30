@@ -1,3 +1,6 @@
+# hal9001 0.4.6
+* Fixed predict method to address changes required by Matrix 1.6.2
+
 # hal9001 0.4.5
 * Added multivariate outcome prediction
 

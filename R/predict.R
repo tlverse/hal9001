@@ -80,16 +80,13 @@ predict.hal9001 <- function(object,
   # generate predictions
   if (!family %in% c("cox", "mgaussian")) {
     if (ncol(object$coefs) > 1) {
-      preds <- apply(object$coefs, 2, function(hal_coefs) {
-        as.vector(Matrix::tcrossprod(
-          x = pred_x_basis,
-          y = hal_coefs[-1]
-        ) + hal_coefs[1])
-      })
+      preds <- pred_x_basis%*%object$coefs[-1,]+
+        matrix(object$coefs[1,], nrow=nrow(pred_x_basis), 
+               ncol=ncol(object$coefs), byrow = TRUE)
     } else {
       preds <- as.vector(Matrix::tcrossprod(
         x = pred_x_basis,
-        y = object$coefs[-1]
+        y = matrix(object$coefs[-1],nrow=1)
       ) + object$coefs[1])
     }
   } else {
@@ -99,16 +96,13 @@ predict.hal9001 <- function(object,
       # Note: there is no intercept in the Cox model (built into the baseline
       #       hazard and would cancel in the partial likelihood).
       if (ncol(object$coefs) > 1) {
-        preds <- apply(object$coefs, 2, function(hal_coefs) {
-          as.vector(Matrix::tcrossprod(
-            x = pred_x_basis,
-            y = hal_coefs
-          ))
-        })
+        preds <- pred_x_basis%*%object$coefs[-1,]+
+          matrix(object$coefs[1,], nrow=nrow(pred_x_basis), 
+                 ncol=ncol(object$coefs), byrow = TRUE)
       } else {
         preds <- as.vector(Matrix::tcrossprod(
           x = pred_x_basis,
-          y = as.vector(object$coefs)
+          y = as.matrix(object$coefs,nrow = 1)
         ))
       }
     } else if (family == "mgaussian") {
