@@ -1,4 +1,3 @@
-
 context("check formula function")
 
 

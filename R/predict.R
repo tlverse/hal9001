@@ -41,7 +41,6 @@ predict.hal9001 <- function(object,
                             offset = NULL,
                             type = c("response", "link"),
                             ...) {
-
   family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
 
   type <- match.arg(type)
@@ -80,25 +79,28 @@ predict.hal9001 <- function(object,
   # generate predictions
   if (!family %in% c("cox", "mgaussian")) {
     if (ncol(object$coefs) > 1) {
-      preds <- pred_x_basis%*%object$coefs[-1,]+
-        matrix(object$coefs[1,], nrow=nrow(pred_x_basis), 
-               ncol=ncol(object$coefs), byrow = TRUE)
+      preds <- pred_x_basis %*% object$coefs[-1, ] +
+        matrix(object$coefs[1, ],
+          nrow = nrow(pred_x_basis),
+          ncol = ncol(object$coefs), byrow = TRUE
+        )
     } else {
       preds <- as.vector(Matrix::tcrossprod(
         x = pred_x_basis,
-        y = matrix(object$coefs[-1],nrow=1)
+        y = matrix(object$coefs[-1], nrow = 1)
       ) + object$coefs[1])
     }
   } else {
-    if(family == "cox") {
+    if (family == "cox") {
       # Note: there is no intercept in the Cox model (built into the baseline
       #       hazard and would cancel in the partial likelihood).
       # Note: there is no intercept in the Cox model (built into the baseline
       #       hazard and would cancel in the partial likelihood).
-      preds <- pred_x_basis%*%object$coefs
+      preds <- pred_x_basis %*% object$coefs
     } else if (family == "mgaussian") {
       preds <- stats::predict(
-        object$lasso_fit, newx = pred_x_basis, s = object$lambda_star
+        object$lasso_fit,
+        newx = pred_x_basis, s = object$lambda_star
       )
     }
   }
@@ -123,13 +125,13 @@ predict.hal9001 <- function(object,
       transform <- stats::plogis
     } else if (family %in% c("poisson", "cox")) {
       transform <- exp
-    } else if(family%in%c("gaussian","mgaussian")){
+    } else if (family %in% c("gaussian", "mgaussian")) {
       transform <- identity
-    } else{
+    } else {
       stop("unsupported family")
     }
-    
-    if(length(ncol(preds))){
+
+    if (length(ncol(preds))) {
       # apply along only the first dimension (to handle n-d arrays)
       margin <- seq(length(dim(preds)))[-1]
       preds <- apply(preds, margin, transform)
@@ -141,10 +143,10 @@ predict.hal9001 <- function(object,
   # bound predictions within observed outcome bounds if on response scale
   if (!is.null(object$prediction_bounds)) {
     bounds <- object$prediction_bounds
-    if(family == "mgaussian") {
-      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i){
+    if (family == "mgaussian") {
+      preds <- do.call(cbind, lapply(seq(ncol(preds)), function(i) {
         bounds_y <- sort(bounds[[i]])
-        preds_y <- preds[,i,]
+        preds_y <- preds[, i, ]
         preds_y <- pmax(bounds_y[1], preds_y)
         preds_y <- pmin(preds_y, bounds_y[2])
         return(preds_y)

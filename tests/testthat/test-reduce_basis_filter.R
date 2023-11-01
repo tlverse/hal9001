@@ -50,7 +50,7 @@ system.time({
     mse <- mean(se)
     se[c(current_i, new_i)] <- 0
     new_i <- which.max(se)
-    #print(sprintf("%f, %f", old_mse, mse))
+    # print(sprintf("%f, %f", old_mse, mse))
     continue <- mse < 1.1 * old_mse
     if (mse < old_mse) {
       good_i <- unique(c(good_i, new_i))
@@ -58,7 +58,7 @@ system.time({
       old_mse <- mse
       coefs <- as.vector(coef(screen_glmnet, s = "lambda.min"))[-1]
       # old_basis <- union(old_basis,c(old_basis,b1)[which(coefs!=0)])
-      #print(length(old_basis))
+      # print(length(old_basis))
       old_basis <- unique(c(old_basis, b1))
     }
 
@@ -164,4 +164,3 @@ test_that("Predictions are not too different when reducing basis functions", {
 # ensure hal fit with reduce_basis works with new data for prediction
 newx <- matrix(rnorm(n * p), n, p)
 hal_pred_reduced_newx <- predict(hal_fit_reduced, new_data = newx)
-

@@ -178,7 +178,7 @@ summary.hal9001 <- function(object,
         } else {
           # add col indicating whether or not there is a duplicate
           coef_summ[, dup := (duplicated(dups_tbl) |
-                                duplicated(dups_tbl, fromLast = TRUE))]
+            duplicated(dups_tbl, fromLast = TRUE))]
 
           # if basis_list_idx contains redundant duplicates, remove them
           redundant_dups <- coef_summ[dup == TRUE, "basis_list_idx"]
