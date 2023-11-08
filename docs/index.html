@@ -49,7 +49,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -128,7 +128,11 @@
 <code class="sourceCode R"><span class="co"># load the package and set a seed</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tlverse/hal9001" class="external-link">hal9001</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: Rcpp</span>
+<<<<<<< HEAD
+<span class="co">#&gt; hal9001 v0.4.4: The Scalable Highly Adaptive Lasso</span>
+=======
 <span class="co">#&gt; hal9001 v0.4.5: The Scalable Highly Adaptive Lasso</span>
+>>>>>>> 81093a5ceebcd36630f308dd07f69d4e30f07f1c
 <span class="co">#&gt; note: fit_hal defaults have changed. See ?fit_hal for details</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">385971</span><span class="op">)</span>
 
@@ -143,12 +147,21 @@
 <span class="co">#&gt; [1] "I'm sorry, Dave. I'm afraid I can't do that."</span>
 <span class="va">hal_fit</span><span class="op">$</span><span class="va">times</span>
 <span class="co">#&gt;                   user.self sys.self elapsed user.child sys.child</span>
+<<<<<<< HEAD
+<span class="co">#&gt; enumerate_basis       0.014    0.003   0.059          0         0</span>
+<span class="co">#&gt; design_matrix         0.004    0.001   0.005          0         0</span>
+<span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
+<span class="co">#&gt; remove_duplicates     0.000    0.000   0.000          0         0</span>
+<span class="co">#&gt; lasso                 2.684    0.343   6.583          0         0</span>
+<span class="co">#&gt; total                 2.703    0.348   6.655          0         0</span>
+=======
 <span class="co">#&gt; enumerate_basis       0.008    0.001   0.009          0         0</span>
 <span class="co">#&gt; design_matrix         0.003    0.000   0.003          0         0</span>
 <span class="co">#&gt; reduce_basis          0.000    0.000   0.000          0         0</span>
 <span class="co">#&gt; remove_duplicates     0.000    0.000   0.001          0         0</span>
 <span class="co">#&gt; lasso                 1.690    0.036   1.764          0         0</span>
 <span class="co">#&gt; total                 1.702    0.037   1.778          0         0</span>
+>>>>>>> 81093a5ceebcd36630f308dd07f69d4e30f07f1c
 
 <span class="co"># training sample prediction</span>
 <span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">hal_fit</span>, new_data <span class="op">=</span> <span class="va">x</span><span class="op">)</span>

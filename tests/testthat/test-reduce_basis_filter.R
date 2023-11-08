@@ -50,7 +50,7 @@ system.time({
     mse <- mean(se)
     se[c(current_i, new_i)] <- 0
     new_i <- which.max(se)
-    print(sprintf("%f, %f", old_mse, mse))
+    # print(sprintf("%f, %f", old_mse, mse))
     continue <- mse < 1.1 * old_mse
     if (mse < old_mse) {
       good_i <- unique(c(good_i, new_i))
@@ -58,7 +58,7 @@ system.time({
       old_mse <- mse
       coefs <- as.vector(coef(screen_glmnet, s = "lambda.min"))[-1]
       # old_basis <- union(old_basis,c(old_basis,b1)[which(coefs!=0)])
-      print(length(old_basis))
+      # print(length(old_basis))
       old_basis <- unique(c(old_basis, b1))
     }
 
@@ -72,7 +72,7 @@ system.time({
     if (is.na(rate)) {
       rate <- -Inf
     }
-    print(rate)
+    # print(rate)
     continue <- (-1 * rate) > 1e-4
     continue <- TRUE
     continue <- length(current_i) < n
@@ -108,13 +108,13 @@ b1 <- coef(fit)
 
 fit <- glmnet(
   x = x_basis, y = y, family = "gaussian", offset = offset,
-  intercept = FALSE, maxit = 1, thresh = 1, lambda = 0.03
+  intercept = FALSE, maxit = 2, thresh = 1, lambda = 0.03
 )
 b2 <- coef(fit)
 
 fit <- glmnet(
   x = x_basis, y = y, family = "gaussian", offset = offset,
-  intercept = FALSE, maxit = 1, thresh = 1, lambda = 0.03
+  intercept = FALSE, maxit = 2, thresh = 1, lambda = 0.03
 )
 b3 <- coef(fit)
 

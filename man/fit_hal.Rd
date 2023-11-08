@@ -13,13 +13,14 @@ fit_hal(
   smoothness_orders = 1,
   num_knots = num_knots_generator(max_degree = max_degree, smoothness_orders =
     smoothness_orders, base_num_knots_0 = 200, base_num_knots_1 = 50),
-  reduce_basis = 1/sqrt(length(Y)),
-  family = c("gaussian", "binomial", "poisson", "cox"),
+  reduce_basis = NULL,
+  family = c("gaussian", "binomial", "poisson", "cox", "mgaussian"),
   lambda = NULL,
   id = NULL,
+  weights = NULL,
   offset = NULL,
-  fit_control = list(cv_select = TRUE, n_folds = 10, foldid = NULL, use_min = TRUE,
-    lambda.min.ratio = 1e-04, prediction_bounds = "default"),
+  fit_control = list(cv_select = TRUE, use_min = TRUE, lambda.min.ratio = 1e-04,
+    prediction_bounds = "default"),
   basis_list = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,
@@ -31,7 +32,9 @@ fit_hal(
 number of covariates that will be used to derive the design matrix of basis
 functions.}
 
-\item{Y}{A \code{numeric} vector of observations of the outcome variable.}
+\item{Y}{A \code{numeric} vector of observations of the outcome variable. For
+\code{family="mgaussian"}, \code{Y} is a matrix of observations of the
+outcome variables.}
 
 \item{formula}{A character string formula to be used in
 \code{\link{formula_hal}}. See its documentation for details.}
@@ -59,19 +62,21 @@ combinatorial explosions in the number of higher-degree and higher-order
 basis functions generated. This allows the complexity of the optimization
 problem to grow scalably. See details of \code{num_knots} more information.}
 
-\item{reduce_basis}{A \code{numeric} value bounded in the open unit interval
-indicating the minimum proportion of 1's in a basis function column needed
-for the basis function to be included in the procedure to fit the lasso.
-Any basis functions with a lower proportion of 1's than the cutoff will be
-removed. When \code{reduce_basis} is set to \code{NULL}, all basis
-functions are used in the lasso-fitting stage of \code{fit_hal}.}
+\item{reduce_basis}{Am optional \code{numeric} value bounded in the open
+unit interval indicating the minimum proportion of 1's in a basis function
+column needed for the basis function to be included in the procedure to fit
+the lasso. Any basis functions with a lower proportion of 1's than the
+cutoff will be removed. Defaults to 1 over the square root of the number of
+observations. Only applicable for models fit with zero-order splines, i.e.
+\code{smoothness_orders = 0}.}
 
 \item{family}{A \code{character} or a \code{\link[stats]{family}} object
 (supported by \code{\link[glmnet]{glmnet}}) specifying the error/link
 family for a generalized linear model. \code{character} options are limited
 to "gaussian" for fitting a standard penalized linear model, "binomial" for
 penalized logistic regression, "poisson" for penalized Poisson regression,
-and "cox" for a penalized proportional hazards model. Note that passing in
+"cox" for a penalized proportional hazards model, and "mgaussian" for
+multivariate penalized linear model. Note that passing in
 family objects leads to slower performance relative to passing in a
 character family (if supported). For example, one should set
 \code{family = "binomial"} instead of \code{family = binomial()} when
@@ -90,11 +95,13 @@ lambda in the input array will be returned.}
 folds for \code{\link[glmnet]{cv.glmnet}}. This argument is ignored when
 \code{fit_control}'s \code{cv_select} argument is \code{FALSE}.}
 
+\item{weights}{observation weights; defaults to 1 per observation.}
+
 \item{offset}{a vector of offset values, used in fitting.}
 
-\item{fit_control}{List of arguments for fitting. Includes the following
-arguments, and any others to be passed to \code{\link[glmnet]{cv.glmnet}}
-or \code{\link[glmnet]{glmnet}}.
+\item{fit_control}{List of arguments, including the following, and any
+others to be passed to \code{\link[glmnet]{cv.glmnet}} or
+\code{\link[glmnet]{glmnet}}.
 \itemize{
 \item \code{cv_select}: A \code{logical} specifying if the sequence of
 specified \code{lambda} values should be passed to
@@ -102,28 +109,23 @@ specified \code{lambda} values should be passed to
 \code{lambda} to be selected according to cross-validation. When
 \code{cv_select = FALSE}, a \code{\link[glmnet]{glmnet}} model will be
 used to fit the sequence of (or single) \code{lambda}.
-\item \code{n_folds}: Integer for the number of folds to be used when splitting
-the data for V-fold cross-validation. Only used when
-\code{cv_select = TRUE}.
-\item \code{foldid}: An optional \code{numeric} containing values between 1 and
-\code{n_folds}, identifying the fold to which each observation is
-assigned. If supplied, \code{n_folds} can be missing. In such a case,
-this vector is passed directly to \code{\link[glmnet]{cv.glmnet}}. Only
-used when \code{cv_select = TRUE}.
 \item \code{use_min}: Specify the choice of lambda to be selected by
 \code{\link[glmnet]{cv.glmnet}}. When \code{TRUE}, \code{"lambda.min"} is
 used; otherwise, \code{"lambda.1se"}. Only used when
 \code{cv_select = TRUE}.
-\item \code{lambda.min.ratio}: A \code{\link[glmnet]{glmnet}} argument specifying
-the smallest value for \code{lambda}, as a fraction of \code{lambda.max},
-the (data derived) entry value (i.e. the smallest value for which all
-coefficients are zero). We've seen that not setting \code{lambda.min.ratio}
-can lead to no \code{lambda} values that fit the data sufficiently well.
-\item \code{prediction_bounds}: A vector of size two that provides the lower and
-upper bounds for predictions. When \code{prediction_bounds = "default"},
-the predictions are bounded between \code{min(Y) - sd(Y)} and
-\code{max(Y) + sd(Y)}. Bounding ensures that there is no extrapolation,
-and it is necessary for cross-validation selection and/or Super Learning.
+\item \code{lambda.min.ratio}: A \code{\link[glmnet]{glmnet}} argument
+specifying the smallest value for \code{lambda}, as a fraction of
+\code{lambda.max}, the (data derived) entry value (i.e. the smallest value
+for which all coefficients are zero). We've seen that not setting
+\code{lambda.min.ratio} can lead to no \code{lambda} values that fit the
+data sufficiently well.
+\item \code{prediction_bounds}: An optional vector of size two that provides
+the lower and upper bounds predictions; not used when
+\code{family = "cox"}. When \code{prediction_bounds = "default"}, the
+predictions are bounded between \code{min(Y) - sd(Y)} and
+\code{max(Y) + sd(Y)} for each outcome (when \code{family = "mgaussian"},
+each outcome can have different bounds). Bounding ensures that there is
+no extrapolation.
 }}
 
 \item{basis_list}{The full set of basis functions generated from \code{X}.}

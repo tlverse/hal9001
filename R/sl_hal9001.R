@@ -22,19 +22,9 @@
 #'  specifying the maximum number of knot points (i.e., bins) for each
 #'  covariate for generating basis functions. See \code{num_knots} argument in
 #'  \code{\link{fit_hal}} for more information.
-#' @param reduce_basis A \code{numeric} value bounded in the open unit interval
-#'  indicating the minimum proportion of 1's in a basis function column needed
-#'  for the basis function to be included in the procedure to fit the lasso.
-#'  Any basis functions with a lower proportion of 1's than the cutoff will be
-#'  removed.
-#' @param lambda A user-specified sequence of values of the regularization
-#'  parameter for the lasso L1 regression. If \code{NULL}, the default sequence
-#'  in \code{\link[glmnet]{cv.glmnet}} will be used. The cross-validated
-#'  optimal value of this regularization parameter will be selected with
-#'  \code{\link[glmnet]{cv.glmnet}}.
-#' @param ... Not used.
+#' @param ... Additional arguments to \code{\link{fit_hal}}.
 #'
-#' @importFrom stats predict gaussian
+#' @importFrom stats predict
 #'
 #' @export
 #'
@@ -42,27 +32,23 @@
 #'  object and corresponding predictions based on the input data.
 SL.hal9001 <- function(Y,
                        X,
-                       newX = NULL,
-                       family = stats::gaussian(),
-                       obsWeights = rep(1, length(Y)),
-                       id = NULL,
-                       max_degree = ifelse(ncol(X) >= 20, 2, 3),
+                       newX,
+                       family,
+                       obsWeights,
+                       id,
+                       max_degree = 2,
                        smoothness_orders = 1,
-                       num_knots = ifelse(smoothness_orders >= 1, 25, 50),
-                       reduce_basis = 1 / sqrt(length(Y)),
-                       lambda = NULL,
+                       num_knots = 5,
                        ...) {
-
   # create matrix version of X and newX for use with hal9001::fit_hal
   if (!is.matrix(X)) X <- as.matrix(X)
   if (!is.null(newX) & !is.matrix(newX)) newX <- as.matrix(newX)
 
   # fit hal
-  hal_fit <- fit_hal(
-    X = X, Y = Y, family = family$family,
-    fit_control = list(weights = obsWeights), id = id, max_degree = max_degree,
-    smoothness_orders = smoothness_orders, num_knots = num_knots, reduce_basis
-    = reduce_basis, lambda = lambda
+  hal_fit <- hal9001::fit_hal(
+    Y = Y, X = X, family = family$family, weights = obsWeights, id = id,
+    max_degree = max_degree, smoothness_orders = smoothness_orders,
+    num_knots = num_knots, ...
   )
 
   # compute predictions based on `newX` or input `X`

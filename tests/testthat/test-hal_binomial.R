@@ -39,3 +39,27 @@ oob_ml_hal_mse <- mse(oob_preds, y = test_y_prob)
 test_that("MSE for logistic regression on test set is less than for nulll", {
   expect_lt(oob_ml_hal_mse, mse(rep(mean(y), test_n), test_y_prob))
 })
+
+test_that("Prediction bounds respected when numeric vector supplied", {
+  ml_hal_fit <- fit_hal(
+    X = x, Y = y, family = "binomial",
+    fit_control = list(prediction_bounds = c(0.4, 0.7))
+  )
+  preds <- predict(ml_hal_fit, new_data = x)
+  expect_true(min(preds) >= 0.4)
+  expect_true(max(preds) <= 0.7)
+})
+
+test_that("Check of prediction_bounds formatting errors", {
+  kitty_fit_control <- list(prediction_bounds = 9)
+  expect_error(
+    fit_hal(X = x, Y = y, family = "binomial", fit_control = kitty_fit_control)
+  )
+})
+
+test_that("Check of fit_control formatting errors", {
+  kitty_fit_control <- list("kitty" = TRUE)
+  expect_warning(
+    fit_hal(X = x, Y = y, family = "binomial", fit_control = kitty_fit_control)
+  )
+})

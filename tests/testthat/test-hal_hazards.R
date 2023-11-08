@@ -5,7 +5,7 @@ library(glmnet)
 library(survival)
 
 # create survival data structures
-data(kidney)
+data(cancer, package = "survival")
 y_surv <- Surv(kidney$time, kidney$status)
 x_surv <- kidney[, c("age", "sex", "disease", "frail")]
 x_surv$disease <- as.numeric(x_surv$disease)

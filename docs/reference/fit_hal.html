@@ -23,7 +23,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hal9001</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -74,13 +74,14 @@
   smoothness_orders <span class="op">=</span> <span class="fl">1</span>,
   num_knots <span class="op">=</span> <span class="fu"><a href="num_knots_generator.html">num_knots_generator</a></span><span class="op">(</span>max_degree <span class="op">=</span> <span class="va">max_degree</span>, smoothness_orders <span class="op">=</span>
     <span class="va">smoothness_orders</span>, base_num_knots_0 <span class="op">=</span> <span class="fl">200</span>, base_num_knots_1 <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>,
-  reduce_basis <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,
-  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"binomial"</span>, <span class="st">"poisson"</span>, <span class="st">"cox"</span><span class="op">)</span>,
+  reduce_basis <span class="op">=</span> <span class="cn">NULL</span>,
+  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"binomial"</span>, <span class="st">"poisson"</span>, <span class="st">"cox"</span>, <span class="st">"mgaussian"</span><span class="op">)</span>,
   lambda <span class="op">=</span> <span class="cn">NULL</span>,
   id <span class="op">=</span> <span class="cn">NULL</span>,
+  weights <span class="op">=</span> <span class="cn">NULL</span>,
   offset <span class="op">=</span> <span class="cn">NULL</span>,
-  fit_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_select <span class="op">=</span> <span class="cn">TRUE</span>, n_folds <span class="op">=</span> <span class="fl">10</span>, foldid <span class="op">=</span> <span class="cn">NULL</span>, use_min <span class="op">=</span> <span class="cn">TRUE</span>,
-    lambda.min.ratio <span class="op">=</span> <span class="fl">1e-04</span>, prediction_bounds <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span>,
+  fit_control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cv_select <span class="op">=</span> <span class="cn">TRUE</span>, use_min <span class="op">=</span> <span class="cn">TRUE</span>, lambda.min.ratio <span class="op">=</span> <span class="fl">1e-04</span>,
+    prediction_bounds <span class="op">=</span> <span class="st">"default"</span><span class="op">)</span>,
   basis_list <span class="op">=</span> <span class="cn">NULL</span>,
   return_lasso <span class="op">=</span> <span class="cn">TRUE</span>,
   return_x_basis <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -95,7 +96,9 @@
 number of covariates that will be used to derive the design matrix of basis
 functions.</p></dd>
 <dt>Y</dt>
-<dd><p>A <code>numeric</code> vector of observations of the outcome variable.</p></dd>
+<dd><p>A <code>numeric</code> vector of observations of the outcome variable. For
+<code>family="mgaussian"</code>, <code>Y</code> is a matrix of observations of the
+outcome variables.</p></dd>
 <dt>formula</dt>
 <dd><p>A character string formula to be used in
 <code><a href="formula_hal.html">formula_hal</a></code>. See its documentation for details.</p></dd>
@@ -123,19 +126,21 @@ combinatorial explosions in the number of higher-degree and higher-order
 basis functions generated. This allows the complexity of the optimization
 problem to grow scalably. See details of <code>num_knots</code> more information.</p></dd>
 <dt>reduce_basis</dt>
-<dd><p>A <code>numeric</code> value bounded in the open unit interval
-indicating the minimum proportion of 1's in a basis function column needed
-for the basis function to be included in the procedure to fit the lasso.
-Any basis functions with a lower proportion of 1's than the cutoff will be
-removed. When <code>reduce_basis</code> is set to <code>NULL</code>, all basis
-functions are used in the lasso-fitting stage of <code>fit_hal</code>.</p></dd>
+<dd><p>Am optional <code>numeric</code> value bounded in the open
+unit interval indicating the minimum proportion of 1's in a basis function
+column needed for the basis function to be included in the procedure to fit
+the lasso. Any basis functions with a lower proportion of 1's than the
+cutoff will be removed. Defaults to 1 over the square root of the number of
+observations. Only applicable for models fit with zero-order splines, i.e.
+<code>smoothness_orders = 0</code>.</p></dd>
 <dt>family</dt>
 <dd><p>A <code>character</code> or a <code><a href="https://rdrr.io/r/stats/family.html" class="external-link">family</a></code> object
 (supported by <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code>) specifying the error/link
 family for a generalized linear model. <code>character</code> options are limited
 to "gaussian" for fitting a standard penalized linear model, "binomial" for
 penalized logistic regression, "poisson" for penalized Poisson regression,
-and "cox" for a penalized proportional hazards model. Note that passing in
+"cox" for a penalized proportional hazards model, and "mgaussian" for
+multivariate penalized linear model. Note that passing in
 family objects leads to slower performance relative to passing in a
 character family (if supported). For example, one should set
 <code>family = "binomial"</code> instead of <code>family = binomial()</code> when
@@ -153,39 +158,36 @@ lambda in the input array will be returned.</p></dd>
 <dd><p>A vector of ID values that is used to generate cross-validation
 folds for <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>. This argument is ignored when
 <code>fit_control</code>'s <code>cv_select</code> argument is <code>FALSE</code>.</p></dd>
+<dt>weights</dt>
+<dd><p>observation weights; defaults to 1 per observation.</p></dd>
 <dt>offset</dt>
 <dd><p>a vector of offset values, used in fitting.</p></dd>
 <dt>fit_control</dt>
-<dd><p>List of arguments for fitting. Includes the following
-arguments, and any others to be passed to <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>
-or <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code>.</p><ul><li><p><code>cv_select</code>: A <code>logical</code> specifying if the sequence of
+<dd><p>List of arguments, including the following, and any
+others to be passed to <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code> or
+<code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code>.</p><ul><li><p><code>cv_select</code>: A <code>logical</code> specifying if the sequence of
 specified <code>lambda</code> values should be passed to
 <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code> in order for a single, optimal value of
 <code>lambda</code> to be selected according to cross-validation. When
 <code>cv_select = FALSE</code>, a <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code> model will be
 used to fit the sequence of (or single) <code>lambda</code>.</p></li>
-<li><p><code>n_folds</code>: Integer for the number of folds to be used when splitting
-the data for V-fold cross-validation. Only used when
-<code>cv_select = TRUE</code>.</p></li>
-<li><p><code>foldid</code>: An optional <code>numeric</code> containing values between 1 and
-<code>n_folds</code>, identifying the fold to which each observation is
-assigned. If supplied, <code>n_folds</code> can be missing. In such a case,
-this vector is passed directly to <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>. Only
-used when <code>cv_select = TRUE</code>.</p></li>
 <li><p><code>use_min</code>: Specify the choice of lambda to be selected by
 <code><a href="https://glmnet.stanford.edu/reference/cv.glmnet.html" class="external-link">cv.glmnet</a></code>. When <code>TRUE</code>, <code>"lambda.min"</code> is
 used; otherwise, <code>"lambda.1se"</code>. Only used when
 <code>cv_select = TRUE</code>.</p></li>
-<li><p><code>lambda.min.ratio</code>: A <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code> argument specifying
-the smallest value for <code>lambda</code>, as a fraction of <code>lambda.max</code>,
-the (data derived) entry value (i.e. the smallest value for which all
-coefficients are zero). We've seen that not setting <code>lambda.min.ratio</code>
-can lead to no <code>lambda</code> values that fit the data sufficiently well.</p></li>
-<li><p><code>prediction_bounds</code>: A vector of size two that provides the lower and
-upper bounds for predictions. When <code>prediction_bounds = "default"</code>,
-the predictions are bounded between <code>min(Y) - sd(Y)</code> and
-<code>max(Y) + sd(Y)</code>. Bounding ensures that there is no extrapolation,
-and it is necessary for cross-validation selection and/or Super Learning.</p></li>
+<li><p><code>lambda.min.ratio</code>: A <code><a href="https://glmnet.stanford.edu/reference/glmnet.html" class="external-link">glmnet</a></code> argument
+specifying the smallest value for <code>lambda</code>, as a fraction of
+<code>lambda.max</code>, the (data derived) entry value (i.e. the smallest value
+for which all coefficients are zero). We've seen that not setting
+<code>lambda.min.ratio</code> can lead to no <code>lambda</code> values that fit the
+data sufficiently well.</p></li>
+<li><p><code>prediction_bounds</code>: An optional vector of size two that provides
+the lower and upper bounds predictions; not used when
+<code>family = "cox"</code>. When <code>prediction_bounds = "default"</code>, the
+predictions are bounded between <code>min(Y) - sd(Y)</code> and
+<code>max(Y) + sd(Y)</code> for each outcome (when <code>family = "mgaussian"</code>,
+each outcome can have different bounds). Bounding ensures that there is
+no extrapolation.</p></li>
 </ul></dd>
 <dt>basis_list</dt>
 <dd><p>The full set of basis functions generated from <code>X</code>.</p></dd>

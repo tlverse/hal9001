@@ -10,7 +10,6 @@
   new_X_unpenalized = NULL,
   offset = NULL,
   type = c("response", "link"),
-  p_reserve = 0.75,
   ...
 )
 }
@@ -31,11 +30,6 @@ observations as \code{new_data}.}
 
 \item{type}{Either "response" for predictions of the response, or "link" for
 un-transformed predictions (on the scale of the link function).}
-
-\item{p_reserve}{Sparse matrix pre-allocation proportion, which is the
-anticipated proportion of 1's in the design matrix. Default value is
-recommended in most settings. If a dense design matrix is expected, it
-would be useful to set \code{p_reserve} to a higher value.}
 
 \item{...}{Additional arguments passed to \code{predict} as necessary.}
 }

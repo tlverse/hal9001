@@ -1,3 +1,24 @@
+# hal9001 0.4.6
+* Fixed predict method to address changes required by Matrix 1.6.2
+
+# hal9001 0.4.5
+* Added multivariate outcome prediction
+
+# hal9001 0.4.4
+* Fixed bug with `prediction_bounds` (a `fit_hal` argument in `fit_control` 
+  list), which would error when it was specified as a numeric vector. Also, 
+  added a check to assert this argument is correctly specified, and tests
+  to ensure a numeric vector of bounds is provided.
+* Simplified `fit_control` list arguments in `fit_hal`. Users can still specify
+  additional arguments to `cv.glmnet` and `glmnet` in this list.
+* Defined `weights` as a formal argument in `fit_hal`, opposed to an optional
+  argument in `fit_control`, to facilitate specification and avoid confusion. 
+  This increases flexibility with SuperLearner wrapper `SL.hal9001` as well; 
+  `fit_control` can now be customized with `SL.hal9001`.
+
+# hal9001 0.4.3
+* Version bump for CRAN resubmission following archiving.
+
 # hal9001 0.4.2
 * Version bump for CRAN resubmission following archiving.
 
