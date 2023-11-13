@@ -13,6 +13,8 @@ num_knots_generator(
 )
 }
 \arguments{
+\item{max_degree}{interaction degree.}
+
 \item{smoothness_orders}{see \code{\link{fit_hal}}.}
 
 \item{base_num_knots_0}{The base number of knots for zeroth-order smoothness
@@ -24,8 +26,6 @@ function.}
 smoothness basis functions. The number of knots by degree interaction
 decays as \code{base_num_knots_1/2^(d-1)} where \code{d} is the interaction degree of
 the basis function.}
-
-\item{d}{interaction degree.}
 }
 \description{
 A default generator for the \code{num_knots} argument for each degree of

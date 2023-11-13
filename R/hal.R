@@ -514,7 +514,7 @@ fit_hal <- function(X,
 #' A default generator for the \code{num_knots} argument for each degree of
 #' interactions and the smoothness orders.
 #'
-#' @param d interaction degree.
+#' @param max_degree interaction degree.
 #' @param smoothness_orders see \code{\link{fit_hal}}.
 #' @param base_num_knots_0 The base number of knots for zeroth-order smoothness
 #'  basis functions. The number of knots by degree interaction decays as
