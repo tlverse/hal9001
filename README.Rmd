@@ -97,7 +97,7 @@ x <- matrix(rnorm(n * p), n, p)
 y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
 # fit the HAL regression
-hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
+hal_fit <- fit_hal(X = x, Y = y, smoothness_orders = 0)
 hal_fit$times
 
 # training sample prediction

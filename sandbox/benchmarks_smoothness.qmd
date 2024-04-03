@@ -1,0 +1,152 @@
+---
+title: "Benchmarks for `hal9001` `smoothness_orders`"
+author: "Nima Hejazi"
+format:
+  pdf:
+    documentclass: scrartcl
+    papersize: letter
+    number-sections: false
+    link-citations: true
+    colorlinks: true
+    fontsize: 11pt
+    geometry:
+      - margin=1in
+      - heightrounded
+    fig-width: 6
+    fig-asp: 0.618
+    fig-cap-location: bottom
+  html:
+    theme: sandstone
+    callout-appearance: simple
+    # figure options
+    fig-width: 8
+    fig-asp: 0.618
+    # code block options
+    code-link: true
+    code-fold: true
+    code-tools: true
+    code-line-numbers: true
+    code-block-bg: dark
+    highlight-style: ayu-mirage
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| label: load-pkg
+knitr::opts_chunk$set(echo = TRUE)
+#devtools::load_all(here::here())
+library(hal9001)
+library(here)
+library(knitr)
+
+library(tidyverse)
+library(data.table)
+library(future)
+library(microbenchmark)
+set.seed(11249)
+```
+
+This document provides some simple benchmarks of the `smoothness_orders`
+argument of the `hal9001` package. The argument in question sets the degree
+of smoothness assumed for the HAL basis created to fit a relevant regression
+function via the LASSO.
+
+```{r}
+#| label: mse_fun
+mse <- function(preds, y) {
+  mean((preds - y)^2)
+}
+```
+
+# Example: Continuous Outcomes
+
+```{r}
+#| label: sim
+
+# generate simple test data
+n <- c(100, 1000, 2500)
+p <- c(3, 5, 10)
+np_design <- expand.grid(n = n, p = p)
+
+gen_data <- function(n, p) {
+  x <- matrix(rnorm(n * p), n, p)
+  y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
+
+  test_x <- matrix(rnorm(n * p), n, p)
+  test_y <- sin(x[, 1]) * sin(x[, 2]) +
+    rnorm(n, mean = 0, sd = 0.2)
+  return(list(x = x, y = y, test_x = test_x, test_y = test_y))
+}
+```
+
+```{r}
+#| label: hal_smoothness_order_zero
+# generate data
+dat <- gen_data(n = np_design$n[1], p = np_design$p[1])
+
+# glmnet implementation
+hal_fit <- with(dat, fit_hal(X = x, Y = y, smoothness_orders = 0L))
+
+# training sample prediction
+train_preds <- with(dat, predict(hal_fit, new_data = x))
+train_mse <- with(dat, mse(train_preds, y))
+
+# out-of-bag prediction
+test_preds <- with(dat, predict(hal_fit, new_data = test_x))
+test_mse <- with(dat, mse(test_preds, y = test_y))
+```
+
+
+```{r}
+#| label: hal_microbenchmark
+#| cache: true
+hal_bench <- apply(np_design, 1, function(exp) {
+  # generate data from experimental design parameters
+  exp_dat <- gen_data(n = exp[1], p = exp[2])
+
+  # benchmark 0th-order HAL on data
+  hal_so0 <- microbenchmark(unit = "s", times = 20,
+    hal_fit <- with(exp_dat, fit_hal(
+      Y = y, X = x, smoothness_orders = 0L
+    ))
+  )
+  #summary(hal_so0)
+
+  # benchmark 1st-order HAL on data
+  hal_so1 <- microbenchmark(unit = "s", times = 20,
+    hal_fit <- with(exp_dat, fit_hal(
+      Y = y, X = x, smoothness_orders = 1L
+    ))
+  )
+  #summary(hal_so1)
+
+  # output benchmark results
+  return(list(so0 = setDT(hal_so0), so1 = setDT(hal_so1)))
+})
+
+# convert to data.table
+hal_bench_dt <- rbindlist(hal_bench, idcol = "exp")
+```
+
+```{r}
+#| label: hal_microbenchmark_vis
+p_fit_bench <- %>%
+  transmute(
+    type = case_when(str_detect(as.character(expr), "1L") ~ "1st-order",
+                     str_detect(as.character(expr), "0L")~ "0th-order"),
+    time = time / 1e9
+  ) %>%
+  group_by(type) %>%
+  ggplot(aes(x = type, y = time, colour = type)) +
+    geom_violin() +
+    geom_point() +
+    stat_boxplot(geom = 'errorbar') +
+    xlab("") +
+    ylab("time (sec.)") +
+    ggtitle("") +
+    theme_bw() +
+    theme(legend.position = "none")
+p_fit_bench
+```
+

@@ -57,8 +57,8 @@ y <- sin(x[, 1]) * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 
 test_n = 10000
 test_x <- matrix(rnorm(test_n * p), test_n, p)
-test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) + rnorm(test_n, mean = 0,
-                                                      sd = 0.2)
+test_y <- sin(test_x[, 1]) * sin(test_x[, 2]) +
+  rnorm(test_n, mean = 0, sd = 0.2)
 ```
 
 ```{r hal_glmnet}
@@ -75,7 +75,7 @@ oob_preds_glmnet <- predict(glmnet_hal_fit, new_data = test_x)
 oob_glmnet_hal_mse <- mse(oob_preds_glmnet, y = test_y)
 ```
 
-```{r hal_lassi}
+```{r hal_lassi, eval=false}
 # lassi implementation
 lassi_hal_fit <- fit_hal(X = x, Y = y, fit_type = "lassi")
 lassi_hal_fit$times
@@ -121,12 +121,12 @@ p_fit_times
 
 ```{r sim_drtmle}
 makeData <- function(n = n) {
-    L0 <- data.frame(x.0 = runif(n, -1, 1))
-    A0 <- rbinom(n, 1, plogis(L0$x.0 ^ 2))
-    L1 <- data.frame(x.1 = L0$x.0 ^ 2 * A0 + runif(n))
-    A1 <- rbinom(n, 1, plogis(L0$x.0 * L1$x.1))
-    L2 <- rnorm(n, L0$x.0 ^ 2 * A0 * A1 + L1$x.1)
-    return(list(L0 = L0, L1 = L1, L2 = L2, A0 = A0, A1 = A1))
+  L0 <- data.frame(x.0 = runif(n, -1, 1))
+  A0 <- rbinom(n, 1, plogis(L0$x.0 ^ 2))
+  L1 <- data.frame(x.1 = L0$x.0 ^ 2 * A0 + runif(n))
+  A1 <- rbinom(n, 1, plogis(L0$x.0 * L1$x.1))
+  L2 <- rnorm(n, L0$x.0 ^ 2 * A0 * A1 + L1$x.1)
+  return(list(L0 = L0, L1 = L1, L2 = L2, A0 = A0, A1 = A1))
 }
 dat <- makeData(n = 200)
 
