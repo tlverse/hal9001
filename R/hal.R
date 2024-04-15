@@ -179,11 +179,12 @@ fit_hal <- function(X,
                     num_knots = num_knots_generator(
                       max_degree = max_degree,
                       smoothness_orders = smoothness_orders,
-                      base_num_knots_0 = 200,
-                      base_num_knots_1 = 50
+                      base_num_knots_0 = 20,
+                      base_num_knots_1 = 10
                     ),
                     reduce_basis = NULL,
-                    family = c("gaussian", "binomial", "poisson", "cox", "mgaussian"),
+                    family = c("gaussian", "binomial", "poisson", "cox",
+                               "mgaussian"),
                     lambda = NULL,
                     id = NULL,
                     weights = NULL,
