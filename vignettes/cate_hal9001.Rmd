@@ -1,0 +1,40 @@
+---
+title: "Untitled"
+output: html_document
+date: '2024-05-06'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(data.table)
+out <- rbindlist(lapply(1:20, function(iter) {
+  
+  n <- 500
+  X <- runif(n, -1 ,1)
+  A <- rbinom(n, 1, plogis(X))
+  Y <- rnorm(n, X + A + A*X, 0.1)
+  cate_fit <- fit_hal_cate(X, Y, A, smoothness_orders = 0, num_knots = 100)
+  
+  #cate_fit <- squash_hal_fit(cate_fit)
+  preds <- predict(cate_fit, X)
+   
+  
+  cate_fit <- bootstrap_hal(cate_fit)
+  
+  output <- as.data.frame(inference_pointwise(cate_fit, X))
+  
+  
+  functional <- function(hal_fit, X, other_data, ...) {
+    weighted.mean(predict(hal_fit, X))
+  }
+  
+  as.data.table(inference_delta_method(cate_fit, functional, other_data = data.frame(A= A)))
+}))
+
+mean(out[[2]] <= 1 & out[[3]] >= 1)
+
+```

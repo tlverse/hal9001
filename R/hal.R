@@ -503,7 +503,8 @@ fit_hal <- function(X,
         NULL
       },
     unpenalized_covariates = unpenalized_covariates,
-    prediction_bounds = fit_control$prediction_bounds
+    prediction_bounds = fit_control$prediction_bounds,
+    data_train = list(X = X, X_unpenalized = X_unpenalized, Y = Y, weights = weights, offset = offset)
   )
   class(fit) <- "hal9001"
   return(fit)

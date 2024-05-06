@@ -53,7 +53,8 @@ squash_hal_fit <- function(object) {
     prediction_bounds = object$prediction_bounds,
     family = object$family,
     unpenalized_covariates = object$unpenalized_covariates,
-    p_reserve = object$p_reserve
+    p_reserve = object$p_reserve,
+    data_train = object$data_train
   )
   class(fit) <- "hal9001"
   return(fit)
