@@ -125,9 +125,11 @@ inference_pointwise <- function(hal_fit, new_data,
   if(ncol(preds) > 1) {
     stop("Inference methds only available for one-dimensional outcomes.")
   }
+
   boot_mat <- do.call(cbind, lapply(bootstrap_fits, function(fit) {
     predict(fit, new_data, new_X_unpenalized, offset, type = "response")
   }))
+
 
   output <- do.call(rbind, lapply(seq_len(nrow(boot_mat)), function(row_index) {
     boot_preds <- boot_mat[row_index, ]
@@ -139,9 +141,7 @@ inference_pointwise <- function(hal_fit, new_data,
   return(output)
 }
 
-inference_pointwise <- function(hal_fit, new_data, new_X_unpenalized = NULL, offset = NULL, alpha = 0.05) {
-  # Function body as provided earlier
-}
+
 
 #' Calculate the Mean Prediction of a HAL Fit
 #'

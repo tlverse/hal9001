@@ -8,6 +8,10 @@ date: '2024-05-06'
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(data.table)
+library(hal9001)
+```
 
 # Adaptive TMLE using HAL for the ATE
 
@@ -81,19 +85,29 @@ cate.hat <- predict(cate_fit, X)
 plot(X, cate.hat)
 ```
 
-## Bootstrap-assisted inference for ATE using HAL
+## Bootstrap-assisted inference for CATE and ATE using HAL
 
-In causal inference problems, estimates and inference for functionals of the CATE, such as the average treatment effect (ATE), are often required. The `hal9001` package implements a bootstrap-assisted inference method that provides confidence intervals for functionals of HAL fits. To utilize this method, we first need to bootstrap the HAL fit. It is important to note that our bootstrap procedure does not re-bootstrap the HAL lasso problem itself; rather, it only refits the coefficients of the basis functions selected by HAL using bootstrap replicates of the data with unpenalized generalized linear models. As a result, bootstrapping is computationally inexpensive and runs quickly. 
+In causal inference problems, estimates and inference for the CATE or functionals of the CATE, such as the average treatment effect (ATE), are often required. The `hal9001` package implements a bootstrap-assisted inference method that provides confidence intervals for functionals of HAL fits. To utilize this method, we first need to bootstrap the HAL fit. It is important to note that our bootstrap procedure does not re-bootstrap the HAL lasso problem itself; rather, it only refits the coefficients of the basis functions selected by HAL using bootstrap replicates of the data with unpenalized generalized linear models. As a result, bootstrapping is computationally inexpensive and runs quickly. 
 
-To bootstrap, we simply pass our fitted HAL object to the `bootstrap_hal` function, which by default uses `nboot = 1000` bootstrap replicates. The output of this function is a nearly identical HAL fit object, except with model coefficients refit without penalization, and a list of HAL fit objects corresponding to each bootstrap iteration. For inference, we then pass our bootstrapped HAL object to the `inference_delta_method` function, specifying a functional of interest for inference. This functional must be a user-specified function that accepts the arguments `hal_fit, X, X_unpenalized, offset, other_data`, where `other_data` is an optional user-specified matrix that can be supplied through the `inference_delta_method` function (and will be bootstrapped as well).
-
-
+To bootstrap, we simply pass our fitted HAL object to the `bootstrap_hal` function, which by default uses `nboot = 1000` bootstrap replicates. The output of this function is a nearly identical HAL fit object, except with model coefficients refit without penalization, and a list of HAL fit objects corresponding to each bootstrap iteration.
 
 ```{r}
 cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 1, num_knots = 100)
 bootstrapped_cate_fit <- bootstrap_hal(cate_fit)
-  
+```
 
+For inference on the CATE, we pass our bootstrapped HAL object to the `inference_pointwise` function, specifying a new covariate matrix for which we wish to estimate the CATE. 
+
+
+```{r}
+out <- as.data.table(inference_pointwise(bootstrapped_cate_fit, new_data = X))
+head(out)
+```
+
+
+For inference for functionals of the CATE, we pass our bootstrapped HAL object to the `inference_delta_method` function, specifying a functional of interest for inference. This functional must be a user-specified function that accepts the arguments `hal_fit, X, X_unpenalized, offset, other_data`, where `other_data` is an optional user-specified matrix that can be supplied through the `inference_delta_method` function (and will be bootstrapped as well). In the following example, we obtain inference on the ATE by specifying the mean functional.
+
+```{r}
 functional_mean <- function(hal_fit, X, X_unpenalized = NULL, offset = NULL, other_data = NULL, ...) {
   mean(predict(hal_fit, X, X_unpenalized, offset))
 }
@@ -109,7 +123,7 @@ out
 ```{r}
  
 library(data.table)
-out <- rbindlist(lapply(1:100, function(iter) {
+out <- rbindlist(lapply(1:20, function(iter) {
   
   n <- 1000
   X <- runif(n, -1 ,1)
@@ -124,7 +138,6 @@ out <- rbindlist(lapply(1:100, function(iter) {
   
   
   cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 1, num_knots = 100)
-  sd(cate_fit$data_train$Y)
   cate_fit <- bootstrap_hal(cate_fit)
   
 
