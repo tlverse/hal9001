@@ -145,6 +145,12 @@
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
 #'  the matrix of (possibly reduced) basis functions used in \code{fit_hal}.
+#' @param return_cv_predictions A \code{logical} value indicating whether to return
+#' the in-sample cross-fitted (or cross-validated) predictions derived from the original \code{cv.glmnet} fit.
+#' These predictions are obtained by running \code{cv.glmnet} with the \code{keep = TRUE} argument,
+#' and by selecting the column of out-of-fold predictions in \code{fit.preval} that corresponds to the CV-selected lambda parameter.
+#' Specifically, the predictions are extracted as follows: \code{cv_predictions <- as.vector(lasso_fit$fit.preval[, lasso_fit$lambda == lambda.cv])},
+#' where \code{lasso_fit} is the \code{cv.glmnet} object returned by \code{fit_hal} when \code{return_x_basis == TRUE}.
 #' @param yolo A \code{logical} indicating whether to print one of a curated
 #'  selection of quotes from the HAL9000 computer, from the critically
 #'  acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).
@@ -192,11 +198,13 @@ fit_hal <- function(X,
                       cv_select = TRUE,
                       use_min = TRUE,
                       lambda.min.ratio = 1e-4,
+                      keep = FALSE,
                       prediction_bounds = "default"
                     ),
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
+                    return_cv_predictions = FALSE,
                     yolo = FALSE) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
@@ -206,7 +214,7 @@ fit_hal <- function(X,
   # errors when a supplied control list is missing arguments
   defaults <- list(
     cv_select = TRUE, use_min = TRUE, lambda.min.ratio = 1e-4,
-    prediction_bounds = "default"
+    prediction_bounds = "default", keep = FALSE
   )
   if (any(!names(defaults) %in% names(fit_control))) {
     fit_control <- c(
@@ -431,6 +439,9 @@ fit_hal <- function(X,
   fit_control$penalty.factor <- penalty_factor
   fit_control$offset <- offset
   fit_control$weights <- weights
+  if(return_cv_predictions & fit_control$cv_select) {
+    fit_control$keep <- TRUE
+  }
 
   if (!fit_control$cv_select) {
     hal_lasso <- do.call(glmnet::glmnet, fit_control)
@@ -446,6 +457,11 @@ fit_hal <- function(X,
       lambda_star <- hal_lasso$lambda.1se
     }
     coefs <- stats::coef(hal_lasso, lambda_type)
+    if(return_cv_predictions) {
+      cv_predictions <- as.vector(hal_lasso$fit.preval[, hal_lasso$lambda == lambda_star])
+    } else {
+      cv_predictions <- NULL
+    }
   }
 
   # bookkeeping: get time for computation of the lasso regression
@@ -504,6 +520,7 @@ fit_hal <- function(X,
       },
     unpenalized_covariates = unpenalized_covariates,
     prediction_bounds = fit_control$prediction_bounds,
+    cv_predictions = cv_predictions,
     data_train = list(X = X, X_unpenalized = X_unpenalized, Y = Y, weights = weights, offset = offset)
   )
   class(fit) <- "hal9001"

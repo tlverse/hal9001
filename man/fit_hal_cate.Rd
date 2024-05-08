@@ -2,7 +2,7 @@
 % Please edit documentation in R/hal_cate.R
 \name{fit_hal_cate}
 \alias{fit_hal_cate}
-\title{CATE-HAL: The Highly Adaptive Lasso for CATE Estimation}
+\title{CATE-HAL: Highly Adaptive Lasso for CATE Estimation}
 \usage{
 fit_hal_cate(
   X,
@@ -10,9 +10,9 @@ fit_hal_cate(
   A,
   A.hat,
   Y.hat,
-  formula_A = NULL,
-  formula_Y = NULL,
-  formula_cate = NULL,
+  A_fit_params = NULL,
+  Y_fit_params = NULL,
+  formula = NULL,
   X_unpenalized = NULL,
   max_degree = ifelse(ncol(X) >= 20, 2, 3),
   smoothness_orders = 1,
@@ -23,8 +23,7 @@ fit_hal_cate(
 )
 }
 \arguments{
-\item{X}{A \code{matrix} with dimensions corresponding to the number of observations by the number of covariates,
-used to derive the design matrix of basis functions.}
+\item{X}{A \code{matrix} of covariates used to derive the design matrix of basis functions, with dimensions corresponding to the number of observations by the number of covariates.}
 
 \item{Y}{A \code{numeric} vector containing observations of the outcome variable.}
 
@@ -37,33 +36,24 @@ which is the conditional mean of the treatment \code{A} given the covariates \co
 \item{Y.hat}{A \code{numeric} vector of estimates for \code{E[Y | X]},
 which is the conditional mean of the outcome \code{Y} given the covariates \code{X}.}
 
-\item{X_unpenalized}{An input \code{matrix} with the same number of rows as
-\code{X}, for which no L1 penalization will be performed. Note that
-\code{X_unpenalized} is directly appended to the design matrix; no basis
-expansion is performed on \code{X_unpenalized}.}
+\item{A_fit_params}{Optional parameters for fitting the model for the propensity score.}
 
-\item{max_degree}{The highest order of interaction terms for which basis
-functions ought to be generated.}
+\item{Y_fit_params}{Optional parameters for fitting the model for the outcome.}
 
-\item{smoothness_orders}{An \code{integer}, specifying the smoothness of the
-basis functions. See details for \code{smoothness_orders} for more
-information.}
+\item{formula}{An optional formula specifying the model structure for the CATE estimation.}
 
-\item{num_knots}{An \code{integer} vector of length 1 or \code{max_degree},
-specifying the maximum number of knot points (i.e., bins) for any covariate
-for generating basis functions. If \code{num_knots} is a unit-length
-vector, then the same \code{num_knots} are used for each degree (this is
-not recommended). The default settings for \code{num_knots} are
-recommended, and these defaults decrease \code{num_knots} with increasing
-\code{max_degree} and \code{smoothness_orders}, which prevents (expensive)
-combinatorial explosions in the number of higher-degree and higher-order
-basis functions generated. This allows the complexity of the optimization
-problem to grow scalably. See details of \code{num_knots} more information.}
+\item{X_unpenalized}{An optional matrix of covariates that will not be penalized in the model.}
 
-\item{weights}{observation weights; defaults to 1 per observation.}
+\item{max_degree}{The maximum degree of interactions considered in the model.
+Default is set depending on the number of covariates: 2 if more than or equal to 20 covariates, otherwise 3.}
+
+\item{smoothness_orders}{The order of smoothness applied to the basis functions, default is 1.}
+
+\item{num_knots}{Function used to generate the number of knots for basis functions depending on the model complexity.}
+
+\item{weights}{An optional vector of weights to be used in the regression.}
 
 \item{...}{Additional arguments to be passed internally to \code{fit_hal}.
-Refer to the documentation of \code{fit_hal} for details.
 Note that the \code{family} argument should not be specified as it is internally set to "gaussian".
 Specifying this argument through \code{...} will cause an argument clash error.}
 }
@@ -72,7 +62,6 @@ This function estimates the Conditional Average Treatment Effect (CATE) using a 
 }
 \details{
 This procedure implements the R-learner approach (Nie & Wager, 2021) for estimating the Conditional Average Treatment Effect (CATE) with a binary treatment variable.
-It utilizes the Highly Adaptive Lasso (HAL) estimator as implemented by the \code{fit_hal} function.
-This method functions similarly to \code{fit_hal}, but it requires additional arguments: an initial estimator of the propensity score (the conditional mean of the treatment given the covariates)
-and the conditional mean of the outcome given the covariates.
+It utilizes the Highly Adaptive Lasso (HAL) estimator as implemented by the \code{fit_hal} function. This method functions similarly to \code{fit_hal}, but it requires additional arguments:
+an initial estimator of the propensity score (the conditional mean of the treatment given the covariates) and the conditional mean of the outcome given the covariates.
 }

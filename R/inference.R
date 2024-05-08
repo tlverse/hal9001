@@ -1,4 +1,39 @@
-bootstrap_hal <- function(hal_fit, nboot = 500) {
+#' Bootstrap a Selected HAL Model Using Nonzero Basis Functions
+#'
+#' @description
+#' This function bootstraps a Highly Adaptive Lasso (HAL) model to generate bootstrap replicates
+#' of the model coefficients selected by the original HAL fit (i.e., those with nonzero coefficients).
+#' This is particularly useful for inference procedures that require resampling techniques to estimate
+#' variability and compute confidence intervals.
+#' @param hal_fit A HAL fit object obtained from fitting a HAL model.
+#' @param nboot The number of bootstrap replicates to generate (default is 1000).
+#'
+#' @return A modified HAL fit object that includes:
+#'   - `coefs_relaxed`: The coefficients from the relaxed model fit to the entire training data.
+#'   - `bootstrap_info`: A list containing the original training data (`X`), an array of bootstrapped HAL fit objects (`hal_fits`), and the bootstrap index matrix (`index`).
+#'
+#' @details
+#' The function first adjusts the original HAL fit object to a format suitable for bootstrapping by calling `squash_hal_fit`. It then proceeds to:
+#'   - Extract and process the original training data.
+#'   - Construct the original design matrix using the basis functions specified in the HAL model.
+#'   - Fit a relaxed model using `bigGlm` from the `glmnet` package to compute coefficients using the full data set.
+#'   - Generate bootstrap indices and perform resampling to create bootstrap replicates of the HAL model.
+#'
+#' Importantly, our bootstrap procedure does not re-bootstrap the HAL lasso problem itself; instead, it refits the coefficients of the basis functions selected by HAL using bootstrap replicates of the data with unpenalized generalized linear models. As a result, bootstrapping is computationally inexpensive and runs quickly.
+#'
+#' Each bootstrap replicate is fitted independently, and the coefficients are stored. The training data and other mutable elements are removed from the bootstrapped models to prevent recursive growth in object size.
+#'
+#' @examples
+#' # Assuming `hal_fit` is a previously fitted HAL model:
+#' hal_fit_bootstrapped <- bootstrap_hal(hal_fit)
+#'
+#' @note The function uses the `bigGlm` function from the `glmnet` package to fit the model at each bootstrap iteration.
+#'
+#' @seealso \code{\link{glmnet::bigGlm}}, \code{\link{make_design_matrix}}, and other functions involved in manipulating and fitting HAL models.
+#'
+#' @importFrom glmnet bigGlm
+#' @export
+bootstrap_hal <- function(hal_fit, nboot = 1000) {
   hal_fit <- squash_hal_fit(hal_fit)
   # get input training data
   data_train <- hal_fit$data_train
@@ -49,6 +84,35 @@ bootstrap_hal <- function(hal_fit, nboot = 500) {
   return(hal_fit)
   }
 
+
+#' Provide Pointwise Confidence Intervals for Regression Fits by HAL
+#'
+#' @description
+#' This function calculates pointwise confidence intervals for predictions from a HAL model
+#' that has been bootstrapped. It is essential that the HAL model is bootstrapped prior to using
+#' this function.
+#'
+#' @param hal_fit A previously bootstrapped HAL fit object.
+#' @param new_data Data frame or matrix of new data for prediction.
+#' @param new_X_unpenalized An optional matrix of unpenalized predictors, if different from those
+#'   used in the original model fitting.
+#' @param offset An optional vector of offset values to be used in the prediction.
+#' @param alpha The significance level used to construct the confidence interval (default is 0.05).
+#'
+#' @return A matrix where each row corresponds to a prediction from the new data along with its
+#'   lower and upper confidence intervals.
+#'
+#' @examples
+#' # Assuming `hal_fit_bootstrapped` is a previously bootstrapped HAL fit object
+#' results <- inference_pointwise(hal_fit_bootstrapped, new_data = my_new_data)
+#'
+#' @note Ensure that the HAL fit has been bootstrapped by running:
+#'   `hal_fit_bootstrapped <- bootstrap_hal(hal_fit)`.
+#'
+#' @seealso \code{\link{bootstrap_hal}} for details on how to bootstrap HAL models.
+#'
+#' @importFrom stats quantile
+#' @export
 inference_pointwise <- function(hal_fit, new_data,
                                 new_X_unpenalized = NULL,
                                 offset = NULL, alpha = 0.05) {
@@ -75,12 +139,69 @@ inference_pointwise <- function(hal_fit, new_data,
   return(output)
 }
 
+inference_pointwise <- function(hal_fit, new_data, new_X_unpenalized = NULL, offset = NULL, alpha = 0.05) {
+  # Function body as provided earlier
+}
+
+#' Calculate the Mean Prediction of a HAL Fit
+#'
+#' @description
+#' This utility function calculates the mean prediction from a HAL model, which can be used
+#' as a functional in various inference procedures.
+#'
+#' @param hal_fit A HAL fit object.
+#' @param X Data frame or matrix of predictors.
+#' @param X_unpenalized An optional matrix of unpenalized predictors, if different from those
+#'   used in the original model fitting.
+#' @param offset An optional vector of offset values to be used in the prediction.
+#' @param other_data An optional data frame or matrix containing additional data used in prediction.
+#'
+#' @return The mean of the predicted values.
+#'
+#' @examples
+#' # Assuming `hal_fit` is a HAL fit object
+#' mean_pred <- functional_mean(hal_fit, X = my_data)
+#'
+#' @export
 functional_mean <- function(hal_fit, X, X_unpenalized = NULL, offset = NULL, other_data = NULL, ...) {
   mean(predict(hal_fit, X, X_unpenalized, offset))
 }
 
 
-inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data = NULL) {
+
+#' Perform Inference Using the Delta Method with Bootstrapped HAL Fits
+#'
+#' @description
+#' This function applies the delta method for inference using bootstrapped HAL fits.
+#' It requires that the HAL model has been previously bootstrapped using `bootstrap_hal`.
+#' It supports one-dimensional outcomes and allows for additional data to be included in the inference process.
+#'
+#' @param hal_fit A HAL fit object that has been bootstrapped using `bootstrap_hal`.
+#' @param functional A function that takes the parameters `hal_fit`, `X`, `X_unpenalized`, `offset`,
+#'   and `other_data`, and returns the calculated functional of interest. This function must output
+#'   a one-dimensional matrix representing the estimated values.
+#' @param alpha The significance level used to construct the confidence interval (default is 0.05).
+#' @param other_data An optional data frame or matrix containing additional data used in the functional.
+#'   If `other_data` is a vector, it is automatically converted to a matrix.
+#' @param bootstrap_other_data A logical value indicating whether to bootstrap `other_data` alongside
+#'   the main data. If `TRUE`, `other_data` is resampled according to the bootstrap indices (default is TRUE).
+#'
+#' @return A matrix where each row corresponds to an estimate from the `functional` along with its
+#'   lower and upper confidence limits.
+#'
+#' @examples
+#' # Assuming `hal_fit_bootstrapped` is a previously bootstrapped HAL fit object
+#' # and `my_functional` is defined to take the required arguments.
+#' results <- inference_delta_method(hal_fit_bootstrapped, my_functional)
+#'
+#' @note Before using this function, ensure that the HAL fit has been bootstrapped by running
+#'   `hal_fit_bootstrapped <- bootstrap_hal(hal_fit)`.
+#'
+#' @seealso \code{\link{bootstrap_hal}} for details on bootstrapping HAL models.
+#'
+#' @importFrom stats quantile
+#' @export
+inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data = NULL, bootstrap_other_data = TRUE) {
   bootstrap_info <- hal_fit$bootstrap_info
   if(is.null(bootstrap_info)) {
     stop("You must bootstrap your HAL fit first. To do so, run 'hal_fit_bootstrapped <- bootstrap_hal(hal_fit)")
@@ -98,9 +219,15 @@ inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data
     stop("Inference methds only available for one-dimensional outcomes.")
   }
   boot_mat <- do.call(cbind, lapply(seq_along(bootstrap_fits), function(i) {
+    hal_fit_boot <- bootstrap_fits[[i]]
     index <- boot_index[,i]
     X_boot <- X[index, , drop = FALSE]
-    other_data_boot <- other_data[index, , drop = FALSE]
+    if(bootstrap_other_data){
+      other_data_boot <- other_data[index, , drop = FALSE]
+    } else {
+      other_data_boot <- other_data
+    }
+
     X_unpenalized_boot <- NULL
     offset_boot <- NULL
     if(!is.null(X_unpenalized)) {
@@ -109,11 +236,9 @@ inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data
     if(!is.null(offset)) {
       offset_boot <- offset[index]
     }
-    if(!is.null(A)) {
-      A_boot <- A[index]
-    }
-    boot_estimate <- functional(hal_fit, X = X_boot, other_data = other_data_boot, X_unpenalized = X_unpenalized_boot, offset = offset_boot)
+    boot_estimate <- as.matrix(functional(hal_fit_boot, X = X_boot, other_data = other_data_boot, X_unpenalized = X_unpenalized_boot, offset = offset_boot))
   }))
+
   output <- do.call(rbind, lapply(seq_len(nrow(boot_mat)), function(row_index) {
     boot_estimate <- boot_mat[row_index, ]
     estimate <- as.vector(estimate[row_index, ])
@@ -123,5 +248,7 @@ inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data
   colnames(output) <- c("estimate", "CI_lower", "CI_right")
   return(output)
 }
+
+
 
 

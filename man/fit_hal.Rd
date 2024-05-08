@@ -19,11 +19,12 @@ fit_hal(
   id = NULL,
   weights = NULL,
   offset = NULL,
-  fit_control = list(cv_select = TRUE, use_min = TRUE, lambda.min.ratio = 1e-04,
-    prediction_bounds = "default"),
+  fit_control = list(cv_select = TRUE, use_min = TRUE, lambda.min.ratio = 1e-04, keep =
+    FALSE, prediction_bounds = "default"),
   basis_list = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,
+  return_cv_predictions = FALSE,
   yolo = FALSE
 )
 }
@@ -135,6 +136,13 @@ the \code{\link[glmnet]{glmnet}} fit object of the lasso model.}
 
 \item{return_x_basis}{A \code{logical} indicating whether or not to return
 the matrix of (possibly reduced) basis functions used in \code{fit_hal}.}
+
+\item{return_cv_predictions}{A \code{logical} value indicating whether to return
+the in-sample cross-fitted (or cross-validated) predictions derived from the original \code{cv.glmnet} fit.
+These predictions are obtained by running \code{cv.glmnet} with the \code{keep = TRUE} argument,
+and by selecting the column of out-of-fold predictions in \code{fit.preval} that corresponds to the CV-selected lambda parameter.
+Specifically, the predictions are extracted as follows: \code{cv_predictions <- as.vector(lasso_fit$fit.preval[, lasso_fit$lambda == lambda.cv])},
+where \code{lasso_fit} is the \code{cv.glmnet} object returned by \code{fit_hal} when \code{return_x_basis == TRUE}.}
 
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically

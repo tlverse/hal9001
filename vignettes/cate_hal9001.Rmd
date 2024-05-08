@@ -9,32 +9,132 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+# Adaptive TMLE using HAL for the ATE
+
+## Generate data
+
 ```{r}
+n <- 1000
+# Covariates X, treatment A, outcome Y
+X <- runif(n, -1 ,1)
+# True propensity E[A | X]
+pi.true <- plogis(-1 + abs(X) + X^2 + 0.5*sin(4*X))
+# True conditional mean outcome E[Y | X]
+m.true <- 2*X^2 + pi.true * (1 + abs(X) + 0.5*sin(4*X))
+# true CATE
+cate.true <-  (1 + abs(X))
+ATE.true <- 1.5
+A <- rbinom(n, 1, pi.true)
+# Robinson's parameterization of outcome regression
+mu.true <- m.true + (A - pi.true) * cate.true
+Y <- rnorm(n, mu.true, 0.2)
+
+plot(X, cate.true, xlab = "Covariate (X)", ylab = "CATE")
+```
+
+
+## Estimate CATE using HAL.
+
+This function `fit_hal_cate` estimates the Conditional Average Treatment Effect (CATE) using a Highly Adaptive Lasso (HAL)-based R-learner (Xie and Wager, 2021). To estimate the CATE, we call `fit_hal_cate`, which is almost identical to `fit_hal` except that it requires specification of the binary treatment indicator `A`. Predictions are obtained in the same manner as with `fit_hal`.
+
+
+```{r}
+cate_fit <- fit_hal_cate(X, Y, A, smoothness_orders = 1, num_knots = 100, max_degree = 1)
+cate.hat <- predict(cate_fit, X)
+
+plot(X, cate.hat)
+```
+
+
+Internally, the function `fit_hal_cate` estimates the conditional mean nuisance functions \(E[Y | X]\) and \(E[A | X]\). By default, this is accomplished using cross-fitted HAL estimates, obtained by running `fit_hal` with default arguments and `return_cv_predictions = TRUE`. To customize the HAL nuisance estimators, you can specify a list of arguments to pass to the nuisance `fit_hal` calls using the `A_fit_params` and `Y_fit_params` arguments. Here is an example:
+
+
+
+```{r}
+
+cate_fit <- fit_hal_cate(X, Y, A, smoothness_orders = 1, num_knots = 100,
+                          A_fit_params = list(smoothness_orders = 1, num_knots = 100),
+                          Y_fit_params = list(smoothness_orders = 1, num_knots = 100))
+cate.hat <- predict(cate_fit, X)
+
+plot(X, cate.hat)
+```
+
+Similar to the `causal_forest` function in the `grf` package, you can also directly specify nuisance estimates for `fit_hal_cate` using the `A.hat` and `Y.hat` arguments. This approach allows you to use any machine learning algorithm for nuisance estimation, such as ensemble learning methods like SuperLearner. In the following example, we externally fit the nuisance functions using HAL and then pass the resulting nuisance estimates into our `fit_hal_cate` call.
+
+
+
+```{r}
+
+# Use the 'return_cv_predictions' argument to return the cross-fitted predictions from the cv.glmnet fit. 
+A_fit <- fit_hal(X, A, smoothness_orders = 1, num_knots = 100, return_cv_predictions = TRUE)
+A.hat <- A_fit$cv_predictions
+
+Y_fit <- fit_hal(X, Y, smoothness_orders = 1, num_knots = 100, return_cv_predictions = TRUE)
+Y.hat <- Y_fit$cv_predictions
+
+cate_fit <- fit_hal_cate(X, Y, A, smoothness_orders = 1, num_knots = 100,
+                          A.hat = A.hat,
+                          Y.hat = Y.hat)
+cate.hat <- predict(cate_fit, X)
+
+plot(X, cate.hat)
+```
+
+## Bootstrap-assisted inference for ATE using HAL
+
+In causal inference problems, estimates and inference for functionals of the CATE, such as the average treatment effect (ATE), are often required. The `hal9001` package implements a bootstrap-assisted inference method that provides confidence intervals for functionals of HAL fits. To utilize this method, we first need to bootstrap the HAL fit. It is important to note that our bootstrap procedure does not re-bootstrap the HAL lasso problem itself; rather, it only refits the coefficients of the basis functions selected by HAL using bootstrap replicates of the data with unpenalized generalized linear models. As a result, bootstrapping is computationally inexpensive and runs quickly. 
+
+To bootstrap, we simply pass our fitted HAL object to the `bootstrap_hal` function, which by default uses `nboot = 1000` bootstrap replicates. The output of this function is a nearly identical HAL fit object, except with model coefficients refit without penalization, and a list of HAL fit objects corresponding to each bootstrap iteration. For inference, we then pass our bootstrapped HAL object to the `inference_delta_method` function, specifying a functional of interest for inference. This functional must be a user-specified function that accepts the arguments `hal_fit, X, X_unpenalized, offset, other_data`, where `other_data` is an optional user-specified matrix that can be supplied through the `inference_delta_method` function (and will be bootstrapped as well).
+
+
+
+```{r}
+cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 1, num_knots = 100)
+bootstrapped_cate_fit <- bootstrap_hal(cate_fit)
+  
+
+functional_mean <- function(hal_fit, X, X_unpenalized = NULL, offset = NULL, other_data = NULL, ...) {
+  mean(predict(hal_fit, X, X_unpenalized, offset))
+}
+  
+out <- as.data.table(inference_delta_method(bootstrapped_cate_fit, functional = functional_mean))
+out
+```
+
+
+
+## Check coverage
+
+```{r}
+ 
 library(data.table)
 out <- rbindlist(lapply(1:100, function(iter) {
   
-  n <- 500
+  n <- 1000
   X <- runif(n, -1 ,1)
-  A <- rbinom(n, 1, plogis(X))
-  Y <- rnorm(n, X + A + A*X, 0.1)
-  cate_fit <- fit_hal_cate(X, Y, A, A.hat = plogis(X), Y.hat = X + plogis(X) * (1 + X),  smoothness_orders = 0, num_knots = 100)
+  pi.true <- plogis(-1 + abs(X) + X^2 + 0.5*sin(3*X))
+  pi.true <- 0.5
+  m.true <- 2*X^2 + pi.true * (1 + abs(X) + 0.5*sin(3*X))
+  cate.true <-  (1 + abs(X) + 0.5*sin(3*X))
+  ATE.true <- 1.5
+  A <- rbinom(n, 1, pi.true)
+  mu.true <- m.true + (A - pi.true) * cate.true
+  Y <- rnorm(n, mu.true, 0.2)
   
-  #cate_fit <- squash_hal_fit(cate_fit)
-  preds <- predict(cate_fit, X)
-   
   
+  cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 1, num_knots = 100)
+  sd(cate_fit$data_train$Y)
   cate_fit <- bootstrap_hal(cate_fit)
   
-  output <- as.data.frame(inference_pointwise(cate_fit, X))
-  
-  
+
   functional <- function(hal_fit, X, other_data, ...) {
-    weighted.mean(predict(hal_fit, X))
+    mean(predict(hal_fit, X))
   }
   
-  as.data.table(inference_delta_method(cate_fit, functional ))
+  out <- as.data.table(inference_delta_method(cate_fit, functional ))
 }))
-
-mean(out[[2]] <= 1 & out[[3]] >= 1)
+ATE <- 1.5
+mean(out[[2]] <= ATE & out[[3]] >= ATE)
 
 ```
