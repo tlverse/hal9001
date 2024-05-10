@@ -9,6 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+# Install causalHAL branch of hal9001 Github package
+devtools::install_github("tlverse/hal9001@causalHAL")
 library(data.table)
 library(hal9001)
 ```
@@ -151,3 +153,57 @@ ATE <- 1.5
 mean(out[[2]] <= ATE & out[[3]] >= ATE)
 
 ```
+
+
+
+
+# Short demo
+```{r}
+library(data.table)
+library(hal9001)
+
+# Generate data
+n <- 1000
+X <- runif(n, -1, 1)
+pi.true <- plogis(-1 + abs(X) + X^2 + 0.5*sin(4*X))
+A <- rbinom(n, 1, pi.true)
+m.true <- 2*X^2 + pi.true * (1 + abs(X) + 0.5*sin(4*X))
+cate.true <- (1 + abs(X) + 0.5*sin(4*X))
+mu.true <- m.true + (A - pi.true) * cate.true
+Y <- rnorm(n, mu.true, 0.2)
+ 
+# HAL model fitting
+cate_fit <- fit_hal_cate(X, Y, A, smoothness_orders = 1, num_knots = 100)
+cate.hat <- predict(cate_fit, X)
+
+# Plotting
+library(ggplot2)
+
+data_plot <- data.frame(X = X, cate_hat = cate.hat, cate_true = cate.true)
+data_plot <- data_plot[order(data_plot$X),]
+ggplot(data_plot, aes(x = X)) +
+  geom_line(aes(y = cate_hat), color = "blue", size = 1) +
+  geom_line(aes(y = cate_true), color = "black", alpha = 0.5, size = 1) +
+  labs(x = "Covariate (X)", y = "Estimated CATE") +
+  theme_bw()
+ggsave("demo_cate_plot.pdf")
+# Bootstrap the HAL fit
+bootstrapped_cate_fit <- bootstrap_hal(cate_fit)
+
+# Pointwise inference on new data
+out <- as.data.table(inference_pointwise(bootstrapped_cate_fit, new_data = X))
+head(out)
+ 
+# Functional inference for ATE
+functional_mean <- function(hal_fit, X, ...) {
+  mean(predict(hal_fit, X))
+}
+out <- as.data.table(inference_delta_method(
+                      bootstrapped_cate_fit, 
+                      functional = functional_mean))
+out
+ 
+
+```
+
+
