@@ -4,7 +4,7 @@
 \alias{bootstrap_hal}
 \title{Bootstrap a Selected HAL Model Using Nonzero Basis Functions}
 \usage{
-bootstrap_hal(hal_fit, nboot = 1000)
+bootstrap_hal(hal_fit, nboot = 1000, lambda = NULL, seed = NULL)
 }
 \arguments{
 \item{hal_fit}{A HAL fit object obtained from fitting a HAL model.}

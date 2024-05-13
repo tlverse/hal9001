@@ -1,6 +1,8 @@
 ---
 title: "Untitled"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 date: '2024-05-06'
 ---
 
@@ -49,6 +51,8 @@ cate_fit <- fit_hal_cate(X, Y, A, smoothness_orders = 1, num_knots = 100, max_de
 cate.hat <- predict(cate_fit, X)
 
 plot(X, cate.hat)
+
+ 
 ```
 
 
@@ -96,6 +100,16 @@ To bootstrap, we simply pass our fitted HAL object to the `bootstrap_hal` functi
 ```{r}
 cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 1, num_knots = 100)
 bootstrapped_cate_fit <- bootstrap_hal(cate_fit)
+head(bootstrapped_cate_fit$coefs_relaxed)
+```
+
+We can perform bootstrapping based on an undersmoothed HAL fit by specifying a regularization parameter, lambda, that is less than the CV-selected one, lambda_star. Undersmoothing can enhance the performance of inferences based on the bootstrap. Furthermore, we can employ the plateau method for data-adaptive selection of lambda, as described in "Nonparametric Bootstrap Inference for the Targeted Highly Adaptive LASSO Estimator" by Ca and van der Laan (2019). While the plateau method for automatic targeted undersmoothing is not yet supported natively in hal9001, it will be included in a future release.
+
+```{r}
+
+cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 1, num_knots = 100)
+bootstrapped_cate_fit_lambda <- bootstrap_hal(cate_fit, lambda = 0.1*cate_fit$lambda_star)
+head(bootstrapped_cate_fit$coefs_relaxed)
 ```
 
 For inference on the CATE, we pass our bootstrapped HAL object to the `inference_pointwise` function, specifying a new covariate matrix for which we wish to estimate the CATE. 

@@ -33,15 +33,28 @@
 #'
 #' @importFrom glmnet bigGlm
 #' @export
-bootstrap_hal <- function(hal_fit, nboot = 1000) {
-  hal_fit <- squash_hal_fit(hal_fit)
+bootstrap_hal <- function(hal_fit,  nboot = 1000, lambda = NULL, seed = NULL) {
+  if(!is.null(seed)){
+    set.seed(seed)
+  }
+  #hal_fit <- squash_hal_fit(hal_fit)
+  if(is.null(lambda)){
+    lambda <- hal_fit$lambda_star
+  }
+  coefs <- as.matrix(coef(hal_fit$lasso_fit$glmnet.fit, s = lambda)[-1, ])
+  basis_list <- hal_fit$basis_list
+  if(length(basis_list) != nrow(coefs)){
+    stop("Length of basis list of hal_fit does not match number of coefficients in hal_fit$lasso_fit$glmnet.fit. This may be caused by apply squash_hal_fit to the hal_fit.")
+  }
+  basis_list_lambda <- basis_list[which(coefs != 0)]
+
   # get input training data
   data_train <- hal_fit$data_train
   X <- data_train$X
   n <- nrow(X)
   X_unpenalized <- data_train$X_unpenalized
   # get original design matrix
-  x_basis <- make_design_matrix(X, hal_fit$basis_list)
+  x_basis <- make_design_matrix(X, basis_list_lambda)
   if (!is.null(X_unpenalized)) {
     x_basis <- cbind(x_basis, X_unpenalized)
   }
@@ -55,8 +68,9 @@ bootstrap_hal <- function(hal_fit, nboot = 1000) {
     return(index)
   }))
   # get coefficient estimates for each bootstrap iteration
+  hal_fit_squashed <- squash_hal_fit(hal_fit)
   bootstrapped_hal_fits <-  lapply(1:nboot, function(iter) {
-    hal_fit_boot <- hal_fit
+    hal_fit_boot <- hal_fit_squashed
     index <- boot_index[, iter]
     x_basis_boot <- x_basis[index, , drop = FALSE]
     Y_boot <- data_train$Y[index]
