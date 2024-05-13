@@ -1,8 +1,8 @@
 ---
-title: "Untitled"
+title: "Highly Adaptive Lasso Estimation of CATE and Bootstrap-Assisted Inference of Functionals"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 date: '2024-05-06'
 ---
 
