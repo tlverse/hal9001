@@ -12,9 +12,8 @@ bootstrap_hal(hal_fit, nboot = 1000, lambda = NULL, seed = NULL)
 \item{nboot}{The number of bootstrap replicates to generate (default is 1000).}
 }
 \value{
-A modified HAL fit object that includes:
+A modified HAL fit object with relaxed coefficient fits that includes:
 \itemize{
-\item \code{coefs_relaxed}: The coefficients from the relaxed model fit to the entire training data.
 \item \code{bootstrap_info}: A list containing the original training data (\code{X}), an array of bootstrapped HAL fit objects (\code{hal_fits}), and the bootstrap index matrix (\code{index}).
 }
 }
@@ -25,7 +24,7 @@ This is particularly useful for inference procedures that require resampling tec
 variability and compute confidence intervals.
 }
 \details{
-The function first adjusts the original HAL fit object to a format suitable for bootstrapping by calling \code{squash_hal_fit}. It then proceeds to:
+The function
 \itemize{
 \item Extract and process the original training data.
 \item Construct the original design matrix using the basis functions specified in the HAL model.

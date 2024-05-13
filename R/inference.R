@@ -8,12 +8,11 @@
 #' @param hal_fit A HAL fit object obtained from fitting a HAL model.
 #' @param nboot The number of bootstrap replicates to generate (default is 1000).
 #'
-#' @return A modified HAL fit object that includes:
-#'   - `coefs_relaxed`: The coefficients from the relaxed model fit to the entire training data.
+#' @return A modified HAL fit object with relaxed coefficient fits that includes:
 #'   - `bootstrap_info`: A list containing the original training data (`X`), an array of bootstrapped HAL fit objects (`hal_fits`), and the bootstrap index matrix (`index`).
 #'
 #' @details
-#' The function first adjusts the original HAL fit object to a format suitable for bootstrapping by calling `squash_hal_fit`. It then proceeds to:
+#' The function
 #'   - Extract and process the original training data.
 #'   - Construct the original design matrix using the basis functions specified in the HAL model.
 #'   - Fit a relaxed model using `bigGlm` from the `glmnet` package to compute coefficients using the full data set.
@@ -33,11 +32,11 @@
 #'
 #' @importFrom glmnet bigGlm
 #' @export
-bootstrap_hal <- function(hal_fit,  nboot = 1000, lambda = NULL, seed = NULL) {
+bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL) {
   if(!is.null(seed)){
     set.seed(seed)
   }
-  #hal_fit <- squash_hal_fit(hal_fit)
+
   if(is.null(lambda)){
     lambda <- hal_fit$lambda_star
   }
@@ -58,9 +57,10 @@ bootstrap_hal <- function(hal_fit,  nboot = 1000, lambda = NULL, seed = NULL) {
   if (!is.null(X_unpenalized)) {
     x_basis <- cbind(x_basis, X_unpenalized)
   }
-
-
   coefs_relaxed <- as.matrix(coef(glmnet::bigGlm(x = x_basis, y = data_train$Y, weights = data_train$weights, offset = data_train$offset, family = hal_fit$family)))
+  hal_fit$coefs <- coefs_relaxed
+  hal_fit_squashed <- squash_hal_fit(hal_fit)
+
 
   # generate bootstrap row indices
   boot_index <- do.call(cbind, lapply(1:nboot, function(iter) {
@@ -68,7 +68,6 @@ bootstrap_hal <- function(hal_fit,  nboot = 1000, lambda = NULL, seed = NULL) {
     return(index)
   }))
   # get coefficient estimates for each bootstrap iteration
-  hal_fit_squashed <- squash_hal_fit(hal_fit)
   bootstrapped_hal_fits <-  lapply(1:nboot, function(iter) {
     hal_fit_boot <- hal_fit_squashed
     index <- boot_index[, iter]
@@ -92,10 +91,9 @@ bootstrap_hal <- function(hal_fit,  nboot = 1000, lambda = NULL, seed = NULL) {
     hal_fit_boot$x_basis = NULL
     return(hal_fit_boot)
   })
-  hal_fit <- hal_fit # not sure if this copies it or not
-  hal_fit$coefs_relaxed <- coefs_relaxed
-  hal_fit$bootstrap_info <- list(X = X, hal_fits = bootstrapped_hal_fits, index = boot_index)
-  return(hal_fit)
+
+  hal_fit_squashed$bootstrap_info <- list(X = X, hal_fits = bootstrapped_hal_fits, index = boot_index)
+  return(hal_fit_squashed)
   }
 
 
@@ -134,7 +132,6 @@ inference_pointwise <- function(hal_fit, new_data,
     stop("You must bootstrap your HAL fit first. To do so, run 'hal_fit_bootstrapped <- bootstrap_hal(hal_fit)")
   }
   bootstrap_fits <- hal_fit$bootstrap_info$hal_fits
-  hal_fit$coefs <- hal_fit$coefs_relaxed
   preds <- as.matrix(predict(hal_fit, new_data, new_X_unpenalized, offset, type = "response"))
   if(ncol(preds) > 1) {
     stop("Inference methds only available for one-dimensional outcomes.")
