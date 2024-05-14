@@ -146,24 +146,70 @@ out
 We can perform bootstrapping based on an undersmoothed HAL fit by specifying a regularization parameter, lambda, that is less than the CV-selected one, lambda_star. Undersmoothing can enhance the performance of inferences based on the bootstrap. Furthermore, we can employ the plateau method for data-adaptive selection of lambda, as described in "Nonparametric Bootstrap Inference for the Targeted Highly Adaptive LASSO Estimator" by Ca and van der Laan (2019).  
 
 ```{r}
+n <- 1000
+# Covariates X, treatment A, outcome Y
+X <- runif(n, -1 ,1)
+# True propensity E[A | X]
+pi.true <- plogis(-1 + abs(X) + X^2 + 0.5*sin(4*X))
+# True conditional mean outcome E[Y | X]
+m.true <- 2*X^2 + pi.true * (1 + abs(X) + 0.5*sin(4*X))
+# true CATE
+cate.true <-  (1  + 0.5*sin(5*X))
+ATE.true <- 1.5
+A <- rbinom(n, 1, pi.true)
+# Robinson's parameterization of outcome regression
+mu.true <- m.true + (A - pi.true) * cate.true
+Y <- rnorm(n, mu.true, 0.5)
 
-cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 1, num_knots = 100)
+
+
+library(data.table)
+library(ggplot2)
+cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 0, num_knots = 100)
 # get cv-selected lambda
 lambda_star <- cate_fit$lambda_star
 # get lambda sequence that are smaller than cv-selector (undersmoothed)
-lambda_seq <- cate_fit$lasso_fit$lambda
+lambda_seq <- sort(cate_fit$lasso_fit$lambda, decreasing = TRUE)
 lambda_seq <- lambda_seq[lambda_seq <= lambda_star]
 # share seed across bootstrap replicates
 seed <- rnorm(1)
-nboot <- 200
-
-estimates_seq <-lapply(lambda_seq, function(lambda) {
-  cate_fit_lambda <- bootstrap_hal(cate_fit, lambda = lambda, nboot = 100, seed = seed)
-  cbind(lambda, inference_delta_method(cate_fit_lambda, functional = functional_mean))
+nboot <- 500
+ell_1norm_star = sum(abs(cate_fit$coefs[-1]))
+stop_flag <- FALSE
+estimates_list <-lapply(lambda_seq, function(lambda) {
+  print(lambda)
+  try({
+  cate_fit_lambda <- bootstrap_hal(cate_fit, lambda = lambda, nboot = nboot, seed = seed)
+  ell_1norm = sum(abs(cate_fit_lambda$coefs[-1]))
+  cbind(ell_1norm, inference_delta_method(cate_fit_lambda, functional = functional_mean))
+  })
 })
-estimates_seq <- as.data.table(do.call(rbind, estimates_seq))
-estimates_seq <- estimates_seq[!duplicated(estimates_seq$estimate),]
+estimates_seq <- as.data.table(do.call(rbind, estimates_list))
+estimates_seq <- estimates_seq[!duplicated(estimates_seq[, c("estimate", "CI_lower"), with = FALSE]),]
+radius_monotone <- as.stepfun(isoreg(estimates_seq$ell_1norm, (estimates_seq$CI_upper - estimates_seq$CI_lower)/2))(estimates_seq$ell_1norm)
+#estimates_seq$CI_lower <- estimates_seq$estimate - radius_monotone
+#estimates_seq$CI_upper <- estimates_seq$estimate + radius_monotone
+estimates_seq$radius_monotone <- radius_monotone
+
  
+
+ggplot(estimates_seq, aes(x = ell_1norm, y = estimates_seq$CI_upper - estimates_seq$CI_lower)) + 
+  geom_line() +  # Add the line for estimates
+  #geom_ribbon(aes(ymin = CI_lower, ymax = CI_right), alpha = 0.2) +  # Add shaded confidence intervals
+  labs(x = "Ell-1 norm", y = "CI radius", title = "CI radius vs. ell-1 norm with Confidence Intervals") +
+  theme_bw() + scale_x_log10()
+
+
+# ggplot(estimates_seq, aes(x = lambda, y =  CI_lower)) + 
+#   geom_line() +  # Add the line for estimates
+#   #geom_ribbon(aes(ymin = CI_lower, ymax = CI_right), alpha = 0.2) +  # Add shaded confidence intervals
+#   labs(x = "Lambda", y = "Lower CI", title = "LowerCI vs. Lambda with Confidence Intervals") +
+#   theme_bw() + scale_x_log10()
+
+cate_fit_lambda <- bootstrap_hal(cate_fit, lambda = max(lambda_seq))
+plot(X, predict(cate_fit_lambda, X))
+cate_fit_lambda <- bootstrap_hal(cate_fit, lambda = min(lambda_seq))
+plot(X, predict(cate_fit_lambda, X))
 ```
 
 

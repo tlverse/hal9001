@@ -31,6 +31,7 @@
 #' @seealso \code{\link{glmnet::bigGlm}}, \code{\link{make_design_matrix}}, and other functions involved in manipulating and fitting HAL models.
 #'
 #' @importFrom glmnet bigGlm
+#' @importFrom glmfast fastGlm
 #' @export
 bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boot_indices = NULL) {
   if(!is.null(seed)){
@@ -57,7 +58,7 @@ bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boo
   if (!is.null(X_unpenalized)) {
     x_basis <- cbind(x_basis, X_unpenalized)
   }
-  coefs_relaxed <- as.matrix(coef(glmnet::bigGlm(x = x_basis, y = data_train$Y, weights = data_train$weights, offset = data_train$offset, family = hal_fit$family)))
+  coefs_relaxed <- as.matrix(coef(glmnet::bigGlm(x = x_basis, y = data_train$Y, weights = data_train$weights, offset = data_train$offset, family = hal_fit$family, intercept = TRUE)))
   hal_fit$coefs <- coefs_relaxed
   hal_fit$basis_list <- basis_list_lambda
 
@@ -92,7 +93,35 @@ bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boo
       offset_boot <- rep(0, n)
     }
 
-    coefs_boot <- as.matrix(coef(glmnet::bigGlm(x = x_basis_boot, y = Y_boot, weights = weights_boot, offset = offset_boot,family = hal_fit$family)))
+
+    # Fit the model using fastGlm
+
+
+    #fit <- as.matrix(glm.fit(x = as.matrix(x_basis_boot),
+    # y = Y_boot,
+    # family = family,
+    # weights = weights_boot,
+    # offset = offset_boot, intercept = TRUE)$coefficients)
+
+
+    t <- proc.time()
+
+
+    coefs_boot <- try({
+      family <- hal_fit$family
+      if(is.character(family)) {
+        family <- get(family)()
+      }
+      as.matrix(glm.fit(x = cbind(1,as.matrix(x_basis_boot)), y = Y_boot, family = family, weights = weights_boot, offset = offset_boot, intercept = FALSE, singular.ok = FALSE)$coefficients)
+    }, silent = TRUE)
+
+    if (is.null(coefs_boot) || any(is.na(coefs_boot))) {
+      coefs_boot <- as.matrix(coef(glmnet::bigGlm(x = x_basis_boot, y = Y_boot, weights = weights_boot, offset = offset_boot, family = hal_fit$family, intercept = TRUE)))
+    }
+
+
+    #as.matrix(coef(glmnet::bigGlm(x = x_basis_boot, y = Y_boot, weights = weights_boot, offset = offset_boot,family = hal_fit$family)))
+    #print(proc.time() - t)
     hal_fit_boot$coefs <- coefs_boot
     hal_fit_boot$data_train = NULL
     hal_fit_boot$bootstrap_info = NULL
@@ -102,7 +131,7 @@ bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boo
 
   hal_fit_squashed$bootstrap_info <- list(X = X, hal_fits = bootstrapped_hal_fits, index = boot_indices)
   return(hal_fit_squashed)
-  }
+}
 
 
 #' Provide Pointwise Confidence Intervals for Regression Fits by HAL
@@ -136,8 +165,9 @@ bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boo
 inference_pointwise <- function(hal_fit, new_data,
                                 new_X_unpenalized = NULL,
                                 offset = NULL, alpha = 0.05) {
-  if(is.null(hal_fit$bootstrap_info)) {
-    stop("You must bootstrap your HAL fit first. To do so, run 'hal_fit_bootstrapped <- bootstrap_hal(hal_fit)")
+  if(is.null(bootstrap_info)) {
+    hal_fit <- bootstrap_hal(hal_fit)
+    warning("hal_fit was not bootstrapped. Automatically running bootstrap via 'hal_fit_bootstrapped <- bootstrap_hal(hal_fit)")
   }
   bootstrap_fits <- hal_fit$bootstrap_info$hal_fits
   preds <- as.matrix(predict(hal_fit, new_data, new_X_unpenalized, offset, type = "response"))
@@ -152,11 +182,12 @@ inference_pointwise <- function(hal_fit, new_data,
 
   output <- do.call(rbind, lapply(seq_len(nrow(boot_mat)), function(row_index) {
     boot_preds <- boot_mat[row_index, ]
+
     pred <- as.vector(preds[row_index, ])
     interval <- pred + quantile(boot_preds - pred, c(alpha/2, 1 - alpha/2))
     return(c(pred, interval))
   }))
-  colnames(output) <- c("prediction", "CI_lower", "CI_right")
+  colnames(output) <- c("prediction", "CI_lower", "CI_upper")
   return(output)
 }
 
@@ -223,7 +254,8 @@ functional_mean <- function(hal_fit, X, X_unpenalized = NULL, offset = NULL, oth
 inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data = NULL, bootstrap_other_data = TRUE) {
   bootstrap_info <- hal_fit$bootstrap_info
   if(is.null(bootstrap_info)) {
-    stop("You must bootstrap your HAL fit first. To do so, run 'hal_fit_bootstrapped <- bootstrap_hal(hal_fit)")
+    hal_fit <- bootstrap_hal(hal_fit)
+    warning("hal_fit was not bootstrapped. Automatically running bootstrap via 'hal_fit_bootstrapped <- bootstrap_hal(hal_fit)")
   }
   if(is.vector(other_data)){
     other_data <- as.matrix(other_data)
@@ -261,13 +293,19 @@ inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data
   output <- do.call(rbind, lapply(seq_len(nrow(boot_mat)), function(row_index) {
     boot_estimate <- boot_mat[row_index, ]
     estimate <- as.vector(estimate[row_index, ])
-    interval <- estimate + quantile(boot_estimate - estimate, c(alpha/2, 1 - alpha/2))
+
+    #print(as.vector(diff(quantile(boot_estimate - estimate, c(alpha/2, 1 - alpha/2))))/2)
+    #print(qnorm(1 - alpha/2)*sd(boot_estimate))
+    interval <- estimate + c(-1,1) * qnorm(1 - alpha/2)*sd(boot_estimate) #quantile(boot_estimate - estimate, c(alpha/2, 1 - alpha/2))
     return(c(estimate, interval))
   }))
-  colnames(output) <- c("estimate", "CI_lower", "CI_right")
+  colnames(output) <- c("estimate", "CI_lower", "CI_upper")
   return(output)
 }
 
+
+
+#targeted_undersmooth <- function(hal_fit, functional, alpha = 0.05, other_data = NULL, bootstrap_other_data = TRUE)
 
 
 
