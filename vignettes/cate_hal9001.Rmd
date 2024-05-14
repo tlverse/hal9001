@@ -141,12 +141,13 @@ out
 ```
 
 
-### Targeted undersmoothing with the bootstrap
+### (Experimental, in progress) Targeted undersmoothing with the bootstrap
 
 We can perform bootstrapping based on an undersmoothed HAL fit by specifying a regularization parameter, lambda, that is less than the CV-selected one, lambda_star. Undersmoothing can enhance the performance of inferences based on the bootstrap. Furthermore, we can employ the plateau method for data-adaptive selection of lambda, as described in "Nonparametric Bootstrap Inference for the Targeted Highly Adaptive LASSO Estimator" by Ca and van der Laan (2019).  
 
-```{r}
-n <- 1000
+```{r, eval = FALSE}
+set.seed(1234)
+n <- 500
 # Covariates X, treatment A, outcome Y
 X <- runif(n, -1 ,1)
 # True propensity E[A | X]
@@ -162,10 +163,18 @@ mu.true <- m.true + (A - pi.true) * cate.true
 Y <- rnorm(n, mu.true, 0.5)
 
 
+functional_mean <- function(hal_fit, X, X_unpenalized = NULL, offset = NULL, other_data = NULL, ...) {
+   print(length(hal_fit$basis_list))
+   print(dim(hal_fit$coefs))
+  mean(predict(hal_fit, X, X_unpenalized, offset))
+  
+}
+
+
 
 library(data.table)
 library(ggplot2)
-cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 0, num_knots = 100)
+cate_fit <- fit_hal_cate(X, Y, A,  smoothness_orders = 0, num_knots = 50)
 # get cv-selected lambda
 lambda_star <- cate_fit$lambda_star
 # get lambda sequence that are smaller than cv-selector (undersmoothed)
@@ -173,20 +182,26 @@ lambda_seq <- sort(cate_fit$lasso_fit$lambda, decreasing = TRUE)
 lambda_seq <- lambda_seq[lambda_seq <= lambda_star]
 # share seed across bootstrap replicates
 seed <- rnorm(1)
-nboot <- 500
+nboot <- 100
 ell_1norm_star = sum(abs(cate_fit$coefs[-1]))
 stop_flag <- FALSE
 estimates_list <-lapply(lambda_seq, function(lambda) {
   print(lambda)
+  out <- NULL
   try({
   cate_fit_lambda <- bootstrap_hal(cate_fit, lambda = lambda, nboot = nboot, seed = seed)
   ell_1norm = sum(abs(cate_fit_lambda$coefs[-1]))
-  cbind(ell_1norm, inference_delta_method(cate_fit_lambda, functional = functional_mean))
+  out <- cbind(lambda, ell_1norm, inference_delta_method(cate_fit_lambda, functional = functional_mean))
   })
+  return(out)
 })
-estimates_seq <- as.data.table(do.call(rbind, estimates_list))
-estimates_seq <- estimates_seq[!duplicated(estimates_seq[, c("estimate", "CI_lower"), with = FALSE]),]
 radius_monotone <- as.stepfun(isoreg(estimates_seq$ell_1norm, (estimates_seq$CI_upper - estimates_seq$CI_lower)/2))(estimates_seq$ell_1norm)
+estimates_seq$CI_lower_iso <- estimates_seq$estimate - radius_monotone
+estimates_seq$CI_upper_iso <- estimates_seq$estimate + radius_monotone
+
+estimates_seq <- as.data.table(do.call(rbind, estimates_list))
+estimates_seq <- estimates_seq[!duplicated(estimates_seq[, c("ell_1norm"), with = FALSE]),]
+ 
 #estimates_seq$CI_lower <- estimates_seq$estimate - radius_monotone
 #estimates_seq$CI_upper <- estimates_seq$estimate + radius_monotone
 estimates_seq$radius_monotone <- radius_monotone

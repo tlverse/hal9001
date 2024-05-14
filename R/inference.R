@@ -122,7 +122,7 @@ bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boo
 
     #as.matrix(coef(glmnet::bigGlm(x = x_basis_boot, y = Y_boot, weights = weights_boot, offset = offset_boot,family = hal_fit$family)))
     #print(proc.time() - t)
-    hal_fit_boot$coefs <- coefs_boot
+    hal_fit_boot$coefs <- as.matrix(coefs_boot)
     hal_fit_boot$data_train = NULL
     hal_fit_boot$bootstrap_info = NULL
     hal_fit_boot$x_basis = NULL

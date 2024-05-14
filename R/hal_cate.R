@@ -7,7 +7,9 @@
 #' It utilizes the Highly Adaptive Lasso (HAL) estimator as implemented by the \code{fit_hal} function. This method functions similarly to \code{fit_hal}, but it requires additional arguments:
 #' an initial estimator of the propensity score (the conditional mean of the treatment given the covariates) and the conditional mean of the outcome given the covariates.
 #'
-#' @param X A \code{matrix} of covariates used to derive the design matrix of basis functions, with dimensions corresponding to the number of observations by the number of covariates.
+#' @param X A \code{matrix} of effect modifiers/covariates used to derive the design matrix of basis functions for the CATE, with dimensions corresponding to the number of observations and the number of covariates.
+#' @param W A \code{matrix} of covariates/potential confounders used to adjust for confounding and model the propensity score and outcome regression.
+#' By default, \code{X = W} so that the effect modifiers are used as covariates.
 #' @param Y A \code{numeric} vector containing observations of the outcome variable.
 #' @param A A \code{numeric} vector containing observations of the binary treatment indicator.
 #'   Note that this vector must consist solely of 0's and 1's.
@@ -34,6 +36,7 @@
 fit_hal_cate <- function(X,
                          Y,
                          A,
+                         W = X,
                          A.hat,
                          Y.hat,
                          A_fit_params = NULL,
@@ -50,6 +53,7 @@ fit_hal_cate <- function(X,
                          ),
                          weights = NULL,
                          ...) {
+  if(!is.matrix(V)) V <- as.matrix(V)
   if(!is.matrix(X)) X <- as.matrix(X)
   if(!is.vector(A)) A <- as.matrix(A)
   if(!is.vector(Y)) Y <- as.matrix(Y)
@@ -89,7 +93,7 @@ fit_hal_cate <- function(X,
   if(!is.null(weights)) {
     overlap_weights <- overlap_weights * weights
   }
-  cate_fit <- fit_hal(X = X, Y = pseudo_outcome, formula = formula, max_degree = max_degree,
+  cate_fit <- fit_hal(X = V, Y = pseudo_outcome, formula = formula, max_degree = max_degree,
           smoothness_orders = smoothness_orders, num_knots = num_knots,
           weights = overlap_weights,
           family = "gaussian",

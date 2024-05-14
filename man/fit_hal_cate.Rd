@@ -8,6 +8,7 @@ fit_hal_cate(
   X,
   Y,
   A,
+  W = X,
   A.hat,
   Y.hat,
   A_fit_params = NULL,
@@ -23,12 +24,15 @@ fit_hal_cate(
 )
 }
 \arguments{
-\item{X}{A \code{matrix} of covariates used to derive the design matrix of basis functions, with dimensions corresponding to the number of observations by the number of covariates.}
+\item{X}{A \code{matrix} of effect modifiers/covariates used to derive the design matrix of basis functions for the CATE, with dimensions corresponding to the number of observations and the number of covariates.}
 
 \item{Y}{A \code{numeric} vector containing observations of the outcome variable.}
 
 \item{A}{A \code{numeric} vector containing observations of the binary treatment indicator.
 Note that this vector must consist solely of 0's and 1's.}
+
+\item{W}{A \code{matrix} of covariates/potential confounders used to adjust for confounding and model the propensity score and outcome regression.
+By default, \code{X = W} so that the effect modifiers are used as covariates.}
 
 \item{A.hat}{A \code{numeric} vector of estimates for the propensity score \code{E[A | X]},
 which is the conditional mean of the treatment \code{A} given the covariates \code{X}.}
