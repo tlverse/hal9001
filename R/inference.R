@@ -32,7 +32,7 @@
 #'
 #' @importFrom glmnet bigGlm
 #' @export
-bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL) {
+bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boot_indices = NULL) {
   if(!is.null(seed)){
     set.seed(seed)
   }
@@ -59,18 +59,26 @@ bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL) {
   }
   coefs_relaxed <- as.matrix(coef(glmnet::bigGlm(x = x_basis, y = data_train$Y, weights = data_train$weights, offset = data_train$offset, family = hal_fit$family)))
   hal_fit$coefs <- coefs_relaxed
+  hal_fit$basis_list <- basis_list_lambda
+
+
   hal_fit_squashed <- squash_hal_fit(hal_fit)
 
-
   # generate bootstrap row indices
-  boot_index <- do.call(cbind, lapply(1:nboot, function(iter) {
-    index <- sample(1:n, n, replace = TRUE)
-    return(index)
-  }))
+  if(is.null(boot_indices)) {
+    if(!is.null(seed)){
+      set.seed(seed)
+    }
+    boot_indices <- do.call(cbind, lapply(1:nboot, function(iter) {
+      index <- sample(1:n, n, replace = TRUE)
+      return(index)
+    }))
+  }
+
   # get coefficient estimates for each bootstrap iteration
   bootstrapped_hal_fits <-  lapply(1:nboot, function(iter) {
     hal_fit_boot <- hal_fit_squashed
-    index <- boot_index[, iter]
+    index <- boot_indices[, iter]
     x_basis_boot <- x_basis[index, , drop = FALSE]
     Y_boot <- data_train$Y[index]
     if(!is.null(data_train$weights)) {
@@ -92,7 +100,7 @@ bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL) {
     return(hal_fit_boot)
   })
 
-  hal_fit_squashed$bootstrap_info <- list(X = X, hal_fits = bootstrapped_hal_fits, index = boot_index)
+  hal_fit_squashed$bootstrap_info <- list(X = X, hal_fits = bootstrapped_hal_fits, index = boot_indices)
   return(hal_fit_squashed)
   }
 
@@ -223,7 +231,7 @@ inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data
   X <- hal_fit$data_train$X
   X_unpenalized <- hal_fit$data_train$X_unpenalized
   offset <- hal_fit$data_train$offset
-  boot_index <- bootstrap_info$index
+  boot_indices <- bootstrap_info$index
   bootstrap_fits <- bootstrap_info$hal_fits
   estimate <- as.matrix(functional(hal_fit, X = X, X_unpenalized = X_unpenalized , offset = offset, other_data = other_data))
   if(ncol(estimate) > 1) {
@@ -231,7 +239,7 @@ inference_delta_method <- function(hal_fit, functional, alpha = 0.05, other_data
   }
   boot_mat <- do.call(cbind, lapply(seq_along(bootstrap_fits), function(i) {
     hal_fit_boot <- bootstrap_fits[[i]]
-    index <- boot_index[,i]
+    index <- boot_indices[,i]
     X_boot <- X[index, , drop = FALSE]
     if(bootstrap_other_data){
       other_data_boot <- other_data[index, , drop = FALSE]
