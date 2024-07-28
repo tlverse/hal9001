@@ -399,6 +399,7 @@ kmeans_knot_screen <- function(X,
                                smoothness_orders,
                                include_zero_order,
                                include_lower_order) {
+
   if (is.null(bins)) {
     return(X)
   }
@@ -409,8 +410,8 @@ kmeans_knot_screen <- function(X,
 
   # function to screen knot-points for given x (subset of X)
   screen_knots <- function(x) {
-    if (uniqueN(x) <= bins) {
-      return(x)
+    if (nrow(unique(x)) <= bins) {
+      return(unique(x))
     }
     if (ncol(x) == 1 & all(x %in% c(0, 1))) {
       return(rep(0, length(x)))
