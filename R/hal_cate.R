@@ -30,7 +30,6 @@
 #'   Note that the \code{family} argument should not be specified as it is internally set to "gaussian".
 #'   Specifying this argument through `...` will cause an argument clash error.
 #'
-#' @inheritParams fit_hal
 #' @rdname fit_hal_cate
 #' @export
 fit_hal_cate <- function(X,
