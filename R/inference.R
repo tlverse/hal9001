@@ -31,7 +31,7 @@
 #' @seealso \code{\link{glmnet::bigGlm}}, \code{\link{make_design_matrix}}, and other functions involved in manipulating and fitting HAL models.
 #'
 #' @importFrom glmnet bigGlm
-#' @importFrom glmfast fastGlm
+#' @importFrom fastglm fastglm
 #' @export
 bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boot_indices = NULL) {
   if(!is.null(seed)){
@@ -94,7 +94,7 @@ bootstrap_hal <- function(hal_fit,  nboot = 500, lambda = NULL, seed = NULL, boo
     }
 
 
-    # Fit the model using fastGlm
+    # Fit the model using fastglm
 
 
     #fit <- as.matrix(glm.fit(x = as.matrix(x_basis_boot),
