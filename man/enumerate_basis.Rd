@@ -10,7 +10,9 @@ enumerate_basis(
   smoothness_orders = rep(0, ncol(x)),
   include_zero_order = FALSE,
   include_lower_order = FALSE,
-  num_knots = NULL
+  num_knots = NULL,
+  screen_knots = FALSE,
+  algorithm = "kmeans"
 )
 }
 \arguments{
@@ -49,6 +51,15 @@ knot points to be used for the kth degree basis functions. Specifically,
 for a kth degree basis function, which is the tensor product of k
 univariate basis functions, this determines the number of knot points to be
 used for each univariate basis function in the tensor product.}
+
+\item{screen_knots}{A \code{logical}, indicating whether to screen the knot
+points for each basis function. If \code{TRUE}, the knot points are screened
+using k-mean clustering. The number of knots for each degree of basis
+function is determined by the \code{num_knots} argument.}
+
+\item{algorithm}{A \code{character} string specifying the algorithm to use
+for knot point screening. The default is \code{"kmeans"}. The other option
+is \code{"pam"}.}
 }
 \value{
 A \code{list} of basis functions generated for all covariates and

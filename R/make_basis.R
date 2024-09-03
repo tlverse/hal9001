@@ -175,6 +175,9 @@ basis_of_degree <- function(x, degree, smoothness_orders, include_zero_order,
 #'  for a kth degree basis function, which is the tensor product of k
 #'  univariate basis functions, this determines the number of knot points to be
 #'  used for each univariate basis function in the tensor product.
+#' @param algorithm A \code{character} string specifying the algorithm to use
+#'  for knot point screening. The default is \code{"kmeans"}. The other option
+#'  is \code{"pam"}.
 #'
 #' @export
 #'
@@ -206,7 +209,8 @@ enumerate_basis <- function(x,
                             include_zero_order = FALSE,
                             include_lower_order = FALSE,
                             num_knots = NULL,
-                            screen_knots = FALSE) {
+                            screen_knots = FALSE,
+                            algorithm = "kmeans") {
   if (!is.matrix(x)) {
     x <- as.matrix(x)
   }
@@ -235,13 +239,23 @@ enumerate_basis <- function(x,
       }
 
       if (screen_knots) {
-        basis_list <- kmeans_knot_screen(
-          X = x,
-          bins = n_bin,
-          degree = degree,
-          smoothness_orders = smoothness_orders,
-          include_zero_order = include_zero_order,
-          include_lower_order = include_lower_order)
+        if (algorithm == "kmeans") {
+          basis_list <- kmeans_knot_screen(
+            X = x,
+            bins = n_bin,
+            degree = degree,
+            smoothness_orders = smoothness_orders,
+            include_zero_order = include_zero_order,
+            include_lower_order = include_lower_order)
+        } else if (algorithm == "pam") {
+          basis_list <- pam_knot_screen(
+            X = x,
+            bins = n_bin,
+            degree = degree,
+            smoothness_orders = smoothness_orders,
+            include_zero_order = include_zero_order,
+            include_lower_order = include_lower_order)
+        }
 
         return(basis_list)
 
@@ -423,6 +437,81 @@ kmeans_knot_screen <- function(X,
     # k-means clustering of knot-points
     k_means <- kmeans(x = x, centers = bins, algorithm = "MacQueen")
     centroids <- k_means$centers
+
+    return(centroids)
+  }
+
+  # generate column index sets up to max_degree interactions
+  var_idx_num <- utils::combn(1:ncol(X), degree, simplify = FALSE)
+
+  # screen knot-points for each column index set
+  basis_list <- unlist(lapply(var_idx_num, function(var_idx) {
+    X_sub <- X[, var_idx, drop = FALSE]
+    suppressWarnings(knots <- screen_knots(X_sub))
+
+    # make basis list for the screened knot-points
+    basis_of_degree(x = knots,
+                    degree = degree,
+                    smoothness_orders = smoothness_orders,
+                    include_zero_order = include_zero_order,
+                    include_lower_order = include_lower_order,
+                    x_col_idx = var_idx)
+
+  }), recursive = FALSE)
+
+  return(basis_list)
+}
+
+#' @title Screen knot-points using PAM clustering
+#'
+#' @description Using PAM clustering at each basis function level to screen
+#' knot-points. An effective way to reduce the number of basis function and
+#' improve the computational speed while maintaining good predictive
+#' performance of HAL fit.
+#'
+#' @param X A \code{numeric} vector or matrix of input.
+#' @param bins A \code{numeric} scalar indicating the number of knot-points for
+#' each basis function.
+#' @param degree A \code{numeric} scalar indicating the degree of the basis
+#' functions.
+#' @param smoothness_orders Argument for `enumerate_basis()`
+#' @param include_zero_order Argument for `enumerate_basis()`
+#' @param include_lower_order Argument for `enumerate_basis()`
+#'
+#' @importFrom cluster pam
+#' @importFrom data.table uniqueN
+#'
+#' @keywords internal
+pam_knot_screen <- function(X,
+                            bins,
+                            degree,
+                            smoothness_orders,
+                            include_zero_order,
+                            include_lower_order) {
+
+  if (is.null(bins)) {
+    return(X)
+  }
+
+  if (!is.matrix(X)) {
+    X <- as.matrix(X)
+  }
+
+  # function to screen knot-points for given x (subset of X)
+  screen_knots <- function(x) {
+    if (nrow(unique(x)) <= bins) {
+      return(unique(x))
+    }
+    if (ncol(x) == 1 & all(x %in% c(0, 1))) {
+      return(rep(0, length(x)))
+    }
+    if (bins == 1) {
+      return(rep(min(x), length(x)))
+    }
+
+    # pam clustering of knot-points
+    pam_obj <- pam(x = x, k = bins, metric = "euclidean")
+    centroids <- pam_obj$medoids
 
     return(centroids)
   }
