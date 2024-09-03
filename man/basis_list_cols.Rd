@@ -9,7 +9,8 @@ basis_list_cols(
   x,
   smoothness_orders,
   include_zero_order,
-  include_lower_order = FALSE
+  include_lower_order = FALSE,
+  ignore_cols = FALSE
 )
 }
 \arguments{

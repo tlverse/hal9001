@@ -41,7 +41,6 @@ predict.hal9001 <- function(object,
                             offset = NULL,
                             type = c("response", "link"),
                             ...) {
-
   family <- ifelse(inherits(object$family, "family"), object$family$family, object$family)
 
   type <- match.arg(type)
@@ -89,7 +88,7 @@ predict.hal9001 <- function(object,
     } else {
       preds <- as.vector(Matrix::tcrossprod(
         x = pred_x_basis,
-        y = object$coefs[-1]
+        y = matrix(object$coefs[-1], nrow = 1)
       ) + object$coefs[1])
     }
   } else {

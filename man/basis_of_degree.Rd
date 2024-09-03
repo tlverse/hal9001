@@ -9,7 +9,8 @@ basis_of_degree(
   degree,
   smoothness_orders,
   include_zero_order,
-  include_lower_order
+  include_lower_order,
+  x_col_idx = NULL
 )
 }
 \arguments{
