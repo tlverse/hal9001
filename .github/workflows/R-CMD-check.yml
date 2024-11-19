@@ -1,10 +1,12 @@
 on:
   push:
     branches:
+      - main
       - master
       - devel
   pull_request:
     branches:
+      - main
       - master
       - devel
 
@@ -29,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
@@ -37,10 +39,10 @@ jobs:
           r-version: ${{ matrix.config.r }}
 
       - name: Install pandoc
-        uses: r-lib/actions/setup-pandoc@v1
+        uses: r-lib/actions/setup-pandoc@v2
 
       - name: Install tinyTeX
-        uses: r-lib/actions/setup-tinytex@v1
+        uses: r-lib/actions/setup-tinytex@v2
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
@@ -49,8 +51,8 @@ jobs:
 
       - name: Install package dependencies
         run: |
-          install.packages(c("remotes", "rcmdcheck", "covr", "sessioninfo"))
-          remotes::install_deps(dependencies = TRUE)
+          install.packages(c("remotes", "rcmdcheck", "covr", "sessioninfo", "pak"))
+          pak::local_install_deps(ask = FALSE, dependencies = TRUE)
         shell: Rscript {0}
 
       - name: Check package

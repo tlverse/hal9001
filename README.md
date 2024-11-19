@@ -85,12 +85,11 @@ predictions via Highly Adaptive Lasso regression:
 # load the package and set a seed
 library(hal9001)
 #> Loading required package: Rcpp
-<<<<<<< HEAD
-#> hal9001 v0.4.4: The Scalable Highly Adaptive Lasso
-=======
-#> hal9001 v0.4.5: The Scalable Highly Adaptive Lasso
->>>>>>> 81093a5ceebcd36630f308dd07f69d4e30f07f1c
+#> hal9001 v0.4.6: The Scalable Highly Adaptive Lasso
 #> note: fit_hal defaults have changed. See ?fit_hal for details
+```
+
+``` r
 set.seed(385971)
 
 # simulate data
@@ -102,19 +101,25 @@ y <- x[, 1] * sin(x[, 2]) + rnorm(n, mean = 0, sd = 0.2)
 # fit the HAL regression
 hal_fit <- fit_hal(X = x, Y = y, yolo = TRUE)
 #> [1] "I'm sorry, Dave. I'm afraid I can't do that."
+```
+
+``` r
 hal_fit$times
 #>                   user.self sys.self elapsed user.child sys.child
-#> enumerate_basis       0.014    0.003   0.059          0         0
-#> design_matrix         0.004    0.001   0.005          0         0
+#> enumerate_basis       0.003    0.000   0.002          0         0
+#> design_matrix         0.000    0.000   0.000          0         0
 #> reduce_basis          0.000    0.000   0.000          0         0
 #> remove_duplicates     0.000    0.000   0.000          0         0
-#> lasso                 2.684    0.343   6.583          0         0
-#> total                 2.703    0.348   6.655          0         0
+#> lasso                 0.362    0.002   0.365          0         0
+#> total                 0.365    0.002   0.367          0         0
+```
+
+``` r
 
 # training sample prediction
 preds <- predict(hal_fit, new_data = x)
 mean(hal_mse <- (preds - y)^2)
-#> [1] 0.03667466
+#> [1] 0.03587941
 ```
 
 ------------------------------------------------------------------------
@@ -158,7 +163,7 @@ After using the `hal9001` R package, please cite both of the following:
 
 ## License
 
-© 2017-2022 [Jeremy R. Coyle](https://github.com/tlverse) & [Nima S.
+© 2017-2024 [Jeremy Coyle](https://github.com/tlverse) and [Nima
 Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the GPL-3 license.
@@ -168,7 +173,8 @@ See file `LICENSE` for details.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-benkeser2016hal" class="csl-entry">
 
