@@ -92,13 +92,17 @@ basis_list_cols <- function(cols, x, smoothness_orders, include_zero_order,
 #' @param include_lower_order A \code{logical}, like \code{include_zero_order},
 #'  except including all basis functions of lower smoothness degrees than
 #'  specified via \code{smoothness_orders}.
+#' @param reflected_from An optional \code{integer}. When \code{x} is a matrix
+#'  \code{cbind(z, -z)} built by \code{enumerate_basis} with
+#'  \code{reflect = TRUE}, this is \code{ncol(z)}, and tensor products that
+#'  use a covariate together with its own reflection are not generated.
 #'
 #' @importFrom utils combn
 #'
 #' @return A \code{list} containing  basis functions and cutoffs generated from
 #'  a set of input columns up to a particular pre-specified degree.
 basis_of_degree <- function(x, degree, smoothness_orders, include_zero_order,
-                            include_lower_order) {
+                            include_lower_order, reflected_from = NULL) {
   # get dimensionality of input matrix
   p <- ncol(x)
 
@@ -107,6 +111,13 @@ basis_of_degree <- function(x, degree, smoothness_orders, include_zero_order,
 
   # compute combinations of columns and generate a list of basis functions
   all_cols <- utils::combn(p, degree)
+  if (!is.null(reflected_from)) {
+    # a covariate and its reflection never enter the same tensor product
+    original_col <- (all_cols - 1) %% reflected_from
+    all_cols <- all_cols[, !apply(original_col, 2, anyDuplicated),
+      drop = FALSE
+    ]
+  }
   all_basis_lists <- apply(all_cols, 2, basis_list_cols,
     x = x,
     smoothness_orders = smoothness_orders,
@@ -156,6 +167,14 @@ basis_of_degree <- function(x, degree, smoothness_orders, include_zero_order,
 #'  for a kth degree basis function, which is the tensor product of k
 #'  univariate basis functions, this determines the number of knot points to be
 #'  used for each univariate basis function in the tensor product.
+#' @param reflect A \code{logical}. If \code{TRUE}, basis functions are
+#'  generated in both directions of every covariate: from the columns of
+#'  \code{cbind(x, -x)}, without tensor products that use a covariate together
+#'  with its own reflection. The resulting basis is the same set of functions
+#'  when any covariate is negated, so the fit does not depend on the sign
+#'  coding of the covariates. The \code{cols} of the returned basis functions
+#'  index \code{cbind(x, -x)}, and design matrices must be built from it. See
+#'  \code{\link{fit_hal}}.
 #'
 #' @export
 #'
@@ -186,9 +205,20 @@ enumerate_basis <- function(x,
                             smoothness_orders = rep(0, ncol(x)),
                             include_zero_order = FALSE,
                             include_lower_order = FALSE,
-                            num_knots = NULL) {
+                            num_knots = NULL,
+                            reflect = FALSE) {
   if (!is.matrix(x)) {
     x <- as.matrix(x)
+  }
+  # if degree is not specified, set it as the full dimensionality of input x
+  if (is.null(max_degree)) {
+    max_degree <- ncol(x)
+  }
+  max_degree <- min(ncol(x), max_degree)
+  reflected_from <- NULL
+  if (reflect) {
+    reflected_from <- ncol(x)
+    x <- cbind(x, -x)
   }
   # Make sure order map consists of integers in [0,10]
   smoothness_orders <- round(smoothness_orders)
@@ -197,12 +227,7 @@ enumerate_basis <- function(x,
   # truncate
   smoothness_orders[smoothness_orders < 0] <- 0
   smoothness_orders[smoothness_orders > 10] <- 9
-  # if degree is not specified, set it as the full dimensionality of input x
-  if (is.null(max_degree)) {
-    max_degree <- ncol(x)
-  }
 
-  max_degree <- min(ncol(x), max_degree)
   degrees <- seq_len(max_degree)
 
   # generate all basis functions up to the specified degree
@@ -217,7 +242,7 @@ enumerate_basis <- function(x,
     }
     return(basis_of_degree(
       x, degree, smoothness_orders, include_zero_order,
-      include_lower_order
+      include_lower_order, reflected_from
     ))
   })
 
@@ -226,7 +251,7 @@ enumerate_basis <- function(x,
   if (any(smoothness_orders > 0)) {
     edge_basis <- enumerate_edge_basis(
       x, max_degree, smoothness_orders,
-      include_zero_order, include_lower_order
+      include_zero_order, include_lower_order, reflected_from
     )
   }
   all_bases <- union(edge_basis, all_bases)
@@ -268,20 +293,22 @@ enumerate_basis <- function(x,
 #' @param include_lower_order A \code{logical}, like \code{include_zero_order},
 #'  except including all basis functions of lower smoothness degrees than
 #'  specified via \code{smoothness_orders}.
+#' @param reflected_from See \code{\link{basis_of_degree}}.
 #'
 #' @keywords internal
 enumerate_edge_basis <- function(x,
                                  max_degree = 3,
                                  smoothness_orders = rep(0, ncol(x)),
                                  include_zero_order = FALSE,
-                                 include_lower_order = FALSE) {
+                                 include_lower_order = FALSE,
+                                 reflected_from = NULL) {
   edge_basis <- c()
   if (any(smoothness_orders > 0)) {
     if (max_degree > 1) {
       edge_basis <- unlist(lapply(2:max_degree, function(degree) {
         basis_of_degree(matrix(apply(x, 2, min), nrow = 1), degree,
           smoothness_orders, include_zero_order,
-          include_lower_order = TRUE
+          include_lower_order = TRUE, reflected_from = reflected_from
         )
       }), recursive = F)
     }
@@ -290,7 +317,7 @@ enumerate_edge_basis <- function(x,
       basis_of_degree(matrix(apply(x, 2, min), nrow = 1), 1,
         sapply(smoothness_orders - 1, max, 1),
         include_zero_order,
-        include_lower_order = TRUE
+        include_lower_order = TRUE, reflected_from = reflected_from
       )
     )
   }

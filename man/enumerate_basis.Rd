@@ -10,7 +10,8 @@ enumerate_basis(
   smoothness_orders = rep(0, ncol(x)),
   include_zero_order = FALSE,
   include_lower_order = FALSE,
-  num_knots = NULL
+  num_knots = NULL,
+  reflect = FALSE
 )
 }
 \arguments{
@@ -49,6 +50,15 @@ knot points to be used for the kth degree basis functions. Specifically,
 for a kth degree basis function, which is the tensor product of k
 univariate basis functions, this determines the number of knot points to be
 used for each univariate basis function in the tensor product.}
+
+\item{reflect}{A \code{logical}. If \code{TRUE}, basis functions are
+generated in both directions of every covariate: from the columns of
+\code{cbind(x, -x)}, without tensor products that use a covariate together
+with its own reflection. The resulting basis is the same set of functions
+when any covariate is negated, so the fit does not depend on the sign
+coding of the covariates. The \code{cols} of the returned basis functions
+index \code{cbind(x, -x)}, and design matrices must be built from it. See
+\code{\link{fit_hal}}.}
 }
 \value{
 A \code{list} of basis functions generated for all covariates and

@@ -24,7 +24,8 @@ fit_hal(
   basis_list = NULL,
   return_lasso = TRUE,
   return_x_basis = FALSE,
-  yolo = FALSE
+  yolo = FALSE,
+  reflect = FALSE
 )
 }
 \arguments{
@@ -128,7 +129,9 @@ each outcome can have different bounds). Bounding ensures that there is
 no extrapolation.
 }}
 
-\item{basis_list}{The full set of basis functions generated from \code{X}.}
+\item{basis_list}{The full set of basis functions generated from \code{X}.
+With \code{reflect = TRUE}, the basis functions index the columns of
+\code{cbind(X, -X)}.}
 
 \item{return_lasso}{A \code{logical} indicating whether or not to return
 the \code{\link[glmnet]{glmnet}} fit object of the lasso model.}
@@ -139,6 +142,17 @@ the matrix of (possibly reduced) basis functions used in \code{fit_hal}.}
 \item{yolo}{A \code{logical} indicating whether to print one of a curated
 selection of quotes from the HAL9000 computer, from the critically
 acclaimed epic science-fiction film "2001: A Space Odyssey" (1968).}
+
+\item{reflect}{A \code{logical}. If \code{TRUE}, the basis contains each
+basis function in both directions of every covariate, as if fit to
+\code{cbind(X, -X)}: zero-order indicators \eqn{1(x_j \ge u)} and
+\eqn{1(x_j \le u)}, first-order hinges \eqn{(x_j - u)_+} and
+\eqn{(u - x_j)_+}, and their tensor products. The fit is then the same
+when any covariate is negated, whereas with the default basis, which
+only contains functions that switch on as a covariate increases, the
+penalty and the fit depend on the sign coding of the covariates. The
+basis has about \eqn{2^d} times as many terms of interaction degree
+\eqn{d}. Not supported with \code{formula}.}
 }
 \value{
 Object of class \code{hal9001}, containing a list of basis
