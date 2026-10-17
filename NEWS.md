@@ -1,3 +1,13 @@
+# hal9001 (development version)
+* Added `reflect` argument to `fit_hal` and `enumerate_basis`. With
+  `reflect = TRUE`, the basis contains every basis function in both
+  directions of each covariate (`I(x >= u)` and `I(x <= u)`, `(x - u)_+` and
+  `(u - x)_+`, and their tensor products), so the fit no longer depends on the
+  sign coding of the covariates. The default basis only contains functions
+  that switch on as a covariate increases, so negating a covariate changes
+  the penalty and the fit. The default, `reflect = FALSE`, is unchanged
+  (@soodoku, #117).
+
 # hal9001 0.4.6
 * Fixed predict method to address changes required by Matrix 1.6.2
 * Reduced default number of knots used for zero-order and first-order basis

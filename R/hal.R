@@ -141,6 +141,18 @@
 #'    each outcome can have different bounds). Bounding ensures that there is
 #'    no extrapolation.
 #' @param basis_list The full set of basis functions generated from \code{X}.
+#'  With \code{reflect = TRUE}, the basis functions index the columns of
+#'  \code{cbind(X, -X)}.
+#' @param reflect A \code{logical}. If \code{TRUE}, the basis contains each
+#'  basis function in both directions of every covariate, as if fit to
+#'  \code{cbind(X, -X)}: zero-order indicators \eqn{1(x_j \ge u)} and
+#'  \eqn{1(x_j \le u)}, first-order hinges \eqn{(x_j - u)_+} and
+#'  \eqn{(u - x_j)_+}, and their tensor products. The fit is then the same
+#'  when any covariate is negated, whereas with the default basis, which
+#'  only contains functions that switch on as a covariate increases, the
+#'  penalty and the fit depend on the sign coding of the covariates. The
+#'  basis has about \eqn{2^d} times as many terms of interaction degree
+#'  \eqn{d}. Not supported with \code{formula}.
 #' @param return_lasso A \code{logical} indicating whether or not to return
 #'  the \code{\link[glmnet]{glmnet}} fit object of the lasso model.
 #' @param return_x_basis A \code{logical} indicating whether or not to return
@@ -198,7 +210,8 @@ fit_hal <- function(X,
                     basis_list = NULL,
                     return_lasso = TRUE,
                     return_x_basis = FALSE,
-                    yolo = FALSE) {
+                    yolo = FALSE,
+                    reflect = FALSE) {
   if (!inherits(family, "family")) {
     family <- match.arg(family)
   }
@@ -283,6 +296,10 @@ fit_hal <- function(X,
 
 
 
+  if (reflect && !is.null(formula)) {
+    stop("`reflect = TRUE` is not supported with `formula`.")
+  }
+
   if (!is.null(formula)) {
     # formula <- formula_hal(
     #   formula = formula, X = X, smoothness_orders = smoothness_orders,
@@ -328,12 +345,26 @@ fit_hal <- function(X,
       smoothness_orders = smoothness_orders,
       num_knots = num_knots,
       include_lower_order = FALSE,
-      include_zero_order = FALSE
+      include_zero_order = FALSE,
+      reflect = reflect
     )
   }
 
   # bookkeeping: get end time of enumerate basis procedure
   time_enumerate_basis <- proc.time()
+
+  # generate a vector of col names
+  if (!is.null(colnames(X))) {
+    X_colnames <- colnames(X)
+  } else {
+    X_colnames <- paste0("x", 1:ncol(X))
+  }
+
+  # the reflected basis is built on, and indexes, cbind(X, -X)
+  if (reflect) {
+    X <- cbind(X, -X)
+    X_colnames <- c(X_colnames, paste0("-", X_colnames))
+  }
 
   # make design matrix for HAL from basis functions
   x_basis <- make_design_matrix(X, basis_list)
@@ -371,13 +402,6 @@ fit_hal <- function(X,
 
   # bookkeeping: get end time of duplicate removal procedure
   time_rm_duplicates <- proc.time()
-
-  # generate a vector of col names
-  if (!is.null(colnames(X))) {
-    X_colnames <- colnames(X)
-  } else {
-    X_colnames <- paste0("x", 1:ncol(X))
-  }
 
   # the HAL basis are subject to L1 penalty
   if (is.null(penalty_factor)) {
@@ -504,7 +528,8 @@ fit_hal <- function(X,
         NULL
       },
     unpenalized_covariates = unpenalized_covariates,
-    prediction_bounds = fit_control$prediction_bounds
+    prediction_bounds = fit_control$prediction_bounds,
+    reflect = reflect
   )
   class(fit) <- "hal9001"
   return(fit)

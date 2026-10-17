@@ -51,6 +51,11 @@ predict.hal9001 <- function(object,
     new_data <- new_data[, object$covariates]
   }
 
+  # a reflected basis indexes the columns of cbind(new_data, -new_data)
+  if (isTRUE(object$reflect)) {
+    new_data <- cbind(new_data, -new_data)
+  }
+
   # generate design matrix
   pred_x_basis <- make_design_matrix(new_data, object$basis_list)
 

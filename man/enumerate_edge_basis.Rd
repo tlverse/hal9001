@@ -9,7 +9,8 @@ enumerate_edge_basis(
   max_degree = 3,
   smoothness_orders = rep(0, ncol(x)),
   include_zero_order = FALSE,
-  include_lower_order = FALSE
+  include_lower_order = FALSE,
+  reflected_from = NULL
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ of smoothness.}
 \item{include_lower_order}{A \code{logical}, like \code{include_zero_order},
 except including all basis functions of lower smoothness degrees than
 specified via \code{smoothness_orders}.}
+
+\item{reflected_from}{See \code{\link{basis_of_degree}}.}
 }
 \description{
 For degrees of smoothness greater than 1, we must generate the lower order

@@ -9,7 +9,8 @@ basis_of_degree(
   degree,
   smoothness_orders,
   include_zero_order,
-  include_lower_order
+  include_lower_order,
+  reflected_from = NULL
 )
 }
 \arguments{
@@ -38,6 +39,11 @@ of smoothness.}
 \item{include_lower_order}{A \code{logical}, like \code{include_zero_order},
 except including all basis functions of lower smoothness degrees than
 specified via \code{smoothness_orders}.}
+
+\item{reflected_from}{An optional \code{integer}. When \code{x} is a matrix
+\code{cbind(z, -z)} built by \code{enumerate_basis} with
+\code{reflect = TRUE}, this is \code{ncol(z)}, and tensor products that
+use a covariate together with its own reflection are not generated.}
 }
 \value{
 A \code{list} containing  basis functions and cutoffs generated from
