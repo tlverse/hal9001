@@ -35,6 +35,57 @@ test_that("Check formula", {
 })
 
 
+fit_n <- 300
+set.seed(4917)
+fit_X <- cbind(x1 = runif(fit_n), x2 = runif(fit_n))
+fit_Y <- 2 * fit_X[, "x1"] - 2 * fit_X[, "x2"] + rnorm(fit_n, sd = 0.3)
+basis_cols <- function(fit) sapply(fit$basis_list, `[[`, "cols")
+
+test_that("fit_hal leaves formula terms with pf = 0 unpenalized", {
+  # lambda is large enough to zero every penalized coefficient
+  fit <- fit_hal(
+    fit_X, fit_Y,
+    formula = ~ h(x1, pf = 0) + h(x2), smoothness_orders = 1, num_knots = 5,
+    lambda = 10, fit_control = list(cv_select = FALSE)
+  )
+  coefs <- fit$coefs[-1]
+  expect_true(any(coefs[basis_cols(fit) == 1] != 0))
+  expect_true(all(coefs[basis_cols(fit) == 2] == 0))
+})
+
+test_that("formula penalty factors follow the reduced zero-order basis", {
+  fit <- fit_hal(
+    fit_X, fit_Y,
+    formula = ~ h(x1) + h(x2, pf = 0), smoothness_orders = 0, num_knots = 5,
+    reduce_basis = 0.3, lambda = 10, fit_control = list(cv_select = FALSE)
+  )
+  # the reduction must drop columns for this to test the alignment
+  expect_lt(length(fit$basis_list), 10)
+  coefs <- fit$coefs[-1]
+  expect_true(all(coefs[basis_cols(fit) == 1] == 0))
+  expect_true(any(coefs[basis_cols(fit) == 2] != 0))
+})
+
+test_that("formula monotonicity limits follow the reduced zero-order basis", {
+  lambda <- 0.01
+  fit <- fit_hal(
+    fit_X, fit_Y,
+    formula = ~ h(x1, monotone = "i") + h(x2, monotone = "d"),
+    smoothness_orders = 0, num_knots = 5, reduce_basis = 0.3, lambda = lambda,
+    fit_control = list(cv_select = FALSE), return_x_basis = TRUE
+  )
+  expect_lt(length(fit$basis_list), 10)
+  increasing <- basis_cols(fit) == 1
+  reference <- glmnet::glmnet(
+    fit$x_basis, fit_Y,
+    lambda = lambda, standardize = FALSE,
+    lower.limits = ifelse(increasing, 0, -Inf),
+    upper.limits = ifelse(increasing, Inf, 0)
+  )
+  expect_equal(as.numeric(fit$coefs), as.numeric(stats::coef(reference)))
+})
+
+
 
 
 #

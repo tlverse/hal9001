@@ -1,3 +1,10 @@
+# hal9001 (development version)
+* Fixed `fit_hal` ignoring the `pf` penalty factors of a formula, so terms
+  specified with `pf = 0` are now left unpenalized (@soodoku, #81).
+* Fixed formula penalty factors and monotonicity limits being misaligned with
+  the basis functions kept after basis reduction when `smoothness_orders = 0`
+  (@soodoku, #81).
+
 # hal9001 0.4.6
 * Fixed predict method to address changes required by Matrix 1.6.2
 * Reduced default number of knots used for zero-order and first-order basis
