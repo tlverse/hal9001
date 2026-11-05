@@ -408,6 +408,16 @@ fit_hal <- function(X,
   if (unpenalized_covariates > 0) {
     x_basis <- cbind(x_basis, X_unpenalized)
     penalty_factor <- c(penalty_factor, rep(0, ncol(X_unpenalized)))
+    if (!is.null(formula)) {
+      # formula limits cover the basis functions only; glmnet needs one per
+      # column
+      fit_control$upper.limits <- c(
+        fit_control$upper.limits, rep(Inf, ncol(X_unpenalized))
+      )
+      fit_control$lower.limits <- c(
+        fit_control$lower.limits, rep(-Inf, ncol(X_unpenalized))
+      )
+    }
   }
 
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"

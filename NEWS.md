@@ -1,9 +1,11 @@
 # hal9001 (development version)
-* Fixed `fit_hal` ignoring the `pf` penalty factors of a formula, so terms
-  specified with `pf = 0` are now left unpenalized (@soodoku, #81).
-* Fixed formula penalty factors and monotonicity limits being misaligned with
-  the basis functions kept after basis reduction when `smoothness_orders = 0`
+* `fit_hal()` now applies the `pf` penalty factors of a formula, so terms
+  specified with `pf = 0` are left unpenalized. They were ignored before
   (@soodoku, #81).
+* `fit_hal()` now keeps a formula's penalty factors and monotonicity limits in
+  step with the columns of the design matrix. They were misaligned after basis
+  reduction when `smoothness_orders = 0`, and a formula combined with
+  `X_unpenalized` usually failed with a glmnet error (@soodoku, #81).
 
 # hal9001 0.4.6
 * Fixed predict method to address changes required by Matrix 1.6.2
