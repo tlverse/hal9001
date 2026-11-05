@@ -35,6 +35,92 @@ test_that("Check formula", {
 })
 
 
+fit_n <- 300
+set.seed(4917)
+fit_X <- cbind(x1 = runif(fit_n), x2 = runif(fit_n))
+fit_Y <- 2 * fit_X[, "x1"] - 2 * fit_X[, "x2"] + rnorm(fit_n, sd = 0.3)
+fit_Z <- cbind(z = rnorm(fit_n))
+basis_cols <- function(fit) sapply(fit$basis_list, `[[`, "cols")
+# glmnet on the design matrix fit_hal returned, with settings built from the
+# fitted basis_list instead of the formula object
+glmnet_coefs <- function(fit, lambda, ...) {
+  reference <- glmnet::glmnet(
+    fit$x_basis, fit_Y,
+    lambda = lambda, standardize = FALSE, ...
+  )
+  as.numeric(stats::coef(reference))
+}
+
+test_that("fit_hal leaves formula terms with pf = 0 unpenalized", {
+  # lambda is large enough to zero every penalized coefficient
+  fit <- fit_hal(
+    fit_X, fit_Y,
+    formula = ~ h(x1, pf = 0) + h(x2), smoothness_orders = 1, num_knots = 5,
+    lambda = 10, fit_control = list(cv_select = FALSE)
+  )
+  coefs <- fit$coefs[-1]
+  expect_gt(sum(coefs[basis_cols(fit) == 1] != 0), 0)
+  expect_equal(sum(coefs[basis_cols(fit) == 2] != 0), 0)
+})
+
+test_that("formula penalty factors follow the reduced zero-order basis", {
+  fit <- fit_hal(
+    fit_X, fit_Y,
+    formula = ~ h(x1) + h(x2, pf = 0), smoothness_orders = 0, num_knots = 5,
+    reduce_basis = 0.3, lambda = 10, fit_control = list(cv_select = FALSE)
+  )
+  # the reduction must drop columns for this to test the alignment
+  expect_lt(length(fit$basis_list), 10)
+  coefs <- fit$coefs[-1]
+  expect_equal(sum(coefs[basis_cols(fit) == 1] != 0), 0)
+  expect_gt(sum(coefs[basis_cols(fit) == 2] != 0), 0)
+})
+
+test_that("formula monotonicity limits follow the reduced zero-order basis", {
+  lambda <- 0.01
+  fit <- fit_hal(
+    fit_X, fit_Y,
+    formula = ~ h(x1, monotone = "i") + h(x2, monotone = "d"),
+    smoothness_orders = 0, num_knots = 5, reduce_basis = 0.3, lambda = lambda,
+    fit_control = list(cv_select = FALSE), return_x_basis = TRUE
+  )
+  expect_lt(length(fit$basis_list), 10)
+  increasing <- basis_cols(fit) == 1
+  expect_equal(
+    as.numeric(fit$coefs),
+    glmnet_coefs(
+      fit, lambda,
+      lower.limits = ifelse(increasing, 0, -Inf),
+      upper.limits = ifelse(increasing, Inf, 0)
+    )
+  )
+})
+
+test_that("formula settings are kept when X_unpenalized is supplied", {
+  lambda <- 0.01
+  for (s in c(0, 1)) {
+    fit <- fit_hal(
+      fit_X, fit_Y,
+      formula = ~ h(x1, monotone = "i") + h(x2, monotone = "d"),
+      X_unpenalized = fit_Z, smoothness_orders = s, num_knots = 5,
+      reduce_basis = if (s == 0) 0.3, lambda = lambda,
+      fit_control = list(cv_select = FALSE), return_x_basis = TRUE
+    )
+    increasing <- basis_cols(fit) == 1
+    expect_equal(
+      as.numeric(fit$coefs),
+      glmnet_coefs(
+        fit, lambda,
+        lower.limits = c(ifelse(increasing, 0, -Inf), -Inf),
+        upper.limits = c(ifelse(increasing, Inf, 0), Inf),
+        penalty.factor = c(rep(1, length(increasing)), 0)
+      ),
+      info = paste("smoothness_orders =", s)
+    )
+  }
+})
+
+
 
 
 #

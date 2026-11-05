@@ -300,7 +300,7 @@ fit_hal <- function(X,
     basis_list <- formula$basis_list
     fit_control$upper.limits <- formula$upper.limits
     fit_control$lower.limits <- formula$lower.limits
-    penalty_factor <- formula$penalty_factors
+    penalty_factor <- formula$penalty.factors
   } else {
     penalty_factor <- NULL
   }
@@ -349,6 +349,13 @@ fit_hal <- function(X,
     reduced_basis_map <- make_reduced_basis_map(x_basis, reduce_basis)
     x_basis <- x_basis[, reduced_basis_map]
     basis_list <- basis_list[reduced_basis_map]
+    if (!is.null(formula)) {
+      # a formula sets these per basis function, so they must follow the
+      # columns that survive; glmnet silently truncates over-long limits
+      penalty_factor <- penalty_factor[reduced_basis_map]
+      fit_control$upper.limits <- fit_control$upper.limits[reduced_basis_map]
+      fit_control$lower.limits <- fit_control$lower.limits[reduced_basis_map]
+    }
   } else {
     if (!is.null(reduce_basis)) {
       warning("Dropping reduce_basis; only applies if smoothness_orders = 0")
@@ -365,6 +372,11 @@ fit_hal <- function(X,
     unique_columns <- as.numeric(names(copy_map))
     x_basis <- x_basis[, unique_columns]
     basis_list <- basis_list[unique_columns]
+    if (!is.null(formula)) {
+      penalty_factor <- penalty_factor[unique_columns]
+      fit_control$upper.limits <- fit_control$upper.limits[unique_columns]
+      fit_control$lower.limits <- fit_control$lower.limits[unique_columns]
+    }
   }
   copy_map <- seq_along(basis_list)
   names(copy_map) <- seq_along(basis_list)
@@ -396,6 +408,16 @@ fit_hal <- function(X,
   if (unpenalized_covariates > 0) {
     x_basis <- cbind(x_basis, X_unpenalized)
     penalty_factor <- c(penalty_factor, rep(0, ncol(X_unpenalized)))
+    if (!is.null(formula)) {
+      # formula limits cover the basis functions only; glmnet needs one per
+      # column
+      fit_control$upper.limits <- c(
+        fit_control$upper.limits, rep(Inf, ncol(X_unpenalized))
+      )
+      fit_control$lower.limits <- c(
+        fit_control$lower.limits, rep(-Inf, ncol(X_unpenalized))
+      )
+    }
   }
 
   # NOTE: workaround for "Cox model not implemented for sparse x in glmnet"
